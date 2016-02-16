@@ -1,0 +1,14 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="wtKST/MainDlg.cs">
+    <Files>
+      <File FileName="wtKST/MainDlg.cs" Line="261" Column="4" />
+      <File FileName="WCCheck/WCCheck.cs" Line="4" Column="11" />
+      <File FileName="wtKST/OptionsDlg.cs" Line="524" Column="40" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
