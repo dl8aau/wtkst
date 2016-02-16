@@ -2500,7 +2500,7 @@ namespace wtKST
 			this.tsl_Error.Font = new Font("Segoe UI", 9f, FontStyle.Bold, GraphicsUnit.Point, 0);
 			this.tsl_Error.ForeColor = Color.Red;
 			this.tsl_Error.Name = "tsl_Error";
-			this.tsl_Error.RightToLeft = RightToLeft.No;
+//			this.tsl_Error.RightToLeft = RightToLeft.No;
 			this.tsl_Error.Size = new Size(965, 17);
 			this.tsl_Error.Spring = true;
 			this.tsl_Error.TextAlign = ContentAlignment.MiddleRight;
@@ -2861,8 +2861,8 @@ namespace wtKST
 			this.bw_GetPlanes.RunWorkerCompleted += new RunWorkerCompletedEventHandler(this.bw_GetPlanes_RunWorkerCompleted);
 			base.AcceptButton = this.btn_KST_Send;
 			base.AutoScaleDimensions = new SizeF(6f, 13f);
-			base.AutoScaleMode = AutoScaleMode.Font;
-			this.AutoValidate = AutoValidate.EnableAllowFocusChange;
+//			base.AutoScaleMode = AutoScaleMode.Font;
+//			this.AutoValidate = AutoValidate.EnableAllowFocusChange;
 			base.ClientSize = new Size(1008, 730);
 			base.Controls.Add(this.splitContainer1);
 			base.Controls.Add(this.ss_Main);
