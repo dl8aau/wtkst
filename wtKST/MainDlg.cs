@@ -1234,18 +1234,17 @@ namespace wtKST
 							int utime = BitConverter.ToInt32(buf, 24);
 							DateTime ts = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 							ts = ts.AddSeconds((double)utime);
+							byte band = buf[4];
 							string call = Encoding.ASCII.GetString(buf, 32, 14);
 							call = call.ToString().Replace("\0", "");
+
 							DataRow row = this.QSO.NewRow();
 							row["CALL"] = call;
-							switch (buf[4])
+							switch (band)
 							{
 							case 12:
 								row["BAND"] = "144M";
 								break;
-							case 13:
-							case 15:
-								goto IL_35A;
 							case 14:
 								row["BAND"] = "432M";
 								break;
@@ -1273,10 +1272,13 @@ namespace wtKST
 							case 23:
 								row["BAND"] = "76G";
 								break;
+							case 13:
+							case 15:
 							default:
-								goto IL_35A;
+								row["BAND"] = "";
+								break;
 							}
-							IL_36E:
+
 							row["TIME"] = ts.ToString("HH:mm");
 							string s = BitConverter.ToInt16(buf, 0).ToString();
 							s = Encoding.ASCII.GetString(buf, 46, 4).Replace("\0", "") + s.PadLeft(3, '0');
@@ -1309,20 +1311,14 @@ namespace wtKST
 							for (int i = 0; i < this.CALL.Rows.Count; i++)
 							{
 								string findcall = this.CALL.Rows[i]["CALL"].ToString();
-								findcall = findcall.TrimStart(new char[]
-								{
-									'('
-								}).TrimEnd(new char[]
-								{
-									')'
-								});
+								findcall = findcall.TrimStart(new char[] {'('}).TrimEnd(new char[]{')'});
 								if (findcall.IndexOf("-") > 0)
 								{
 									findcall = findcall.Remove(findcall.IndexOf("-"));
 								}
 								if (findcall == call)
 								{
-									switch (buf[4])
+									switch (band)
 									{
 									case 12:
 										this.CALL.Rows[i]["144M"] = 2;
@@ -1357,10 +1353,6 @@ namespace wtKST
 									}
 								}
 							}
-							continue;
-							IL_35A:
-							row["BAND"] = "";
-							goto IL_36E;
 						}
 					}
 				}
