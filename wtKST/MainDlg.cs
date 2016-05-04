@@ -441,7 +441,7 @@ namespace wtKST
 				for (byte b = 0; b <= 31; b += 1)
 				{
 					bytes[0] = b;
-					string esc = Encoding.ASCII.GetString(bytes, 0, 1);
+					string esc = Encoding.GetEncoding("iso-8859-1").GetString(bytes, 0, 1);
 					t = t.Replace(esc, "{" + b.ToString("X2") + "}");
 				}
 			}
@@ -1095,7 +1095,8 @@ namespace wtKST
 				{
 					try
 					{
-						this.tw.Send(this.cb_Command.Text + "\r");
+						// TODO: sending latin1 does not work - or is not correctly handled by telnet server?
+						tw.Send(Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.Convert(Encoding.UTF8, Encoding.GetEncoding("ISO-8859-1"), Encoding.UTF8.GetBytes(cb_Command.Text))) + "\r");
 						if (this.cb_Command.FindStringExact(this.cb_Command.Text) != 0)
 						{
 							this.cb_Command.Items.Insert(0, this.cb_Command.Text);
