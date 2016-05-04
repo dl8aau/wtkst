@@ -1097,6 +1097,7 @@ namespace wtKST
 					{
 						// TODO: sending latin1 does not work - or is not correctly handled by telnet server?
 						tw.Send(Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.Convert(Encoding.UTF8, Encoding.GetEncoding("ISO-8859-1"), Encoding.UTF8.GetBytes(cb_Command.Text))) + "\r");
+						MainDlg.Log.WriteMessage("KST message send: " + cb_Command.Text);
 						if (this.cb_Command.FindStringExact(this.cb_Command.Text) != 0)
 						{
 							this.cb_Command.Items.Insert(0, this.cb_Command.Text);
@@ -1214,6 +1215,7 @@ namespace wtKST
 							Settings.Default.WinTest_FileName = S;
 							Settings.Default.Save();
 							Settings.Default.Reload();
+							MainDlg.Log.WriteMessage("Using Win-Test log " + Settings.Default.WinTest_FileName);
 						}
 					}
 					using (Stream stream = File.Open(Settings.Default.WinTest_FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
