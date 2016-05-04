@@ -592,6 +592,7 @@ namespace wtKST
 					Thread.Sleep(100);
 					this.tw.Send(Settings.Default.KST_UserName + "\r");
 					this.KSTState = MainDlg.KST_STATE.WaitPassword;
+					this.Say("Login " + Settings.Default.KST_UserName + " send.");
 				}
 				break;
 			case MainDlg.KST_STATE.WaitPassword:
@@ -600,10 +601,19 @@ namespace wtKST
 					Thread.Sleep(100);
 					this.tw.Send(Settings.Default.KST_Password + "\r");
 					this.KSTState = MainDlg.KST_STATE.WaitChat;
+					this.Say("Password send.");
 				}
 				break;
 			case MainDlg.KST_STATE.WaitChat:
-				if (s.IndexOf(':') > 0)
+				if (s.IndexOf("Wrong password!") >= 0)
+				{
+					Thread.Sleep(100);
+					this.Say("Password wrong.");
+					this.tw.Close();
+					MainDlg.Log.WriteMessage("Password wrong ");
+					break;
+				}
+				if (s.IndexOf("Your choice           :") >= 0)
 				{
 					Thread.Sleep(100);
 					this.tw.Send(Settings.Default.KST_Chat.Substring(0, 1) + "\r");
@@ -1040,7 +1050,7 @@ namespace wtKST
 					this.tw.Connect(Settings.Default.KST_ServerName, Convert.ToInt32(Settings.Default.KST_ServerPort));
 					this.tw.Receive();
 					this.KSTState = MainDlg.KST_STATE.WaitUserName;
-					this.Say("Connecting to KST chat...");
+					this.Say("Connecting to KST chat..." + Settings.Default.KST_ServerName + " Port "+ Settings.Default.KST_ServerPort);
 				}
 				catch (Exception e)
 				{
