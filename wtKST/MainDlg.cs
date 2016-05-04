@@ -421,7 +421,7 @@ namespace wtKST
 			{
 				MainDlg.Log.WriteMessage("Socket Error - " + e.Message);
 			}
-			MainDlg.Log.WriteMessage("Diconnected from: " + Settings.Default.KST_Chat);
+			MainDlg.Log.WriteMessage("Disconnected from: " + Settings.Default.KST_Chat);
 			try
 			{
 				this.tw.Dispose();
