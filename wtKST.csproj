@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{329EC555-7D88-4D0D-900E-0E8071A88E7D}</ProjectGuid>
@@ -46,10 +46,16 @@
     <Compile Include="WCCheck\WCUtils.cs" />
     <Compile Include="wtKST.Properties\Resources.cs" />
     <Compile Include="wtKST.Properties\Settings.cs" />
-    <Compile Include="wtKST\LogWriter.cs" />
+    <Compile Include="wtKST\LogWriter.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="wtKST\LogWriterEventArgs.cs" />
-    <Compile Include="wtKST\MainDlg.cs" />
-    <Compile Include="wtKST\OptionsDlg.cs" />
+    <Compile Include="wtKST\MainDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="wtKST\OptionsDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="wtKST\PlaneInfo.cs" />
     <Compile Include="wtKST\PlaneInfoComparer.cs" />
     <Compile Include="wtKST\PlaneInfoList.cs" />

@@ -19,4 +19,3 @@ using System.Runtime.Versioning;
 [assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
 [assembly: ComVisible(false)]
 [assembly: Guid("b2298d01-0c4b-41e5-b805-e328ad54d0b3")]
-[assembly: TargetFramework(".NETFramework,Version=v4.0", FrameworkDisplayName = ".NET Framework 4")]
