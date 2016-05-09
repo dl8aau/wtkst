@@ -206,6 +206,8 @@ namespace wtKST
 
 		private BackgroundWorker bw_GetPlanes;
 
+		private bool WinTestLocatorWarning = false;
+
 		public MainDlg()
 		{
 			this.InitializeComponent();
@@ -883,7 +885,8 @@ namespace wtKST
 							}
 							this.lv_Calls_Updating = false;
 							this.KSTState = MainDlg.KST_STATE.Connected;
-							this.Say("");
+							if (!this.WinTestLocatorWarning)
+								this.Say("");
 							MainDlg.Log.WriteMessage("KST GetUsers finished: " + this.lv_Calls.Items.Count.ToString() + " Calls.");
 						}
 						catch (Exception e)
@@ -1197,6 +1200,7 @@ namespace wtKST
 
 		private void Get_QSOs()
 		{
+			WinTestLocatorWarning = false;
 			string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName.ToUpper());
 			if (kstcall.IndexOf("DL0GTH") >= 0 || kstcall.IndexOf("DL2ALF") >= 0 || kstcall.IndexOf("DL2ARD") >= 0 || kstcall.IndexOf("DL2AKT") >= 0 || kstcall.IndexOf("DM5CT") >= 0 || kstcall.IndexOf("DL6AUI") >= 0 || kstcall.IndexOf("DR9A") >= 0 || kstcall.IndexOf("DA0FF") >= 0 || kstcall.IndexOf("DL0FTZ") >= 0)
 			{
@@ -1350,6 +1354,13 @@ namespace wtKST
 									case 23:
 										this.CALL.Rows[i]["76G"] = 2;
 										break;
+									}
+									// check locator
+									if (CALL.Rows[i]["LOC"] != row["LOC"])
+									{
+										Say(call + " Locator wrong? Win-Test Log " + row["BAND"] + " " + row["TIME"] + " " + call + " " + row["LOC"] + " KST " + this.CALL.Rows[i]["LOC"].ToString());
+										WinTestLocatorWarning = true;
+										MainDlg.Log.WriteMessage("Win-Test log locator mismatch: " + row["BAND"] + " " + row["TIME"] +  " " + call + " Locator wrong? Win-Test Log " + row["LOC"] + " KST " + this.CALL.Rows[i]["LOC"].ToString());
 									}
 								}
 							}
