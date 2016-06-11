@@ -63,7 +63,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="wtKST.Properties\Resources.resources" />
-    <EmbeddedResource Include="wtKST\MainDlg.resources" />
+    <Resource Include="wtKST\MainDlg.resources" />
+    <EmbeddedResource Include="wtKST\MainDlg.resx">
+      <DependentUpon>MainDlg.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="wtKST\OptionsDlg.resources" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
