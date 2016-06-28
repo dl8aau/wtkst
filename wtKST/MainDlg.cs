@@ -1202,7 +1202,7 @@ namespace wtKST
         {
             WinTestLocatorWarning = false;
             string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName.ToUpper());
-            if (kstcall.IndexOf("DL0GTH") >= 0 || kstcall.IndexOf("DL2ALF") >= 0 || kstcall.IndexOf("DL2ARD") >= 0 || kstcall.IndexOf("DL2AKT") >= 0 || kstcall.IndexOf("DM5CT") >= 0 || kstcall.IndexOf("DL6AUI") >= 0 || kstcall.IndexOf("DR9A") >= 0 || kstcall.IndexOf("DA0FF") >= 0 || kstcall.IndexOf("DL0FTZ") >= 0)
+            if (kstcall.IndexOf("DL0GTH") >= 0 || kstcall.IndexOf("DL2ALF") >= 0 || kstcall.IndexOf("DL2ARD") >= 0 || kstcall.IndexOf("DL2AKT") >= 0 || kstcall.IndexOf("DM5CT") >= 0 || kstcall.IndexOf("DL6AUI") >= 0 || kstcall.IndexOf("DR9A") >= 0 || kstcall.IndexOf("DA0FF") >= 0 || kstcall.IndexOf("DL8AAU") >= 0 || kstcall.IndexOf("DL0FTZ") >= 0)
             {
                 try
                 {
