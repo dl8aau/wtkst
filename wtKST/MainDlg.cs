@@ -1227,9 +1227,9 @@ namespace wtKST
                         this.QSO.Clear();
                         byte[] bufh = new byte[13944];
                         stream.Read(bufh, 0, bufh.Length);
-                        string arg_196_0 = Encoding.ASCII.GetString(bufh, 24, 6);
+                        string wtLoc = Encoding.ASCII.GetString(bufh, 24, 6);
                         char[] separator = new char[1];
-                        this.MyLoc = arg_196_0.Split(separator)[0];
+                        this.MyLoc = wtLoc.Split(separator)[0];
                         stream.Position = 13944L;
                         while (stream.Position < stream.Length)
                         {
