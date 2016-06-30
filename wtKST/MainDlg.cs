@@ -1356,7 +1356,7 @@ namespace wtKST
                                         break;
                                     }
                                     // check locator
-                                    if (CALL.Rows[i]["LOC"] != row["LOC"])
+                                    if (CALL.Rows[i]["LOC"].ToString() != row["LOC"].ToString())
                                     {
                                         Say(call + " Locator wrong? Win-Test Log " + row["BAND"] + " " + row["TIME"] + " " + call + " " + row["LOC"] + " KST " + this.CALL.Rows[i]["LOC"].ToString());
                                         WinTestLocatorWarning = true;
