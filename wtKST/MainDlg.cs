@@ -1481,6 +1481,21 @@ namespace wtKST
             }
         }
 
+        private void MainDlg_Load(object sender, EventArgs e)
+        {
+            // Set window location
+            if (Settings.Default.WindowLocation != null)
+            {
+                this.Location = Settings.Default.WindowLocation;
+            }
+
+            // Set window size
+            if (Settings.Default.WindowSize != null)
+            {
+                this.Size = Settings.Default.WindowSize;
+            }
+        }
+
         private void MainDlg_FormClosing(object sender, FormClosingEventArgs e)
         {
             try
@@ -1494,6 +1509,22 @@ namespace wtKST
             {
                 this.Error(MethodBase.GetCurrentMethod().Name, "(qrv.xml): " + e2.Message);
             }
+            // Copy window location to app settings
+            Settings.Default.WindowLocation = this.Location;
+
+            // Copy window size to app settings
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                Settings.Default.WindowSize = this.Size;
+            }
+            else
+            {
+                Settings.Default.WindowSize = this.RestoreBounds.Size;
+            }
+
+            // Save settings
+            Settings.Default.Save();
+
             MainDlg.Log.WriteMessage("Closed down.");
         }
 
@@ -2508,7 +2539,7 @@ namespace wtKST
             this.tsl_Error});
             this.ss_Main.Location = new System.Drawing.Point(0, 708);
             this.ss_Main.Name = "ss_Main";
-            this.ss_Main.Size = new System.Drawing.Size(1008, 22);
+            this.ss_Main.Size = new System.Drawing.Size(1202, 22);
             this.ss_Main.TabIndex = 9;
             this.ss_Main.Text = "statusStrip1";
             // 
@@ -2523,7 +2554,7 @@ namespace wtKST
             this.tsl_Error.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tsl_Error.ForeColor = System.Drawing.Color.Red;
             this.tsl_Error.Name = "tsl_Error";
-            this.tsl_Error.Size = new System.Drawing.Size(965, 17);
+            this.tsl_Error.Size = new System.Drawing.Size(1159, 17);
             this.tsl_Error.Spring = true;
             this.tsl_Error.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -2542,8 +2573,8 @@ namespace wtKST
             // 
             this.splitContainer1.Panel2.Controls.Add(this.lv_Calls);
             this.splitContainer1.Panel2.Controls.Add(this.lbl_KST_Calls);
-            this.splitContainer1.Size = new System.Drawing.Size(1008, 684);
-            this.splitContainer1.SplitterDistance = 707;
+            this.splitContainer1.Size = new System.Drawing.Size(1202, 684);
+            this.splitContainer1.SplitterDistance = 843;
             this.splitContainer1.TabIndex = 10;
             // 
             // splitContainer2
@@ -2564,7 +2595,7 @@ namespace wtKST
             this.splitContainer2.Panel2.Controls.Add(this.lv_MyMsg);
             this.splitContainer2.Panel2.Controls.Add(this.lbl_KST_MyMsg);
             this.splitContainer2.Panel2MinSize = 75;
-            this.splitContainer2.Size = new System.Drawing.Size(707, 684);
+            this.splitContainer2.Size = new System.Drawing.Size(843, 684);
             this.splitContainer2.SplitterDistance = 346;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -2588,7 +2619,7 @@ namespace wtKST
             // 
             this.splitContainer3.Panel2.Controls.Add(this.lv_Msg);
             this.splitContainer3.Panel2.Controls.Add(this.lbl_KST_Msg);
-            this.splitContainer3.Size = new System.Drawing.Size(707, 346);
+            this.splitContainer3.Size = new System.Drawing.Size(843, 346);
             this.splitContainer3.SplitterDistance = 80;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -2625,7 +2656,7 @@ namespace wtKST
             this.lbl_KST_Status.Location = new System.Drawing.Point(0, 0);
             this.lbl_KST_Status.Name = "lbl_KST_Status";
             this.lbl_KST_Status.Padding = new System.Windows.Forms.Padding(4);
-            this.lbl_KST_Status.Size = new System.Drawing.Size(705, 26);
+            this.lbl_KST_Status.Size = new System.Drawing.Size(841, 26);
             this.lbl_KST_Status.TabIndex = 15;
             this.lbl_KST_Status.Text = "Status";
             this.lbl_KST_Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2654,7 +2685,7 @@ namespace wtKST
             this.lv_Msg.Location = new System.Drawing.Point(0, 26);
             this.lv_Msg.MultiSelect = false;
             this.lv_Msg.Name = "lv_Msg";
-            this.lv_Msg.Size = new System.Drawing.Size(705, 234);
+            this.lv_Msg.Size = new System.Drawing.Size(841, 234);
             this.lv_Msg.TabIndex = 12;
             this.lv_Msg.UseCompatibleStateImageBehavior = false;
             this.lv_Msg.View = System.Windows.Forms.View.Details;
@@ -2691,7 +2722,7 @@ namespace wtKST
             this.lbl_KST_Msg.Location = new System.Drawing.Point(0, 0);
             this.lbl_KST_Msg.Name = "lbl_KST_Msg";
             this.lbl_KST_Msg.Padding = new System.Windows.Forms.Padding(4);
-            this.lbl_KST_Msg.Size = new System.Drawing.Size(705, 26);
+            this.lbl_KST_Msg.Size = new System.Drawing.Size(841, 26);
             this.lbl_KST_Msg.TabIndex = 11;
             this.lbl_KST_Msg.Text = "Messages";
             this.lbl_KST_Msg.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2710,7 +2741,7 @@ namespace wtKST
             this.lv_MyMsg.Location = new System.Drawing.Point(0, 26);
             this.lv_MyMsg.MultiSelect = false;
             this.lv_MyMsg.Name = "lv_MyMsg";
-            this.lv_MyMsg.Size = new System.Drawing.Size(705, 306);
+            this.lv_MyMsg.Size = new System.Drawing.Size(841, 306);
             this.lv_MyMsg.TabIndex = 13;
             this.lv_MyMsg.UseCompatibleStateImageBehavior = false;
             this.lv_MyMsg.View = System.Windows.Forms.View.Details;
@@ -2747,7 +2778,7 @@ namespace wtKST
             this.lbl_KST_MyMsg.Location = new System.Drawing.Point(0, 0);
             this.lbl_KST_MyMsg.Name = "lbl_KST_MyMsg";
             this.lbl_KST_MyMsg.Padding = new System.Windows.Forms.Padding(4);
-            this.lbl_KST_MyMsg.Size = new System.Drawing.Size(705, 26);
+            this.lbl_KST_MyMsg.Size = new System.Drawing.Size(841, 26);
             this.lbl_KST_MyMsg.TabIndex = 10;
             this.lbl_KST_MyMsg.Text = "My Messages";
             this.lbl_KST_MyMsg.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2777,7 +2808,7 @@ namespace wtKST
             this.lv_Calls.MultiSelect = false;
             this.lv_Calls.Name = "lv_Calls";
             this.lv_Calls.OwnerDraw = true;
-            this.lv_Calls.Size = new System.Drawing.Size(295, 658);
+            this.lv_Calls.Size = new System.Drawing.Size(353, 658);
             this.lv_Calls.SmallImageList = this.il_Calls;
             this.lv_Calls.TabIndex = 14;
             this.lv_Calls.UseCompatibleStateImageBehavior = false;
@@ -2880,7 +2911,7 @@ namespace wtKST
             this.lbl_KST_Calls.Location = new System.Drawing.Point(0, 0);
             this.lbl_KST_Calls.Name = "lbl_KST_Calls";
             this.lbl_KST_Calls.Padding = new System.Windows.Forms.Padding(4);
-            this.lbl_KST_Calls.Size = new System.Drawing.Size(295, 24);
+            this.lbl_KST_Calls.Size = new System.Drawing.Size(353, 24);
             this.lbl_KST_Calls.TabIndex = 0;
             this.lbl_KST_Calls.Text = "Calls";
             this.lbl_KST_Calls.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -2895,7 +2926,7 @@ namespace wtKST
             this.toolStripMenuItem1});
             this.mn_Main.Location = new System.Drawing.Point(0, 0);
             this.mn_Main.Name = "mn_Main";
-            this.mn_Main.Size = new System.Drawing.Size(1008, 24);
+            this.mn_Main.Size = new System.Drawing.Size(1202, 24);
             this.mn_Main.TabIndex = 11;
             this.mn_Main.Text = "menuStrip1";
             // 
@@ -3075,13 +3106,16 @@ namespace wtKST
             // MainDlg
             // 
             this.AcceptButton = this.btn_KST_Send;
-            this.ClientSize = new System.Drawing.Size(1008, 730);
+            this.ClientSize = new System.Drawing.Size(1202, 730);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.ss_Main);
             this.Controls.Add(this.mn_Main);
+            this.DataBindings.Add(new System.Windows.Forms.Binding("Location", global::wtKST.Properties.Settings.Default, "WindowLocation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.Location = global::wtKST.Properties.Settings.Default.WindowLocation;
             this.Name = "MainDlg";
             this.Text = "wtKST";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainDlg_FormClosing);
+            this.Load += new System.EventHandler(this.MainDlg_Load);
             this.ss_Main.ResumeLayout(false);
             this.ss_Main.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
