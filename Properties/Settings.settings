@@ -1,0 +1,105 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="wtKST.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="KST_StartAsHere" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="KST_StartAsAway" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="KST_ServerName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">www.on4kst.org</Value>
+    </Setting>
+    <Setting Name="KST_ServerPort" Type="System.String" Scope="User">
+      <Value Profile="(Default)">23000</Value>
+    </Setting>
+    <Setting Name="KST_UserName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="KST_Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="KST_Chat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3 - Microwave</Value>
+    </Setting>
+    <Setting Name="KST_AutoConnect" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="WinTest_QRV_FileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\\ProgramData\\Win-Test\\extras\\qrv.xdt</Value>
+    </Setting>
+    <Setting Name="WinTest_INI_FileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\\ProgramData\\Win-Test\\cfg\\wt.ini</Value>
+    </Setting>
+    <Setting Name="WinTest_FileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="WinTest_QRV_Table_FileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">qrv.xml</Value>
+    </Setting>
+    <Setting Name="UpdateInterval" Type="System.String" Scope="User">
+      <Value Profile="(Default)">60</Value>
+    </Setting>
+    <Setting Name="KST_ShowBalloon" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AS_Planes_MinAlt" Type="System.String" Scope="User">
+      <Value Profile="(Default)">20000</Value>
+    </Setting>
+    <Setting Name="AS_MinDist" Type="System.String" Scope="User">
+      <Value Profile="(Default)">300</Value>
+    </Setting>
+    <Setting Name="AS_MaxDist" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="AS_SCPRadius" Type="System.String" Scope="User">
+      <Value Profile="(Default)">50</Value>
+    </Setting>
+    <Setting Name="AS_Active" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AS_PlaneRadius" Type="System.String" Scope="User">
+      <Value Profile="(Default)">200</Value>
+    </Setting>
+    <Setting Name="ShowBeacons" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="BeaconFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">beacons.lst</Value>
+    </Setting>
+    <Setting Name="WinTest_Port" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">9871</Value>
+    </Setting>
+    <Setting Name="AS_Port" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">9872</Value>
+    </Setting>
+    <Setting Name="KST_Loc" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="KST_Name" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="WinTest_Activate" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AS_Timeout" Type="System.String" Scope="User">
+      <Value Profile="(Default)">10</Value>
+    </Setting>
+    <Setting Name="AS_My_Name" Type="System.String" Scope="User">
+      <Value Profile="(Default)">KST</Value>
+    </Setting>
+    <Setting Name="AS_Server_Name" Type="System.String" Scope="User">
+      <Value Profile="(Default)">AS</Value>
+    </Setting>
+    <Setting Name="AS_QRG" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1.2G</Value>
+    </Setting>
+    <Setting Name="WindowLocation" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="WindowSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">1220, 768</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
