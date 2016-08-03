@@ -1043,7 +1043,9 @@ namespace wtKST
 
         private void KST_Connect()
         {
-            if (this.KSTState == MainDlg.KST_STATE.Disconnected)
+            if (this.KSTState == MainDlg.KST_STATE.Disconnected &&
+                !string.IsNullOrEmpty(Settings.Default.KST_ServerName) &&
+                !string.IsNullOrEmpty(Settings.Default.KST_UserName))
             {
                 this.tw = new TelnetWrapper();
                 this.tw.DataAvailable += new DataAvailableEventHandler(this.tw_DataAvailable);
