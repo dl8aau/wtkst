@@ -54,7 +54,7 @@ namespace wtKST
 
         private Point OldMousePos = new Point(0, 0);
 
-        public static LogWriter Log = new LogWriter(Application.StartupPath);
+        public static LogWriter Log = new LogWriter(Application.UserAppDataPath);
 
         private TelnetWrapper tw;
 
