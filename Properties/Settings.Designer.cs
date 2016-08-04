@@ -412,5 +412,125 @@ namespace wtKST.Properties {
                 this["WindowSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Band_144 {
+            get {
+                return ((bool)(this["Band_144"]));
+            }
+            set {
+                this["Band_144"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Band_432 {
+            get {
+                return ((bool)(this["Band_432"]));
+            }
+            set {
+                this["Band_432"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Band_1296 {
+            get {
+                return ((bool)(this["Band_1296"]));
+            }
+            set {
+                this["Band_1296"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Band_2320 {
+            get {
+                return ((bool)(this["Band_2320"]));
+            }
+            set {
+                this["Band_2320"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Band_3400 {
+            get {
+                return ((bool)(this["Band_3400"]));
+            }
+            set {
+                this["Band_3400"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Band_5760 {
+            get {
+                return ((bool)(this["Band_5760"]));
+            }
+            set {
+                this["Band_5760"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Band_10368 {
+            get {
+                return ((bool)(this["Band_10368"]));
+            }
+            set {
+                this["Band_10368"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Band_24GHz {
+            get {
+                return ((bool)(this["Band_24GHz"]));
+            }
+            set {
+                this["Band_24GHz"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Band_47GHz {
+            get {
+                return ((bool)(this["Band_47GHz"]));
+            }
+            set {
+                this["Band_47GHz"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Band_76GHz {
+            get {
+                return ((bool)(this["Band_76GHz"]));
+            }
+            set {
+                this["Band_76GHz"] = value;
+            }
+        }
     }
 }

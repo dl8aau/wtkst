@@ -148,27 +148,29 @@ namespace wtKST
 
         private ColumnHeader ch_Loc;
 
-        private ColumnHeader columnHeader9;
+        private ColumnHeader columnHeader144;
 
-        private ColumnHeader columnHeader10;
+        private ColumnHeader columnHeader432;
 
         private ImageList il_Calls;
 
-        private ColumnHeader columnHeader11;
+        private ColumnHeader columnHeader1296;
 
-        private ColumnHeader columnHeader12;
+        private ColumnHeader columnHeader2320;
 
-        private ColumnHeader columnHeader13;
+        private ColumnHeader columnHeader3400;
 
-        private ColumnHeader columnHeader14;
+        private ColumnHeader columnHeader5760;
 
-        private ColumnHeader columnHeader15;
+        private ColumnHeader columnHeader10368;
 
-        private ColumnHeader columnHeader16;
+        private ColumnHeader columnHeader24GHz;
 
-        private ColumnHeader columnHeader17;
+        private ColumnHeader columnHeader47GHz;
 
-        private ColumnHeader columnHeader18;
+        private ColumnHeader columnHeader76GHz;
+
+        private const int COLUMN_WIDTH = 20;
 
         private Label lbl_KST_Status;
 
@@ -276,6 +278,8 @@ namespace wtKST
                 this.CALL.Columns["CALL"]
             };
             this.CALL.PrimaryKey = CALLkeys;
+
+            UpdateUserBandsWidth();
             this.bw_GetPlanes.RunWorkerAsync();
             if (Settings.Default.KST_AutoConnect)
             {
@@ -1142,6 +1146,51 @@ namespace wtKST
             base.Close();
         }
 
+        // hide bands that should not be displayed by making their width = 0
+        private void UpdateUserBandsWidth()
+        {
+            if (Settings.Default.Band_144)
+                this.columnHeader144.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader144.Width = 0;
+            if (Settings.Default.Band_432)
+                this.columnHeader432.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader432.Width = 0;
+            if (Settings.Default.Band_1296)
+                this.columnHeader1296.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader1296.Width = 0;
+            if (Settings.Default.Band_2320)
+                this.columnHeader2320.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader2320.Width = 0;
+            if (Settings.Default.Band_3400)
+                this.columnHeader3400.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader3400.Width = 0;
+            if (Settings.Default.Band_5760)
+                this.columnHeader5760.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader5760.Width = 0;
+            if (Settings.Default.Band_10368)
+                this.columnHeader10368.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader10368.Width = 0;
+            if (Settings.Default.Band_24GHz)
+                this.columnHeader24GHz.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader24GHz.Width = 0;
+            if (Settings.Default.Band_47GHz)
+                this.columnHeader47GHz.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader47GHz.Width = 0;
+            if (Settings.Default.Band_76GHz)
+                this.columnHeader76GHz.Width = COLUMN_WIDTH;
+            else
+                this.columnHeader76GHz.Width = 0;
+        }
+
         private void tsi_Options_Click(object sender, EventArgs e)
         {
             OptionsDlg Dlg = new OptionsDlg();
@@ -1166,6 +1215,7 @@ namespace wtKST
                     this.lv_Msg.Items.Clear();
                     this.lv_MyMsg.Items.Clear();
                 }
+                UpdateUserBandsWidth();
             }
         }
 
@@ -2479,16 +2529,16 @@ namespace wtKST
             this.ch_Loc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ch_UTC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ch_AS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader10 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader11 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader12 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader13 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader14 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader15 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader16 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader17 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader18 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader144 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader432 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1296 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2320 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3400 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5760 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader10368 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader24GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader47GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader76GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.il_Calls = new System.Windows.Forms.ImageList(this.components);
             this.lbl_KST_Calls = new System.Windows.Forms.Label();
             this.mn_Main = new System.Windows.Forms.MenuStrip();
@@ -2793,16 +2843,16 @@ namespace wtKST
             this.ch_Loc,
             this.ch_UTC,
             this.ch_AS,
-            this.columnHeader9,
-            this.columnHeader10,
-            this.columnHeader11,
-            this.columnHeader12,
-            this.columnHeader13,
-            this.columnHeader14,
-            this.columnHeader15,
-            this.columnHeader16,
-            this.columnHeader17,
-            this.columnHeader18});
+            this.columnHeader144,
+            this.columnHeader432,
+            this.columnHeader1296,
+            this.columnHeader2320,
+            this.columnHeader3400,
+            this.columnHeader5760,
+            this.columnHeader10368,
+            this.columnHeader24GHz,
+            this.columnHeader47GHz,
+            this.columnHeader76GHz});
             this.lv_Calls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lv_Calls.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lv_Calls.GridLines = true;
@@ -2843,57 +2893,57 @@ namespace wtKST
             // ch_AS
             // 
             this.ch_AS.Text = "AS";
-            this.ch_AS.Width = 20;
+            this.ch_AS.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader9
             // 
-            this.columnHeader9.Text = "144M";
-            this.columnHeader9.Width = 20;
+            this.columnHeader144.Text = "144M";
+            this.columnHeader144.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader10
             // 
-            this.columnHeader10.Text = "432M";
-            this.columnHeader10.Width = 20;
+            this.columnHeader432.Text = "432M";
+            this.columnHeader432.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader11
             // 
-            this.columnHeader11.Text = "1.2G";
-            this.columnHeader11.Width = 20;
+            this.columnHeader1296.Text = "1.2G";
+            this.columnHeader1296.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader12
             // 
-            this.columnHeader12.Text = "2.3G";
-            this.columnHeader12.Width = 20;
+            this.columnHeader2320.Text = "2.3G";
+            this.columnHeader2320.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader13
             // 
-            this.columnHeader13.Text = "3.4G";
-            this.columnHeader13.Width = 20;
+            this.columnHeader3400.Text = "3.4G";
+            this.columnHeader3400.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader14
             // 
-            this.columnHeader14.Text = "5.7G";
-            this.columnHeader14.Width = 20;
+            this.columnHeader5760.Text = "5.7G";
+            this.columnHeader5760.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader15
             // 
-            this.columnHeader15.Text = "10G";
-            this.columnHeader15.Width = 20;
+            this.columnHeader10368.Text = "10G";
+            this.columnHeader10368.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader16
             // 
-            this.columnHeader16.Text = "24G";
-            this.columnHeader16.Width = 20;
+            this.columnHeader24GHz.Text = "24G";
+            this.columnHeader24GHz.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader17
             // 
-            this.columnHeader17.Text = "47G";
-            this.columnHeader17.Width = 20;
+            this.columnHeader47GHz.Text = "47G";
+            this.columnHeader47GHz.Width = MainDlg.COLUMN_WIDTH;
             // 
             // columnHeader18
             // 
-            this.columnHeader18.Text = "76G";
-            this.columnHeader18.Width = 20;
+            this.columnHeader76GHz.Text = "76G";
+            this.columnHeader76GHz.Width = MainDlg.COLUMN_WIDTH;
             // 
             // il_Calls
             // 
