@@ -470,7 +470,9 @@ namespace wtKST
                     for (int i = 0; i < array.Length; i++)
                     {
                         string buf = array[i];
-                        this.MsgQueue.Enqueue(buf);
+                        StringWriter bufWriter = new StringWriter();
+                        WebUtility.HtmlDecode(buf, bufWriter);
+                        this.MsgQueue.Enqueue(bufWriter.ToString());
                     }
                 }
                 this.KSTBuffer = "";
