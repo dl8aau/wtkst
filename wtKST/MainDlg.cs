@@ -2901,57 +2901,57 @@ namespace wtKST
             // ch_AS
             // 
             this.ch_AS.Text = "AS";
-            this.ch_AS.Width = MainDlg.COLUMN_WIDTH;
+            this.ch_AS.Width = 20;
             // 
-            // columnHeader9
+            // columnHeader144
             // 
             this.columnHeader144.Text = "144M";
-            this.columnHeader144.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader144.Width = 20;
             // 
-            // columnHeader10
+            // columnHeader432
             // 
             this.columnHeader432.Text = "432M";
-            this.columnHeader432.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader432.Width = 20;
             // 
-            // columnHeader11
+            // columnHeader1296
             // 
             this.columnHeader1296.Text = "1.2G";
-            this.columnHeader1296.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader1296.Width = 20;
             // 
-            // columnHeader12
+            // columnHeader2320
             // 
             this.columnHeader2320.Text = "2.3G";
-            this.columnHeader2320.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader2320.Width = 20;
             // 
-            // columnHeader13
+            // columnHeader3400
             // 
             this.columnHeader3400.Text = "3.4G";
-            this.columnHeader3400.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader3400.Width = 20;
             // 
-            // columnHeader14
+            // columnHeader5760
             // 
             this.columnHeader5760.Text = "5.7G";
-            this.columnHeader5760.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader5760.Width = 20;
             // 
-            // columnHeader15
+            // columnHeader10368
             // 
             this.columnHeader10368.Text = "10G";
-            this.columnHeader10368.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader10368.Width = 20;
             // 
-            // columnHeader16
+            // columnHeader24GHz
             // 
             this.columnHeader24GHz.Text = "24G";
-            this.columnHeader24GHz.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader24GHz.Width = 20;
             // 
-            // columnHeader17
+            // columnHeader47GHz
             // 
             this.columnHeader47GHz.Text = "47G";
-            this.columnHeader47GHz.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader47GHz.Width = 20;
             // 
-            // columnHeader18
+            // columnHeader76GHz
             // 
             this.columnHeader76GHz.Text = "76G";
-            this.columnHeader76GHz.Width = MainDlg.COLUMN_WIDTH;
+            this.columnHeader76GHz.Width = 20;
             // 
             // il_Calls
             // 
