@@ -135,6 +135,7 @@ namespace wtKST
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionsDlg));
             this.btn_OK = new System.Windows.Forms.Button();
             this.btn_Cancel = new System.Windows.Forms.Button();
             this.btn_Options_WinTest_INI_Select = new System.Windows.Forms.Button();
@@ -948,6 +949,7 @@ namespace wtKST
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btn_Cancel);
             this.Controls.Add(this.btn_OK);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "OptionsDlg";
             this.Text = "Options";
             this.groupBox3.ResumeLayout(false);

@@ -29,6 +29,9 @@
   <PropertyGroup>
     <RootNamespace>wtKST</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Main.Icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System" />
@@ -73,9 +76,9 @@
     <EmbeddedResource Include="wtKST\OptionsDlg.resx">
       <DependentUpon>OptionsDlg.cs</DependentUpon>
     </EmbeddedResource>
-    <Resource Include="wtKST\MainDlg.resources" />
     <EmbeddedResource Include="wtKST\MainDlg.resx">
       <DependentUpon>MainDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Resource Include="wtKST\OptionsDlg.resources" />
   </ItemGroup>
@@ -89,6 +92,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Main.Icon.ico" />
     <Content Include="qrv.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

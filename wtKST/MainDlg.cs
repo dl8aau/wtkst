@@ -3165,6 +3165,7 @@ namespace wtKST
             this.Controls.Add(this.ss_Main);
             this.Controls.Add(this.mn_Main);
             this.DataBindings.Add(new System.Windows.Forms.Binding("Location", global::wtKST.Properties.Settings.Default, "WindowLocation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Location = global::wtKST.Properties.Settings.Default.WindowLocation;
             this.Name = "MainDlg";
             this.Text = "wtKST";
