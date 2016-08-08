@@ -232,7 +232,7 @@ namespace wtKST
             this.btn_Options_WinTest_INI_Select.Name = "btn_Options_WinTest_INI_Select";
             this.btn_Options_WinTest_INI_Select.Size = new System.Drawing.Size(75, 23);
             this.btn_Options_WinTest_INI_Select.TabIndex = 13;
-            this.btn_Options_WinTest_INI_Select.Text = "Auswählen";
+            this.btn_Options_WinTest_INI_Select.Text = "Select";
             this.btn_Options_WinTest_INI_Select.UseVisualStyleBackColor = true;
             this.btn_Options_WinTest_INI_Select.Click += new System.EventHandler(this.btn_Options_WinTest_INI_Select_Click);
             // 
@@ -253,7 +253,7 @@ namespace wtKST
             this.btn_Options_WinTest_QRV_Select.Name = "btn_Options_WinTest_QRV_Select";
             this.btn_Options_WinTest_QRV_Select.Size = new System.Drawing.Size(75, 23);
             this.btn_Options_WinTest_QRV_Select.TabIndex = 10;
-            this.btn_Options_WinTest_QRV_Select.Text = "Auswählen";
+            this.btn_Options_WinTest_QRV_Select.Text = "Select";
             this.btn_Options_WinTest_QRV_Select.UseVisualStyleBackColor = true;
             this.btn_Options_WinTest_QRV_Select.Click += new System.EventHandler(this.btn_Options_WinTest_QRV_Select_Click);
             // 
