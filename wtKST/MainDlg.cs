@@ -144,7 +144,7 @@ namespace wtKST
 
         private ColumnHeader ch_Name;
 
-        private ColumnHeader ch_UTC;
+        private ColumnHeader ch_Act;
 
         private ColumnHeader ch_Loc;
 
@@ -857,6 +857,12 @@ namespace wtKST
                                     LV.SubItems.Add(this.CALL.Rows[i]["LOC"].ToString());
                                     LV.SubItems.Add(((DateTime)this.CALL.Rows[i]["TIME"]).ToString("HH:mm"));
                                     int qrb = WCCheck.WCCheck.QRB(this.MyLoc, this.CALL.Rows[i]["LOC"].ToString());
+                                    // last activity
+                                    double lastActivityMinutes = (DateTime.UtcNow.Subtract((DateTime)this.CALL.Rows[i]["TIME"])).TotalMinutes;
+                                    if (lastActivityMinutes < 120.0)
+                                        LV.SubItems.Add(lastActivityMinutes.ToString("0"));
+                                    else
+                                        LV.SubItems.Add("---");
                                     if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
                                     {
                                         LV.SubItems.Add(this.GetNearestPlanePotential(this.CALL.Rows[i]["CALL"].ToString()).ToString());
@@ -2529,7 +2535,7 @@ namespace wtKST
             this.ch_Call = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ch_Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ch_Loc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_UTC = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ch_Act = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.ch_AS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader144 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader432 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -2843,7 +2849,7 @@ namespace wtKST
             this.ch_Call,
             this.ch_Name,
             this.ch_Loc,
-            this.ch_UTC,
+            this.ch_Act,
             this.ch_AS,
             this.columnHeader144,
             this.columnHeader432,
@@ -2887,10 +2893,10 @@ namespace wtKST
             // 
             this.ch_Loc.Text = "Locator";
             // 
-            // ch_UTC
+            // ch_Act
             // 
-            this.ch_UTC.Text = "UTC";
-            this.ch_UTC.Width = 40;
+            this.ch_Act.Text = "Act";
+            this.ch_Act.Width = 30;
             // 
             // ch_AS
             // 
