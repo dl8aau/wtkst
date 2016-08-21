@@ -263,6 +263,7 @@ namespace wtKST
             this.CALL.Columns.Add("TIME", typeof(DateTime));
             this.CALL.Columns.Add("ASLAT", typeof(double));
             this.CALL.Columns.Add("ASLON", typeof(double));
+            this.CALL.Columns.Add("AWAY", typeof(bool));
             this.CALL.Columns.Add("AS", typeof(int));
             this.CALL.Columns.Add("144M", typeof(int));
             this.CALL.Columns.Add("432M", typeof(int));
@@ -903,7 +904,13 @@ namespace wtKST
                                 if (this.CALL.Rows[i]["CALL"].ToString().IndexOf(Settings.Default.KST_UserName.ToUpper()) < 0)
                                 {
                                     ListViewItem LV = new ListViewItem();
-                                    LV.Text = this.CALL.Rows[i]["CALL"].ToString();
+                                    if ((bool)this.CALL.Rows[i]["AWAY"])
+                                    {
+                                        LV.Text = "(" + this.CALL.Rows[i]["CALL"].ToString() + ")";
+                                        LV.Font = new Font(LV.Font, FontStyle.Italic);
+                                    }
+                                    else
+                                        LV.Text = this.CALL.Rows[i]["CALL"].ToString();
                                     LV.UseItemStyleForSubItems = false;
                                     LV.SubItems.Add(this.CALL.Rows[i]["NAME"].ToString());
                                     LV.SubItems.Add(this.CALL.Rows[i]["LOC"].ToString());
@@ -1031,6 +1038,14 @@ namespace wtKST
                             {
                                 ')'
                             });
+                            if (qrvcall.Equals(call))
+                                row["AWAY"] = false;
+                            else
+                            {
+                                row["AWAY"] = true;
+                                call = qrvcall;
+                                row["CALL"] = qrvcall;
+                            }
                             if (qrvcall.IndexOf("-") > 0)
                             {
                                 qrvcall = qrvcall.Remove(qrvcall.IndexOf("-"));
