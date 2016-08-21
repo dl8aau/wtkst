@@ -914,14 +914,14 @@ namespace wtKST
                                     LV.UseItemStyleForSubItems = false;
                                     LV.SubItems.Add(this.CALL.Rows[i]["NAME"].ToString());
                                     LV.SubItems.Add(this.CALL.Rows[i]["LOC"].ToString());
-                                    LV.SubItems.Add(((DateTime)this.CALL.Rows[i]["TIME"]).ToString("HH:mm"));
-                                    int qrb = WCCheck.WCCheck.QRB(this.MyLoc, this.CALL.Rows[i]["LOC"].ToString());
+
                                     // last activity
                                     double lastActivityMinutes = (DateTime.UtcNow.Subtract((DateTime)this.CALL.Rows[i]["TIME"])).TotalMinutes;
                                     if (lastActivityMinutes < 120.0)
                                         LV.SubItems.Add(lastActivityMinutes.ToString("0"));
                                     else
                                         LV.SubItems.Add("---");
+                                    int qrb = WCCheck.WCCheck.QRB(this.MyLoc, this.CALL.Rows[i]["LOC"].ToString());
                                     if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
                                     {
                                         LV.SubItems.Add(this.GetNearestPlanePotential(this.CALL.Rows[i]["CALL"].ToString()).ToString());
