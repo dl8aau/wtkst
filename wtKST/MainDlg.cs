@@ -45,6 +45,7 @@ namespace wtKST
         public DataTable QRV = new DataTable("QRV");
 
         public DataTable CALL = new DataTable("CALL");
+        private DataTable oldCALL = new DataTable("CALL"); // used to hold copy of CALL
 
         public DataTable QSO = new DataTable("QSO");
 
@@ -261,6 +262,7 @@ namespace wtKST
             this.CALL.Columns.Add("NAME");
             this.CALL.Columns.Add("LOC");
             this.CALL.Columns.Add("TIME", typeof(DateTime));
+            this.CALL.Columns.Add("LOGINTIME", typeof(DateTime));
             this.CALL.Columns.Add("ASLAT", typeof(double));
             this.CALL.Columns.Add("ASLON", typeof(double));
             this.CALL.Columns.Add("AWAY", typeof(bool));
@@ -901,6 +903,7 @@ namespace wtKST
                             this.lv_Calls.BeginUpdate();
                             for (int i = 0; i < this.CALL.Rows.Count; i++)
                             {
+                                // ignore own call
                                 if (this.CALL.Rows[i]["CALL"].ToString().IndexOf(Settings.Default.KST_UserName.ToUpper()) < 0)
                                 {
                                     ListViewItem LV = new ListViewItem();
@@ -911,6 +914,12 @@ namespace wtKST
                                     }
                                     else
                                         LV.Text = this.CALL.Rows[i]["CALL"].ToString();
+                                    // login time - new calls should be bold
+                                    DateTime logintime = (DateTime)this.CALL.Rows[i]["LOGINTIME"];
+                                    double loggedOnMinutes = (DateTime.UtcNow.Subtract(logintime)).TotalMinutes;
+                                    if (loggedOnMinutes < 2) // TODO: too short? Configurable?
+                                        LV.Font = new Font(LV.Font, FontStyle.Bold);
+
                                     LV.UseItemStyleForSubItems = false;
                                     LV.SubItems.Add(this.CALL.Rows[i]["NAME"].ToString());
                                     LV.SubItems.Add(this.CALL.Rows[i]["LOC"].ToString());
@@ -969,6 +978,7 @@ namespace wtKST
                     {
                         if (!this.lv_Calls_Updating)
                         {
+                            this.oldCALL = this.CALL.Copy(); // keep old CALL
                             this.CALL.Clear();
                             if (Settings.Default.ShowBeacons)
                             {
@@ -1050,10 +1060,36 @@ namespace wtKST
                             {
                                 qrvcall = qrvcall.Remove(qrvcall.IndexOf("-"));
                             }
+                            bool call_new_in_userlist = false;
+                            DataRow oldcallrow = this.oldCALL.Rows.Find(call);
+                            if (oldcallrow == null)
+                            {
+                                if (this.oldCALL.Rows.Count > 0)
+                                {
+                                    call_new_in_userlist = true;
+                                    row["LOGINTIME"] = DateTime.UtcNow; // remember time of login
+                                }
+                                else
+                                {
+                                    row["LOGINTIME"] = DateTime.MinValue;
+                                }
+                            }
+                            else
+                            {
+                                row["LOGINTIME"] = oldcallrow["LOGINTIME"];
+                            }
                             DataRow findrow = this.QRV.Rows.Find(qrvcall);
                             if (findrow != null)
                             {
-                                row["TIME"] = findrow["TIME"];
+                                if (call_new_in_userlist)
+                                {
+                                    // if we have not just started (oldCALL empty) treat connecting
+                                    // to KST as activity
+                                    row["TIME"] = row["LOGINTIME"];
+                                    findrow["TIME"] = row["LOGINTIME"];
+                                }
+                                else
+                                    row["TIME"] = findrow["TIME"];
                                 row["144M"] = findrow["144M"];
                                 row["432M"] = findrow["432M"];
                                 row["1_2G"] = findrow["1_2G"];
@@ -1067,7 +1103,10 @@ namespace wtKST
                             }
                             else
                             {
-                                row["TIME"] = DateTime.MinValue;
+                                if (call_new_in_userlist)
+                                    row["TIME"] = row["LOGINTIME"];
+                                else
+                                    row["TIME"] = DateTime.MinValue;
                                 row["144M"] = 0;
                                 row["432M"] = 0;
                                 row["1_2G"] = 0;
@@ -1080,7 +1119,10 @@ namespace wtKST
                                 row["76G"] = 0;
                                 DataRow newrow = this.QRV.NewRow();
                                 newrow["CALL"] = qrvcall;
-                                newrow["TIME"] = DateTime.MinValue;
+                                if (call_new_in_userlist)
+                                    newrow["TIME"] = row["LOGINTIME"];
+                                else
+                                    newrow["TIME"] = DateTime.MinValue;
                                 newrow["144M"] = 0;
                                 newrow["432M"] = 0;
                                 newrow["1_2G"] = 0;
