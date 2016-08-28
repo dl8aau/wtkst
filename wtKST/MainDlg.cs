@@ -23,6 +23,7 @@ namespace wtKST
         public enum KST_STATE
         {
             Disconnected,
+            Standby,
             WaitUserName,
             WaitPassword,
             WaitChat,
@@ -516,6 +517,7 @@ namespace wtKST
                 {
                     this.ti_Reconnect.Start();
                 }
+                this.KSTState = MainDlg.KST_STATE.Standby;
             }
             if (this.KSTState >= MainDlg.KST_STATE.Connected)
             {
@@ -1164,7 +1166,7 @@ namespace wtKST
 
         private void KST_Connect()
         {
-            if (this.KSTState == MainDlg.KST_STATE.Disconnected &&
+            if (this.KSTState == MainDlg.KST_STATE.Standby &&
                 !string.IsNullOrEmpty(Settings.Default.KST_ServerName) &&
                 !string.IsNullOrEmpty(Settings.Default.KST_UserName))
             {
@@ -1312,7 +1314,7 @@ namespace wtKST
         {
             OptionsDlg Dlg = new OptionsDlg();
             Dlg.cbb_KST_Chat.SelectedIndex = 2;
-            if (this.KSTState != MainDlg.KST_STATE.Disconnected)
+            if (this.KSTState != MainDlg.KST_STATE.Standby)
             {
                 Dlg.tb_KST_Password.Enabled = false;
                 Dlg.tb_KST_ServerName.Enabled = false;
@@ -2307,7 +2309,7 @@ namespace wtKST
 
         private void ti_Reconnect_Tick(object sender, EventArgs e)
         {
-            if (Settings.Default.KST_AutoConnect && this.KSTState == MainDlg.KST_STATE.Disconnected)
+            if (Settings.Default.KST_AutoConnect && this.KSTState == MainDlg.KST_STATE.Standby)
             {
                 this.KST_Connect();
             }
@@ -2315,6 +2317,9 @@ namespace wtKST
 
         private void bw_GetPlanes_DoWork(object sender, DoWorkEventArgs e)
         {
+            if (this.KSTState < MainDlg.KST_STATE.Connected)
+                return;
+
             while (!this.bw_GetPlanes.CancellationPending)
             {
                 int errors = 0;
