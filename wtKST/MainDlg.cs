@@ -1835,6 +1835,15 @@ namespace wtKST
                     if (string.IsNullOrEmpty(s))
                     {
                         ToolTipText = "No planes\n\nLeft click for map";
+                        DataRow Row = this.CALL.Rows.Find(info.Item.Text);
+                        if (Row != null && Settings.Default.AS_Active)
+                        {
+                            int qrb = WCCheck.WCCheck.QRB(this.MyLoc, Row["LOC"].ToString());
+                            if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                                ToolTipText = "Too close for planes\n\nLeft click for map";
+                            else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
+                                ToolTipText = "Too far away for planes\n\nLeft click for map";
+                        }
                     }
                     else
                     {
@@ -2037,6 +2046,15 @@ namespace wtKST
                         if (string.IsNullOrEmpty(s))
                         {
                             ToolTipText = "No planes\n\nLeft click for map";
+                            DataRow Row = this.CALL.Rows.Find(info.Item.Text);
+                            if (Row != null && Settings.Default.AS_Active)
+                            {
+                                int qrb = WCCheck.WCCheck.QRB(this.MyLoc, Row["LOC"].ToString());
+                                if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                                    ToolTipText = "Too close for planes\n\nLeft click for map";
+                                else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
+                                    ToolTipText = "Too far away for planes\n\nLeft click for map";
+                            }
                         }
                         else
                         {
