@@ -215,6 +215,7 @@ namespace wtKST
         private bool hide_away = false;
         private bool sort_by_dir = false;
         private bool ignore_inactive = false;
+        private bool hide_worked = false;
 
         public MainDlg()
         {
@@ -936,6 +937,10 @@ namespace wtKST
                     if (MaxDist !=0 && (int)tbl.Rows[i]["QRB"] > MaxDist)
                         continue;
 
+                    // drop calls that are already in log
+                    if (this.hide_worked && check_in_log(tbl.Rows[i]))
+                        continue;
+
                     // login time - new calls should be bold
                     DateTime logintime = (DateTime)tbl.Rows[i]["LOGINTIME"];
                     double loggedOnMinutes = (DateTime.UtcNow.Subtract(logintime)).TotalMinutes;
@@ -1360,6 +1365,31 @@ namespace wtKST
                 this.columnHeader76GHz.Width = COLUMN_WIDTH;
             else
                 this.columnHeader76GHz.Width = 0;
+        }
+
+        bool check_in_log(DataRow row)
+        {
+            if (Settings.Default.Band_144 && (int)row["144M"] != 2)
+                return false;
+            if (Settings.Default.Band_432 && (int)row["432M"] != 2)
+                return false;
+            if (Settings.Default.Band_1296 && (int)row["1_2G"] != 2)
+                return false;
+            if (Settings.Default.Band_2320 && (int)row["2_3G"] != 2)
+                return false;
+            if (Settings.Default.Band_3400 && (int)row["3_4G"] != 2)
+                return false;
+            if (Settings.Default.Band_5760 && (int)row["5_7G"] != 2)
+                return false;
+            if (Settings.Default.Band_10368 && (int)row["10G"] != 2)
+                return false;
+            if (Settings.Default.Band_24GHz && (int)row["24G"] != 2)
+                return false;
+            if (Settings.Default.Band_47GHz && (int)row["47G"] != 2)
+                return false;
+            if (Settings.Default.Band_76GHz && (int)row["76G"] != 2)
+                return false;
+            return true;
         }
 
         private void tsi_Options_Click(object sender, EventArgs e)
@@ -1984,6 +2014,15 @@ namespace wtKST
                     this.ignore_inactive = false;
                 else
                     this.ignore_inactive = true;
+                KST_Update_USR_Window("");
+            }
+            // band columns
+            if (e.Column > 4)
+            {
+                if (this.hide_worked)
+                    this.hide_worked = false;
+                else
+                    this.hide_worked = true;
                 KST_Update_USR_Window("");
             }
         }
