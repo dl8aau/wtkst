@@ -1807,7 +1807,10 @@ namespace wtKST
             if ((e.Header.Text[0] > '0' && e.Header.Text[0] < '9') || e.Header.Text == "AS")
             {
                 Rectangle rect = e.Bounds;
-                e.DrawBackground();
+                if (e.ColumnIndex > 4 && this.hide_worked) // Band
+                    e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
+                else
+                    e.DrawBackground();
                 Font headerfont = new Font(e.Font.OriginalFontName, 6f);
                 Size titlesize = TextRenderer.MeasureText(e.Header.Text, headerfont);
                 e.Graphics.TranslateTransform(0f, (float)titlesize.Width);
@@ -1818,6 +1821,19 @@ namespace wtKST
             }
             else
             {
+                if (e.ColumnIndex == 0 || e.ColumnIndex == 2 || e.ColumnIndex == 3)
+                {
+                    // CALL column
+                    if ((e.ColumnIndex == 0 && this.hide_away) ||   // CALL
+                        (e.ColumnIndex == 2 && this.sort_by_dir) || // LOCATOR
+                        (e.ColumnIndex == 3 && this.ignore_inactive)) // ACT
+                        e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
+                    else
+                        e.DrawBackground();
+                    e.DrawDefault = false;
+                    e.DrawText(TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
+                    return;
+                }
                 e.DrawDefault = true;
             }
         }
@@ -2025,6 +2041,7 @@ namespace wtKST
                     this.hide_worked = false;
                 else
                     this.hide_worked = true;
+                this.lv_Calls.Invalidate(true);
                 KST_Update_USR_Window("");
             }
         }
