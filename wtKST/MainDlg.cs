@@ -212,6 +212,9 @@ namespace wtKST
 
         private bool WinTestLocatorWarning = false;
         private bool msg_latest_first = false;
+        private bool hide_away = false;
+        private bool sort_by_dir = false;
+        private bool ignore_inactive = false;
 
         public MainDlg()
         {
@@ -878,6 +881,107 @@ namespace wtKST
             }
         }
 
+        private void KST_Update_USR_Window(string msg)
+        {
+            try
+            {
+                string topcall = "";
+                if (this.lv_Calls.TopItem != null)
+                {
+                    topcall = this.lv_Calls.TopItem.Text;
+                }
+                this.lv_Calls.Items.Clear();
+                this.lv_Calls.BeginUpdate();
+                DataView view = this.CALL.DefaultView;
+                if (this.sort_by_dir)
+                    view.Sort = "CALL ASC";
+                else
+                    view.Sort = "DIR ASC";
+                DataTable tbl = view.ToTable();
+
+                for (int i = 0; i < tbl.Rows.Count; i++)
+                {
+                    // ignore own call
+                    if (tbl.Rows[i]["CALL"].ToString().IndexOf(Settings.Default.KST_UserName.ToUpper()) >= 0)
+                        continue;
+
+                    ListViewItem LV = new ListViewItem();
+
+                    if ((bool)tbl.Rows[i]["AWAY"])
+                    {
+                        if (this.hide_away)
+                            continue;
+                        LV.Text = "(" + tbl.Rows[i]["CALL"].ToString() + ")";
+                        LV.Font = new Font(LV.Font, FontStyle.Italic);
+                    }
+                    else
+                        LV.Text = tbl.Rows[i]["CALL"].ToString();
+
+                    // login time - new calls should be bold
+                    DateTime logintime = (DateTime)tbl.Rows[i]["LOGINTIME"];
+                    double loggedOnMinutes = (DateTime.UtcNow.Subtract(logintime)).TotalMinutes;
+                    if (loggedOnMinutes < 2) // TODO: too short? Configurable?
+                        LV.Font = new Font(LV.Font, FontStyle.Bold);
+
+                    LV.UseItemStyleForSubItems = false;
+                    LV.SubItems.Add(tbl.Rows[i]["NAME"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["LOC"].ToString());
+
+                    // last activity
+                    double lastActivityMinutes = (DateTime.UtcNow.Subtract((DateTime)tbl.Rows[i]["TIME"])).TotalMinutes;
+                    //MainDlg.Log.WriteMessage("KST Time " + LV.Text + " " + DateTime.UtcNow + " " + (DateTime)tbl.Rows[i]["TIME"] + " " + lastActivityMinutes.ToString("0"));
+                    if (lastActivityMinutes < 120.0)
+                        LV.SubItems.Add(lastActivityMinutes.ToString("0"));
+                    else
+                    {
+                        if (this.ignore_inactive)
+                            continue;
+                        LV.SubItems.Add("---");
+                    }
+                    int qrb = (int)tbl.Rows[i]["QRB"];
+                    if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
+                    {
+                        LV.SubItems.Add(this.GetNearestPlanePotential(tbl.Rows[i]["CALL"].ToString()).ToString());
+                    }
+                    else
+                    {
+                        LV.SubItems.Add("0");
+                    }
+                    LV.SubItems.Add(tbl.Rows[i]["144M"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["432M"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["1_2G"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["2_3G"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["3_4G"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["5_7G"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["10G"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["24G"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["47G"].ToString());
+                    LV.SubItems.Add(tbl.Rows[i]["76G"].ToString());
+                    for (int j = 0; j < this.lv_Calls.Columns.Count; j++)
+                    {
+                        LV.SubItems[j].Name = this.lv_Calls.Columns[j].Text.Replace(".", "_");
+                    }
+                    this.lv_Calls.Items.Add(LV);
+                }
+                this.lv_Calls.EndUpdate();
+                ListViewItem toplv = this.lv_Calls.FindItemWithText(topcall);
+                if (toplv != null)
+                {
+                    this.lv_Calls.TopItem = this.lv_Calls.Items[this.lv_Calls.Items.Count - 1];
+                    this.lv_Calls.TopItem = toplv;
+                }
+                this.lv_Calls_Updating = false;
+                this.KSTState = MainDlg.KST_STATE.Connected;
+                if (!this.WinTestLocatorWarning)
+                    this.Say("");
+                MainDlg.Log.WriteMessage("KST GetUsers finished: " + this.lv_Calls.Items.Count.ToString() + " Calls.");
+            }
+            catch (Exception e)
+            {
+                this.Error(MethodBase.GetCurrentMethod().Name, "(" + msg + "): " + e.Message);
+            }
+        }
+
         private void KST_Receive_USR(string s)
         {
             if (char.IsDigit(s, 0) && char.IsDigit(s, 1) && char.IsDigit(s, 2) && char.IsDigit(s, 3) && s[4] == 'Z' && s.IndexOf(Settings.Default.KST_UserName.ToUpper()) != 6)
@@ -892,91 +996,11 @@ namespace wtKST
                 {
                     if (s.EndsWith("chat>"))
                     {
-                        try
+                        if (Settings.Default.WinTest_Activate)
                         {
-                            if (Settings.Default.WinTest_Activate)
-                            {
-                                this.Get_QSOs();
-                            }
-                            string topcall = "";
-                            if (this.lv_Calls.TopItem != null)
-                            {
-                                topcall = this.lv_Calls.TopItem.Text;
-                            }
-                            this.lv_Calls.Items.Clear();
-                            this.lv_Calls.BeginUpdate();
-                            for (int i = 0; i < this.CALL.Rows.Count; i++)
-                            {
-                                // ignore own call
-                                if (this.CALL.Rows[i]["CALL"].ToString().IndexOf(Settings.Default.KST_UserName.ToUpper()) < 0)
-                                {
-                                    ListViewItem LV = new ListViewItem();
-                                    if ((bool)this.CALL.Rows[i]["AWAY"])
-                                    {
-                                        LV.Text = "(" + this.CALL.Rows[i]["CALL"].ToString() + ")";
-                                        LV.Font = new Font(LV.Font, FontStyle.Italic);
-                                    }
-                                    else
-                                        LV.Text = this.CALL.Rows[i]["CALL"].ToString();
-                                    // login time - new calls should be bold
-                                    DateTime logintime = (DateTime)this.CALL.Rows[i]["LOGINTIME"];
-                                    double loggedOnMinutes = (DateTime.UtcNow.Subtract(logintime)).TotalMinutes;
-                                    if (loggedOnMinutes < 2) // TODO: too short? Configurable?
-                                        LV.Font = new Font(LV.Font, FontStyle.Bold);
-
-                                    LV.UseItemStyleForSubItems = false;
-                                    LV.SubItems.Add(this.CALL.Rows[i]["NAME"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["LOC"].ToString());
-
-                                    // last activity
-                                    double lastActivityMinutes = (DateTime.UtcNow.Subtract((DateTime)this.CALL.Rows[i]["TIME"])).TotalMinutes;
-                                    if (lastActivityMinutes < 120.0)
-                                        LV.SubItems.Add(lastActivityMinutes.ToString("0"));
-                                    else
-                                        LV.SubItems.Add("---");
-                                    int qrb = (int)this.CALL.Rows[i]["QRB"];
-                                    if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
-                                    {
-                                        LV.SubItems.Add(this.GetNearestPlanePotential(this.CALL.Rows[i]["CALL"].ToString()).ToString());
-                                    }
-                                    else
-                                    {
-                                        LV.SubItems.Add("0");
-                                    }
-                                    LV.SubItems.Add(this.CALL.Rows[i]["144M"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["432M"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["1_2G"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["2_3G"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["3_4G"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["5_7G"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["10G"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["24G"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["47G"].ToString());
-                                    LV.SubItems.Add(this.CALL.Rows[i]["76G"].ToString());
-                                    for (int j = 0; j < this.lv_Calls.Columns.Count; j++)
-                                    {
-                                        LV.SubItems[j].Name = this.lv_Calls.Columns[j].Text.Replace(".", "_");
-                                    }
-                                    this.lv_Calls.Items.Add(LV);
-                                }
-                            }
-                            this.lv_Calls.EndUpdate();
-                            ListViewItem toplv = this.lv_Calls.FindItemWithText(topcall);
-                            if (toplv != null)
-                            {
-                                this.lv_Calls.TopItem = this.lv_Calls.Items[this.lv_Calls.Items.Count - 1];
-                                this.lv_Calls.TopItem = toplv;
-                            }
-                            this.lv_Calls_Updating = false;
-                            this.KSTState = MainDlg.KST_STATE.Connected;
-                            if (!this.WinTestLocatorWarning)
-                                this.Say("");
-                            MainDlg.Log.WriteMessage("KST GetUsers finished: " + this.lv_Calls.Items.Count.ToString() + " Calls.");
+                            this.Get_QSOs();
                         }
-                        catch (Exception e)
-                        {
-                            this.Error(MethodBase.GetCurrentMethod().Name, "(" + msg + "): " + e.Message);
-                        }
+                        KST_Update_USR_Window(msg);
                     }
                     else
                     {
@@ -1905,6 +1929,40 @@ namespace wtKST
                 this.cb_Command.Focus();
                 this.cb_Command.SelectionStart = this.cb_Command.Text.Length;
                 this.cb_Command.SelectionLength = 0;
+            }
+        }
+
+
+        private void lv_Calls_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            // CALL column
+            if (e.Column == 0)
+            {
+                if (this.hide_away)
+                    this.hide_away = false;
+                else
+                    this.hide_away = true;
+                KST_Update_USR_Window("");
+            }
+
+            // LOCATOR column
+            if (e.Column == 2)
+            {
+                if (this.sort_by_dir)
+                    this.sort_by_dir = false;
+                else
+                    this.sort_by_dir = true;
+                KST_Update_USR_Window("");
+            }
+
+            // ACT column
+            if (e.Column == 3)
+            {
+                if (this.ignore_inactive)
+                    this.ignore_inactive = false;
+                else
+                    this.ignore_inactive = true;
+                KST_Update_USR_Window("");
             }
         }
 
@@ -3014,6 +3072,7 @@ namespace wtKST
             this.lv_Calls.TabIndex = 14;
             this.lv_Calls.UseCompatibleStateImageBehavior = false;
             this.lv_Calls.View = System.Windows.Forms.View.Details;
+            this.lv_Calls.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.lv_Calls_DrawColumnHeader);
             this.lv_Calls.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.lv_Calls_DrawItem);
             this.lv_Calls.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.lv_Calls_DrawSubItem);
