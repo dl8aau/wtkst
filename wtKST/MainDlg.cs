@@ -266,6 +266,8 @@ namespace wtKST
             this.CALL.Columns.Add("LOGINTIME", typeof(DateTime));
             this.CALL.Columns.Add("ASLAT", typeof(double));
             this.CALL.Columns.Add("ASLON", typeof(double));
+            this.CALL.Columns.Add("QRB", typeof(int));
+            this.CALL.Columns.Add("DIR", typeof(int));
             this.CALL.Columns.Add("AWAY", typeof(bool));
             this.CALL.Columns.Add("AS", typeof(int));
             this.CALL.Columns.Add("144M", typeof(int));
@@ -932,7 +934,7 @@ namespace wtKST
                                         LV.SubItems.Add(lastActivityMinutes.ToString("0"));
                                     else
                                         LV.SubItems.Add("---");
-                                    int qrb = WCCheck.WCCheck.QRB(this.MyLoc, this.CALL.Rows[i]["LOC"].ToString());
+                                    int qrb = (int)this.CALL.Rows[i]["QRB"];
                                     if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
                                     {
                                         LV.SubItems.Add(this.GetNearestPlanePotential(this.CALL.Rows[i]["CALL"].ToString()).ToString());
@@ -1043,6 +1045,13 @@ namespace wtKST
                             row["CALL"] = call;
                             row["NAME"] = name;
                             row["LOC"] = loc;
+                            if (WCCheck.WCCheck.IsLoc(loc) >= 0)
+                            {
+                                int qrb = WCCheck.WCCheck.QRB(this.MyLoc, loc);
+                                int qtf = (int)WCCheck.WCCheck.QTF(this.MyLoc, loc);
+                                row["QRB"] = qrb;
+                                row["DIR"] = qtf;
+                            }
                             string qrvcall = call.TrimStart(new char[]
                             {
                                 '('
@@ -1838,7 +1847,7 @@ namespace wtKST
                         DataRow Row = this.CALL.Rows.Find(info.Item.Text);
                         if (Row != null && Settings.Default.AS_Active)
                         {
-                            int qrb = WCCheck.WCCheck.QRB(this.MyLoc, Row["LOC"].ToString());
+                            int qrb = (int)Row["QRB"];
                             if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
                                 ToolTipText = "Too close for planes\n\nLeft click for map";
                             else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
@@ -2049,7 +2058,7 @@ namespace wtKST
                             DataRow Row = this.CALL.Rows.Find(info.Item.Text);
                             if (Row != null && Settings.Default.AS_Active)
                             {
-                                int qrb = WCCheck.WCCheck.QRB(this.MyLoc, Row["LOC"].ToString());
+                                int qrb = (int)Row["QRB"];
                                 if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
                                     ToolTipText = "Too close for planes\n\nLeft click for map";
                                 else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
@@ -2345,7 +2354,7 @@ namespace wtKST
                 {
                     try
                     {
-                        int qrb = WCCheck.WCCheck.QRB(this.MyLoc, this.CALL.Rows[i]["LOC"].ToString());
+                        int qrb = (int)this.CALL.Rows[i]["QRB"];
                         string mycall = WCCheck.WCCheck.Cut(this.MyCall);
                         string myloc = this.MyLoc;
                         string dxcall = WCCheck.WCCheck.Cut(this.CALL.Rows[i]["CALL"].ToString().TrimStart(new char[]
