@@ -302,8 +302,23 @@ namespace wtKST
             this.QRV.Clear();
             try
             {
-                TimeSpan ts = DateTime.Now - File.GetLastWriteTime(Settings.Default.WinTest_QRV_Table_FileName);
-                if (!ForceReload && File.Exists(Settings.Default.WinTest_QRV_Table_FileName) && ts.Hours < 48)
+                string QRV_Table_Filename = Application.UserAppDataPath + "\\" + Settings.Default.WinTest_QRV_Table_FileName;
+                TimeSpan ts = DateTime.Now - File.GetLastWriteTime(QRV_Table_Filename);
+                if (!ForceReload && File.Exists(QRV_Table_Filename) && ts.Hours < 48)
+                {
+                    try
+                    {
+                        this.QRV.BeginLoadData();
+                        this.QRV.ReadXml(QRV_Table_Filename);
+                        this.QRV.EndLoadData();
+                    }
+                    catch (Exception e)
+                    {
+                        this.Error(MethodBase.GetCurrentMethod().Name, "(QRV.xml): " + e.Message);
+                    }
+                }
+                // if we cannot read qrv.xml from appdata path, try current directoy (=previous default)
+                if (this.QRV.Rows.Count == 0 && !ForceReload && File.Exists(Settings.Default.WinTest_QRV_Table_FileName))
                 {
                     try
                     {
@@ -1712,7 +1727,7 @@ namespace wtKST
             try
             {
                 this.bw_GetPlanes.CancelAsync();
-                string FileName = Settings.Default.WinTest_QRV_Table_FileName;
+                string FileName = Application.UserAppDataPath + "\\" + Settings.Default.WinTest_QRV_Table_FileName;
                 this.Say("Saving QRV-Database to " + FileName + "...");
                 this.QRV.WriteXml(FileName, XmlWriteMode.IgnoreSchema);
             }
