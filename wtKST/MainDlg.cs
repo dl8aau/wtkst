@@ -899,6 +899,8 @@ namespace wtKST
 
         private void KST_Update_USR_Window(string msg)
         {
+            if (this.KSTState <= KST_STATE.WaitConfig)
+                return;
             try
             {
                 string topcall = "";
