@@ -532,5 +532,17 @@ namespace wtKST.Properties {
                 this["Band_76GHz"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1200")]
+        public string KST_MaxDist {
+            get {
+                return ((string)(this["KST_MaxDist"]));
+            }
+            set {
+                this["KST_MaxDist"] = value;
+            }
+        }
     }
 }

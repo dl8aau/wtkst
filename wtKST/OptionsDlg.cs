@@ -81,6 +81,8 @@ namespace wtKST
         private CheckBox checkBox3400;
         private CheckBox checkBox5760;
         private CheckBox checkBox76GHz;
+        public TextBox tb_KST_MaxDist;
+        private Label label17;
         public CheckBox cb_WinTest_Active;
 
         public OptionsDlg()
@@ -194,6 +196,8 @@ namespace wtKST
             this.tb_Options_AS_Server_Name = new System.Windows.Forms.TextBox();
             this.tb_AS_MaxDist = new System.Windows.Forms.TextBox();
             this.tb_AS_Timeout = new System.Windows.Forms.TextBox();
+            this.tb_KST_MaxDist = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.checkBox76GHz = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -269,6 +273,8 @@ namespace wtKST
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.tb_KST_MaxDist);
+            this.groupBox3.Controls.Add(this.label17);
             this.groupBox3.Controls.Add(this.cb_ShowBeacons);
             this.groupBox3.Controls.Add(this.tb_Options_UpdateInterval);
             this.groupBox3.Controls.Add(this.label7);
@@ -286,7 +292,7 @@ namespace wtKST
             this.cb_ShowBeacons.Checked = global::wtKST.Properties.Settings.Default.ShowBeacons;
             this.cb_ShowBeacons.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "ShowBeacons", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.cb_ShowBeacons.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_ShowBeacons.Location = new System.Drawing.Point(218, 31);
+            this.cb_ShowBeacons.Location = new System.Drawing.Point(163, 32);
             this.cb_ShowBeacons.Name = "cb_ShowBeacons";
             this.cb_ShowBeacons.Size = new System.Drawing.Size(98, 17);
             this.cb_ShowBeacons.TabIndex = 13;
@@ -299,7 +305,7 @@ namespace wtKST
             this.tb_Options_UpdateInterval.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_Options_UpdateInterval.Location = new System.Drawing.Point(111, 29);
             this.tb_Options_UpdateInterval.Name = "tb_Options_UpdateInterval";
-            this.tb_Options_UpdateInterval.Size = new System.Drawing.Size(71, 20);
+            this.tb_Options_UpdateInterval.Size = new System.Drawing.Size(33, 20);
             this.tb_Options_UpdateInterval.TabIndex = 12;
             this.tb_Options_UpdateInterval.Text = global::wtKST.Properties.Settings.Default.UpdateInterval;
             this.tb_Options_UpdateInterval.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tb_Options_UpdateInterval_KeyPress);
@@ -938,6 +944,26 @@ namespace wtKST
             this.tb_AS_Timeout.Size = new System.Drawing.Size(33, 20);
             this.tb_AS_Timeout.TabIndex = 18;
             this.tb_AS_Timeout.Text = global::wtKST.Properties.Settings.Default.AS_Timeout;
+            // 
+            // tb_KST_MaxDist
+            // 
+            this.tb_KST_MaxDist.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_MaxDist", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_KST_MaxDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_KST_MaxDist.Location = new System.Drawing.Point(384, 29);
+            this.tb_KST_MaxDist.Name = "tb_KST_MaxDist";
+            this.tb_KST_MaxDist.Size = new System.Drawing.Size(45, 20);
+            this.tb_KST_MaxDist.TabIndex = 15;
+            this.tb_KST_MaxDist.Text = global::wtKST.Properties.Settings.Default.KST_MaxDist;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(279, 32);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(101, 13);
+            this.label17.TabIndex = 14;
+            this.label17.Text = "Max. Distance [km]:";
             // 
             // OptionsDlg
             // 

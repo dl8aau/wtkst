@@ -916,6 +916,10 @@ namespace wtKST
                     }
                     else
                         LV.Text = tbl.Rows[i]["CALL"].ToString();
+                    // Ignore stations too far away
+                    int MaxDist = Convert.ToInt32(Settings.Default.KST_MaxDist);
+                    if (MaxDist !=0 && (int)tbl.Rows[i]["QRB"] > MaxDist)
+                        continue;
 
                     // login time - new calls should be bold
                     DateTime logintime = (DateTime)tbl.Rows[i]["LOGINTIME"];
@@ -1356,6 +1360,7 @@ namespace wtKST
                 Dlg.cbb_KST_Chat.Enabled = false;
             }
             string oldchat = Settings.Default.KST_Chat;
+            int KST_MaxDist = Convert.ToInt32(Settings.Default.KST_MaxDist);
             if (Dlg.ShowDialog() == DialogResult.OK)
             {
                 Settings.Default.Save();
@@ -1368,6 +1373,8 @@ namespace wtKST
                     this.lv_MyMsg.Items.Clear();
                 }
                 UpdateUserBandsWidth();
+                if (KST_MaxDist != Convert.ToInt32(Settings.Default.KST_MaxDist))
+                    KST_Update_USR_Window("");
             }
         }
 
