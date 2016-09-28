@@ -171,6 +171,7 @@ namespace wtKST
             this.tb_Options_WinTest_QRV = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.Bands = new System.Windows.Forms.GroupBox();
+            this.checkBox76GHz = new System.Windows.Forms.CheckBox();
             this.checkBox10GHz = new System.Windows.Forms.CheckBox();
             this.checkBox24GHz = new System.Windows.Forms.CheckBox();
             this.checkBox47GHz = new System.Windows.Forms.CheckBox();
@@ -198,7 +199,6 @@ namespace wtKST
             this.tb_AS_Timeout = new System.Windows.Forms.TextBox();
             this.tb_KST_MaxDist = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
-            this.checkBox76GHz = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -608,6 +608,21 @@ namespace wtKST
             this.Bands.TabStop = false;
             this.Bands.Text = "Bands";
             // 
+            // checkBox76GHz
+            // 
+            this.checkBox76GHz.AutoSize = true;
+            this.checkBox76GHz.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox76GHz.Checked = global::wtKST.Properties.Settings.Default.Band_76GHz;
+            this.checkBox76GHz.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox76GHz.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_76GHz", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.checkBox76GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox76GHz.Location = new System.Drawing.Point(46, 96);
+            this.checkBox76GHz.Name = "checkBox76GHz";
+            this.checkBox76GHz.Size = new System.Drawing.Size(59, 17);
+            this.checkBox76GHz.TabIndex = 10;
+            this.checkBox76GHz.Text = "76GHz";
+            this.checkBox76GHz.UseVisualStyleBackColor = true;
+            // 
             // checkBox10GHz
             // 
             this.checkBox10GHz.AutoSize = true;
@@ -742,21 +757,6 @@ namespace wtKST
             this.checkBox144.TabIndex = 1;
             this.checkBox144.Text = "144MHz";
             this.checkBox144.UseVisualStyleBackColor = true;
-            // 
-            // checkBox76GHz
-            // 
-            this.checkBox76GHz.AutoSize = true;
-            this.checkBox76GHz.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox76GHz.Checked = global::wtKST.Properties.Settings.Default.Band_76GHz;
-            this.checkBox76GHz.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox76GHz.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_76GHz", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.checkBox76GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox76GHz.Location = new System.Drawing.Point(46, 96);
-            this.checkBox76GHz.Name = "checkBox76GHz";
-            this.checkBox76GHz.Size = new System.Drawing.Size(59, 17);
-            this.checkBox76GHz.TabIndex = 10;
-            this.checkBox76GHz.Text = "76GHz";
-            this.checkBox76GHz.UseVisualStyleBackColor = true;
             // 
             // tabPage4
             // 

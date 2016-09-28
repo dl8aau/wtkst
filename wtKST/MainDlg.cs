@@ -3368,9 +3368,9 @@ namespace wtKST
             this.ti_Main.Tick += new System.EventHandler(this.ti_Main_Tick);
             // 
             // ni_Main
-            //
-            this.ni_Main.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            // 
             this.ni_Main.ContextMenuStrip = this.cmn_Notify;
+            this.ni_Main.Icon = ((System.Drawing.Icon)(resources.GetObject("ni_Main.Icon")));
             this.ni_Main.Text = "wtKST";
             this.ni_Main.Visible = true;
             this.ni_Main.BalloonTipClicked += new System.EventHandler(this.ni_Main_BalloonTipClicked);
