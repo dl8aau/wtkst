@@ -916,9 +916,9 @@ namespace wtKST
                 this.lv_Calls.BeginUpdate();
                 DataView view = this.CALL.DefaultView;
                 if (this.sort_by_dir)
-                    view.Sort = "CALL ASC";
-                else
                     view.Sort = "DIR ASC";
+                else
+                    view.Sort = "CALL ASC";
                 DataTable tbl = view.ToTable();
 
                 for (int i = 0; i < tbl.Rows.Count; i++)
