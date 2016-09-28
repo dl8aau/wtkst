@@ -930,7 +930,8 @@ namespace wtKST
                         if (this.hide_away)
                             continue;
                         LV.Text = "(" + tbl.Rows[i]["CALL"].ToString() + ")";
-                        LV.Font = new Font(LV.Font, FontStyle.Italic);
+                        // Italic is too difficult to read and the font gets bigger
+                        //LV.Font = new Font(LV.Font, FontStyle.Italic);
                     }
                     else
                         LV.Text = tbl.Rows[i]["CALL"].ToString();
