@@ -267,6 +267,7 @@ namespace wtKST
             this.CALL.Columns.Add("NAME");
             this.CALL.Columns.Add("LOC");
             this.CALL.Columns.Add("TIME", typeof(DateTime));
+            this.CALL.Columns.Add("CONTACTED", typeof(int));
             this.CALL.Columns.Add("LOGINTIME", typeof(DateTime));
             this.CALL.Columns.Add("ASLAT", typeof(double));
             this.CALL.Columns.Add("ASLON", typeof(double));
@@ -846,6 +847,21 @@ namespace wtKST
                             // (mycall) does not happen for "/sh msg"
                             this.lv_Msg.Items[0].BackColor = Color.FromArgb(16745026);
                         }
+                        // check the recipient of the message
+                        var msg_upper = Row["MSG"].ToString().ToUpper();
+                        if (msg_upper.IndexOf(' ') > 0)
+                            msg_upper = msg_upper.Remove(msg_upper.IndexOf(' '));
+                        var recipient = msg_upper.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
+                        findrow = this.CALL.Rows.Find(recipient);
+                        if (findrow != null)
+                        {
+                            findrow["CONTACTED"] = (int)findrow["CONTACTED"] + 1;
+                        }
+                        findrow = this.CALL.Rows.Find(Row["CALL"].ToString().Trim());
+                        if (findrow != null)
+                        {
+                            findrow["CONTACTED"] = 0; // clear counter on activity
+                        }
                         if (Row["MSG"].ToString().ToUpper().StartsWith("(" + this.MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(this.MyCall))
                         {
                             ListViewItem MyLV = new ListViewItem();
@@ -951,7 +967,10 @@ namespace wtKST
                     {
                         if (this.ignore_inactive)
                             continue;
-                        LV.SubItems.Add("---");
+                        if ((int)tbl.Rows[i]["CONTACTED"] < 3)
+                            LV.SubItems.Add("---");
+                        else
+                            LV.SubItems.Add("xxx"); // if contacted 3 times without answer then probably really not available
                     }
                     int qrb = (int)tbl.Rows[i]["QRB"];
                     if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
@@ -1039,6 +1058,7 @@ namespace wtKST
                                                 row["NAME"] = "Beacon";
                                                 row["LOC"] = bs.Split(new char[]{ ' ' })[1].Trim();
                                                 row["TIME"] = DateTime.MinValue;
+                                                row["CONTACTED"] = 0;
                                                 row["144M"] = 0;
                                                 row["432M"] = 0;
                                                 row["1_2G"] = 0;
@@ -1111,10 +1131,12 @@ namespace wtKST
                                 {
                                     row["LOGINTIME"] = DateTime.MinValue;
                                 }
+                                row["CONTACTED"] = 0;
                             }
                             else
                             {
                                 row["LOGINTIME"] = oldcallrow["LOGINTIME"];
+                                row["CONTACTED"] = oldcallrow["CONTACTED"];
                             }
                             DataRow findrow = this.QRV.Rows.Find(qrvcall);
                             if (findrow != null)
