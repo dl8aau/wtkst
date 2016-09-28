@@ -341,13 +341,8 @@ namespace wtKST
                             string line = sr.ReadLine();
                             DataRow Row = this.QRV.NewRow();
                             Row["CALL"] = line.Split(new char[0])[0];
-                            Row["TIME"] = DateTime.Parse(line.Split(new char[0])[1].TrimStart(new char[]
-                            {
-                                '['
-                            }).TrimEnd(new char[]
-                            {
-                                ']'
-                            }) + " 00:00:00");
+                            Row["TIME"] = DateTime.Parse(line.Split(new char[0])[1].TrimStart(
+                                new char[]{ '[' }).TrimEnd(new char[]{ ']' }) + " 00:00:00");
                             if (line.IndexOf("144M") > 0)
                             {
                                 Row["144M"] = 1;
@@ -485,11 +480,7 @@ namespace wtKST
             this.KSTBuffer += s;
             if (this.KSTBuffer.EndsWith("\r\n"))
             {
-                string[] buffer = this.KSTBuffer.Split(new char[]
-                {
-                    '\r',
-                    '\n'
-                });
+                string[] buffer = this.KSTBuffer.Split(new char[] {'\r', '\n' });
                 lock (this.MsgQueue)
                 {
                     string[] array = buffer;
@@ -755,10 +746,7 @@ namespace wtKST
                     if (!s.EndsWith(">"))
                     {
                         MainDlg.Log.WriteMessage("KST message: " + msg);
-                        string[] header = s.Substring(0, s.IndexOf("> ")).Split(new char[]
-                        {
-                            ' '
-                        });
+                        string[] header = s.Substring(0, s.IndexOf("> ")).Split(new char[] { ' '  });
                         DataRow Row = this.MSG.NewRow();
                         string time = header[0].Trim();
                         time = time.Substring(0, 2) + ":" + time.Substring(2, 2);
@@ -1047,15 +1035,9 @@ namespace wtKST
                                             {
                                                 string bs = sr.ReadLine();
                                                 DataRow row = this.CALL.NewRow();
-                                                row["CALL"] = bs.Split(new char[]
-                                                {
-                                                    ' '
-                                                })[0].Trim();
+                                                row["CALL"] = bs.Split(new char[]{ ' ' })[0].Trim();
                                                 row["NAME"] = "Beacon";
-                                                row["LOC"] = bs.Split(new char[]
-                                                {
-                                                    ' '
-                                                })[1].Trim();
+                                                row["LOC"] = bs.Split(new char[]{ ' ' })[1].Trim();
                                                 row["TIME"] = DateTime.MinValue;
                                                 row["144M"] = 0;
                                                 row["432M"] = 0;
@@ -1103,13 +1085,7 @@ namespace wtKST
                                 row["QRB"] = qrb;
                                 row["DIR"] = qtf;
                             }
-                            string qrvcall = call.TrimStart(new char[]
-                            {
-                                '('
-                            }).TrimEnd(new char[]
-                            {
-                                ')'
-                            });
+                            string qrvcall = call.TrimStart(new char[]{ '(' }).TrimEnd(new char[]{ ')' });
                             if (qrvcall.Equals(call))
                                 row["AWAY"] = false;
                             else
@@ -1644,13 +1620,7 @@ namespace wtKST
 
         public string GetNearestPlanes(string call)
         {
-            call = call.TrimStart(new char[]
-            {
-                '('
-            }).TrimEnd(new char[]
-            {
-                ')'
-            });
+            call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
             PlaneInfoList infolist = null;
             string result;
             if (this.planes.TryGetValue(call, out infolist))
@@ -1684,13 +1654,7 @@ namespace wtKST
 
         public int GetNearestPlanePotential(string call)
         {
-            call = call.TrimStart(new char[]
-            {
-                '('
-            }).TrimEnd(new char[]
-            {
-                ')'
-            });
+            call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
             PlaneInfoList infolist = null;
             int result;
             if (this.planes.TryGetValue(call, out infolist))
@@ -2362,13 +2326,7 @@ namespace wtKST
                 string LastCommand = this.cb_Command.Text;
                 if (this.cb_Command.Text.ToUpper().StartsWith("/CQ ") && this.cb_Command.SelectedItem != null)
                 {
-                    LastCommand = LastCommand.Split(new char[]
-                    {
-                        ' '
-                    })[0] + " " + LastCommand.Split(new char[]
-                    {
-                        ' '
-                    })[1];
+                    LastCommand = LastCommand.Split(new char[] { ' ' })[0] + " " + LastCommand.Split(new char[] { ' ' })[1];
                     string NewCommand = (string)this.cb_Command.SelectedItem;
                     if (NewCommand.ToUpper().StartsWith("/CQ "))
                     {
@@ -2498,13 +2456,8 @@ namespace wtKST
                         int qrb = (int)this.CALL.Rows[i]["QRB"];
                         string mycall = WCCheck.WCCheck.Cut(this.MyCall);
                         string myloc = this.MyLoc;
-                        string dxcall = WCCheck.WCCheck.Cut(this.CALL.Rows[i]["CALL"].ToString().TrimStart(new char[]
-                        {
-                            '('
-                        }).TrimEnd(new char[]
-                        {
-                            ')'
-                        }));
+                        string dxcall = WCCheck.WCCheck.Cut(this.CALL.Rows[i]["CALL"].ToString().TrimStart(
+                            new char[]{ '(' }).TrimEnd(new char[]{ ')' }));
                         string dxloc = this.CALL.Rows[i]["LOC"].ToString();
                         string rxmycall = "";
                         string rxdxcall = "";
@@ -2603,10 +2556,7 @@ namespace wtKST
                                             Msg = new wtMessage(data);
                                             if (Msg.Msg == WTMESSAGES.ASNEAREST)
                                             {
-                                                string[] a = Msg.Data.Split(new char[]
-                                                {
-                                                    ','
-                                                });
+                                                string[] a = Msg.Data.Split(new char[]{ ',' });
                                                 rxmycall = a[1];
                                                 rxdxcall = a[3];
                                             }
@@ -2669,10 +2619,7 @@ namespace wtKST
                 {
                     try
                     {
-                        string[] a = Msg.Data.Split(new char[]
-                        {
-                            ','
-                        });
+                        string[] a = Msg.Data.Split(new char[]{ ',' });
                         DateTime utc = Convert.ToDateTime(a[0]).ToUniversalTime();
                         string mycall = a[1];
                         string myloc = a[2];
@@ -2754,10 +2701,7 @@ namespace wtKST
                 {
                     try
                     {
-                        string[] a = Msg.Data.Split(new char[]
-                        {
-                            ','
-                        });
+                        string[] a = Msg.Data.Split(new char[]{ ',' });
                         string mycall = a[0];
                         string myloc = a[1];
                         string dxcall = a[2];
