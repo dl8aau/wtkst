@@ -951,7 +951,7 @@ namespace wtKST
                     // login time - new calls should be bold
                     DateTime logintime = (DateTime)tbl.Rows[i]["LOGINTIME"];
                     double loggedOnMinutes = (DateTime.UtcNow.Subtract(logintime)).TotalMinutes;
-                    if (loggedOnMinutes < 2) // TODO: too short? Configurable?
+                    if (loggedOnMinutes < 5)
                         LV.Font = new Font(LV.Font, FontStyle.Bold);
 
                     LV.UseItemStyleForSubItems = false;
