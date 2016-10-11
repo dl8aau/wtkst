@@ -442,6 +442,7 @@ namespace wtKST
             this.rb_KST_StartAsAway.TabStop = true;
             this.rb_KST_StartAsAway.Text = "Start as AWAY";
             this.rb_KST_StartAsAway.UseVisualStyleBackColor = true;
+            this.rb_KST_StartAsAway.Click += new System.EventHandler(this.rb_KST_StartAsAwayHere_Click);
             // 
             // tb_KST_ServerPort
             // 
@@ -465,6 +466,7 @@ namespace wtKST
             this.rb_KST_StartAsHere.TabIndex = 11;
             this.rb_KST_StartAsHere.Text = "Start as HERE";
             this.rb_KST_StartAsHere.UseVisualStyleBackColor = true;
+            this.rb_KST_StartAsHere.Click += new System.EventHandler(this.rb_KST_StartAsAwayHere_Click);
             // 
             // cb_KST_AutoConnect
             // 
@@ -994,6 +996,14 @@ namespace wtKST
             this.tabPage4.PerformLayout();
             this.ResumeLayout(false);
 
+        }
+
+        private void rb_KST_StartAsAwayHere_Click(object sender, EventArgs e)
+        {
+            // work around an issue with using user settings and data binding
+            RadioButton radioButton = sender as RadioButton;
+            if (radioButton.Checked == false)
+                radioButton.Checked = true;
         }
     }
 }
