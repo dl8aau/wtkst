@@ -228,6 +228,8 @@ namespace wtKST
                 this.DLLNotLoaded = true;
             }
             Application.Idle += new EventHandler(this.OnIdle);
+            Application.ApplicationExit += new EventHandler(this.OnApplicationExit);
+
             this.cb_Command.MouseWheel += new MouseEventHandler(this.cb_Command_MouseWheel);
             this.MSG.Columns.Add("TIME", typeof(DateTime));
             this.MSG.Columns.Add("CALL");
@@ -600,7 +602,7 @@ namespace wtKST
                 this.lbl_KST_Status.Text = "Status: Disconnected ";
             }
             this.ni_Main.Text = "wtKST\nLeft click to activate";
-            if (!this.cb_Command.Focused && !this.btn_KST_Send.Capture)
+            if (!this.cb_Command.IsDisposed && !this.cb_Command.Focused && !this.btn_KST_Send.Capture)
             {
                 this.cb_Command.Focus();
                 this.cb_Command.SelectionLength = 0;
@@ -1746,6 +1748,7 @@ namespace wtKST
             try
             {
                 this.bw_GetPlanes.CancelAsync();
+                this.ni_Main.Visible = false; // hide NotificationIcon
                 string FileName = Application.UserAppDataPath + "\\" + Settings.Default.WinTest_QRV_Table_FileName;
                 this.Say("Saving QRV-Database to " + FileName + "...");
                 this.QRV.WriteXml(FileName, XmlWriteMode.IgnoreSchema);
@@ -1771,6 +1774,10 @@ namespace wtKST
             Settings.Default.Save();
 
             MainDlg.Log.WriteMessage("Closed down.");
+        }
+        private void OnApplicationExit(object sender, EventArgs e)
+        {
+            this.ni_Main.Dispose(); //remove notification icon
         }
 
         private void ShowToolTip(string text, Control control, Point p)
