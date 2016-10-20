@@ -1283,9 +1283,15 @@ namespace wtKST
                 {
                     try
                     {
-                        // TODO: sending latin1 does not work - or is not correctly handled by telnet server?
-                        tw.Send(Encoding.GetEncoding("ISO-8859-1").GetString(Encoding.Convert(Encoding.UTF8, Encoding.GetEncoding("ISO-8859-1"), Encoding.UTF8.GetBytes(cb_Command.Text))) + "\r");
-                        MainDlg.Log.WriteMessage("KST message send: " + cb_Command.Text);
+                        // Telnet server does not handle non-ASCII
+                        String t = cb_Command.Text;
+                        t = t.Replace("ä", "ae").Replace("ö", "oe").Replace("ü", "ue");
+                        t = t.Replace("Ä", "Ae").Replace("Ö", "Oe").Replace("Ü", "Ue");
+                        t = t.Replace("ß", "ss");
+                        System.Text.Encoding iso_8859_1 = System.Text.Encoding.GetEncoding("iso-8859-1");
+                        String to_sent = iso_8859_1.GetString(iso_8859_1.GetBytes(t)) +"\r";
+                        tw.Send(to_sent);
+                        MainDlg.Log.WriteMessage("KST message send: " + this.cb_Command.Text);
                         if (this.cb_Command.FindStringExact(this.cb_Command.Text) != 0)
                         {
                             this.cb_Command.Items.Insert(0, this.cb_Command.Text);
