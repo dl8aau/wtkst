@@ -462,6 +462,29 @@ namespace wtKST
             this.KSTState = MainDlg.KST_STATE.Disconnected;
         }
 
+        private void set_KST_Status()
+        {
+            if (this.KSTState < MainDlg.KST_STATE.Connected)
+            {
+                this.lbl_KST_Status.BackColor = Color.LightGray;
+                this.lbl_KST_Status.Text = "Status: Disconnected ";
+                return;
+            }
+            this.lbl_KST_Status.BackColor = Color.PaleTurquoise;
+            this.lbl_KST_Status.Text = string.Concat(new string[]
+            {
+                "Status: Connected to ",
+                Settings.Default.KST_Chat,
+                " chat   [",
+                Settings.Default.KST_UserName,
+                " ",
+                Settings.Default.KST_Name,
+                " ",
+                this.MyLoc,
+                "]"
+            });
+        }
+
         private void tw_DataAvailable(object sender, DataAvailableEventArgs e)
         {
             string t = e.Data;
@@ -558,7 +581,9 @@ namespace wtKST
             }
             if (this.lv_Calls.Items.Count > 0)
             {
-                this.lbl_KST_Calls.Text = "Calls [" + this.lv_Calls.Items.Count.ToString() + "] - " + Path.GetFileName(Settings.Default.WinTest_FileName);
+                this.lbl_KST_Calls.Text = "Calls [" + this.lv_Calls.Items.Count.ToString() + "]";
+                if (Settings.Default.WinTest_Activate)
+                    this.lbl_KST_Calls.Text += " - " + Path.GetFileName(Settings.Default.WinTest_FileName);
             }
             else
             {
@@ -580,27 +605,9 @@ namespace wtKST
             {
                 this.lbl_KST_MyMsg.Text = "My Messages";
             }
-            if (this.KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                this.lbl_KST_Status.BackColor = Color.PaleTurquoise;
-                this.lbl_KST_Status.Text = string.Concat(new string[]
-                {
-                    "Status: Connected to ",
-                    Settings.Default.KST_Chat,
-                    " chat   [",
-                    Settings.Default.KST_UserName,
-                    " ",
-                    Settings.Default.KST_Name,
-                    " ",
-                    Settings.Default.KST_Loc,
-                    "]"
-                });
-            }
-            else
-            {
-                this.lbl_KST_Status.BackColor = Color.LightGray;
-                this.lbl_KST_Status.Text = "Status: Disconnected ";
-            }
+
+            set_KST_Status();
+
             this.ni_Main.Text = "wtKST\nLeft click to activate";
             if (!this.cb_Command.IsDisposed && !this.cb_Command.Focused && !this.btn_KST_Send.Capture)
             {
@@ -1427,6 +1434,7 @@ namespace wtKST
                     this.lv_MyMsg.Items.Clear();
                 }
                 UpdateUserBandsWidth();
+                set_KST_Status();
                 if (KST_MaxDist != Convert.ToInt32(Settings.Default.KST_MaxDist))
                     KST_Update_USR_Window("");
             }
@@ -1495,6 +1503,8 @@ namespace wtKST
                         string wtLoc = Encoding.ASCII.GetString(bufh, 24, 6);
                         char[] separator = new char[1];
                         this.MyLoc = wtLoc.Split(separator)[0];
+                        if (!this.MyLoc.Equals(Settings.Default.KST_Loc))
+                            set_KST_Status();
                         stream.Position = 13944L;
                         while (stream.Position < stream.Length)
                         {
