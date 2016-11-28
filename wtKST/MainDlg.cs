@@ -503,7 +503,7 @@ namespace wtKST
         {
             if (this.DLLNotLoaded)
             {
-                MessageBox.Show("Die Datei telnet.dll konnte im Programmverzeichnis nicht gefunden werden.", "Fehler");
+                MessageBox.Show("The file telnet.dll could not be found in program directory.", "Error");
                 base.Close();
             }
             try
