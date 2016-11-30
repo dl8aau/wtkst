@@ -235,6 +235,7 @@ namespace wtKST
             this.MSG.Columns.Add("CALL");
             this.MSG.Columns.Add("NAME");
             this.MSG.Columns.Add("MSG");
+            this.MSG.Columns.Add("RECIPIENT");
             this.QRV.Columns.Add("CALL");
             this.QRV.Columns.Add("TIME", typeof(DateTime));
             this.QRV.Columns.Add("144M", typeof(int));
@@ -765,6 +766,10 @@ namespace wtKST
                         Row["CALL"] = header[1].Trim();
                         Row["NAME"] = header[2].Trim();
                         Row["MSG"] = s.Remove(0, s.IndexOf("> ") + 2).Trim();
+                        var msg_upper = Row["MSG"].ToString().ToUpper();
+                        if (msg_upper.IndexOf(' ') > 0)
+                            msg_upper = msg_upper.Remove(msg_upper.IndexOf(' '));
+                        Row["RECIPIENT"] = msg_upper.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
                         KST_Process_new_message(Row);
                     }
                 }
@@ -872,17 +877,13 @@ namespace wtKST
                     else
                         this.lv_Msg.Items[0].BackColor = Color.FromArgb(11516905);
                 }
-                if (Row["MSG"].ToString().Contains("(" + this.MyCall + ")"))
+                if (Row["RECIPIENT"].ToString().Equals(this.MyCall))
                 {
                     // (mycall) does not happen for "/sh msg"
                     this.lv_Msg.Items[0].BackColor = Color.FromArgb(16745026);
                 }
                 // check the recipient of the message
-                var msg_upper = Row["MSG"].ToString().ToUpper();
-                if (msg_upper.IndexOf(' ') > 0)
-                    msg_upper = msg_upper.Remove(msg_upper.IndexOf(' '));
-                var recipient = msg_upper.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
-                findrow = this.CALL.Rows.Find(recipient);
+                findrow = this.CALL.Rows.Find(Row["RECIPIENT"].ToString());
                 if (findrow != null)
                 {
                     findrow["CONTACTED"] = (int)findrow["CONTACTED"] + 1;
