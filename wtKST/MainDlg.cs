@@ -863,24 +863,18 @@ namespace wtKST
                         this.ti_Top.Start();
                     }
                 }
+                int current_index = 0;
+                if (this.msg_latest_first)
+                    current_index = this.lv_Msg.Items.Count - 1;
+
                 if (this.lv_Msg.Items.Count % 2 == 0)
-                {
-                    if (this.msg_latest_first)
-                        this.lv_Msg.Items[this.lv_Msg.Items.Count - 1].BackColor = Color.FromArgb(16777200);
-                    else
-                        this.lv_Msg.Items[0].BackColor = Color.FromArgb(16777200);
-                }
+                    this.lv_Msg.Items[current_index].BackColor = Color.FromArgb(16777200);
                 else
-                {
-                    if (this.msg_latest_first)
-                        this.lv_Msg.Items[this.lv_Msg.Items.Count - 1].BackColor = Color.FromArgb(11516905);
-                    else
-                        this.lv_Msg.Items[0].BackColor = Color.FromArgb(11516905);
-                }
+                    this.lv_Msg.Items[current_index].BackColor = Color.FromArgb(11516905);
+
                 if (Row["RECIPIENT"].ToString().Equals(this.MyCall))
                 {
-                    // (mycall) does not happen for "/sh msg"
-                    this.lv_Msg.Items[0].BackColor = Color.FromArgb(16745026);
+                    this.lv_Msg.Items[current_index].BackColor = Color.FromArgb(16745026);
                 }
                 // check the recipient of the message
                 findrow = this.CALL.Rows.Find(Row["RECIPIENT"].ToString());
