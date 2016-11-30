@@ -1034,8 +1034,6 @@ namespace wtKST
                     this.lv_Calls.TopItem = this.lv_Calls.Items[this.lv_Calls.Items.Count - 1];
                     this.lv_Calls.TopItem = toplv;
                 }
-                this.lv_Calls_Updating = false;
-                this.KSTState = MainDlg.KST_STATE.Connected;
                 if (!this.WinTestLocatorWarning)
                     this.Say("");
                 MainDlg.Log.WriteMessage("KST GetUsers finished: " + this.lv_Calls.Items.Count.ToString() + " Calls.");
@@ -1106,6 +1104,8 @@ namespace wtKST
                             this.Get_QSOs();
                         }
                         KST_Update_USR_Window();
+                        this.lv_Calls_Updating = false;
+                        this.KSTState = MainDlg.KST_STATE.Connected;
                     }
                     else
                     {
