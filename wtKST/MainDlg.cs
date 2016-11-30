@@ -931,7 +931,7 @@ namespace wtKST
             }
         }
 
-        private void KST_Update_USR_Window(string msg)
+        private void KST_Update_USR_Window()
         {
             if (this.KSTState <= KST_STATE.WaitConfig)
                 return;
@@ -1042,7 +1042,7 @@ namespace wtKST
             }
             catch (Exception e)
             {
-                this.Error(MethodBase.GetCurrentMethod().Name, "(" + msg + "): " + e.Message);
+                this.Error(MethodBase.GetCurrentMethod().Name, e.Message);
             }
         }
 
@@ -1105,7 +1105,7 @@ namespace wtKST
                         {
                             this.Get_QSOs();
                         }
-                        KST_Update_USR_Window(msg);
+                        KST_Update_USR_Window();
                     }
                     else
                     {
@@ -1460,7 +1460,7 @@ namespace wtKST
                 UpdateUserBandsWidth();
                 set_KST_Status();
                 if (KST_MaxDist != Convert.ToInt32(Settings.Default.KST_MaxDist))
-                    KST_Update_USR_Window("");
+                    KST_Update_USR_Window();
             }
         }
 
@@ -2046,7 +2046,7 @@ namespace wtKST
                     this.hide_away = false;
                 else
                     this.hide_away = true;
-                KST_Update_USR_Window("");
+                KST_Update_USR_Window();
             }
 
             // LOCATOR column
@@ -2056,7 +2056,7 @@ namespace wtKST
                     this.sort_by_dir = false;
                 else
                     this.sort_by_dir = true;
-                KST_Update_USR_Window("");
+                KST_Update_USR_Window();
             }
 
             // ACT column
@@ -2066,7 +2066,7 @@ namespace wtKST
                     this.ignore_inactive = false;
                 else
                     this.ignore_inactive = true;
-                KST_Update_USR_Window("");
+                KST_Update_USR_Window();
             }
             // band columns
             if (e.Column > 4)
@@ -2076,7 +2076,7 @@ namespace wtKST
                 else
                     this.hide_worked = true;
                 this.lv_Calls.Invalidate(true);
-                KST_Update_USR_Window("");
+                KST_Update_USR_Window();
             }
         }
 
