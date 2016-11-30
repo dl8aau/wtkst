@@ -1025,6 +1025,47 @@ namespace wtKST
             }
         }
 
+        private void KST_Add_Beacons_USR()
+        {
+            try
+            {
+                using (StreamReader sr = new StreamReader(Settings.Default.BeaconFileName))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        try
+                        {
+                            string bs = sr.ReadLine();
+                            DataRow row = this.CALL.NewRow();
+                            row["CALL"] = bs.Split(new char[] { ' ' })[0].Trim();
+                            row["NAME"] = "Beacon";
+                            row["LOC"] = bs.Split(new char[] { ' ' })[1].Trim();
+                            row["TIME"] = DateTime.MinValue;
+                            row["CONTACTED"] = 0;
+                            row["144M"] = 0;
+                            row["432M"] = 0;
+                            row["1_2G"] = 0;
+                            row["2_3G"] = 0;
+                            row["3_4G"] = 0;
+                            row["5_7G"] = 0;
+                            row["10G"] = 0;
+                            row["24G"] = 0;
+                            row["47G"] = 0;
+                            row["76G"] = 0;
+                            this.CALL.Rows.Add(row);
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                this.Error(MethodBase.GetCurrentMethod().Name, e.Message);
+            }
+        }
+
         private void KST_Receive_USR(string s)
         {
             if (char.IsDigit(s, 0) && char.IsDigit(s, 1) && char.IsDigit(s, 2) && char.IsDigit(s, 3) && s[4] == 'Z' && s.IndexOf(Settings.Default.KST_UserName.ToUpper()) != 6)
@@ -1052,45 +1093,7 @@ namespace wtKST
                             this.oldCALL = this.CALL.Copy(); // keep old CALL
                             this.CALL.Clear();
                             if (Settings.Default.ShowBeacons)
-                            {
-                                try
-                                {
-                                    using (StreamReader sr = new StreamReader(Settings.Default.BeaconFileName))
-                                    {
-                                        while (!sr.EndOfStream)
-                                        {
-                                            try
-                                            {
-                                                string bs = sr.ReadLine();
-                                                DataRow row = this.CALL.NewRow();
-                                                row["CALL"] = bs.Split(new char[]{ ' ' })[0].Trim();
-                                                row["NAME"] = "Beacon";
-                                                row["LOC"] = bs.Split(new char[]{ ' ' })[1].Trim();
-                                                row["TIME"] = DateTime.MinValue;
-                                                row["CONTACTED"] = 0;
-                                                row["144M"] = 0;
-                                                row["432M"] = 0;
-                                                row["1_2G"] = 0;
-                                                row["2_3G"] = 0;
-                                                row["3_4G"] = 0;
-                                                row["5_7G"] = 0;
-                                                row["10G"] = 0;
-                                                row["24G"] = 0;
-                                                row["47G"] = 0;
-                                                row["76G"] = 0;
-                                                this.CALL.Rows.Add(row);
-                                            }
-                                            catch
-                                            {
-                                            }
-                                        }
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    this.Error(MethodBase.GetCurrentMethod().Name, "(" + msg + "): " + e.Message);
-                                }
-                            }
+                                KST_Add_Beacons_USR();
                         }
                         this.lv_Calls_Updating = true;
                         s = s.Replace("\r\n", "");
