@@ -765,148 +765,168 @@ namespace wtKST
                         Row["CALL"] = header[1].Trim();
                         Row["NAME"] = header[2].Trim();
                         Row["MSG"] = s.Remove(0, s.IndexOf("> ") + 2).Trim();
-                        this.MSG.Rows.Add(Row);
-                        DataRow findrow = this.QRV.Rows.Find(Row["CALL"].ToString().Trim());
-                        // TODO: what if user is not in user list yet? time not updated then
-                        // -> count appearing on user list as "activity", too
-                        if (findrow != null)
-                        {
-                            if ((DateTime)findrow["TIME"] < dt)
-                                findrow["TIME"] = Row["TIME"];
-                        }
-                        ListViewItem LV = new ListViewItem();
-                        LV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
-                        LV.SubItems.Add(Row["CALL"].ToString());
-                        LV.SubItems.Add(Row["NAME"].ToString());
-                        LV.SubItems.Add(Row["MSG"].ToString());
-                        for (int i = 0; i < LV.SubItems.Count; i++)
-                        {
-                            LV.SubItems[i].Name = this.lv_Msg.Columns[i].Text;
-                        }
-                        if (this.lv_Msg.Items.Count == 0)
-                        {
-                            // first entry
-                            this.lv_Msg.Items.Insert(0, LV);
-                            this.lv_Msg.TopItem = this.lv_Msg.Items[0];
-                        }
-                        else if (this.lv_Msg.TopItem == this.lv_Msg.Items[0])
-                        {
-                            // add at beginning of list (becomes new top item)
-                            DateTime dt_top = DateTime.Parse(this.lv_Msg.Items[0].Text.ToString());
-                            if (this.msg_latest_first && dt_top < dt)
-                            {
-                                this.msg_latest_first = false;
-                            }
-
-                            if (this.msg_latest_first)
-                            {
-                                // add at end of list
-                                this.lv_Msg.Items.Insert(this.lv_Msg.Items.Count, LV);
-                            }
-                            else
-                            {
-                                this.lv_Msg.Items.Insert(0, LV);
-                            }
-                            this.lv_Msg.TopItem = this.lv_Msg.Items[0];
-                        }
-                        else
-                        {
-                            ListViewItem topitem = this.lv_Msg.TopItem;
-                            DateTime dt_top = DateTime.Parse(this.lv_Msg.Items[0].Text.ToString());
-                            if (dt_top < dt)
-                                if (this.msg_latest_first && dt_top < dt)
-                                {
-                                    this.msg_latest_first = false;
-                                }
-
-                            if (this.msg_latest_first)
-                            {
-                                // add at end of list
-                                this.lv_Msg.Items.Insert(this.lv_Msg.Items.Count, LV);
-                            }
-                            else
-                            {
-                                this.lv_Msg.Items.Insert(0, LV);
-                            }
-                            if (topitem != null)
-                            {
-                                this.lv_Msg.TopItem = topitem;
-                            }
-                            if (!this.ti_Top.Enabled)
-                            {
-                                this.ti_Top.Start();
-                            }
-                        }
-                        if (this.lv_Msg.Items.Count % 2 == 0)
-                        {
-                           if (this.msg_latest_first)
-                                this.lv_Msg.Items[this.lv_Msg.Items.Count-1].BackColor = Color.FromArgb(16777200);
-                           else
-                                this.lv_Msg.Items[0].BackColor = Color.FromArgb(16777200);
-                        }
-                        else
-                        {
-                            if (this.msg_latest_first)
-                                this.lv_Msg.Items[this.lv_Msg.Items.Count-1].BackColor = Color.FromArgb(11516905);
-                            else
-                                this.lv_Msg.Items[0].BackColor = Color.FromArgb(11516905);
-                        }
-                        if (Row["MSG"].ToString().Contains("(" + this.MyCall + ")"))
-                        {
-                            // (mycall) does not happen for "/sh msg"
-                            this.lv_Msg.Items[0].BackColor = Color.FromArgb(16745026);
-                        }
-                        // check the recipient of the message
-                        var msg_upper = Row["MSG"].ToString().ToUpper();
-                        if (msg_upper.IndexOf(' ') > 0)
-                            msg_upper = msg_upper.Remove(msg_upper.IndexOf(' '));
-                        var recipient = msg_upper.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
-                        findrow = this.CALL.Rows.Find(recipient);
-                        if (findrow != null)
-                        {
-                            findrow["CONTACTED"] = (int)findrow["CONTACTED"] + 1;
-                        }
-                        findrow = this.CALL.Rows.Find(Row["CALL"].ToString().Trim());
-                        if (findrow != null)
-                        {
-                            findrow["CONTACTED"] = 0; // clear counter on activity
-                        }
-                        if (Row["MSG"].ToString().ToUpper().StartsWith("(" + this.MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(this.MyCall))
-                        {
-                            ListViewItem MyLV = new ListViewItem();
-                            if (Row["MSG"].ToString().ToUpper().StartsWith("(" + this.MyCall + ")"))
-                            {
-                                MyLV.BackColor = Color.BlanchedAlmond;
-                            }
-                            else
-                            {
-                                MyLV.BackColor = Color.Cornsilk;
-                            }
-                            MyLV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
-                            MyLV.SubItems.Add(Row["CALL"].ToString());
-                            MyLV.SubItems.Add(Row["NAME"].ToString());
-                            MyLV.SubItems.Add(Row["MSG"].ToString());
-                            for (int i = 0; i < MyLV.SubItems.Count; i++)
-                            {
-                                MyLV.SubItems[i].Name = this.lv_MyMsg.Columns[i].Text;
-                            }
-                            this.lv_MyMsg.Items.Insert(0, MyLV);
-                            this.lv_MyMsg.Items[0].EnsureVisible();
-                            int hwnd = MainDlg.GetForegroundWindow();
-                            if (hwnd != base.Handle.ToInt32())
-                            {
-                                if (Settings.Default.KST_ShowBalloon)
-                                {
-                                    this.ni_Main.ShowBalloonTip(30000, "New MyMessage received", s, ToolTipIcon.Info);
-                                }
-                            }
-                        }
+                        KST_Process_new_message(Row);
                     }
                 }
                 catch (Exception e)
                 {
                     this.Error(MethodBase.GetCurrentMethod().Name, "(" + msg + "): " + e.Message);
                 }
+            }
+        }
+
+        private void KST_Process_new_message(DataRow Row)
+        {
+            try
+            {
+                // add message to list
+                this.MSG.Rows.Add(Row);
+
+                DateTime dt = (DateTime)Row["TIME"];
+
+                DataRow findrow = this.QRV.Rows.Find(Row["CALL"].ToString().Trim());
+                // TODO: what if user is not in user list yet? time not updated then
+                // -> count appearing on user list as "activity", too
+                if (findrow != null)
+                {
+                    if ((DateTime)findrow["TIME"] < dt)
+                        findrow["TIME"] = Row["TIME"];
+                }
+                ListViewItem LV = new ListViewItem();
+                LV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
+                LV.SubItems.Add(Row["CALL"].ToString());
+                LV.SubItems.Add(Row["NAME"].ToString());
+                LV.SubItems.Add(Row["MSG"].ToString());
+                for (int i = 0; i < LV.SubItems.Count; i++)
+                {
+                    LV.SubItems[i].Name = this.lv_Msg.Columns[i].Text;
+                }
+                if (this.lv_Msg.Items.Count == 0)
+                {
+                    // first entry
+                    this.lv_Msg.Items.Insert(0, LV);
+                    this.lv_Msg.TopItem = this.lv_Msg.Items[0];
+                }
+                else if (this.lv_Msg.TopItem == this.lv_Msg.Items[0])
+                {
+                    // add at beginning of list (becomes new top item)
+                    DateTime dt_top = DateTime.Parse(this.lv_Msg.Items[0].Text.ToString());
+                    if (this.msg_latest_first && dt_top < dt)
+                    {
+                        this.msg_latest_first = false;
+                        MainDlg.Log.WriteMessage("msg_oldest_first = false " + dt_top.ToShortTimeString() + " dt " + dt.ToShortTimeString() + " 1 " + Row["CALL"].ToString());
+                    }
+
+                    if (this.msg_latest_first)
+                    {
+                        // add at end of list
+                        this.lv_Msg.Items.Insert(this.lv_Msg.Items.Count, LV);
+                    }
+                    else
+                    {
+                        this.lv_Msg.Items.Insert(0, LV);
+                    }
+                    this.lv_Msg.TopItem = this.lv_Msg.Items[0];
+                }
+                else
+                {
+                    ListViewItem topitem = this.lv_Msg.TopItem;
+                    DateTime dt_top = DateTime.Parse(this.lv_Msg.Items[0].Text.ToString());
+                    if (dt_top < dt)
+                    {
+                        if (this.msg_latest_first && dt_top < dt)
+                        {
+                            this.msg_latest_first = false;
+                            MainDlg.Log.WriteMessage("2: msg_oldest_first = false " + dt_top.ToShortTimeString() + " dt " + dt.ToShortTimeString() + " 1 " + Row["CALL"].ToString());
+                        }
+                    }
+                    if (this.msg_latest_first)
+                    {
+                        // add at end of list
+                        this.lv_Msg.Items.Insert(this.lv_Msg.Items.Count, LV);
+                    }
+                    else
+                    {
+                        this.lv_Msg.Items.Insert(0, LV);
+                    }
+                    if (topitem != null)
+                    {
+                        this.lv_Msg.TopItem = topitem;
+                    }
+                    if (!this.ti_Top.Enabled)
+                    {
+                        this.ti_Top.Start();
+                    }
+                }
+                if (this.lv_Msg.Items.Count % 2 == 0)
+                {
+                    if (this.msg_latest_first)
+                        this.lv_Msg.Items[this.lv_Msg.Items.Count - 1].BackColor = Color.FromArgb(16777200);
+                    else
+                        this.lv_Msg.Items[0].BackColor = Color.FromArgb(16777200);
+                }
+                else
+                {
+                    if (this.msg_latest_first)
+                        this.lv_Msg.Items[this.lv_Msg.Items.Count - 1].BackColor = Color.FromArgb(11516905);
+                    else
+                        this.lv_Msg.Items[0].BackColor = Color.FromArgb(11516905);
+                }
+                if (Row["MSG"].ToString().Contains("(" + this.MyCall + ")"))
+                {
+                    // (mycall) does not happen for "/sh msg"
+                    this.lv_Msg.Items[0].BackColor = Color.FromArgb(16745026);
+                }
+                // check the recipient of the message
+                var msg_upper = Row["MSG"].ToString().ToUpper();
+                if (msg_upper.IndexOf(' ') > 0)
+                    msg_upper = msg_upper.Remove(msg_upper.IndexOf(' '));
+                var recipient = msg_upper.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
+                findrow = this.CALL.Rows.Find(recipient);
+                if (findrow != null)
+                {
+                    findrow["CONTACTED"] = (int)findrow["CONTACTED"] + 1;
+                }
+                findrow = this.CALL.Rows.Find(Row["CALL"].ToString().Trim());
+                if (findrow != null)
+                {
+                    findrow["CONTACTED"] = 0; // clear counter on activity
+                }
+                if (Row["MSG"].ToString().ToUpper().StartsWith("(" + this.MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(this.MyCall))
+                {
+                    ListViewItem MyLV = new ListViewItem();
+                    if (Row["MSG"].ToString().ToUpper().StartsWith("(" + this.MyCall + ")"))
+                    {
+                        MyLV.BackColor = Color.BlanchedAlmond;
+                    }
+                    else
+                    {
+                        MyLV.BackColor = Color.Cornsilk;
+                    }
+                    MyLV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
+                    MyLV.SubItems.Add(Row["CALL"].ToString());
+                    MyLV.SubItems.Add(Row["NAME"].ToString());
+                    MyLV.SubItems.Add(Row["MSG"].ToString());
+                    for (int i = 0; i < MyLV.SubItems.Count; i++)
+                    {
+                        MyLV.SubItems[i].Name = this.lv_MyMsg.Columns[i].Text;
+                    }
+                    this.lv_MyMsg.Items.Insert(0, MyLV);
+                    this.lv_MyMsg.Items[0].EnsureVisible();
+                    int hwnd = MainDlg.GetForegroundWindow();
+                    if (hwnd != base.Handle.ToInt32())
+                    {
+                        if (Settings.Default.KST_ShowBalloon)
+                        {
+                            // TODO: statt MSG war das s... s.Remove(0, s.IndexOf("> ") + 2).Trim();
+                            this.ni_Main.ShowBalloonTip(30000, "New MyMessage received", Row["MSG"].ToString(), ToolTipIcon.Info);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                this.Error(MethodBase.GetCurrentMethod().Name, e.Message);
             }
         }
 
