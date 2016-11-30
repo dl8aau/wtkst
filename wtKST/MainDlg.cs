@@ -1079,6 +1079,74 @@ namespace wtKST
             }
         }
 
+        private void KST_Process_QRV(DataRow row, string qrvcall, bool call_new_in_userlist=false)
+        {
+            DataRow findrow = this.QRV.Rows.Find(qrvcall);
+            if (findrow != null)
+            {
+                if (call_new_in_userlist)
+                {
+                    // if we have not just started (oldCALL empty) treat connecting
+                    // to KST as activity
+                    row["TIME"] = row["LOGINTIME"];
+                    findrow["TIME"] = row["LOGINTIME"];
+                }
+                else
+                    row["TIME"] = findrow["TIME"];
+                row["144M"] = findrow["144M"];
+                row["432M"] = findrow["432M"];
+                row["1_2G"] = findrow["1_2G"];
+                row["2_3G"] = findrow["2_3G"];
+                row["3_4G"] = findrow["3_4G"];
+                row["5_7G"] = findrow["5_7G"];
+                row["10G"] = findrow["10G"];
+                row["24G"] = findrow["24G"];
+                row["47G"] = findrow["47G"];
+                row["76G"] = findrow["76G"];
+            }
+            else
+            {
+                if (call_new_in_userlist)
+                    row["TIME"] = row["LOGINTIME"];
+                else
+                    row["TIME"] = DateTime.MinValue;
+                row["144M"] = 0;
+                row["432M"] = 0;
+                row["1_2G"] = 0;
+                row["2_3G"] = 0;
+                row["3_4G"] = 0;
+                row["5_7G"] = 0;
+                row["10G"] = 0;
+                row["24G"] = 0;
+                row["47G"] = 0;
+                row["76G"] = 0;
+                DataRow newrow = this.QRV.NewRow();
+                newrow["CALL"] = qrvcall;
+                if (call_new_in_userlist)
+                    newrow["TIME"] = row["LOGINTIME"];
+                else
+                    newrow["TIME"] = DateTime.MinValue;
+                newrow["144M"] = 0;
+                newrow["432M"] = 0;
+                newrow["1_2G"] = 0;
+                newrow["2_3G"] = 0;
+                newrow["3_4G"] = 0;
+                newrow["5_7G"] = 0;
+                newrow["10G"] = 0;
+                newrow["24G"] = 0;
+                newrow["47G"] = 0;
+                newrow["76G"] = 0;
+                try
+                {
+                    this.QRV.Rows.Add(newrow);
+                }
+                catch (Exception e)
+                {
+                    this.Error(MethodBase.GetCurrentMethod().Name, e.Message);
+                }
+            }
+        }
+
         private void KST_Receive_USR(string s)
         {
             if (char.IsDigit(s, 0) && char.IsDigit(s, 1) && char.IsDigit(s, 2) && char.IsDigit(s, 3) && s[4] == 'Z' && s.IndexOf(Settings.Default.KST_UserName.ToUpper()) != 6)
@@ -1165,70 +1233,9 @@ namespace wtKST
                                 row["LOGINTIME"] = oldcallrow["LOGINTIME"];
                                 row["CONTACTED"] = oldcallrow["CONTACTED"];
                             }
-                            DataRow findrow = this.QRV.Rows.Find(qrvcall);
-                            if (findrow != null)
-                            {
-                                if (call_new_in_userlist)
-                                {
-                                    // if we have not just started (oldCALL empty) treat connecting
-                                    // to KST as activity
-                                    row["TIME"] = row["LOGINTIME"];
-                                    findrow["TIME"] = row["LOGINTIME"];
-                                }
-                                else
-                                    row["TIME"] = findrow["TIME"];
-                                row["144M"] = findrow["144M"];
-                                row["432M"] = findrow["432M"];
-                                row["1_2G"] = findrow["1_2G"];
-                                row["2_3G"] = findrow["2_3G"];
-                                row["3_4G"] = findrow["3_4G"];
-                                row["5_7G"] = findrow["5_7G"];
-                                row["10G"] = findrow["10G"];
-                                row["24G"] = findrow["24G"];
-                                row["47G"] = findrow["47G"];
-                                row["76G"] = findrow["76G"];
-                            }
-                            else
-                            {
-                                if (call_new_in_userlist)
-                                    row["TIME"] = row["LOGINTIME"];
-                                else
-                                    row["TIME"] = DateTime.MinValue;
-                                row["144M"] = 0;
-                                row["432M"] = 0;
-                                row["1_2G"] = 0;
-                                row["2_3G"] = 0;
-                                row["3_4G"] = 0;
-                                row["5_7G"] = 0;
-                                row["10G"] = 0;
-                                row["24G"] = 0;
-                                row["47G"] = 0;
-                                row["76G"] = 0;
-                                DataRow newrow = this.QRV.NewRow();
-                                newrow["CALL"] = qrvcall;
-                                if (call_new_in_userlist)
-                                    newrow["TIME"] = row["LOGINTIME"];
-                                else
-                                    newrow["TIME"] = DateTime.MinValue;
-                                newrow["144M"] = 0;
-                                newrow["432M"] = 0;
-                                newrow["1_2G"] = 0;
-                                newrow["2_3G"] = 0;
-                                newrow["3_4G"] = 0;
-                                newrow["5_7G"] = 0;
-                                newrow["10G"] = 0;
-                                newrow["24G"] = 0;
-                                newrow["47G"] = 0;
-                                newrow["76G"] = 0;
-                                try
-                                {
-                                    this.QRV.Rows.Add(newrow);
-                                }
-                                catch (Exception e)
-                                {
-                                    this.Error(MethodBase.GetCurrentMethod().Name, "(" + msg + "): " + e.Message);
-                                }
-                            }
+
+                            KST_Process_QRV(row, qrvcall, call_new_in_userlist);
+
                             if (WCCheck.WCCheck.IsCall(WCCheck.WCCheck.Cut(call)) >= 0 && WCCheck.WCCheck.IsLoc(loc) >= 0)
                             {
                                 this.CALL.Rows.Add(row);
