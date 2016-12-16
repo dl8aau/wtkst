@@ -2356,7 +2356,7 @@ namespace wtKST
                             this.cb_Command.SelectionLength = 0;
                         }
                     }
-                    if (info.SubItem.Name == "AS")
+                    if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
                     {
                         string call = WCCheck.WCCheck.Cut(info.Item.Text);
                         string loc = info.Item.SubItems[2].Text;
