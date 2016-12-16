@@ -2360,31 +2360,7 @@ namespace wtKST
                     {
                         string call = WCCheck.WCCheck.Cut(info.Item.Text);
                         string loc = info.Item.SubItems[2].Text;
-                        string qrg = "1440000";
-                        if (Settings.Default.AS_QRG == "432M")
-                        {
-                            qrg = "4320000";
-                        }
-                        else if (Settings.Default.AS_QRG == "1.2G")
-                        {
-                            qrg = "12960000";
-                        }
-                        else if (Settings.Default.AS_QRG == "2.3G")
-                        {
-                            qrg = "23200000";
-                        }
-                        else if (Settings.Default.AS_QRG == "3.4G")
-                        {
-                            qrg = "34000000";
-                        }
-                        else if (Settings.Default.AS_QRG == "5.7G")
-                        {
-                            qrg = "57600000";
-                        }
-                        else if (Settings.Default.AS_QRG == "10G")
-                        {
-                            qrg = "103680000";
-                        }
+                        string qrg = AS_qrg_from_settings();
                         wtMessage Msg = new wtMessage(WTMESSAGES.ASSHOWPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, string.Concat(new string[]
                         {
                             qrg,
@@ -2765,6 +2741,36 @@ namespace wtKST
             }
         }
 
+        private string AS_qrg_from_settings()
+        {
+            string qrg = "1440000";
+            if (Settings.Default.AS_QRG == "432M")
+            {
+                qrg = "4320000";
+            }
+            else if (Settings.Default.AS_QRG == "1.2G")
+            {
+                qrg = "12960000";
+            }
+            else if (Settings.Default.AS_QRG == "2.3G")
+            {
+                qrg = "23200000";
+            }
+            else if (Settings.Default.AS_QRG == "3.4G")
+            {
+                qrg = "34000000";
+            }
+            else if (Settings.Default.AS_QRG == "5.7G")
+            {
+                qrg = "57600000";
+            }
+            else if (Settings.Default.AS_QRG == "10G")
+            {
+                qrg = "103680000";
+            }
+            return qrg;
+        }
+
         private void bw_GetPlanes_DoWork(object sender, DoWorkEventArgs e)
         {
             while (!this.bw_GetPlanes.CancellationPending)
@@ -2787,31 +2793,7 @@ namespace wtKST
                         string dxloc = this.CALL.Rows[i]["LOC"].ToString();
                         string rxmycall = "";
                         string rxdxcall = "";
-                        string qrg = "1440000";
-                        if (Settings.Default.AS_QRG == "432M")
-                        {
-                            qrg = "4320000";
-                        }
-                        else if (Settings.Default.AS_QRG == "1.2G")
-                        {
-                            qrg = "12960000";
-                        }
-                        else if (Settings.Default.AS_QRG == "2.3G")
-                        {
-                            qrg = "23200000";
-                        }
-                        else if (Settings.Default.AS_QRG == "3.4G")
-                        {
-                            qrg = "34000000";
-                        }
-                        else if (Settings.Default.AS_QRG == "5.7G")
-                        {
-                            qrg = "57600000";
-                        }
-                        else if (Settings.Default.AS_QRG == "10G")
-                        {
-                            qrg = "103680000";
-                        }
+                        string qrg = AS_qrg_from_settings();
                         wtMessage Msg = new wtMessage(WTMESSAGES.ASSETPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, string.Concat(new string[]
                         {
                             qrg,
