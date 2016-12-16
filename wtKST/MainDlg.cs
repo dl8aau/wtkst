@@ -29,6 +29,9 @@ namespace wtKST
             WaitChat,
             WaitAway,
             WaitConfig,
+            WaitLogin,
+            WaitLogstat,
+            WaitSPR,
             Connected = 128,
             WaitUser
         }
@@ -216,6 +219,7 @@ namespace wtKST
         private bool sort_by_dir = false;
         private bool ignore_inactive = false;
         private bool hide_worked = false;
+        private bool KST_Use_New_Feed;
 
         public MainDlg()
         {
@@ -727,11 +731,81 @@ namespace wtKST
                     }
                 }
                 break;
+            case MainDlg.KST_STATE.WaitLogin:
+                if (s.IndexOf("login") >= 0)
+                {
+                    this.tw.Send("LOGINC|" + Settings.Default.KST_UserName + "|" + Settings.Default.KST_Password +"|" 
+                        + Settings.Default.KST_Chat.Substring(0, 1) + "|wtKST |25|0|1|0|0|\r");
+                    this.KSTState = MainDlg.KST_STATE.WaitLogstat;
+                    this.Say("Login " + Settings.Default.KST_UserName + " send.");
+                }
+                break;
+            case MainDlg.KST_STATE.WaitLogstat:
+                if (s.IndexOf("LOGSTAT") >= 0)
+                {
+                        try
+                        {
+                            MainDlg.Log.WriteMessage("LOGSTAT: " + s);
+                            string call = Settings.Default.KST_UserName.ToUpper();
+                            if (WCCheck.WCCheck.IsCall(call) >= 0)
+                            {
+                                string[] subs = s.Split('|');
+                                if (subs[2].Equals("Wrong password!")) // maybe test subs[1] for 114? OK seems 100
+                                {
+                                    this.Say("Password wrong.");
+                                    this.tw.Close();
+                                    MainDlg.Log.WriteMessage("Password wrong ");
+                                    break;
+                                }
+                                Settings.Default.KST_Name = subs[6];
+                                Settings.Default.KST_Loc = subs[8];
+                                if (WCCheck.WCCheck.IsLoc(Settings.Default.KST_Loc) > 0)
+                                {
+                                    this.MyLoc = Settings.Default.KST_Loc;
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            MainDlg.Log.WriteMessage("Error reading user configuration: " + e.Message);
+                        }
+                        this.tw.Send("SPR|2|\r");
+                        this.KSTState = MainDlg.KST_STATE.WaitSPR;
+                    this.Say("LOGSTAT " + s);
+                }
+                break;
+            case MainDlg.KST_STATE.WaitSPR:
+                    if (s.IndexOf("PRAU") >= 0)
+                    {
+                        try
+                        {
+                            MainDlg.Log.WriteMessage("Login at " + s.Split('|')[2] + " - " + s);
+                        }
+                        catch { }
+                        this.tw.Send("SDONE|" + Settings.Default.KST_Chat.Substring(0, 1) + "|\r");
+                        this.KSTState = MainDlg.KST_STATE.Connected;
+                        this.Say("Connected to KST chat.");
+                        MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
+                        this.msg_latest_first = true;
+                    }
+                    break;
             default:
                 switch (kSTState)
                 {
                 case MainDlg.KST_STATE.Connected:
-                    this.KST_Receive_MSG(s);
+                    if (this.KST_Use_New_Feed)
+                    {
+                        if(s.Substring(0,1).Equals("C"))
+                        {
+                            KST_Receive_MSG2(s);
+                        }
+                        else if (s.Substring(0, 1).Equals("U"))
+                        {
+                            KST_Receive_USR2(s);
+                        }
+                    }
+                    else
+                        this.KST_Receive_MSG(s);
                     break;
                 case MainDlg.KST_STATE.WaitUser:
                     this.KST_Receive_USR(s);
@@ -780,6 +854,47 @@ namespace wtKST
             }
         }
 
+        private void KST_Receive_MSG2(string s)
+        {
+            string[] msg = s.Split('|'); ;
+            this.MyCall = Settings.Default.KST_UserName.ToUpper();
+            try
+            {
+                MainDlg.Log.WriteMessage("KST message: " + s);
+                // CR|3|1480257613|F6DKW|Maurice|0|U were here all time on poor tropo anyway|F5BUU| -> chat review
+                // CE|3|   -> end
+                // CK|     ??? maybe... end of chat review - start of "normal" list?
+                // CH|3|1480259640|F6APE|JEAN-NOEL|0|es tu tjrs present pr test 6/3cm b4 qsy garden il fait beau|F2CT|
+                switch (s.Substring(0, 2))
+                {
+                    case "CR":
+                    case "CH":
+                        DataRow Row = this.MSG.NewRow();
+                        DateTime dt = new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(long.Parse(msg[2]));
+                        Row["TIME"] = dt;
+                        Row["CALL"] = msg[3].Trim();
+                        Row["NAME"] = msg[4].Trim();
+                        var recipient = msg[7].Trim();
+                        if (recipient.Equals("0"))
+                            Row["MSG"] = msg[6].Trim();
+                        else
+                            Row["MSG"] = "(" + recipient + ") " + msg[6].Trim();
+                        Row["RECIPIENT"] = recipient;
+                        KST_Process_new_message(Row);
+                        break;
+                    case "CK": // chat review over -> normal order now
+                        this.msg_latest_first = false;
+                        break;
+                    case "CE":
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                this.Error(MethodBase.GetCurrentMethod().Name, "(" + s + "): " + e.Message);
+            }
+        }
+
         private void KST_Process_new_message(DataRow Row)
         {
             try
@@ -816,7 +931,7 @@ namespace wtKST
                 {
                     // add at beginning of list (becomes new top item)
                     DateTime dt_top = DateTime.Parse(this.lv_Msg.Items[0].Text.ToString());
-                    if (this.msg_latest_first && dt_top < dt)
+                    if (!this.KST_Use_New_Feed && this.msg_latest_first && dt_top < dt)
                     {
                         this.msg_latest_first = false;
                         MainDlg.Log.WriteMessage("msg_oldest_first = false " + dt_top.ToShortTimeString() + " dt " + dt.ToShortTimeString() + " 1 " + Row["CALL"].ToString());
@@ -837,7 +952,7 @@ namespace wtKST
                 {
                     ListViewItem topitem = this.lv_Msg.TopItem;
                     DateTime dt_top = DateTime.Parse(this.lv_Msg.Items[0].Text.ToString());
-                    if (dt_top < dt)
+                    if (!this.KST_Use_New_Feed && dt_top < dt)
                     {
                         if (this.msg_latest_first && dt_top < dt)
                         {
@@ -1256,6 +1371,115 @@ namespace wtKST
             }
         }
 
+        private void KST_Receive_USR2(string s)
+        {
+            string[] usr = s.Split('|'); ;
+            try
+            {
+                MainDlg.Log.WriteMessage("KST user: " + s);
+                DataRow Row = this.MSG.NewRow();
+                //UA0|3|DF9QX|Matthias 23-1,2|JO42HD|1| -> away
+                //UA0|3|DL7QY|Claus 1-122GHz|JN59BD|0|                 //UA0|3|DL8AAU|Alexander|JO41VL|2| -> new
+                //UM3|3|DL8AAU|Alexander|JN49HU|2| -> modified
+                //US4|3|EA3KZ|0| -> status (2->0)
+                //UR6|3|F8DLS| -> left
+                //UE|3|7042| -> end of list/update
+                switch (s.Substring(0, 2))
+                {
+                    case "UA":
+                        {
+                            DataRow row = this.CALL.NewRow();
+
+                            string call = usr[2].Trim();
+                            string loc = usr[4].Trim();
+                            if (WCCheck.WCCheck.IsCall(WCCheck.WCCheck.Cut(call)) >= 0 && WCCheck.WCCheck.IsLoc(loc) >= 0)
+                            {
+                                row["CALL"] = call;
+                                row["NAME"] = usr[3].Trim();
+                                row["LOC"] = loc;
+
+                                int qrb = WCCheck.WCCheck.QRB(this.MyLoc, loc);
+                                int qtf = (int)WCCheck.WCCheck.QTF(this.MyLoc, loc);
+                                row["QRB"] = qrb;
+                                row["DIR"] = qtf;
+
+                                Int32 usr_state = Int32.Parse(usr[5]);
+                                row["AWAY"] = (usr_state & 1) == 1;
+                                string qrvcall = usr[2].Trim();
+                                if (qrvcall.IndexOf("-") > 0)
+                                {
+                                    qrvcall = qrvcall.Remove(qrvcall.IndexOf("-"));
+                                }
+                                bool call_new_in_userlist = false;
+
+                                if ((usr_state & 2) == 2)
+                                {
+                                    call_new_in_userlist = true;
+                                    row["LOGINTIME"] = DateTime.UtcNow; // remember time of login
+                                }
+                                else
+                                {
+                                    row["LOGINTIME"] = DateTime.MinValue;
+                                }
+                                row["CONTACTED"] = 0;
+
+                                KST_Process_QRV(row, qrvcall, call_new_in_userlist);
+
+                                this.CALL.Rows.Add(row);
+                            }
+                        }
+                        break;
+                    case "UM":
+                        {
+                            string call = usr[2].Trim();
+                            DataRow row = this.CALL.Rows.Find(call);
+                            string loc = usr[4].Trim();
+
+                            if (WCCheck.WCCheck.IsLoc(loc) >= 0)
+                            {
+                                row["CALL"] = call;
+                                row["NAME"] = usr[3].Trim();
+                                row["LOC"] = loc;
+
+                                int qrb = WCCheck.WCCheck.QRB(this.MyLoc, loc);
+                                int qtf = (int)WCCheck.WCCheck.QTF(this.MyLoc, loc);
+                                row["QRB"] = qrb;
+                                row["DIR"] = qtf;
+
+                                Int32 usr_state = Int32.Parse(usr[5]);
+                                row["AWAY"] = (usr_state & 1) == 1;
+                            }
+                        }
+                        break;
+                    case "US":
+                        {
+                            string call = usr[2].Trim();
+                            DataRow row = this.CALL.Rows.Find(call);
+                            Int32 usr_state = Int32.Parse(usr[3]);
+                            row["AWAY"] = (usr_state & 1) == 1;
+                        }
+                        break;
+
+                    case "UR":
+                        {
+                            string call = usr[2].Trim();
+                            DataRow row = this.CALL.Rows.Find(call);
+                            row.Delete();
+                        }
+                        break;
+
+                    case "UE":
+                        KST_Update_USR_Window();
+                        // TODO wt?
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                this.Error(MethodBase.GetCurrentMethod().Name, "(" + s + "): " + e.Message);
+            }
+        }
+
         private void KST_Connect()
         {
             if (this.KSTState == MainDlg.KST_STATE.Standby &&
@@ -1269,7 +1493,24 @@ namespace wtKST
                 {
                     this.tw.Connect(Settings.Default.KST_ServerName, Convert.ToInt32(Settings.Default.KST_ServerPort));
                     this.tw.Receive();
-                    this.KSTState = MainDlg.KST_STATE.WaitUserName;
+                    if (Settings.Default.KST_ServerPort.Equals("23001"))
+                    {
+                        this.KSTState = MainDlg.KST_STATE.WaitLogin;
+                        this.KST_Use_New_Feed = true;
+                        this.CALL.Clear();
+                        if (Settings.Default.ShowBeacons)
+                            KST_Add_Beacons_USR();
+                        this.ti_Main.Interval = 5000;
+                        if (!this.ti_Main.Enabled)
+                        {
+                            this.ti_Main.Start();
+                        }
+                    }
+                    else
+                    {
+                        this.KSTState = MainDlg.KST_STATE.WaitUserName;
+                        this.KST_Use_New_Feed = false;
+                    }
                     this.Say("Connecting to KST chat..." + Settings.Default.KST_ServerName + " Port "+ Settings.Default.KST_ServerPort);
                 }
                 catch (Exception e)
@@ -1321,7 +1562,11 @@ namespace wtKST
                         t = t.Replace("Ä", "Ae").Replace("Ö", "Oe").Replace("Ü", "Ue");
                         t = t.Replace("ß", "ss");
                         System.Text.Encoding iso_8859_1 = System.Text.Encoding.GetEncoding("iso-8859-1");
-                        String to_sent = iso_8859_1.GetString(iso_8859_1.GetBytes(t)) +"\r";
+                        String to_sent = iso_8859_1.GetString(iso_8859_1.GetBytes(t));
+                        if (this.KST_Use_New_Feed)
+                            to_sent = "MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|" + to_sent + "|0|\r";
+                        else
+                            to_sent = to_sent + "\r";
                         tw.Send(to_sent);
                         MainDlg.Log.WriteMessage("KST message send: " + this.cb_Command.Text);
                         if (this.cb_Command.FindStringExact(this.cb_Command.Text) != 0)
@@ -1739,8 +1984,19 @@ namespace wtKST
             if (Settings.Default.AS_Active)
             {
             }
-            MainDlg.Log.WriteMessage("KST GetUsers start.");
-            this.KST_GetUsers();
+            if (this.KST_Use_New_Feed)
+            {
+                if (Settings.Default.WinTest_Activate)
+                {
+                    this.Get_QSOs();
+                }
+                KST_Update_USR_Window();
+            }
+            else
+            {
+                MainDlg.Log.WriteMessage("KST GetUsers start.");
+                this.KST_GetUsers();
+            }
             int interval = Convert.ToInt32(Settings.Default.UpdateInterval) * 1000;
             if (interval > 10000)
             {
