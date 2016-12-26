@@ -584,16 +584,19 @@ namespace wtKST
             {
                 this.lbl_Call.Text = "(" + Settings.Default.KST_UserName.ToUpper() + ")";
             }
+            string KST_Calls_Text = this.lbl_KST_Calls.Text;
             if (this.lv_Calls.Items.Count > 0)
             {
-                this.lbl_KST_Calls.Text = "Calls [" + this.lv_Calls.Items.Count.ToString() + "]";
+                KST_Calls_Text = "Calls [" + this.lv_Calls.Items.Count.ToString() + "]";
                 if (Settings.Default.WinTest_Activate)
-                    this.lbl_KST_Calls.Text += " - " + Path.GetFileName(Settings.Default.WinTest_FileName);
+                    KST_Calls_Text += " - " +  Path.GetFileName(Settings.Default.WinTest_FileName);
             }
             else
             {
-                this.lbl_KST_Calls.Text = "Calls";
+                KST_Calls_Text = "Calls";
             }
+            if (!KST_Calls_Text.Equals(this.lbl_KST_Calls.Text))
+                this.lbl_KST_Calls.Text = KST_Calls_Text;
             if (this.lv_Msg.Items.Count > 0)
             {
                 this.lbl_KST_Msg.Text = "Messages [" + this.lv_Msg.Items.Count.ToString() + "]";
