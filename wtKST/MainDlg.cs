@@ -834,7 +834,7 @@ namespace wtKST
                     if (!s.EndsWith(">"))
                     {
                         MainDlg.Log.WriteMessage("KST message: " + msg);
-                        string[] header = s.Substring(0, s.IndexOf("> ")).Split(new char[] { ' '  });
+                        string[] header = s.Substring(0, s.IndexOf("> ")).Split(new char[] { ' ' });
                         DataRow Row = this.MSG.NewRow();
                         string time = header[0].Trim();
                         time = time.Substring(0, 2) + ":" + time.Substring(2, 2);
@@ -1382,7 +1382,8 @@ namespace wtKST
                 MainDlg.Log.WriteMessage("KST user: " + s);
                 DataRow Row = this.MSG.NewRow();
                 //UA0|3|DF9QX|Matthias 23-1,2|JO42HD|1| -> away
-                //UA0|3|DL7QY|Claus 1-122GHz|JN59BD|0|                 //UA0|3|DL8AAU|Alexander|JO41VL|2| -> new
+                //UA0|3|DL7QY|Claus 1-122GHz|JN59BD|0|
+                //UA0|3|DL8AAU|Alexander|JO41VL|2| -> new
                 //UM3|3|DL8AAU|Alexander|JN49HU|2| -> modified
                 //US4|3|EA3KZ|0| -> status (2->0)
                 //UR6|3|F8DLS| -> left
