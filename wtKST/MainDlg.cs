@@ -512,22 +512,28 @@ namespace wtKST
             }
             Console.WriteLine(t);
             string s = e.Data.Replace("\0", "");
-            this.KSTBuffer += s;
-            if (this.KSTBuffer.EndsWith("\r\n"))
+            lock (this.MsgQueue)
             {
-                string[] buffer = this.KSTBuffer.Split(new char[] {'\r', '\n' });
-                lock (this.MsgQueue)
+                this.KSTBuffer += s;
+                if (this.KSTBuffer.IndexOf("\r\n")>=0)
                 {
+                    string[] buffer = this.KSTBuffer.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries); //this.KSTBuffer.Split(new char[] {'\r', '\n' });
                     string[] array = buffer;
-                    for (int i = 0; i < array.Length; i++)
+                    int number_strings = array.Length-1;
+                    if (KSTBuffer.EndsWith("\r\n"))
+                        number_strings++;
+                    for (int i = 0; i < number_strings; i++)
                     {
                         string buf = array[i];
                         StringWriter bufWriter = new StringWriter();
                         WebUtility.HtmlDecode(buf, bufWriter);
                         this.MsgQueue.Enqueue(bufWriter.ToString());
                     }
+                    if (KSTBuffer.EndsWith("\r\n"))
+                        this.KSTBuffer = "";
+                    else
+                        this.KSTBuffer = buffer[buffer.Length - 1]; // keep the tail
                 }
-                this.KSTBuffer = "";
             }
         }
 
@@ -2609,16 +2615,26 @@ namespace wtKST
         {
             this.ti_Receive.Stop();
             DateTime t = DateTime.Now;
-            lock (this.MsgQueue)
+            while (true)
             {
-                while (this.MsgQueue.Count > 0)
+                string s;
+                lock(this.MsgQueue)
                 {
-                    string s = this.MsgQueue.Dequeue();
-                    if (s.Length > 0)
+                    if (this.MsgQueue.Count > 0)
                     {
-                        this.KST_Receive(s);
+                        s = this.MsgQueue.Dequeue();
+                    }
+                    else
+                    {
+                        s = "";
                     }
                 }
+                if (s.Length > 0)
+                {
+                    this.KST_Receive(s);
+                }
+                else
+                    break;
             }
             TimeSpan ts = DateTime.Now - t;
             if (ts.Seconds > 1)
