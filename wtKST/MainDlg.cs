@@ -241,6 +241,12 @@ namespace wtKST
             this.MSG.Columns.Add("NAME");
             this.MSG.Columns.Add("MSG");
             this.MSG.Columns.Add("RECIPIENT");
+            DataColumn[] MSGkeys = new DataColumn[]
+            {
+                MSG.Columns["TIME"],
+                MSG.Columns["CALL"]
+            };
+            this.MSG.PrimaryKey = MSGkeys;
             this.QRV.Columns.Add("CALL");
             this.QRV.Columns.Add("TIME", typeof(DateTime));
             this.QRV.Columns.Add("144M", typeof(int));
@@ -917,6 +923,16 @@ namespace wtKST
         {
             try
             {
+                // check if the message is already in the list
+                DataRow check_row = MSG.Rows.Find(new string[] { Row["TIME"].ToString(), Row["CALL"].ToString() });
+
+                if (check_row != null)
+                {
+                    if (check_row["MSG"].Equals(Row["MSG"]))
+                    {
+                        return;
+                    }
+                }
                 // add message to list
                 this.MSG.Rows.Add(Row);
 
