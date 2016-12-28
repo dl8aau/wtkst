@@ -2016,9 +2016,6 @@ namespace wtKST
         private void ti_Main_Tick(object sender, EventArgs e)
         {
             this.ti_Main.Stop();
-            if (Settings.Default.AS_Active)
-            {
-            }
             if (this.KST_Use_New_Feed)
             {
                 if (Settings.Default.WinTest_Activate)
@@ -2489,7 +2486,7 @@ namespace wtKST
                 ListViewHitTestInfo info = this.lv_Calls.HitTest(p);
                 if (info != null && info.SubItem != null)
                 {
-                    if (info.SubItem.Name == "AS")
+                    if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
                     {
                         string s = this.GetNearestPlanes(info.Item.Text);
                         if (string.IsNullOrEmpty(s))
@@ -2820,13 +2817,13 @@ namespace wtKST
         {
             while (!this.bw_GetPlanes.CancellationPending)
             {
-                if (this.KSTState < MainDlg.KST_STATE.Connected)
+                if (this.KSTState < MainDlg.KST_STATE.Connected || !Settings.Default.AS_Active)
                 {
                     Thread.Sleep(200); // TODO: better to use WaitHandles
                     continue;
                 }
                 int errors = 0;
-                for (int i = 0; i < this.CALL.Rows.Count; i++)
+                for (int i = 0; Settings.Default.AS_Active && i < this.CALL.Rows.Count; i++)
                 {
                     try
                     {
