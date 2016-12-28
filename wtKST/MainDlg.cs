@@ -23,6 +23,7 @@ namespace wtKST
         public enum KST_STATE
         {
             Disconnected,
+            Disconnecting,
             Standby,
             WaitUserName,
             WaitPassword,
@@ -460,6 +461,9 @@ namespace wtKST
             try
             {
                 this.tw.Dispose();
+                this.tw.Close();
+                this.MsgQueue.Clear();
+                this.KSTBuffer = "";
             }
             catch
             {
@@ -536,7 +540,7 @@ namespace wtKST
             }
             try
             {
-                if (this.tw != null && !this.tw.Connected)
+                if (this.tw != null && !this.tw.Connected && this.KSTState != MainDlg.KST_STATE.Standby)
                 {
                     this.KSTState = MainDlg.KST_STATE.Disconnected;
                 }
@@ -544,6 +548,11 @@ namespace wtKST
             catch
             {
                 this.KSTState = MainDlg.KST_STATE.Disconnected;
+            }
+            if (this.KSTState == MainDlg.KST_STATE.Disconnecting)
+            {
+                if (this.tw != null && this.tw.Connected)
+                    tw.Disconnect();
             }
             if (this.KSTState == MainDlg.KST_STATE.Disconnected)
             {
@@ -1530,7 +1539,7 @@ namespace wtKST
             {
                 this.tw.Send("/q\r");
                 this.Say("Disconnected from KST chat...");
-                this.KSTState = MainDlg.KST_STATE.Disconnected;
+                this.KSTState = MainDlg.KST_STATE.Disconnecting;
             }
         }
 
