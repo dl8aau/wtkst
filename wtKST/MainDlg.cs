@@ -244,7 +244,8 @@ namespace wtKST
             DataColumn[] MSGkeys = new DataColumn[]
             {
                 MSG.Columns["TIME"],
-                MSG.Columns["CALL"]
+                MSG.Columns["CALL"],
+                MSG.Columns["MSG"]
             };
             this.MSG.PrimaryKey = MSGkeys;
             this.QRV.Columns.Add("CALL");
@@ -924,7 +925,7 @@ namespace wtKST
             try
             {
                 // check if the message is already in the list
-                DataRow check_row = MSG.Rows.Find(new string[] { Row["TIME"].ToString(), Row["CALL"].ToString() });
+                DataRow check_row = MSG.Rows.Find(new string[] { Row["TIME"].ToString(), Row["CALL"].ToString(), Row["MSG"].ToString() });
 
                 if (check_row != null)
                 {
