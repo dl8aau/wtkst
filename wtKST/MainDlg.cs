@@ -1297,6 +1297,19 @@ namespace wtKST
             }
         }
 
+        private void KST_Process_MyCallAway()
+        {
+            DataRow row = this.CALL.Rows.Find(this.MyCall);
+            if (row != null)
+            {
+                if ( ((bool)row["AWAY"] == true && this.UserState == MainDlg.USER_STATE.Here) ||
+                     ((bool)row["AWAY"] == false && this.UserState == MainDlg.USER_STATE.Away) )
+                {
+                    this.UserState = (bool)row["AWAY"] ? MainDlg.USER_STATE.Away : MainDlg.USER_STATE.Here;
+                }
+            }
+        }
+
         private void KST_Receive_USR(string s)
         {
             if (char.IsDigit(s, 0) && char.IsDigit(s, 1) && char.IsDigit(s, 2) && char.IsDigit(s, 3) && s[4] == 'Z' && s.IndexOf(Settings.Default.KST_UserName.ToUpper()) != 6)
@@ -1315,6 +1328,7 @@ namespace wtKST
                         {
                             this.Get_QSOs();
                         }
+                        KST_Process_MyCallAway();
                         KST_Update_USR_Window();
                         this.lv_Calls_Updating = false;
                         this.KSTState = MainDlg.KST_STATE.Connected;
@@ -1505,6 +1519,7 @@ namespace wtKST
                         break;
 
                     case "UE":
+                        KST_Process_MyCallAway();
                         KST_Update_USR_Window();
                         // TODO wt?
                         break;
