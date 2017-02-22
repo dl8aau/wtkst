@@ -1585,7 +1585,10 @@ namespace wtKST
         {
             if (this.KSTState >= MainDlg.KST_STATE.Connected)
             {
-                this.tw.Send("/set here\r");
+                if (this.KST_Use_New_Feed)
+                    this.tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/BACK|0|\r");
+                else
+                    this.tw.Send("/set here\r");
                 this.UserState = MainDlg.USER_STATE.Here;
             }
         }
@@ -1594,7 +1597,10 @@ namespace wtKST
         {
             if (this.KSTState >= MainDlg.KST_STATE.Connected)
             {
-                this.tw.Send("/unset here\r");
+                if (this.KST_Use_New_Feed)
+                    this.tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1)+"|0|/AWAY|0|\r");
+                else
+                    this.tw.Send("/unset here\r");
                 this.UserState = MainDlg.USER_STATE.Away;
             }
         }
