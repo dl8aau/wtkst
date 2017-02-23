@@ -812,6 +812,10 @@ namespace wtKST
                         this.Say("Connected to KST chat.");
                         MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
                         this.msg_latest_first = true;
+                        if (Settings.Default.KST_StartAsHere)
+                            KST_Here();
+                        else
+                            KST_Away();
                     }
                     break;
             default:
