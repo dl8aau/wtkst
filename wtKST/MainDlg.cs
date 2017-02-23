@@ -911,7 +911,8 @@ namespace wtKST
                         Row["RECIPIENT"] = recipient;
                         KST_Process_new_message(Row);
                         break;
-                    case "CK": // chat review over -> normal order now
+                    case "CK": // Link Check
+                        this.tw.Send("\r\n"); // need to reply
                         this.msg_latest_first = false;
                         break;
                     case "CE":
