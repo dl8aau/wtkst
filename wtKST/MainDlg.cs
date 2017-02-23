@@ -598,6 +598,7 @@ namespace wtKST
                     this.ti_Reconnect.Stop();
                 }
             }
+            // FIXME: don't touch UI elements here without checking wether they need to be updated. Otherwise CPU load may be high
             if (this.UserState == MainDlg.USER_STATE.Here)
             {
                 this.lbl_Call.Text = Settings.Default.KST_UserName.ToUpper();
@@ -611,7 +612,7 @@ namespace wtKST
             {
                 KST_Calls_Text = "Calls [" + this.lv_Calls.Items.Count.ToString() + "]";
                 if (Settings.Default.WinTest_Activate)
-                    KST_Calls_Text += " - " +  Path.GetFileName(Settings.Default.WinTest_FileName);
+                    KST_Calls_Text += " - " + Path.GetFileName(Settings.Default.WinTest_FileName);
             }
             else
             {
