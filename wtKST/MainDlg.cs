@@ -578,6 +578,7 @@ namespace wtKST
                 this.cb_Command.Enabled = false;
                 this.btn_KST_Send.Enabled = false;
                 this.lbl_Call.Enabled = false;
+                this.ti_Main.Stop();
                 if (Settings.Default.KST_AutoConnect && !this.ti_Reconnect.Enabled)
                 {
                     this.ti_Reconnect.Start();
@@ -2044,7 +2045,7 @@ namespace wtKST
         private void ti_Main_Tick(object sender, EventArgs e)
         {
             this.ti_Main.Stop();
-            if (this.KST_Use_New_Feed)
+            if (this.KST_Use_New_Feed && this.KSTState == MainDlg.KST_STATE.Connected)
             {
                 if (Settings.Default.WinTest_Activate)
                 {
