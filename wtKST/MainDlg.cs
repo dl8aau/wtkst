@@ -909,11 +909,11 @@ namespace wtKST
                         else
                             Row["MSG"] = "(" + recipient + ") " + msg[6].Trim();
                         Row["RECIPIENT"] = recipient;
+                        this.msg_latest_first = (s.Substring(0, 2)).Equals("CR");
                         KST_Process_new_message(Row);
                         break;
                     case "CK": // Link Check
                         this.tw.Send("\r\n"); // need to reply
-                        this.msg_latest_first = false;
                         break;
                     case "CE":
                         break;
