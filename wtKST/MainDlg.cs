@@ -796,12 +796,25 @@ namespace wtKST
                         {
                             MainDlg.Log.WriteMessage("Error reading user configuration: " + e.Message);
                         }
+                        // To set/reset/PRAU only propagation reception frames
+                        // SPR | value |
+
                         this.tw.Send("SPR|2|\r");
                         this.KSTState = MainDlg.KST_STATE.WaitSPR;
                     this.Say("LOGSTAT " + s);
                 }
                 break;
             case MainDlg.KST_STATE.WaitSPR:
+                    /* PRAU|time|Aurora level|
+                        Aurora level:
+                        2: High lat. AU warning
+                        3: High lat. AU alert
+                        5 :Mid lat. AU warning
+                        6:Mid lat. AU alert
+                        8:Low lat. AU warning
+                        9:Low lat. AU alert
+                        Other values: no alert
+                    */
                     if (s.IndexOf("PRAU") >= 0)
                     {
                         try
@@ -809,6 +822,9 @@ namespace wtKST
                             MainDlg.Log.WriteMessage("Login at " + s.Split('|')[2] + " - " + s);
                         }
                         catch { }
+                        // End of the settings frames (session only)
+                        // SDONE | chat id |
+
                         this.tw.Send("SDONE|" + Settings.Default.KST_Chat.Substring(0, 1) + "|\r");
                         this.KSTState = MainDlg.KST_STATE.Connected;
                         this.Say("Connected to KST chat.");
@@ -898,7 +914,11 @@ namespace wtKST
                 // CH|3|1480259640|F6APE|JEAN-NOEL|0|es tu tjrs present pr test 6/3cm b4 qsy garden il fait beau|F2CT|
                 switch (s.Substring(0, 2))
                 {
+                        // Chat message frame at login
+                        // CR | chat id | Unix time | callsign | firstname | destination | msg | highlight |
                     case "CR":
+                        // Chat message frame after login
+                        // CH | chat id | Unix time | callsign | firstname | destination | msg | highlight |
                     case "CH":
                         DataRow Row = this.MSG.NewRow();
                         DateTime dt = new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(long.Parse(msg[2]));
@@ -914,9 +934,15 @@ namespace wtKST
                         this.msg_latest_first = (s.Substring(0, 2)).Equals("CR");
                         KST_Process_new_message(Row);
                         break;
+
+                        // CK: link check
+                        // CK |
+
                     case "CK": // Link Check
                         this.tw.Send("\r\n"); // need to reply
                         break;
+
+                        // End of CR frames 
                     case "CE":
                         break;
                 }
@@ -1443,6 +1469,11 @@ namespace wtKST
                 //UE|3|7042| -> end of list/update
                 switch (s.Substring(0, 2))
                 {
+                    // User frame at login
+                    // UA0 | chat id | callsign | firstname | locator | state |
+                    // UA5 user connected (to add)
+                    // UA5 | chat id | callsign | firstname | locator | state |
+
                     case "UA":
                         {
                             DataRow row = this.CALL.NewRow();
@@ -1486,6 +1517,10 @@ namespace wtKST
                             }
                         }
                         break;
+
+                        //User already logged
+                        //UM3 | chat id | callsign | firstname | locator | state |
+
                     case "UM":
                         {
                             string call = usr[2].Trim();
@@ -1508,6 +1543,9 @@ namespace wtKST
                             }
                         }
                         break;
+
+                        // User state (here/not here/more than 5 min logged)
+                        // US4 | chat id | callsign | state |
                     case "US":
                         {
                             string call = usr[2].Trim();
@@ -1517,6 +1555,9 @@ namespace wtKST
                         }
                         break;
 
+                        // User disconnected (to remove)
+                        // UR6 | chat id | callsign |
+
                     case "UR":
                         {
                             string call = usr[2].Trim();
@@ -1525,6 +1566,8 @@ namespace wtKST
                         }
                         break;
 
+                        // Users statistics/end of users frames
+                        // UE | chat id | nb registered users|
                     case "UE":
                         KST_Process_MyCallAway();
                         KST_Update_USR_Window();
