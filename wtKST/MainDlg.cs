@@ -222,6 +222,7 @@ namespace wtKST
         private bool hide_worked = false;
         private bool KST_Use_New_Feed;
         private DateTime latestMessageTimestamp = DateTime.MinValue;
+        private bool latestMessageTimestampSet = false;
 
         public MainDlg()
         {
@@ -769,7 +770,7 @@ namespace wtKST
                         + Settings.Default.KST_Chat.Substring(0, 1) + "|wtKST " + typeof(MainDlg).Assembly.GetName().Version +
                         "|25|0|1|" + 
                         // we try to get the messages up to our latest one
-                        (latestMessageTimestamp.Equals(DateTime.MinValue) ? "0" :
+                        (!latestMessageTimestampSet ? "0" :
                         ((latestMessageTimestamp - new DateTime(1970, 1, 1)).TotalSeconds - 1).ToString() )
                         +  "|0|\r");
                     this.KSTState = MainDlg.KST_STATE.WaitLogstat;
@@ -954,6 +955,7 @@ namespace wtKST
 
                         // End of CR frames 
                     case "CE":
+                        this.latestMessageTimestampSet = true;
                         break;
                 }
             }
@@ -992,6 +994,7 @@ namespace wtKST
                 }
                 ListViewItem LV = new ListViewItem();
                 LV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
+                LV.Tag = dt; // store the timestamp in the tag field
                 LV.SubItems.Add(Row["CALL"].ToString());
                 LV.SubItems.Add(Row["NAME"].ToString());
                 LV.SubItems.Add(Row["MSG"].ToString());
@@ -999,16 +1002,20 @@ namespace wtKST
                 {
                     LV.SubItems[i].Name = this.lv_Msg.Columns[i].Text;
                 }
+                int current_index = 0;
                 if (this.lv_Msg.Items.Count == 0)
                 {
                     // first entry
                     this.lv_Msg.Items.Insert(0, LV);
                     this.lv_Msg.TopItem = this.lv_Msg.Items[0];
                 }
-                else if (this.lv_Msg.TopItem == this.lv_Msg.Items[0])
+                else
                 {
-                    // add at beginning of list (becomes new top item)
-                    DateTime dt_top = DateTime.Parse(this.lv_Msg.Items[0].Text.ToString());
+                    ListViewItem topitem = this.lv_Msg.TopItem;
+                    Boolean AtBeginningOfList = (this.lv_Msg.TopItem == this.lv_Msg.Items[0]);
+                        // display at beginning of list (so newest entry displayed)
+
+                    DateTime dt_top = (DateTime)this.lv_Msg.Items[0].Tag;
                     if (!this.KST_Use_New_Feed && this.msg_latest_first && dt_top < dt)
                     {
                         this.msg_latest_first = false;
@@ -1017,48 +1024,46 @@ namespace wtKST
 
                     if (this.msg_latest_first)
                     {
-                        // add at end of list
-                        this.lv_Msg.Items.Insert(this.lv_Msg.Items.Count, LV);
-                    }
-                    else
-                    {
-                        this.lv_Msg.Items.Insert(0, LV);
-                    }
-                    this.lv_Msg.TopItem = this.lv_Msg.Items[0];
-                }
-                else
-                {
-                    ListViewItem topitem = this.lv_Msg.TopItem;
-                    DateTime dt_top = DateTime.Parse(this.lv_Msg.Items[0].Text.ToString());
-                    if (!this.KST_Use_New_Feed && dt_top < dt)
-                    {
-                        if (this.msg_latest_first && dt_top < dt)
+                        if (this.KST_Use_New_Feed && this.latestMessageTimestampSet)
                         {
-                            this.msg_latest_first = false;
-                            MainDlg.Log.WriteMessage("2: msg_oldest_first = false " + dt_top.ToShortTimeString() + " dt " + dt.ToShortTimeString() + " 1 " + Row["CALL"].ToString());
+                            // reconnect, sort CR at begining
+                            // probably better to re-generate the whole list... alternate line highlighting will not work
+                            // not great, but ok for the time being...
+                            for (int i=0; i< this.lv_Msg.Items.Count; i++ )
+                            {
+                                if (dt > (DateTime)this.lv_Msg.Items[i].Tag)
+                                {
+                                    lv_Msg.Items.Insert(i, LV);
+                                    current_index = i;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // add at end of list
+                            this.lv_Msg.Items.Insert(this.lv_Msg.Items.Count, LV);
+                            current_index = this.lv_Msg.Items.Count - 1;
                         }
                     }
-                    if (this.msg_latest_first)
-                    {
-                        // add at end of list
-                        this.lv_Msg.Items.Insert(this.lv_Msg.Items.Count, LV);
-                    }
                     else
                     {
                         this.lv_Msg.Items.Insert(0, LV);
                     }
-                    if (topitem != null)
+                    if (AtBeginningOfList)
+                        this.lv_Msg.TopItem = this.lv_Msg.Items[0];
+                    else
                     {
-                        this.lv_Msg.TopItem = topitem;
-                    }
-                    if (!this.ti_Top.Enabled)
-                    {
-                        this.ti_Top.Start();
+                        if (topitem != null)
+                        {
+                            this.lv_Msg.TopItem = topitem;
+                        }
+                        if (!this.ti_Top.Enabled)
+                        {
+                            this.ti_Top.Start();
+                        }
                     }
                 }
-                int current_index = 0;
-                if (this.msg_latest_first)
-                    current_index = this.lv_Msg.Items.Count - 1;
 
                 if (this.lv_Msg.Items.Count % 2 == 0)
                     this.lv_Msg.Items[current_index].BackColor = Color.FromArgb(16777200);
