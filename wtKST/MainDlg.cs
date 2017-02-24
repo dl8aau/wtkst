@@ -221,6 +221,7 @@ namespace wtKST
         private bool ignore_inactive = false;
         private bool hide_worked = false;
         private bool KST_Use_New_Feed;
+        private DateTime latestMessageTimestamp = DateTime.MinValue;
 
         public MainDlg()
         {
@@ -761,8 +762,16 @@ namespace wtKST
             case MainDlg.KST_STATE.WaitLogin:
                 if (s.IndexOf("login") >= 0)
                 {
-                    this.tw.Send("LOGINC|" + Settings.Default.KST_UserName + "|" + Settings.Default.KST_Password +"|" 
-                        + Settings.Default.KST_Chat.Substring(0, 1) + "|wtKST |25|0|1|0|0|\r");
+                        // LOGINC|callsign|password|chat id|client software version|past messages number|past dx/map number|
+                        // users list/update flags|last Unix timestamp for messages|last Unix timestamp for dx/map|
+
+                        this.tw.Send("LOGINC|" + Settings.Default.KST_UserName + "|" + Settings.Default.KST_Password + "|"
+                        + Settings.Default.KST_Chat.Substring(0, 1) + "|wtKST " + typeof(MainDlg).Assembly.GetName().Version +
+                        "|25|0|1|" + 
+                        // we try to get the messages up to our latest one
+                        (latestMessageTimestamp.Equals(DateTime.MinValue) ? "0" :
+                        ((latestMessageTimestamp - new DateTime(1970, 1, 1)).TotalSeconds - 1).ToString() )
+                        +  "|0|\r");
                     this.KSTState = MainDlg.KST_STATE.WaitLogstat;
                     this.Say("Login " + Settings.Default.KST_UserName + " send.");
                 }
@@ -923,6 +932,7 @@ namespace wtKST
                         DataRow Row = this.MSG.NewRow();
                         DateTime dt = new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(long.Parse(msg[2]));
                         Row["TIME"] = dt;
+                        latestMessageTimestamp = dt;
                         Row["CALL"] = msg[3].Trim();
                         Row["NAME"] = msg[4].Trim();
                         var recipient = msg[7].Trim();
