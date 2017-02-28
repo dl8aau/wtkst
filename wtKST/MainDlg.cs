@@ -223,6 +223,7 @@ namespace wtKST
         private bool KST_Use_New_Feed;
         private DateTime latestMessageTimestamp = DateTime.MinValue;
         private bool latestMessageTimestampSet = false;
+        private bool CheckStartUpAway = true;
 
         public MainDlg()
         {
@@ -752,6 +753,7 @@ namespace wtKST
                     Thread.Sleep(100);
                     this.tw.Send("/sh msg 25\r");
                     this.msg_latest_first = true;
+                    this.CheckStartUpAway = true;
 
                     this.ti_Main.Interval = 5000;
                     if (!this.ti_Main.Enabled)
@@ -840,10 +842,7 @@ namespace wtKST
                         this.Say("Connected to KST chat.");
                         MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
                         this.msg_latest_first = true;
-                        if (Settings.Default.KST_StartAsHere)
-                            KST_Here();
-                        else
-                            KST_Away();
+                        this.CheckStartUpAway = true;
                     }
                     break;
             default:
@@ -1585,6 +1584,14 @@ namespace wtKST
                         // UE | chat id | nb registered users|
                     case "UE":
                         KST_Process_MyCallAway();
+                        if (this.CheckStartUpAway)
+                        {
+                            if (Settings.Default.KST_StartAsHere && (this.UserState != MainDlg.USER_STATE.Here))
+                                KST_Here();
+                            else if (!Settings.Default.KST_StartAsHere && (this.UserState == MainDlg.USER_STATE.Here))
+                                KST_Away();
+                            this.CheckStartUpAway = false;
+                        }
                         KST_Update_USR_Window();
                         // TODO wt?
                         break;
