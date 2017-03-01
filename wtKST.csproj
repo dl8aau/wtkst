@@ -38,10 +38,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
-    <Reference Include="WinTest, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>.\WinTest.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -97,7 +93,6 @@
     <Content Include="beacons.lst">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="WinTest.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -105,6 +100,10 @@
     <ProjectReference Include="Telnet\Telnet.csproj">
       <Project>{c0a19260-2ce0-4253-80cb-8579bcfdded3}</Project>
       <Name>Telnet</Name>
+    </ProjectReference>
+    <ProjectReference Include="WinTest\WinTest.csproj">
+      <Project>{7b815c51-6896-4989-bd1b-8d2d7a116aa3}</Project>
+      <Name>WinTest</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
