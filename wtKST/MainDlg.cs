@@ -206,6 +206,8 @@ namespace wtKST
 
         private System.Windows.Forms.Timer ti_Reconnect;
 
+        private System.Timers.Timer ti_Linkcheck;
+
         private ColumnHeader ch_AS;
 
         public ImageList il_Planes;
@@ -545,6 +547,11 @@ namespace wtKST
                         this.KSTBuffer = buffer[buffer.Length - 1]; // keep the tail
                 }
             }
+            if (this.KST_Use_New_Feed && this.KSTState >= MainDlg.KST_STATE.Connected)
+            {
+                this.ti_Linkcheck.Stop();   // restart the linkcheck timer
+                this.ti_Linkcheck.Start();
+            }
         }
 
         private void OnIdle(object sender, EventArgs args)
@@ -586,6 +593,9 @@ namespace wtKST
                 {
                     this.ti_Reconnect.Start();
                 }
+                if (this.KST_Use_New_Feed && this.ti_Linkcheck.Enabled)
+                    this.ti_Linkcheck.Stop();
+
                 this.KSTState = MainDlg.KST_STATE.Standby;
             }
             if (this.KSTState >= MainDlg.KST_STATE.Connected)
@@ -843,6 +853,9 @@ namespace wtKST
                         MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
                         this.msg_latest_first = true;
                         this.CheckStartUpAway = true;
+
+                        this.ti_Linkcheck.Stop();   // restart the linkcheck timer
+                        this.ti_Linkcheck.Start();
                     }
                     break;
             default:
@@ -2877,6 +2890,14 @@ namespace wtKST
             }
         }
 
+        private void ti_Linkcheck_Tick(Object source, System.Timers.ElapsedEventArgs e)
+        {
+            if (this.KSTState == MainDlg.KST_STATE.Connected)
+            {
+                tw.Send("\r\n"); // send to check if link is still up
+            }
+        }
+
         private string AS_qrg_from_settings()
         {
             string qrg = "1440000";
@@ -3242,6 +3263,7 @@ namespace wtKST
             this.ti_Error = new System.Windows.Forms.Timer(this.components);
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
+            this.ti_Linkcheck = new System.Timers.Timer();
             this.il_Planes = new System.Windows.Forms.ImageList(this.components);
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
@@ -3814,6 +3836,13 @@ namespace wtKST
             this.ti_Reconnect.Enabled = true;
             this.ti_Reconnect.Interval = 30000;
             this.ti_Reconnect.Tick += new System.EventHandler(this.ti_Reconnect_Tick);
+            // 
+            // ti_Linkcheck
+            // 
+            this.ti_Linkcheck.Enabled = false;
+            this.ti_Linkcheck.AutoReset = true;
+            this.ti_Linkcheck.Interval = 120000;
+            this.ti_Linkcheck.Elapsed += this.ti_Linkcheck_Tick;
             // 
             // il_Planes
             // 
