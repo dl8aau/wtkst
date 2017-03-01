@@ -60,7 +60,7 @@ namespace wtKST
 
         private Point OldMousePos = new Point(0, 0);
 
-        public static LogWriter Log = new LogWriter(Application.UserAppDataPath);
+        public static LogWriter Log = new LogWriter(Application.LocalUserAppDataPath);
 
         private TelnetWrapper tw;
 
@@ -322,7 +322,7 @@ namespace wtKST
             this.QRV.Clear();
             try
             {
-                string QRV_Table_Filename = Application.UserAppDataPath + "\\" + Settings.Default.WinTest_QRV_Table_FileName;
+                string QRV_Table_Filename = Application.LocalUserAppDataPath + "\\" + Settings.Default.WinTest_QRV_Table_FileName;
                 TimeSpan ts = DateTime.Now - File.GetLastWriteTime(QRV_Table_Filename);
                 if (!ForceReload && File.Exists(QRV_Table_Filename) && ts.Hours < 48)
                 {
@@ -2172,7 +2172,7 @@ namespace wtKST
             {
                 this.bw_GetPlanes.CancelAsync();
                 this.ni_Main.Visible = false; // hide NotificationIcon
-                string FileName = Application.UserAppDataPath + "\\" + Settings.Default.WinTest_QRV_Table_FileName;
+                string FileName = Application.LocalUserAppDataPath + "\\" + Settings.Default.WinTest_QRV_Table_FileName;
                 this.Say("Saving QRV-Database to " + FileName + "...");
                 this.QRV.WriteXml(FileName, XmlWriteMode.IgnoreSchema);
             }
