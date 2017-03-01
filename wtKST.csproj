@@ -37,13 +37,11 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="Telnet">
-      <HintPath>..\Telnet.dll</HintPath>
-    </Reference>
-    <Reference Include="WinTest">
-      <HintPath>..\WinTest.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="WinTest, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\WinTest.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -96,12 +94,18 @@
     <Content Include="qrv.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Telnet.dll">
+    <Content Include="beacons.lst">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="WinTest.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Telnet\Telnet.csproj">
+      <Project>{c0a19260-2ce0-4253-80cb-8579bcfdded3}</Project>
+      <Name>Telnet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
