@@ -1390,6 +1390,8 @@ namespace wtKST
                         }
                         KST_Process_MyCallAway();
                         KST_Update_USR_Window();
+                        if (Settings.Default.AS_Active)
+                            AS_send_ASWATCHLIST();
                         this.lv_Calls_Updating = false;
                         this.KSTState = MainDlg.KST_STATE.Connected;
                     }
@@ -1606,6 +1608,8 @@ namespace wtKST
                             this.CheckStartUpAway = false;
                         }
                         KST_Update_USR_Window();
+                        if (Settings.Default.AS_Active)
+                            AS_send_ASWATCHLIST();
                         // TODO wt?
                         break;
                 }
@@ -2130,6 +2134,8 @@ namespace wtKST
                     this.Get_QSOs();
                 }
                 KST_Update_USR_Window();
+                if (Settings.Default.AS_Active)
+                    AS_send_ASWATCHLIST();
             }
             else
             {
@@ -2895,6 +2901,40 @@ namespace wtKST
             if (this.KSTState == MainDlg.KST_STATE.Connected)
             {
                 tw.Send("\r\n"); // send to check if link is still up
+            }
+        }
+
+        /* send the current list of CALLS to AS server - allows AS to batch process 
+         * TODO: better to send only calls that are not away or still needed
+         */
+        private void AS_send_ASWATCHLIST()
+        {
+            string watchlist = "";
+            for (int i = 0; i < this.CALL.Rows.Count; i++)
+            {
+                string dxcall = WCCheck.WCCheck.Cut(this.CALL.Rows[i]["CALL"].ToString().TrimStart(
+                    new char[] { '(' }).TrimEnd(new char[] { ')' }));
+                string dxloc = this.CALL.Rows[i]["LOC"].ToString();
+                watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
+            }
+            string qrg = AS_qrg_from_settings();
+            wtMessage Msg = new wtMessage(WTMESSAGES.ASWATCHLIST, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, string.Concat(new string[]
+            {
+                qrg, ",", WCCheck.WCCheck.Cut(this.MyCall), ",", this.MyLoc, watchlist
+            }));
+            try
+            {
+                UdpClient client = new UdpClient();
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+                client.Client.ReceiveTimeout = 10000;
+                IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, Settings.Default.AS_Port);
+                client.Connect(groupEp);
+                byte[] b = Msg.ToBytes();
+                client.Send(b, b.Length);
+                client.Close();
+            }
+            catch
+            {
             }
         }
 
