@@ -93,6 +93,7 @@ namespace wtKST
         private void btn_Options_WinTest_QRV_Select_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Win-Test\\extras";
             ofd.CheckFileExists = true;
             ofd.Multiselect = false;
             ofd.Filter = "Win-Test Extradatenbanken | *.xdt";
@@ -107,6 +108,7 @@ namespace wtKST
         private void btn_Options_WinTest_INI_Select_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Win-Test\\cfg";
             ofd.CheckFileExists = true;
             ofd.Multiselect = false;
             ofd.Filter = "Win-Test Einstellung | *.ini";
