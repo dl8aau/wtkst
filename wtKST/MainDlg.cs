@@ -44,7 +44,6 @@ namespace wtKST
         public DataTable QRV = new DataTable("QRV");
 
         public DataTable CALL = new DataTable("CALL");
-        private DataTable oldCALL = new DataTable("CALL"); // used to hold copy of CALL
 
         public DataTable QSO = new DataTable("QSO");
 
