@@ -315,7 +315,7 @@ namespace wtKST
             QRV.Clear();
             try
             {
-                string QRV_Table_Filename = Application.LocalUserAppDataPath + "\\" + Settings.Default.WinTest_QRV_Table_FileName;
+                string QRV_Table_Filename = Path.Combine(Application.LocalUserAppDataPath, Settings.Default.WinTest_QRV_Table_FileName);
                 TimeSpan ts = DateTime.Now - File.GetLastWriteTime(QRV_Table_Filename);
                 if (!ForceReload && File.Exists(QRV_Table_Filename) && ts.Hours < 48)
                 {
@@ -1883,7 +1883,7 @@ namespace wtKST
             {
                 bw_GetPlanes.CancelAsync();
                 ni_Main.Visible = false; // hide NotificationIcon
-                string FileName = Application.LocalUserAppDataPath + "\\" + Settings.Default.WinTest_QRV_Table_FileName;
+                string FileName = Path.Combine(Application.LocalUserAppDataPath, Settings.Default.WinTest_QRV_Table_FileName);
                 Say("Saving QRV-Database to " + FileName + "...");
                 QRV.WriteXml(FileName, XmlWriteMode.IgnoreSchema);
             }
