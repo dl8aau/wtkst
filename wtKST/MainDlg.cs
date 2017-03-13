@@ -25,16 +25,10 @@ namespace wtKST
             Disconnected,
             Disconnecting,
             Standby,
-            WaitUserName,
-            WaitPassword,
-            WaitChat,
-            WaitAway,
-            WaitConfig,
             WaitLogin,
             WaitLogstat,
             WaitSPR,
             Connected = 128,
-            WaitUser
         }
 
         public enum USER_STATE
@@ -53,8 +47,6 @@ namespace wtKST
         private DataTable oldCALL = new DataTable("CALL"); // used to hold copy of CALL
 
         public DataTable QSO = new DataTable("QSO");
-
-        private bool lv_Calls_Updating = false;
 
         private bool DLLNotLoaded = false;
 
@@ -222,7 +214,6 @@ namespace wtKST
         private bool sort_by_dir = false;
         private bool ignore_inactive = false;
         private bool hide_worked = false;
-        private bool KST_Use_New_Feed;
         private DateTime latestMessageTimestamp = DateTime.MinValue;
         private bool latestMessageTimestampSet = false;
         private bool CheckStartUpAway = true;
@@ -547,7 +538,7 @@ namespace wtKST
                         this.KSTBuffer = buffer[buffer.Length - 1]; // keep the tail
                 }
             }
-            if (this.KST_Use_New_Feed && this.KSTState >= MainDlg.KST_STATE.Connected)
+            if (this.KSTState >= MainDlg.KST_STATE.Connected)
             {
                 this.ti_Linkcheck.Stop();   // restart the linkcheck timer
                 this.ti_Linkcheck.Start();
@@ -593,7 +584,7 @@ namespace wtKST
                 {
                     this.ti_Reconnect.Start();
                 }
-                if (this.KST_Use_New_Feed && this.ti_Linkcheck.Enabled)
+                if (this.ti_Linkcheck.Enabled)
                     this.ti_Linkcheck.Stop();
 
                 this.KSTState = MainDlg.KST_STATE.Standby;
@@ -667,111 +658,6 @@ namespace wtKST
             MainDlg.KST_STATE kSTState = this.KSTState;
             switch (kSTState)
             {
-            case MainDlg.KST_STATE.WaitUserName:
-                if (s.IndexOf("Login:") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.tw.Send(Settings.Default.KST_UserName + "\r");
-                    this.KSTState = MainDlg.KST_STATE.WaitPassword;
-                    this.Say("Login " + Settings.Default.KST_UserName + " send.");
-                }
-                break;
-            case MainDlg.KST_STATE.WaitPassword:
-                if (s.IndexOf("Password:") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.tw.Send(Settings.Default.KST_Password + "\r");
-                    this.KSTState = MainDlg.KST_STATE.WaitChat;
-                    this.Say("Password send.");
-                }
-                break;
-            case MainDlg.KST_STATE.WaitChat:
-                if (s.IndexOf("Wrong password!") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.Say("Password wrong.");
-                    this.tw.Close();
-                    MainDlg.Log.WriteMessage("Password wrong ");
-                    break;
-                }
-                if (s.IndexOf("Your choice           :") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.tw.Send(Settings.Default.KST_Chat.Substring(0, 1) + "\r");
-                }
-                if (s.IndexOf(">") > 0)
-                {
-                    if (Settings.Default.KST_StartAsHere)
-                    {
-                        this.tw.Send("/set here\r");
-                    }
-                    else
-                    {
-                        this.tw.Send("/unset here\r");
-                    }
-                    this.KSTState = MainDlg.KST_STATE.WaitAway;
-                }
-                break;
-            case MainDlg.KST_STATE.WaitAway:
-                if (s.IndexOf('>') <= 0)
-                {
-                    if (s.ToUpper().IndexOf("HERE SET") >= 0)
-                    {
-                        this.UserState = MainDlg.USER_STATE.Here;
-                    }
-                    else
-                    {
-                        this.UserState = MainDlg.USER_STATE.Away;
-                    }
-                }
-                else
-                {
-                    this.KSTState = MainDlg.KST_STATE.WaitConfig;
-                    Thread.Sleep(100);
-                    this.tw.Send("/show config\r");
-                }
-                break;
-            case MainDlg.KST_STATE.WaitConfig:
-                if (s.IndexOf('>') <= 0)
-                {
-                    try
-                    {
-                        string call = s.Substring(0, s.IndexOf(" ")).ToUpper();
-                        if (WCCheck.WCCheck.IsCall(call) >= 0)
-                        {
-                            string conf = s.Remove(0, s.IndexOf(" ") + 1);
-                            Settings.Default.KST_Name = conf.Substring(0, conf.LastIndexOf(" "));
-                            conf = conf.Remove(0, conf.LastIndexOf(" ") + 1);
-                            Settings.Default.KST_Loc = conf;
-                            if (WCCheck.WCCheck.IsLoc(Settings.Default.KST_Loc) > 0)
-                            {
-                                this.MyLoc = Settings.Default.KST_Loc;
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        MainDlg.Log.WriteMessage("Error reading user configuration: " + e.Message);
-                    }
-                }
-                else
-                {
-                    this.KSTState = MainDlg.KST_STATE.Connected;
-                    this.Say("Connected to KST chat.");
-                    MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
-                    // get some historic messages
-                    Thread.Sleep(100);
-                    this.tw.Send("/sh msg 25\r");
-                    this.msg_latest_first = true;
-                    this.CheckStartUpAway = true;
-
-                    this.ti_Main.Interval = 5000;
-                    if (!this.ti_Main.Enabled)
-                    {
-                        this.ti_Main.Start();
-                    }
-                }
-                break;
             case MainDlg.KST_STATE.WaitLogin:
                 if (s.IndexOf("login") >= 0)
                 {
@@ -862,68 +748,22 @@ namespace wtKST
                 switch (kSTState)
                 {
                 case MainDlg.KST_STATE.Connected:
-                    if (this.KST_Use_New_Feed)
+                    if(s.Substring(0,1).Equals("C"))
                     {
-                        if(s.Substring(0,1).Equals("C"))
-                        {
-                            KST_Receive_MSG2(s);
-                        }
-                        else if (s.Substring(0, 1).Equals("U"))
-                        {
-                            KST_Receive_USR2(s);
-                        }
+                        KST_Receive_MSG(s);
                     }
-                    else
-                        this.KST_Receive_MSG(s);
-                    break;
-                case MainDlg.KST_STATE.WaitUser:
-                    this.KST_Receive_USR(s);
+                    else if (s.Substring(0, 1).Equals("U"))
+                    {
+                        KST_Receive_USR(s);
+                    }
                     break;
                 }
                 break;
             }
         }
 
-        private void KST_Receive_MSG(string s)
-        {
-            string msg = s;
-            s = s.Replace("(0)", "");
-            this.MyCall = Settings.Default.KST_UserName.ToUpper();
-            if (s.IndexOf("> ") > 0)
-            {
-                try
-                {
-                    if (s.EndsWith("\r\n"))
-                    {
-                        s = s.Substring(0, s.Length - 2);
-                    }
-                    if (!s.EndsWith(">"))
-                    {
-                        MainDlg.Log.WriteMessage("KST message: " + msg);
-                        string[] header = s.Substring(0, s.IndexOf("> ")).Split(new char[] { ' ' });
-                        DataRow Row = this.MSG.NewRow();
-                        string time = header[0].Trim();
-                        time = time.Substring(0, 2) + ":" + time.Substring(2, 2);
-                        DateTime dt = DateTime.Parse(time);
-                        Row["TIME"] = dt;
-                        Row["CALL"] = header[1].Trim();
-                        Row["NAME"] = header[2].Trim();
-                        Row["MSG"] = s.Remove(0, s.IndexOf("> ") + 2).Trim();
-                        var msg_upper = Row["MSG"].ToString().ToUpper();
-                        if (msg_upper.IndexOf(' ') > 0)
-                            msg_upper = msg_upper.Remove(msg_upper.IndexOf(' '));
-                        Row["RECIPIENT"] = msg_upper.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
-                        KST_Process_new_message(Row);
-                    }
-                }
-                catch (Exception e)
-                {
-                    this.Error(MethodBase.GetCurrentMethod().Name, "(" + msg + "): " + e.Message);
-                }
-            }
-        }
 
-        private void KST_Receive_MSG2(string s)
+        private void KST_Receive_MSG(string s)
         {
             string[] msg = s.Split('|'); ;
             this.MyCall = Settings.Default.KST_UserName.ToUpper();
@@ -1028,15 +868,10 @@ namespace wtKST
                         // display at beginning of list (so newest entry displayed)
 
                     DateTime dt_top = (DateTime)this.lv_Msg.Items[0].Tag;
-                    if (!this.KST_Use_New_Feed && this.msg_latest_first && dt_top < dt)
-                    {
-                        this.msg_latest_first = false;
-                        MainDlg.Log.WriteMessage("msg_oldest_first = false " + dt_top.ToShortTimeString() + " dt " + dt.ToShortTimeString() + " 1 " + Row["CALL"].ToString());
-                    }
 
                     if (this.msg_latest_first)
                     {
-                        if (this.KST_Use_New_Feed && this.latestMessageTimestampSet)
+                        if (this.latestMessageTimestampSet)
                         {
                             // reconnect, sort CR at begining
                             // probably better to re-generate the whole list... alternate line highlighting will not work
@@ -1132,12 +967,13 @@ namespace wtKST
             catch (Exception e)
             {
                 this.Error(MethodBase.GetCurrentMethod().Name, e.Message);
+                MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + Row.ToString() + e.Message + "\n" + e.StackTrace);
             }
         }
 
         private void KST_Update_USR_Window()
         {
-            if (this.KSTState <= KST_STATE.WaitConfig)
+            if (this.KSTState <= KST_STATE.WaitLogin) //FIXME needed still?
                 return;
             try
             {
@@ -1370,119 +1206,8 @@ namespace wtKST
             }
         }
 
+
         private void KST_Receive_USR(string s)
-        {
-            if (char.IsDigit(s, 0) && char.IsDigit(s, 1) && char.IsDigit(s, 2) && char.IsDigit(s, 3) && s[4] == 'Z' && s.IndexOf(Settings.Default.KST_UserName.ToUpper()) != 6)
-            {
-                this.KST_Receive_MSG(s);
-            }
-            else
-            {
-                string msg = s;
-                this.Say("Getting KST-Users...");
-                try
-                {
-                    if (s.EndsWith("chat>"))
-                    {
-                        if (Settings.Default.WinTest_Activate)
-                        {
-                            this.Get_QSOs();
-                        }
-                        KST_Process_MyCallAway();
-                        KST_Update_USR_Window();
-                        if (Settings.Default.AS_Active)
-                            AS_send_ASWATCHLIST();
-                        this.lv_Calls_Updating = false;
-                        this.KSTState = MainDlg.KST_STATE.Connected;
-                    }
-                    else
-                    {
-                        if (!this.lv_Calls_Updating)
-                        {
-                            this.oldCALL = this.CALL.Copy(); // keep old CALL
-                            this.CALL.Clear();
-                            if (Settings.Default.ShowBeacons)
-                                KST_Add_Beacons_USR();
-                        }
-                        this.lv_Calls_Updating = true;
-                        s = s.Replace("\r\n", "");
-                        string call = s.Substring(0, s.IndexOf(' '));
-                        s = s.Remove(0, call.Length);
-                        s = s.Trim();
-                        string loc = s.Substring(0, s.IndexOf(' '));
-                        s = s.Remove(0, loc.Length);
-                        s = s.Trim();
-                        string name = s;
-                        try
-                        {
-                            DataRow row = this.CALL.NewRow();
-                            row["CALL"] = call;
-                            row["NAME"] = name;
-                            row["LOC"] = loc;
-                            if (WCCheck.WCCheck.IsLoc(loc) >= 0)
-                            {
-                                int qrb = WCCheck.WCCheck.QRB(this.MyLoc, loc);
-                                int qtf = (int)WCCheck.WCCheck.QTF(this.MyLoc, loc);
-                                row["QRB"] = qrb;
-                                row["DIR"] = qtf;
-                            }
-                            string qrvcall = call.TrimStart(new char[]{ '(' }).TrimEnd(new char[]{ ')' });
-                            if (qrvcall.Equals(call))
-                                row["AWAY"] = false;
-                            else
-                            {
-                                row["AWAY"] = true;
-                                call = qrvcall;
-                                row["CALL"] = qrvcall;
-                            }
-                            if (qrvcall.IndexOf("-") > 0)
-                            {
-                                qrvcall = qrvcall.Remove(qrvcall.IndexOf("-"));
-                            }
-                            bool call_new_in_userlist = false;
-                            DataRow oldcallrow = this.oldCALL.Rows.Find(call);
-                            if (oldcallrow == null)
-                            {
-                                if (this.oldCALL.Rows.Count > 0)
-                                {
-                                    call_new_in_userlist = true;
-                                    row["LOGINTIME"] = DateTime.UtcNow; // remember time of login
-                                }
-                                else
-                                {
-                                    row["LOGINTIME"] = DateTime.MinValue;
-                                }
-                                row["CONTACTED"] = 0;
-                            }
-                            else
-                            {
-                                row["LOGINTIME"] = oldcallrow["LOGINTIME"];
-                                row["CONTACTED"] = oldcallrow["CONTACTED"];
-                            }
-
-                            KST_Process_QRV(row, qrvcall, call_new_in_userlist);
-
-                            if (WCCheck.WCCheck.IsCall(WCCheck.WCCheck.Cut(call)) >= 0 && WCCheck.WCCheck.IsLoc(loc) >= 0)
-                            {
-                                this.CALL.Rows.Add(row);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            this.Error(MethodBase.GetCurrentMethod().Name, "(" + msg + "): " + e.Message);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    this.Error(MethodBase.GetCurrentMethod().Name, "(" + msg + "): " + e.Message);
-                    this.KSTState = MainDlg.KST_STATE.Connected;
-                    this.lv_Calls_Updating = false;
-                }
-            }
-        }
-
-        private void KST_Receive_USR2(string s)
         {
             string[] usr = s.Split('|'); ;
             try
@@ -1633,23 +1358,14 @@ namespace wtKST
                 {
                     this.tw.Connect(Settings.Default.KST_ServerName, Convert.ToInt32(Settings.Default.KST_ServerPort));
                     this.tw.Receive();
-                    if (Settings.Default.KST_ServerPort.Equals("23001"))
+                    this.KSTState = MainDlg.KST_STATE.WaitLogin;
+                    this.CALL.Clear();
+                    if (Settings.Default.ShowBeacons)
+                        KST_Add_Beacons_USR();
+                    this.ti_Main.Interval = 5000;
+                    if (!this.ti_Main.Enabled)
                     {
-                        this.KSTState = MainDlg.KST_STATE.WaitLogin;
-                        this.KST_Use_New_Feed = true;
-                        this.CALL.Clear();
-                        if (Settings.Default.ShowBeacons)
-                            KST_Add_Beacons_USR();
-                        this.ti_Main.Interval = 5000;
-                        if (!this.ti_Main.Enabled)
-                        {
-                            this.ti_Main.Start();
-                        }
-                    }
-                    else
-                    {
-                        this.KSTState = MainDlg.KST_STATE.WaitUserName;
-                        this.KST_Use_New_Feed = false;
+                        this.ti_Main.Start();
                     }
                     this.Say("Connecting to KST chat..." + Settings.Default.KST_ServerName + " Port "+ Settings.Default.KST_ServerPort);
                 }
@@ -1674,10 +1390,7 @@ namespace wtKST
         {
             if (this.KSTState >= MainDlg.KST_STATE.Connected)
             {
-                if (this.KST_Use_New_Feed)
-                    this.tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/BACK|0|\r");
-                else
-                    this.tw.Send("/set here\r");
+                this.tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/BACK|0|\r");
                 this.UserState = MainDlg.USER_STATE.Here;
             }
         }
@@ -1686,10 +1399,7 @@ namespace wtKST
         {
             if (this.KSTState >= MainDlg.KST_STATE.Connected)
             {
-                if (this.KST_Use_New_Feed)
-                    this.tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1)+"|0|/AWAY|0|\r");
-                else
-                    this.tw.Send("/unset here\r");
+                this.tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1)+"|0|/AWAY|0|\r");
                 this.UserState = MainDlg.USER_STATE.Away;
             }
         }
@@ -1709,10 +1419,7 @@ namespace wtKST
                         t = t.Replace("ß", "ss");
                         System.Text.Encoding iso_8859_1 = System.Text.Encoding.GetEncoding("iso-8859-1");
                         String to_sent = iso_8859_1.GetString(iso_8859_1.GetBytes(t));
-                        if (this.KST_Use_New_Feed)
-                            to_sent = "MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|" + to_sent + "|0|\r";
-                        else
-                            to_sent = to_sent + "\r";
+                        to_sent = "MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|" + to_sent + "|0|\r";
                         tw.Send(to_sent);
                         MainDlg.Log.WriteMessage("KST message send: " + this.cb_Command.Text);
                         if (this.cb_Command.FindStringExact(this.cb_Command.Text) != 0)
@@ -1730,15 +1437,6 @@ namespace wtKST
                     MessageBox.Show("Sending commands except /cq is not allowed!", "KST SendCommand");
                 }
                 this.cb_Command.ResetText();
-            }
-        }
-
-        private void KST_GetUsers()
-        {
-            if (this.KSTState == MainDlg.KST_STATE.Connected)
-            {
-                this.tw.Send("/sh user\r");
-                this.KSTState = MainDlg.KST_STATE.WaitUser;
             }
         }
 
@@ -1832,7 +1530,6 @@ namespace wtKST
             {
                 Dlg.tb_KST_Password.Enabled = false;
                 Dlg.tb_KST_ServerName.Enabled = false;
-                Dlg.tb_KST_ServerPort.Enabled = false;
                 Dlg.tb_KST_UserName.Enabled = false;
                 Dlg.cbb_KST_Chat.Enabled = false;
             }
@@ -2127,7 +1824,7 @@ namespace wtKST
         private void ti_Main_Tick(object sender, EventArgs e)
         {
             this.ti_Main.Stop();
-            if (this.KST_Use_New_Feed && this.KSTState == MainDlg.KST_STATE.Connected)
+            if (this.KSTState == MainDlg.KST_STATE.Connected)
             {
                 if (Settings.Default.WinTest_Activate)
                 {
@@ -2136,11 +1833,6 @@ namespace wtKST
                 KST_Update_USR_Window();
                 if (Settings.Default.AS_Active)
                     AS_send_ASWATCHLIST();
-            }
-            else
-            {
-                MainDlg.Log.WriteMessage("KST GetUsers start.");
-                this.KST_GetUsers();
             }
             int interval = Convert.ToInt32(Settings.Default.UpdateInterval) * 1000;
             if (interval > 10000)

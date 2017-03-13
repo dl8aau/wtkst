@@ -39,8 +39,6 @@ namespace wtKST
         public CheckBox cb_ShowBeacons;
         private Label label1;
         public TextBox tb_KST_ServerName;
-        private Label label2;
-        public TextBox tb_KST_ServerPort;
         private Label label3;
         public TextBox tb_KST_UserName;
         private Label label4;
@@ -147,20 +145,20 @@ namespace wtKST
             this.btn_Options_WinTest_QRV_Select = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tb_KST_MaxDist = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
             this.cb_ShowBeacons = new System.Windows.Forms.CheckBox();
             this.tb_Options_UpdateInterval = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cb_KST_ShowBalloon = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.rb_KST_StartAsAway = new System.Windows.Forms.RadioButton();
-            this.tb_KST_ServerPort = new System.Windows.Forms.TextBox();
             this.rb_KST_StartAsHere = new System.Windows.Forms.RadioButton();
             this.cb_KST_AutoConnect = new System.Windows.Forms.CheckBox();
             this.tb_KST_ServerName = new System.Windows.Forms.TextBox();
@@ -199,8 +197,6 @@ namespace wtKST
             this.tb_Options_AS_Server_Name = new System.Windows.Forms.TextBox();
             this.tb_AS_MaxDist = new System.Windows.Forms.TextBox();
             this.tb_AS_Timeout = new System.Windows.Forms.TextBox();
-            this.tb_KST_MaxDist = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -288,6 +284,26 @@ namespace wtKST
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Calls";
             // 
+            // tb_KST_MaxDist
+            // 
+            this.tb_KST_MaxDist.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_MaxDist", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_KST_MaxDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_KST_MaxDist.Location = new System.Drawing.Point(384, 29);
+            this.tb_KST_MaxDist.Name = "tb_KST_MaxDist";
+            this.tb_KST_MaxDist.Size = new System.Drawing.Size(45, 20);
+            this.tb_KST_MaxDist.TabIndex = 15;
+            this.tb_KST_MaxDist.Text = global::wtKST.Properties.Settings.Default.KST_MaxDist;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(279, 32);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(101, 13);
+            this.label17.TabIndex = 14;
+            this.label17.Text = "Max. Distance [km]:";
+            // 
             // cb_ShowBeacons
             // 
             this.cb_ShowBeacons.AutoSize = true;
@@ -357,16 +373,6 @@ namespace wtKST
             this.label1.TabIndex = 0;
             this.label1.Text = "Server :";
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(15, 44);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(32, 13);
-            this.label2.TabIndex = 2;
-            this.label2.Text = "Port :";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -412,13 +418,11 @@ namespace wtKST
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.rb_KST_StartAsAway);
-            this.tabPage1.Controls.Add(this.tb_KST_ServerPort);
             this.tabPage1.Controls.Add(this.rb_KST_StartAsHere);
             this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.cb_KST_AutoConnect);
             this.tabPage1.Controls.Add(this.tb_KST_ServerName);
             this.tabPage1.Controls.Add(this.label5);
-            this.tabPage1.Controls.Add(this.label2);
             this.tabPage1.Controls.Add(this.cbb_KST_Chat);
             this.tabPage1.Controls.Add(this.label3);
             this.tabPage1.Controls.Add(this.tb_KST_Password);
@@ -445,16 +449,6 @@ namespace wtKST
             this.rb_KST_StartAsAway.Text = "Start as AWAY";
             this.rb_KST_StartAsAway.UseVisualStyleBackColor = true;
             this.rb_KST_StartAsAway.Click += new System.EventHandler(this.rb_KST_StartAsAwayHere_Click);
-            // 
-            // tb_KST_ServerPort
-            // 
-            this.tb_KST_ServerPort.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_ServerPort", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.tb_KST_ServerPort.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_KST_ServerPort.Location = new System.Drawing.Point(120, 44);
-            this.tb_KST_ServerPort.Name = "tb_KST_ServerPort";
-            this.tb_KST_ServerPort.Size = new System.Drawing.Size(56, 20);
-            this.tb_KST_ServerPort.TabIndex = 3;
-            this.tb_KST_ServerPort.Text = global::wtKST.Properties.Settings.Default.KST_ServerPort;
             // 
             // rb_KST_StartAsHere
             // 
@@ -948,26 +942,6 @@ namespace wtKST
             this.tb_AS_Timeout.Size = new System.Drawing.Size(33, 20);
             this.tb_AS_Timeout.TabIndex = 18;
             this.tb_AS_Timeout.Text = global::wtKST.Properties.Settings.Default.AS_Timeout;
-            // 
-            // tb_KST_MaxDist
-            // 
-            this.tb_KST_MaxDist.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_MaxDist", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.tb_KST_MaxDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_KST_MaxDist.Location = new System.Drawing.Point(384, 29);
-            this.tb_KST_MaxDist.Name = "tb_KST_MaxDist";
-            this.tb_KST_MaxDist.Size = new System.Drawing.Size(45, 20);
-            this.tb_KST_MaxDist.TabIndex = 15;
-            this.tb_KST_MaxDist.Text = global::wtKST.Properties.Settings.Default.KST_MaxDist;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(279, 32);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(101, 13);
-            this.label17.TabIndex = 14;
-            this.label17.Text = "Max. Distance [km]:";
             // 
             // OptionsDlg
             // 
