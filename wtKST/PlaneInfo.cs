@@ -16,11 +16,11 @@ namespace wtKST
 
 		public PlaneInfo(string call, string category, int intqrb, int potential, int mins)
 		{
-			this.Call = call;
-			this.IntQRB = intqrb;
-			this.Mins = mins;
-			this.Potential = potential;
-			this.Category = category;
+            Call = call;
+            IntQRB = intqrb;
+            Mins = mins;
+            Potential = potential;
+            Category = category;
 		}
 	}
 }

@@ -19,7 +19,7 @@ namespace WCCheck
 			{
 				get
 				{
-					return this.Prefix;
+					return Prefix;
 				}
 			}
 
@@ -27,7 +27,7 @@ namespace WCCheck
 			{
 				get
 				{
-					return this.Stop;
+					return Stop;
 				}
 			}
 
@@ -35,16 +35,16 @@ namespace WCCheck
 			{
 				get
 				{
-					return this.Start;
+					return Start;
 				}
 			}
 
 			public PrefixEntry(string APrefix, string AName, string AStart, string AStop)
 			{
-				this.Prefix = APrefix;
-				this.Name = AName;
-				this.Start = AStart;
-				this.Stop = AStop;
+                Prefix = APrefix;
+                Name = AName;
+                Start = AStart;
+                Stop = AStop;
 			}
 		}
 
@@ -73,89 +73,89 @@ namespace WCCheck
 
 			public PrefixList()
 			{
-				this.Add(new WCCheck.PrefixEntry("C3", "Andorra", "C3", "C3"));
-				this.Add(new WCCheck.PrefixEntry("OE", "Austria", "OE", "OE"));
-				this.Add(new WCCheck.PrefixEntry("ON", "Belgium", "ON", "OT"));
-				this.Add(new WCCheck.PrefixEntry("LZ", "Bulgaria", "LZ", "LZ"));
-				this.Add(new WCCheck.PrefixEntry("EA8", "Canary Islands", "EA8", "EA8"));
-				this.Add(new WCCheck.PrefixEntry("EA8", "Canary Islands", "EH8", "EH8"));
-				this.Add(new WCCheck.PrefixEntry("SV9", "Crete", "SV9", "SV9"));
-				this.Add(new WCCheck.PrefixEntry("5B", "Cyprus", "5B", "5B"));
-				this.Add(new WCCheck.PrefixEntry("5B", "Cyprus", "C4", "C4"));
-				this.Add(new WCCheck.PrefixEntry("5B", "Cyprus", "H2", "H2"));
-				this.Add(new WCCheck.PrefixEntry("5B", "Cyprus", "P3", "P4"));
-				this.Add(new WCCheck.PrefixEntry("OK", "Czechia", "OK", "OL"));
-				this.Add(new WCCheck.PrefixEntry("OM", "Slovakia", "OM", "OM"));
-				this.Add(new WCCheck.PrefixEntry("OZ", "Denmark", "OU", "OZ"));
-				this.Add(new WCCheck.PrefixEntry("EA", "Spain", "AM", "AO"));
-				this.Add(new WCCheck.PrefixEntry("EA", "Spain", "EA", "EH"));
-				this.Add(new WCCheck.PrefixEntry("DL", "Germany", "DA", "DR"));
-				this.Add(new WCCheck.PrefixEntry("EI", "Ireland", "EI", "EJ"));
-				this.Add(new WCCheck.PrefixEntry("F", "France", "F", "F"));
-				this.Add(new WCCheck.PrefixEntry("F", "France", "TP", "TP"));
-				this.Add(new WCCheck.PrefixEntry("F", "France", "TM", "TM"));
-				this.Add(new WCCheck.PrefixEntry("G", "England", "G", "G"));
-				this.Add(new WCCheck.PrefixEntry("G", "England", "M", "M"));
-				this.Add(new WCCheck.PrefixEntry("G", "England", "2E", "2E"));
-				this.Add(new WCCheck.PrefixEntry("HA", "Hungaria", "HA", "HA"));
-				this.Add(new WCCheck.PrefixEntry("HA", "Hungaria", "HG", "HG"));
-				this.Add(new WCCheck.PrefixEntry("HB9", "Switzerland", "HB1", "HB9"));
-				this.Add(new WCCheck.PrefixEntry("HB9", "Switzerland", "HE", "HE"));
-				this.Add(new WCCheck.PrefixEntry("HB0", "Liechtenstein", "HB0", "HB0"));
-				this.Add(new WCCheck.PrefixEntry("SP", "Poland", "HF", "HF"));
-				this.Add(new WCCheck.PrefixEntry("SP", "Poland", "SP", "SP"));
-				this.Add(new WCCheck.PrefixEntry("SP", "Poland", "SO", "SO"));
-				this.Add(new WCCheck.PrefixEntry("SP", "Poland", "SQ", "SQ"));
-				this.Add(new WCCheck.PrefixEntry("SP", "Poland", "SN", "SN"));
-				this.Add(new WCCheck.PrefixEntry("SV", "Greece", "J4", "J4"));
-				this.Add(new WCCheck.PrefixEntry("SV", "Greece", "SV", "SV"));
-				this.Add(new WCCheck.PrefixEntry("LA", "Norway", "LA", "LN"));
-				this.Add(new WCCheck.PrefixEntry("LX", "Luxembuorg", "LX", "LX"));
-				this.Add(new WCCheck.PrefixEntry("PA", "Netherlands", "PA", "PI"));
-				this.Add(new WCCheck.PrefixEntry("I", "Italy", "I0", "I9"));
-				this.Add(new WCCheck.PrefixEntry("I", "Italy", "IA", "IZ"));
-				this.Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "YU1", "YU1"));
-				this.Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "YU6", "YU9"));
-				this.Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "YT", "YT"));
-				this.Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "YZ", "YZ"));
-				this.Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "4N", "4N"));
-				this.Add(new WCCheck.PrefixEntry("9A", "Croatia", "9A", "9A"));
-				this.Add(new WCCheck.PrefixEntry("9A", "Croatia", "YU2", "YU2"));
-				this.Add(new WCCheck.PrefixEntry("S5", "Slovenia", "S5", "S5"));
-				this.Add(new WCCheck.PrefixEntry("S5", "Slovenia", "YU3", "YU3"));
-				this.Add(new WCCheck.PrefixEntry("T9", "Bosnia-Herzegovina", "T9", "T9"));
-				this.Add(new WCCheck.PrefixEntry("T9", "Bosnia-Herzegovina", "YU4", "YU4"));
-				this.Add(new WCCheck.PrefixEntry("Z3", "Mazedonia", "Z3", "Z3"));
-				this.Add(new WCCheck.PrefixEntry("Z3", "Mazedonia", "YU5", "YU5"));
-				this.Add(new WCCheck.PrefixEntry("SM", "Sweden", "SA", "SM"));
-				this.Add(new WCCheck.PrefixEntry("HV", "Vatikan", "HV", "HV"));
-				this.Add(new WCCheck.PrefixEntry("EA6", "Balearic Islands", "EA6", "EA6"));
-				this.Add(new WCCheck.PrefixEntry("EA6", "Balearic Islands", "EH6", "EH6"));
-				this.Add(new WCCheck.PrefixEntry("GD", "Isle Of Man", "GD", "GD"));
-				this.Add(new WCCheck.PrefixEntry("GI", "Northern Ireland", "GI", "GI"));
-				this.Add(new WCCheck.PrefixEntry("GJ", "Jersey", "GJ", "GJ"));
-				this.Add(new WCCheck.PrefixEntry("GM", "Scotland", "GM", "GM"));
-				this.Add(new WCCheck.PrefixEntry("GW", "Wales", "GW", "GW"));
-				this.Add(new WCCheck.PrefixEntry("IS", "Sardinia", "IS", "IS"));
-				this.Add(new WCCheck.PrefixEntry("TK", "Corsica", "TK", "TK"));
-				this.Add(new WCCheck.PrefixEntry("LY", "Lithuania", "LY", "LY"));
-				this.Add(new WCCheck.PrefixEntry("ER", "Moldavia", "ER", "ER"));
-				this.Add(new WCCheck.PrefixEntry("ES", "Estonia", "ES", "ES"));
-				this.Add(new WCCheck.PrefixEntry("EV", "Byelorussia", "EV", "EV"));
-				this.Add(new WCCheck.PrefixEntry("EV", "Byelorussia", "EW", "EW"));
-				this.Add(new WCCheck.PrefixEntry("UA", "European Russia", "UA", "UA"));
-				this.Add(new WCCheck.PrefixEntry("UA", "European Russia", "UA", "RA"));
-				this.Add(new WCCheck.PrefixEntry("UA2", "Kaliningrad", "UA2", "UA2"));
-				this.Add(new WCCheck.PrefixEntry("UA2", "Kaliningrad", "RA2", "RA2"));
-				this.Add(new WCCheck.PrefixEntry("UA2", "Kaliningrad", "RN2", "RN2"));
-				this.Add(new WCCheck.PrefixEntry("UA2", "Kaliningrad", "RK2", "RK2"));
-				this.Add(new WCCheck.PrefixEntry("YO", "Romania", "YO", "YR"));
-				this.Add(new WCCheck.PrefixEntry("ZA", "Albania", "ZA", "ZA"));
-				this.Add(new WCCheck.PrefixEntry("ZB4", "Gibraltar", "ZB4", "ZB4"));
-				this.Add(new WCCheck.PrefixEntry("9H", "Malta", "9H", "9H"));
-				this.Add(new WCCheck.PrefixEntry("TA", "Turkey", "TA", "TA"));
-				this.Add(new WCCheck.PrefixEntry("T7", "San Marino", "T7", "T7"));
-				this.Sort(new WCCheck.PrefixList.LengthComparer());
+                Add(new WCCheck.PrefixEntry("C3", "Andorra", "C3", "C3"));
+                Add(new WCCheck.PrefixEntry("OE", "Austria", "OE", "OE"));
+                Add(new WCCheck.PrefixEntry("ON", "Belgium", "ON", "OT"));
+                Add(new WCCheck.PrefixEntry("LZ", "Bulgaria", "LZ", "LZ"));
+                Add(new WCCheck.PrefixEntry("EA8", "Canary Islands", "EA8", "EA8"));
+                Add(new WCCheck.PrefixEntry("EA8", "Canary Islands", "EH8", "EH8"));
+                Add(new WCCheck.PrefixEntry("SV9", "Crete", "SV9", "SV9"));
+                Add(new WCCheck.PrefixEntry("5B", "Cyprus", "5B", "5B"));
+                Add(new WCCheck.PrefixEntry("5B", "Cyprus", "C4", "C4"));
+                Add(new WCCheck.PrefixEntry("5B", "Cyprus", "H2", "H2"));
+                Add(new WCCheck.PrefixEntry("5B", "Cyprus", "P3", "P4"));
+                Add(new WCCheck.PrefixEntry("OK", "Czechia", "OK", "OL"));
+                Add(new WCCheck.PrefixEntry("OM", "Slovakia", "OM", "OM"));
+                Add(new WCCheck.PrefixEntry("OZ", "Denmark", "OU", "OZ"));
+                Add(new WCCheck.PrefixEntry("EA", "Spain", "AM", "AO"));
+                Add(new WCCheck.PrefixEntry("EA", "Spain", "EA", "EH"));
+                Add(new WCCheck.PrefixEntry("DL", "Germany", "DA", "DR"));
+                Add(new WCCheck.PrefixEntry("EI", "Ireland", "EI", "EJ"));
+                Add(new WCCheck.PrefixEntry("F", "France", "F", "F"));
+                Add(new WCCheck.PrefixEntry("F", "France", "TP", "TP"));
+                Add(new WCCheck.PrefixEntry("F", "France", "TM", "TM"));
+                Add(new WCCheck.PrefixEntry("G", "England", "G", "G"));
+                Add(new WCCheck.PrefixEntry("G", "England", "M", "M"));
+                Add(new WCCheck.PrefixEntry("G", "England", "2E", "2E"));
+                Add(new WCCheck.PrefixEntry("HA", "Hungaria", "HA", "HA"));
+                Add(new WCCheck.PrefixEntry("HA", "Hungaria", "HG", "HG"));
+                Add(new WCCheck.PrefixEntry("HB9", "Switzerland", "HB1", "HB9"));
+                Add(new WCCheck.PrefixEntry("HB9", "Switzerland", "HE", "HE"));
+                Add(new WCCheck.PrefixEntry("HB0", "Liechtenstein", "HB0", "HB0"));
+                Add(new WCCheck.PrefixEntry("SP", "Poland", "HF", "HF"));
+                Add(new WCCheck.PrefixEntry("SP", "Poland", "SP", "SP"));
+                Add(new WCCheck.PrefixEntry("SP", "Poland", "SO", "SO"));
+                Add(new WCCheck.PrefixEntry("SP", "Poland", "SQ", "SQ"));
+                Add(new WCCheck.PrefixEntry("SP", "Poland", "SN", "SN"));
+                Add(new WCCheck.PrefixEntry("SV", "Greece", "J4", "J4"));
+                Add(new WCCheck.PrefixEntry("SV", "Greece", "SV", "SV"));
+                Add(new WCCheck.PrefixEntry("LA", "Norway", "LA", "LN"));
+                Add(new WCCheck.PrefixEntry("LX", "Luxembuorg", "LX", "LX"));
+                Add(new WCCheck.PrefixEntry("PA", "Netherlands", "PA", "PI"));
+                Add(new WCCheck.PrefixEntry("I", "Italy", "I0", "I9"));
+                Add(new WCCheck.PrefixEntry("I", "Italy", "IA", "IZ"));
+                Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "YU1", "YU1"));
+                Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "YU6", "YU9"));
+                Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "YT", "YT"));
+                Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "YZ", "YZ"));
+                Add(new WCCheck.PrefixEntry("YU", "Yugoslavia", "4N", "4N"));
+                Add(new WCCheck.PrefixEntry("9A", "Croatia", "9A", "9A"));
+                Add(new WCCheck.PrefixEntry("9A", "Croatia", "YU2", "YU2"));
+                Add(new WCCheck.PrefixEntry("S5", "Slovenia", "S5", "S5"));
+                Add(new WCCheck.PrefixEntry("S5", "Slovenia", "YU3", "YU3"));
+                Add(new WCCheck.PrefixEntry("T9", "Bosnia-Herzegovina", "T9", "T9"));
+                Add(new WCCheck.PrefixEntry("T9", "Bosnia-Herzegovina", "YU4", "YU4"));
+                Add(new WCCheck.PrefixEntry("Z3", "Mazedonia", "Z3", "Z3"));
+                Add(new WCCheck.PrefixEntry("Z3", "Mazedonia", "YU5", "YU5"));
+                Add(new WCCheck.PrefixEntry("SM", "Sweden", "SA", "SM"));
+                Add(new WCCheck.PrefixEntry("HV", "Vatikan", "HV", "HV"));
+                Add(new WCCheck.PrefixEntry("EA6", "Balearic Islands", "EA6", "EA6"));
+                Add(new WCCheck.PrefixEntry("EA6", "Balearic Islands", "EH6", "EH6"));
+                Add(new WCCheck.PrefixEntry("GD", "Isle Of Man", "GD", "GD"));
+                Add(new WCCheck.PrefixEntry("GI", "Northern Ireland", "GI", "GI"));
+                Add(new WCCheck.PrefixEntry("GJ", "Jersey", "GJ", "GJ"));
+                Add(new WCCheck.PrefixEntry("GM", "Scotland", "GM", "GM"));
+                Add(new WCCheck.PrefixEntry("GW", "Wales", "GW", "GW"));
+                Add(new WCCheck.PrefixEntry("IS", "Sardinia", "IS", "IS"));
+                Add(new WCCheck.PrefixEntry("TK", "Corsica", "TK", "TK"));
+                Add(new WCCheck.PrefixEntry("LY", "Lithuania", "LY", "LY"));
+                Add(new WCCheck.PrefixEntry("ER", "Moldavia", "ER", "ER"));
+                Add(new WCCheck.PrefixEntry("ES", "Estonia", "ES", "ES"));
+                Add(new WCCheck.PrefixEntry("EV", "Byelorussia", "EV", "EV"));
+                Add(new WCCheck.PrefixEntry("EV", "Byelorussia", "EW", "EW"));
+                Add(new WCCheck.PrefixEntry("UA", "European Russia", "UA", "UA"));
+                Add(new WCCheck.PrefixEntry("UA", "European Russia", "UA", "RA"));
+                Add(new WCCheck.PrefixEntry("UA2", "Kaliningrad", "UA2", "UA2"));
+                Add(new WCCheck.PrefixEntry("UA2", "Kaliningrad", "RA2", "RA2"));
+                Add(new WCCheck.PrefixEntry("UA2", "Kaliningrad", "RN2", "RN2"));
+                Add(new WCCheck.PrefixEntry("UA2", "Kaliningrad", "RK2", "RK2"));
+                Add(new WCCheck.PrefixEntry("YO", "Romania", "YO", "YR"));
+                Add(new WCCheck.PrefixEntry("ZA", "Albania", "ZA", "ZA"));
+                Add(new WCCheck.PrefixEntry("ZB4", "Gibraltar", "ZB4", "ZB4"));
+                Add(new WCCheck.PrefixEntry("9H", "Malta", "9H", "9H"));
+                Add(new WCCheck.PrefixEntry("TA", "Turkey", "TA", "TA"));
+                Add(new WCCheck.PrefixEntry("T7", "San Marino", "T7", "T7"));
+                Sort(new WCCheck.PrefixList.LengthComparer());
 			}
 		}
 

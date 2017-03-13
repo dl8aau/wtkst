@@ -14,7 +14,7 @@ namespace wtKST
 		{
 			get
 			{
-				return this.time;
+				return time;
 			}
 		}
 
@@ -23,7 +23,7 @@ namespace wtKST
 		{
 			get
 			{
-				return this.message;
+				return message;
 			}
 		}
 

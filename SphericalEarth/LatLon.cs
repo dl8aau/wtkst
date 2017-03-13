@@ -12,14 +12,14 @@ namespace SphericalEarth
 
 			public GPoint()
 			{
-				this.Lat = double.NaN;
-				this.Lon = double.NaN;
+                Lat = double.NaN;
+                Lon = double.NaN;
 			}
 
 			public GPoint(double lat, double lon)
 			{
-				this.Lat = lat;
-				this.Lon = lon;
+                Lat = lat;
+                Lon = lon;
 			}
 		}
 

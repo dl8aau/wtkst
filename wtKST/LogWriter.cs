@@ -27,11 +27,11 @@ namespace wtKST
 		{
 			get
 			{
-				return this.path;
+				return path;
 			}
 			set
 			{
-				this.path = value;
+                path = value;
 			}
 		}
 
@@ -40,11 +40,11 @@ namespace wtKST
 		{
 			get
 			{
-				return this.fileFormat;
+				return fileFormat;
 			}
 			set
 			{
-				this.fileFormat = value;
+                fileFormat = value;
 			}
 		}
 
@@ -53,11 +53,11 @@ namespace wtKST
 		{
 			get
 			{
-				return this.messageFormat;
+				return messageFormat;
 			}
 			set
 			{
-				this.messageFormat = value;
+                messageFormat = value;
 			}
 		}
 
@@ -72,19 +72,19 @@ namespace wtKST
 
 		public bool WriteMessage(string message)
 		{
-			if (!Directory.Exists(this.path))
+			if (!Directory.Exists(path))
 			{
 				throw new DirectoryNotFoundException("The directory specifyed in Path was not found");
 			}
 			DateTime time = DateTime.Now;
 			string fileName;
-			if (string.IsNullOrEmpty(this.path))
+			if (string.IsNullOrEmpty(path))
 			{
 				fileName = System.IO.Path.DirectorySeparatorChar.ToString();
 			}
 			else
 			{
-				fileName = this.path;
+				fileName = path;
 				if (fileName[fileName.Length - 1] != System.IO.Path.DirectorySeparatorChar)
 				{
 					fileName += System.IO.Path.DirectorySeparatorChar;
@@ -93,7 +93,7 @@ namespace wtKST
 			bool result;
 			try
 			{
-				fileName += string.Format(this.fileFormat, time);
+				fileName += string.Format(fileFormat, time);
 			}
 			catch (FormatException)
 			{
@@ -107,7 +107,7 @@ namespace wtKST
 			string line;
 			try
 			{
-				line = string.Format(this.messageFormat, new object[]
+				line = string.Format(messageFormat, new object[]
 				{
 					time,
 					message
@@ -128,7 +128,7 @@ namespace wtKST
 				if (!File.Exists(fileName))
 				{
 					writer = new StreamWriter(fileName);
-					this.OnFileCreated(EventArgs.Empty);
+                    OnFileCreated(EventArgs.Empty);
 				}
 				else
 				{
@@ -136,7 +136,7 @@ namespace wtKST
 				}
 				writer.WriteLine(line);
 				writer.Close();
-				this.OnMessageWritten(new LogWriterEventArgs(time, message));
+                OnMessageWritten(new LogWriterEventArgs(time, message));
 				result = true;
 			}
 			catch
@@ -148,17 +148,17 @@ namespace wtKST
 
 		protected void OnMessageWritten(LogWriterEventArgs e)
 		{
-			if (this.MessageWritten != null)
+			if (MessageWritten != null)
 			{
-				this.MessageWritten(this, e);
+                MessageWritten(this, e);
 			}
 		}
 
 		protected void OnFileCreated(EventArgs e)
 		{
-			if (this.FileCreated != null)
+			if (FileCreated != null)
 			{
-				this.FileCreated(this, e);
+                FileCreated(this, e);
 			}
 		}
 	}
