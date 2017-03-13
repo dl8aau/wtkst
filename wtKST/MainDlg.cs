@@ -876,9 +876,9 @@ namespace wtKST
                             // reconnect, sort CR at begining
                             // probably better to re-generate the whole list... alternate line highlighting will not work
                             // not great, but ok for the time being...
-                            for (int i=0; i< this.lv_Msg.Items.Count; i++ )
+                            for (int i=0; i< lv_Msg.Items.Count; i++ )
                             {
-                                if (dt > (DateTime)this.lv_Msg.Items[i].Tag)
+                                if (dt > (DateTime)lv_Msg.Items[i].Tag)
                                 {
                                     lv_Msg.Items.Insert(i, LV);
                                     current_index = i;
@@ -991,76 +991,76 @@ namespace wtKST
                     view.Sort = "CALL ASC";
                 DataTable tbl = view.ToTable();
 
-                for (int i = 0; i < tbl.Rows.Count; i++)
+                foreach (DataRow row in tbl.Rows)
                 {
                     // ignore own call
-                    if (tbl.Rows[i]["CALL"].ToString().IndexOf(Settings.Default.KST_UserName.ToUpper()) >= 0)
+                    if (row["CALL"].ToString().IndexOf(Settings.Default.KST_UserName.ToUpper()) >= 0)
                         continue;
 
                     ListViewItem LV = new ListViewItem();
 
-                    if ((bool)tbl.Rows[i]["AWAY"])
+                    if ((bool)row["AWAY"])
                     {
                         if (hide_away)
                             continue;
-                        LV.Text = "(" + tbl.Rows[i]["CALL"].ToString() + ")";
+                        LV.Text = "(" + row["CALL"].ToString() + ")";
                         // Italic is too difficult to read and the font gets bigger
                         //LV.Font = new Font(LV.Font, FontStyle.Italic);
                     }
                     else
-                        LV.Text = tbl.Rows[i]["CALL"].ToString();
+                        LV.Text = row["CALL"].ToString();
                     // Ignore stations too far away
                     int MaxDist = Convert.ToInt32(Settings.Default.KST_MaxDist);
-                    if (MaxDist !=0 && (int)tbl.Rows[i]["QRB"] > MaxDist)
+                    if (MaxDist !=0 && (int)row["QRB"] > MaxDist)
                         continue;
 
                     // drop calls that are already in log
-                    if (hide_worked && check_in_log(tbl.Rows[i]))
+                    if (hide_worked && check_in_log(row))
                         continue;
 
                     // login time - new calls should be bold
-                    DateTime logintime = (DateTime)tbl.Rows[i]["LOGINTIME"];
+                    DateTime logintime = (DateTime)row["LOGINTIME"];
                     double loggedOnMinutes = (DateTime.UtcNow.Subtract(logintime)).TotalMinutes;
                     if (loggedOnMinutes < 5)
                         LV.Font = new Font(LV.Font, FontStyle.Bold);
 
                     LV.UseItemStyleForSubItems = false;
-                    LV.SubItems.Add(tbl.Rows[i]["NAME"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["LOC"].ToString());
+                    LV.SubItems.Add(row["NAME"].ToString());
+                    LV.SubItems.Add(row["LOC"].ToString());
 
                     // last activity
-                    double lastActivityMinutes = (DateTime.UtcNow.Subtract((DateTime)tbl.Rows[i]["TIME"])).TotalMinutes;
-                    //MainDlg.Log.WriteMessage("KST Time " + LV.Text + " " + DateTime.UtcNow + " " + (DateTime)tbl.Rows[i]["TIME"] + " " + lastActivityMinutes.ToString("0"));
+                    double lastActivityMinutes = (DateTime.UtcNow.Subtract((DateTime)row["TIME"])).TotalMinutes;
+                    //MainDlg.Log.WriteMessage("KST Time " + LV.Text + " " + DateTime.UtcNow + " " + (DateTime)row["TIME"] + " " + lastActivityMinutes.ToString("0"));
                     if (lastActivityMinutes < 120.0)
                         LV.SubItems.Add(lastActivityMinutes.ToString("0"));
                     else
                     {
                         if (ignore_inactive)
                             continue;
-                        if ((int)tbl.Rows[i]["CONTACTED"] < 3)
+                        if ((int)row["CONTACTED"] < 3)
                             LV.SubItems.Add("---");
                         else
                             LV.SubItems.Add("xxx"); // if contacted 3 times without answer then probably really not available
                     }
-                    int qrb = (int)tbl.Rows[i]["QRB"];
+                    int qrb = (int)row["QRB"];
                     if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
                     {
-                        LV.SubItems.Add(GetNearestPlanePotential(tbl.Rows[i]["CALL"].ToString()).ToString());
+                        LV.SubItems.Add(GetNearestPlanePotential(row["CALL"].ToString()).ToString());
                     }
                     else
                     {
                         LV.SubItems.Add("0");
                     }
-                    LV.SubItems.Add(tbl.Rows[i]["144M"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["432M"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["1_2G"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["2_3G"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["3_4G"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["5_7G"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["10G"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["24G"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["47G"].ToString());
-                    LV.SubItems.Add(tbl.Rows[i]["76G"].ToString());
+                    LV.SubItems.Add(row["144M"].ToString());
+                    LV.SubItems.Add(row["432M"].ToString());
+                    LV.SubItems.Add(row["1_2G"].ToString());
+                    LV.SubItems.Add(row["2_3G"].ToString());
+                    LV.SubItems.Add(row["3_4G"].ToString());
+                    LV.SubItems.Add(row["5_7G"].ToString());
+                    LV.SubItems.Add(row["10G"].ToString());
+                    LV.SubItems.Add(row["24G"].ToString());
+                    LV.SubItems.Add(row["47G"].ToString());
+                    LV.SubItems.Add(row["76G"].ToString());
                     for (int j = 0; j < lv_Calls.Columns.Count; j++)
                     {
                         LV.SubItems[j].Name = lv_Calls.Columns[j].Text.Replace(".", "_");
@@ -1700,9 +1700,9 @@ namespace wtKST
                             {
                                 Error(MethodBase.GetCurrentMethod().Name, "(" + row["CALL"].ToString() + "): " + e.Message);
                             }
-                            for (int i = 0; i < CALL.Rows.Count; i++)
+                            foreach (DataRow call_row in CALL.Rows)
                             {
-                                string findcall = CALL.Rows[i]["CALL"].ToString();
+                                string findcall = call_row["CALL"].ToString();
                                 findcall = findcall.TrimStart(new char[] {'('}).TrimEnd(new char[]{')'});
                                 if (findcall.IndexOf("-") > 0)
                                 {
@@ -1713,42 +1713,42 @@ namespace wtKST
                                     switch (band)
                                     {
                                     case 12:
-                                            CALL.Rows[i]["144M"] = 2;
+                                            call_row["144M"] = 2;
                                         break;
                                     case 14:
-                                            CALL.Rows[i]["432M"] = 2;
+                                            call_row["432M"] = 2;
                                         break;
                                     case 16:
-                                            CALL.Rows[i]["1_2G"] = 2;
+                                            call_row["1_2G"] = 2;
                                         break;
                                     case 17:
-                                            CALL.Rows[i]["2_3G"] = 2;
+                                            call_row["2_3G"] = 2;
                                         break;
                                     case 18:
-                                            CALL.Rows[i]["3_4G"] = 2;
+                                            call_row["3_4G"] = 2;
                                         break;
                                     case 19:
-                                            CALL.Rows[i]["5_7G"] = 2;
+                                            call_row["5_7G"] = 2;
                                         break;
                                     case 20:
-                                            CALL.Rows[i]["10G"] = 2;
+                                            call_row["10G"] = 2;
                                         break;
                                     case 21:
-                                            CALL.Rows[i]["24G"] = 2;
+                                            call_row["24G"] = 2;
                                         break;
                                     case 22:
-                                            CALL.Rows[i]["47G"] = 2;
+                                            call_row["47G"] = 2;
                                         break;
                                     case 23:
-                                            CALL.Rows[i]["76G"] = 2;
+                                            call_row["76G"] = 2;
                                         break;
                                     }
                                     // check locator
-                                    if (CALL.Rows[i]["LOC"].ToString() != row["LOC"].ToString())
+                                    if (call_row["LOC"].ToString() != row["LOC"].ToString())
                                     {
-                                        Say(call + " Locator wrong? Win-Test Log " + row["BAND"] + " " + row["TIME"] + " " + call + " " + row["LOC"] + " KST " + CALL.Rows[i]["LOC"].ToString());
+                                        Say(call + " Locator wrong? Win-Test Log " + row["BAND"] + " " + row["TIME"] + " " + call + " " + row["LOC"] + " KST " + call_row["LOC"].ToString());
                                         WinTestLocatorWarning = true;
-                                        MainDlg.Log.WriteMessage("Win-Test log locator mismatch: " + row["BAND"] + " " + row["TIME"] +  " " + call + " Locator wrong? Win-Test Log " + row["LOC"] + " KST " + CALL.Rows[i]["LOC"].ToString());
+                                        MainDlg.Log.WriteMessage("Win-Test log locator mismatch: " + row["BAND"] + " " + row["TIME"] +  " " + call + " Locator wrong? Win-Test Log " + row["LOC"] + " KST " + call_row["LOC"].ToString());
                                     }
                                 }
                             }
@@ -2603,11 +2603,11 @@ namespace wtKST
         {
             //return; // FIXME!!! altes AS
             string watchlist = "";
-            for (int i = 0; i < CALL.Rows.Count; i++)
+            foreach (DataRow row in CALL.Rows)
             {
-                string dxcall = WCCheck.WCCheck.Cut(CALL.Rows[i]["CALL"].ToString().TrimStart(
+                string dxcall = WCCheck.WCCheck.Cut(row["CALL"].ToString().TrimStart(
                     new char[] { '(' }).TrimEnd(new char[] { ')' }));
-                string dxloc = CALL.Rows[i]["LOC"].ToString();
+                string dxloc = row["LOC"].ToString();
                 watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
             }
             string qrg = AS_qrg_from_settings();
@@ -2836,14 +2836,14 @@ namespace wtKST
                         {
                             infolist.Sort(new PlaneInfoComparer());
                             planes.Add(dxcall, infolist);
-                            for (int i = 0; i < lv_Calls.Items.Count; i++)
+                            foreach (ListViewItem call_lvi in lv_Calls.Items)
                             {
-                                if (lv_Calls.Items[i].Text.IndexOf(dxcall) >= 0)
+                                if (call_lvi.Text.IndexOf(dxcall) >= 0)
                                 {
                                     string newtext = infolist[0].Potential.ToString();
-                                    if (lv_Calls.Items[i].SubItems[4].Text != newtext)
+                                    if (call_lvi.SubItems[4].Text != newtext)
                                     {
-                                        lv_Calls.Items[i].SubItems[4].Text = newtext;
+                                        call_lvi.SubItems[4].Text = newtext;
                                         lv_Calls.Refresh();
                                     }
                                     break;
@@ -2864,9 +2864,9 @@ namespace wtKST
                     try
                     {
                         planes.Clear();
-                        for (int i = 0; i < lv_Calls.Items.Count; i++)
+                        foreach (ListViewItem lvi in lv_Calls.Items)
                         {
-                            lv_Calls.Items[i].SubItems[4].Text = "";
+                            lvi.SubItems[4].Text = "";
                         }
                         lv_Calls.Refresh();
                     }
@@ -2877,14 +2877,14 @@ namespace wtKST
                 else
                 {
                     planes.Remove(dxcall);
-                    for (int i = 0; i < lv_Calls.Items.Count; i++)
+                    foreach (ListViewItem lvi in lv_Calls.Items)
                     {
-                        if (lv_Calls.Items[i].Text.IndexOf(dxcall) >= 0)
+                        if (lvi.Text.IndexOf(dxcall) >= 0)
                         {
                             string newtext = "";
-                            if (lv_Calls.Items[i].SubItems[4].Text != newtext)
+                            if (lvi.SubItems[4].Text != newtext)
                             {
-                                lv_Calls.Items[i].SubItems[4].Text = newtext;
+                                lvi.SubItems[4].Text = newtext;
                                 lv_Calls.Refresh();
                             }
                             break;
