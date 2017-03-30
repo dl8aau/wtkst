@@ -99,6 +99,7 @@
     <Compile Include="wtKST\PlaneInfoComparer.cs" />
     <Compile Include="wtKST\PlaneInfoList.cs" />
     <Compile Include="wtKST\Program.cs" />
+    <Compile Include="wtKST\WinTestLog.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="wtKST.Properties\Resources.resources" />

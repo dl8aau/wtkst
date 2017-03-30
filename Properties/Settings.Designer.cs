@@ -145,18 +145,6 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string WinTest_FileName {
-            get {
-                return ((string)(this["WinTest_FileName"]));
-            }
-            set {
-                this["WinTest_FileName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("qrv.xml")]
         public string WinTest_QRV_Table_FileName {
             get {

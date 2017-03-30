@@ -45,7 +45,7 @@ namespace wtKST
 
         public DataTable CALL = new DataTable("CALL");
 
-        public DataTable QSO = new DataTable("QSO");
+        private WinTest.WinTestLog wtQSO = null;
 
         private bool DLLNotLoaded = false;
 
@@ -261,18 +261,7 @@ namespace wtKST
             };
             QRV.PrimaryKey = QRVkeys;
             InitializeQRV(false);
-            QSO.Columns.Add("CALL");
-            QSO.Columns.Add("BAND");
-            QSO.Columns.Add("TIME");
-            QSO.Columns.Add("SENT");
-            QSO.Columns.Add("RCVD");
-            QSO.Columns.Add("LOC");
-            DataColumn[] QSOkeys = new DataColumn[]
-            {
-                QSO.Columns["CALL"],
-                QSO.Columns["BAND"]
-            };
-            QSO.PrimaryKey = QSOkeys;
+
             CALL.Columns.Add("CALL");
             CALL.Columns.Add("NAME");
             CALL.Columns.Add("LOC");
@@ -300,7 +289,16 @@ namespace wtKST
                 CALL.Columns["CALL"]
             };
             CALL.PrimaryKey = CALLkeys;
-
+            // FIXME try to load wtlog dll...
+            // only temporary solution... (checked only at program start...)
+            string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName.ToUpper());
+            if (kstcall.IndexOf("DL0GTH") >= 0 || kstcall.IndexOf("DL2ALF") >= 0 || kstcall.IndexOf("DL2ARD") >= 0 ||
+                kstcall.IndexOf("DL2AKT") >= 0 || kstcall.IndexOf("DM5CT") >= 0 || kstcall.IndexOf("DL6AUI") >= 0 ||
+                kstcall.IndexOf("DR9A") >= 0 || kstcall.IndexOf("DA0FF") >= 0 ||
+                kstcall.IndexOf("DL8AAU") >= 0 || kstcall.IndexOf("DL0FTZ") >= 0)
+            {
+                wtQSO = new WinTestLog(MainDlg.Log.WriteMessage);
+            }
             UpdateUserBandsWidth();
             bw_GetPlanes.RunWorkerAsync();
             if (Settings.Default.KST_AutoConnect)
@@ -615,8 +613,8 @@ namespace wtKST
             if (lv_Calls.Items.Count > 0)
             {
                 KST_Calls_Text = "Calls [" + lv_Calls.Items.Count.ToString() + "]";
-                if (Settings.Default.WinTest_Activate)
-                    KST_Calls_Text += " - " + Path.GetFileName(Settings.Default.WinTest_FileName);
+                if (wtQSO != null && Settings.Default.WinTest_Activate)
+                    KST_Calls_Text += " - " + Path.GetFileName(wtQSO.getFileName());
             }
             else
             {
@@ -1073,7 +1071,7 @@ namespace wtKST
                     lv_Calls.TopItem = lv_Calls.Items[lv_Calls.Items.Count - 1];
                     lv_Calls.TopItem = toplv;
                 }
-                if (!WinTestLocatorWarning)
+                if (wtQSO != null & WinTestLocatorWarning)
                     Say("");
                 MainDlg.Log.WriteMessage("KST GetUsers finished: " + lv_Calls.Items.Count.ToString() + " Calls.");
             }
@@ -1532,6 +1530,12 @@ namespace wtKST
                 Dlg.tb_KST_UserName.Enabled = false;
                 Dlg.cbb_KST_Chat.Enabled = false;
             }
+            if(wtQSO == null)
+            {
+                int idx = Dlg.tabControl1.TabPages.IndexOf(Dlg.tabPage2);
+                if (idx >= 0)
+                    Dlg.tabControl1.TabPages.RemoveAt(idx);
+            }
             string oldchat = Settings.Default.KST_Chat;
             int KST_MaxDist = Convert.ToInt32(Settings.Default.KST_MaxDist);
             if (Dlg.ShowDialog() == DialogResult.OK)
@@ -1583,186 +1587,39 @@ namespace wtKST
             KST_Send();
         }
 
-        private void Get_QSOs()
+        private void Check_QSOs()
         {
             WinTestLocatorWarning = false;
-            string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName.ToUpper());
-            if (kstcall.IndexOf("DL0GTH") >= 0 || kstcall.IndexOf("DL2ALF") >= 0 || kstcall.IndexOf("DL2ARD") >= 0 || kstcall.IndexOf("DL2AKT") >= 0 || kstcall.IndexOf("DM5CT") >= 0 || kstcall.IndexOf("DL6AUI") >= 0 || kstcall.IndexOf("DR9A") >= 0 || kstcall.IndexOf("DA0FF") >= 0 || kstcall.IndexOf("DL8AAU") >= 0 || kstcall.IndexOf("DL0FTZ") >= 0)
+            try
             {
-                try
+                foreach (DataRow call_row in CALL.Rows)
                 {
-                    using (StreamReader sr = new StreamReader(Settings.Default.WinTest_INI_FileName, Encoding.Default))
+                    string call = call_row["CALL"].ToString();
+                    call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
+                    if (call.IndexOf("-") > 0)
                     {
-                        string S = sr.ReadToEnd();
-                        S = S.Remove(0, S.IndexOf("[Files]") + 7);
-                        S = S.Remove(0, S.IndexOf("Path=") + 5);
-                        S = S.Remove(S.IndexOf("\r"), S.Length - S.IndexOf("\r"));
-                        S = S.Trim();
-                        string OldFilename = Settings.Default.WinTest_FileName;
-                        if (OldFilename != S)
-                        {
-                            Settings.Default.WinTest_FileName = S;
-                            Settings.Default.Save();
-                            Settings.Default.Reload();
-                            MainDlg.Log.WriteMessage("Using Win-Test log " + Settings.Default.WinTest_FileName);
-                        }
+                        call = call.Remove(call.IndexOf("-"));
                     }
-                    using (Stream stream = File.Open(Settings.Default.WinTest_FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    foreach (string band in new string[] { "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G" })
                     {
-                        QSO.Clear();
-                        byte[] bufh = new byte[13944];
-                        stream.Read(bufh, 0, bufh.Length);
-                        string wtLoc = Encoding.ASCII.GetString(bufh, 24, 6);
-                        char[] separator = new char[1];
-                        MyLoc = wtLoc.Split(separator)[0];
-                        if (!MyLoc.Equals(Settings.Default.KST_Loc))
-                            set_KST_Status();
-                        stream.Position = 13944L;
-                        while (stream.Position < stream.Length)
+                        DataRow qso_row = wtQSO.QSO.Rows.Find(new object[] { call, band });
+                        if (qso_row != null)
                         {
-                            byte[] buf = new byte[544];
-                            stream.Read(buf, 0, buf.Length);
-                            int utime = BitConverter.ToInt32(buf, 24);
-                            DateTime ts = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                            ts = ts.AddSeconds((double)utime);
-                            byte band = buf[4];
-                            string call = Encoding.ASCII.GetString(buf, 32, 14);
-                            call = call.ToString().Replace("\0", "");
-
-                            DataRow row = QSO.NewRow();
-                            row["CALL"] = call;
-                            switch (band)
+                            call_row[band] = 2;
+                            // check locator
+                            if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
                             {
-                            case 12:
-                                row["BAND"] = "144M";
-                                break;
-                            case 14:
-                                row["BAND"] = "432M";
-                                break;
-                            case 16:
-                                row["BAND"] = "1_2G";
-                                break;
-                            case 17:
-                                row["BAND"] = "2_3G";
-                                break;
-                            case 18:
-                                row["BAND"] = "3_4G";
-                                break;
-                            case 19:
-                                row["BAND"] = "5_7G";
-                                break;
-                            case 20:
-                                row["BAND"] = "10G";
-                                break;
-                            case 21:
-                                row["BAND"] = "24G";
-                                break;
-                            case 22:
-                                row["BAND"] = "47G";
-                                break;
-                            case 23:
-                                row["BAND"] = "76G";
-                                break;
-                            case 13:
-                            case 15:
-                            default:
-                                row["BAND"] = "";
-                                break;
-                            }
-
-                            row["TIME"] = ts.ToString("HH:mm");
-                            string s = BitConverter.ToInt16(buf, 0).ToString();
-                            s = Encoding.ASCII.GetString(buf, 46, 4).Replace("\0", "") + s.PadLeft(3, '0');
-                            row["SENT"] = s;
-                            switch (buf[8])
-                            {
-                            case 0:
-                                row["RCVD"] = Encoding.ASCII.GetString(buf, 50, 3).Replace("\0", "") + Encoding.ASCII.GetString(buf, 53, 4).Replace("\0", "");
-                                break;
-                            case 1:
-                                row["RCVD"] = Encoding.ASCII.GetString(buf, 50, 2).Replace("\0", "") + Encoding.ASCII.GetString(buf, 52, 4).Replace("\0", "");
-                                break;
-                            }
-                            row["LOC"] = Encoding.ASCII.GetString(buf, 61, 6).Replace("\0", "");
-                            try
-                            {
-                                if (QSO.Rows.Find(new string[]
-                                {
-                                    row["CALL"].ToString(),
-                                    row["BAND"].ToString()
-                                }) == null)
-                                {
-                                    QSO.Rows.Add(row);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                Error(MethodBase.GetCurrentMethod().Name, "(" + row["CALL"].ToString() + "): " + e.Message);
-                            }
-                            foreach (DataRow call_row in CALL.Rows)
-                            {
-                                string findcall = call_row["CALL"].ToString();
-                                findcall = findcall.TrimStart(new char[] {'('}).TrimEnd(new char[]{')'});
-                                if (findcall.IndexOf("-") > 0)
-                                {
-                                    findcall = findcall.Remove(findcall.IndexOf("-"));
-                                }
-                                if (findcall == call)
-                                {
-                                    switch (band)
-                                    {
-                                    case 12:
-                                            call_row["144M"] = 2;
-                                        break;
-                                    case 14:
-                                            call_row["432M"] = 2;
-                                        break;
-                                    case 16:
-                                            call_row["1_2G"] = 2;
-                                        break;
-                                    case 17:
-                                            call_row["2_3G"] = 2;
-                                        break;
-                                    case 18:
-                                            call_row["3_4G"] = 2;
-                                        break;
-                                    case 19:
-                                            call_row["5_7G"] = 2;
-                                        break;
-                                    case 20:
-                                            call_row["10G"] = 2;
-                                        break;
-                                    case 21:
-                                            call_row["24G"] = 2;
-                                        break;
-                                    case 22:
-                                            call_row["47G"] = 2;
-                                        break;
-                                    case 23:
-                                            call_row["76G"] = 2;
-                                        break;
-                                    }
-                                    // check locator
-                                    if (call_row["LOC"].ToString() != row["LOC"].ToString())
-                                    {
-                                        Say(call + " Locator wrong? Win-Test Log " + row["BAND"] + " " + row["TIME"] + " " + call + " " + row["LOC"] + " KST " + call_row["LOC"].ToString());
-                                        WinTestLocatorWarning = true;
-                                        MainDlg.Log.WriteMessage("Win-Test log locator mismatch: " + row["BAND"] + " " + row["TIME"] +  " " + call + " Locator wrong? Win-Test Log " + row["LOC"] + " KST " + call_row["LOC"].ToString());
-                                    }
-                                }
+                                Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                                WinTestLocatorWarning = true;
+                                Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
                             }
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    Error(MethodBase.GetCurrentMethod().Name, "(" + Settings.Default.WinTest_FileName + "): " + e.Message);
                 }
             }
-            else
+            catch (Exception e)
             {
-                MessageBox.Show("Win-Test functionality is for DL0GTH crew only.\nAs " + kstcall + " is not a member, this option is disabled now.", "Function is restricted");
-                Settings.Default.WinTest_Activate = false;
+                Error(MethodBase.GetCurrentMethod().Name, "(" + wtQSO.getFileName() + "): " + e.Message);
             }
         }
 
@@ -1825,9 +1682,16 @@ namespace wtKST
             ti_Main.Stop();
             if (KSTState == MainDlg.KST_STATE.Connected)
             {
-                if (Settings.Default.WinTest_Activate)
+                if (wtQSO != null && Settings.Default.WinTest_Activate)
                 {
-                    Get_QSOs();
+                    MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
+                    wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
+                    if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
+                    {
+                            MyLoc = wtQSO.MyLoc;
+                            set_KST_Status();
+                    }
+                    Check_QSOs();
                 }
                 KST_Update_USR_Window();
                 if (Settings.Default.AS_Active)
@@ -2090,27 +1954,28 @@ namespace wtKST
                     }
                     else
                     {
-                        DataRow findrow = QSO.Rows.Find(new object[]
+                        if (wtQSO != null)
                         {
-                            info.Item.Text,
-                            info.SubItem.Name.Replace(".", "_")
-                        });
-                        if (findrow != null)
-                        {
-                            ToolTipText = string.Concat(new object[]
+                            string call = info.Item.Text;
+                            string band = info.SubItem.Name;
+                            DataRow findrow = wtQSO.QSO.Rows.Find(new object[] { call, band.Replace(".", "_") });
+                            if (findrow != null)
                             {
-                                info.SubItem.Name.Replace("_", "."),
-                                ": ",
-                                findrow["CALL"],
-                                "  ",
-                                findrow["TIME"],
-                                "  ",
-                                findrow["SENT"],
-                                "  ",
-                                findrow["RCVD"],
-                                "  ",
-                                findrow["LOC"]
-                            });
+                                ToolTipText = string.Concat(new object[]
+                                {
+                                    band.Replace("_", "."),
+                                    ": ",
+                                    findrow["CALL"],
+                                    "  ",
+                                    findrow["TIME"],
+                                    "  ",
+                                    findrow["SENT"],
+                                    "  ",
+                                    findrow["RCVD"],
+                                    "  ",
+                                    findrow["LOC"]
+                                });
+                            }
                         }
                     }
                 }

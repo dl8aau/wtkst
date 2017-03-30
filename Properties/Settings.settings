@@ -32,9 +32,6 @@
     <Setting Name="WinTest_INI_FileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\\ProgramData\\Win-Test\\cfg\\wt.ini</Value>
     </Setting>
-    <Setting Name="WinTest_FileName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="WinTest_QRV_Table_FileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">qrv.xml</Value>
     </Setting>

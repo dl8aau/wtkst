@@ -48,9 +48,9 @@ namespace wtKST
         public CheckBox cb_KST_AutoConnect;
         public RadioButton rb_KST_StartAsHere;
         public RadioButton rb_KST_StartAsAway;
-        private TabControl tabControl1;
+        public TabControl tabControl1;
         private TabPage tabPage1;
-        private TabPage tabPage2;
+        public TabPage tabPage2;
         private TabPage tabPage3;
         private TabPage tabPage4;
         private Label label16;
