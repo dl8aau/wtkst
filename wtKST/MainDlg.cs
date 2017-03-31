@@ -2059,7 +2059,7 @@ namespace wtKST
                     }
                     if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
                     {
-                        string call = WCCheck.WCCheck.Cut(info.Item.Text);
+                        string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
                         string loc = info.Item.SubItems[2].Text;
                         string qrg = AS_qrg_from_settings();
                         wtMessage Msg = new wtMessage(WTMESSAGES.ASSHOWPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, string.Concat(new string[]
