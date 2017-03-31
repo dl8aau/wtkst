@@ -47,6 +47,8 @@ namespace wtKST
 
         private WinTest.WinTestLog wtQSO = null;
 
+        private wtKST.AirScoutInterface AS_if = new wtKST.AirScoutInterface();
+
         private bool DLLNotLoaded = false;
 
         private Point OldMousePos = new Point(0, 0);
@@ -66,8 +68,6 @@ namespace wtKST
         private MainDlg.KST_STATE KSTState;
 
         private MainDlg.USER_STATE UserState;
-
-        public Dictionary<string, PlaneInfoList> planes = new Dictionary<string, PlaneInfoList>();
 
         private IContainer components = null;
 
@@ -1632,7 +1632,7 @@ namespace wtKST
             call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
             PlaneInfoList infolist = null;
             string result;
-            if (planes.TryGetValue(call, out infolist))
+            if (AS_if.planes.TryGetValue(call, out infolist))
             {
                 string s = DateTime.UtcNow.ToString("HH:mm") + " [" + (DateTime.UtcNow - infolist.UTC).Minutes.ToString() + "mins ago]\n\n";
                 foreach (PlaneInfo info in infolist)
@@ -1666,7 +1666,7 @@ namespace wtKST
             call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
             PlaneInfoList infolist = null;
             int result;
-            if (planes.TryGetValue(call, out infolist))
+            if (AS_if.planes.TryGetValue(call, out infolist))
             {
                 result = infolist[0].Potential;
             }
@@ -2061,27 +2061,8 @@ namespace wtKST
                     {
                         string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
                         string loc = info.Item.SubItems[2].Text;
-                        string qrg = AS_qrg_from_settings();
-                        wtMessage Msg = new wtMessage(WTMESSAGES.ASSHOWPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, string.Concat(new string[]
-                        {
-                            qrg,
-                            ",",
-                            WCCheck.WCCheck.Cut(MyCall),
-                            ",",
-                            MyLoc,
-                            ",",
-                            WCCheck.WCCheck.Cut(call),
-                            ",",
-                            loc
-                        }));
-                        UdpClient client = new UdpClient();
-                        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                        client.Client.ReceiveTimeout = 10000;
-                        IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, Settings.Default.AS_Port);
-                        client.Connect(groupEp);
-                        byte[] b = Msg.ToBytes();
-                        client.Send(b, b.Length);
-                        client.Close();
+
+                        AS_if.show_path(call, loc, MyCall, MyLoc);
                     }
                     if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
                     {
@@ -2474,55 +2455,7 @@ namespace wtKST
                 string dxloc = row["LOC"].ToString();
                 watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
             }
-            string qrg = AS_qrg_from_settings();
-            wtMessage Msg = new wtMessage(WTMESSAGES.ASWATCHLIST, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, string.Concat(new string[]
-            {
-                qrg, ",", WCCheck.WCCheck.Cut(MyCall), ",", MyLoc, watchlist
-            }));
-            try
-            {
-                UdpClient client = new UdpClient();
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                client.Client.ReceiveTimeout = 10000;
-                IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, Settings.Default.AS_Port);
-                client.Connect(groupEp);
-                byte[] b = Msg.ToBytes();
-                client.Send(b, b.Length);
-                client.Close();
-            }
-            catch
-            {
-            }
-        }
-
-        private string AS_qrg_from_settings()
-        {
-            string qrg = "1440000";
-            if (Settings.Default.AS_QRG == "432M")
-            {
-                qrg = "4320000";
-            }
-            else if (Settings.Default.AS_QRG == "1.2G")
-            {
-                qrg = "12960000";
-            }
-            else if (Settings.Default.AS_QRG == "2.3G")
-            {
-                qrg = "23200000";
-            }
-            else if (Settings.Default.AS_QRG == "3.4G")
-            {
-                qrg = "34000000";
-            }
-            else if (Settings.Default.AS_QRG == "5.7G")
-            {
-                qrg = "57600000";
-            }
-            else if (Settings.Default.AS_QRG == "10G")
-            {
-                qrg = "103680000";
-            }
-            return qrg;
+            AS_if.send_watchlist(watchlist, MyCall, MyLoc);
         }
 
         private void bw_GetPlanes_DoWork(object sender, DoWorkEventArgs e)
@@ -2541,127 +2474,22 @@ namespace wtKST
                     {
                         int qrb = (int)CALL.Rows[i]["QRB"];
                         string mycall = WCCheck.WCCheck.Cut(MyCall);
-                        string myloc = MyLoc;
                         string dxcall = WCCheck.WCCheck.Cut(CALL.Rows[i]["CALL"].ToString().TrimStart(
                             new char[]{ '(' }).TrimEnd(new char[]{ ')' }));
                         string dxloc = CALL.Rows[i]["LOC"].ToString();
-                        string rxmycall = "";
-                        string rxdxcall = "";
-                        string qrg = AS_qrg_from_settings();
-                        wtMessage Msg = new wtMessage(WTMESSAGES.ASSETPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, string.Concat(new string[]
+                        if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) 
+                            && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
                         {
-                            qrg,
-                            ",",
-                            mycall,
-                            ",",
-                            myloc,
-                            ",",
-                            dxcall,
-                            ",",
-                            dxloc
-                        }));
-                        try
-                        {
-                            if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
+                            if (!AS_if.GetPlanes(mycall, MyLoc, dxcall, dxloc, ref bw_GetPlanes))
                             {
-                                UdpClient client = new UdpClient();
-                                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                                client.Client.ReceiveTimeout = 10000;
-                                IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, Settings.Default.AS_Port);
-                                client.Connect(groupEp);
-                                byte[] b = Msg.ToBytes();
-                                client.Send(b, b.Length);
-                                client.Close();
-                                DateTime start = DateTime.UtcNow;
-                                int rcvtimeout = 30;
-                                try
+                                errors++;
+                                if (errors > 10)
                                 {
-                                    rcvtimeout = Convert.ToInt32(Settings.Default.AS_Timeout);
+                                    bw_GetPlanes.ReportProgress(0, null);
+                                    break;
                                 }
-                                catch
-                                {
-                                    rcvtimeout = 30;
-                                }
-                                int elapsed;
-                                bool match;
-                                do
-                                {
-                                    IPEndPoint ep = new IPEndPoint(IPAddress.Any, Settings.Default.AS_Port);
-                                    UdpClient u = new UdpClient();
-                                    u.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                                    u.Client.ReceiveTimeout = 1000;
-                                    u.Client.Bind(ep);
-                                    try
-                                    {
-                                        byte[] data = u.Receive(ref ep);
-                                        if (data.Length > 0)
-                                        {
-                                            string text = Encoding.ASCII.GetString(data);
-                                            text = text.Remove(text.Length - 1);
-                                            byte sum = 0;
-                                            for (int j = 0; j < data.Length - 1; j++)
-                                            {
-                                                sum += data[j];
-                                            }
-                                            sum |= 128;
-                                            Console.WriteLine(string.Concat(new object[]
-                                            {
-                                                ep.Address,
-                                                " >> ",
-                                                text,
-                                                "[",
-                                                data[data.Length - 1].ToString("X2"),
-                                                "<>",
-                                                sum.ToString("X2"),
-                                                "]"
-                                            }));
-                                            Msg = new wtMessage(data);
-                                            if (Msg.Msg == WTMESSAGES.ASNEAREST)
-                                            {
-                                                string[] a = Msg.Data.Split(new char[]{ ',' });
-                                                rxmycall = a[1];
-                                                rxdxcall = a[3];
-                                            }
-                                        }
-                                    }
-                                    catch
-                                    {
-                                    }
-                                    finally
-                                    {
-                                        if (u != null)
-                                        {
-                                            u.Close();
-                                        }
-                                    }
-                                    elapsed = (DateTime.UtcNow - start).Seconds;
-                                    match = (Msg.Dst == Settings.Default.AS_My_Name && Msg.Msg == WTMESSAGES.ASNEAREST && mycall == rxmycall && dxcall == rxdxcall);
-                                    if (match)
-                                    {
-                                        bw_GetPlanes.ReportProgress(1, Msg);
-                                    }
-                                    Thread.Sleep(100);
-                                }
-                                while (!match && elapsed < rcvtimeout);
-                                if (!match)
-                                {
-                                }
-                                if (elapsed >= rcvtimeout)
-                                {
-                                    errors++;
-                                    bw_GetPlanes.ReportProgress(0, dxcall);
-                                    if (errors > 10)
-                                    {
-                                        bw_GetPlanes.ReportProgress(0, null);
-                                        break;
-                                    }
-                                }
+
                             }
-                        }
-                        catch (Exception e1_596)
-                        {
-                            bw_GetPlanes.ReportProgress(0, null);
-                            bw_GetPlanes.ReportProgress(-1, Msg);
                         }
                         Thread.Sleep(200);
                     }
@@ -2677,46 +2505,24 @@ namespace wtKST
             if (e.ProgressPercentage > 0)
             {
                 wtMessage Msg = (wtMessage)e.UserState;
-                if (Msg.Msg == WTMESSAGES.ASNEAREST)
+                PlaneInfoList infolist = new PlaneInfoList();
+
+                string dxcall;
+                AS_if.process_msg_asnearest(Msg, infolist, out dxcall);
+                if (infolist.Count > 0)
                 {
-                    try
+                    foreach (ListViewItem call_lvi in lv_Calls.Items)
                     {
-                        string[] a = Msg.Data.Split(new char[]{ ',' });
-                        DateTime utc = Convert.ToDateTime(a[0]).ToUniversalTime();
-                        string mycall = a[1];
-                        string myloc = a[2];
-                        string dxcall = a[3];
-                        string dxloc = a[4];
-                        int planecount = Convert.ToInt32(a[5]);
-                        PlaneInfoList infolist = new PlaneInfoList();
-                        infolist.UTC = utc;
-                        for (int i = 0; i < planecount; i++)
+                        if (call_lvi.Text.IndexOf(dxcall) >= 0)
                         {
-                            PlaneInfo info = new PlaneInfo(a[6 + i * 5], a[7 + i * 5], Convert.ToInt32(a[8 + i * 5]), Convert.ToInt32(a[9 + i * 5]), Convert.ToInt32(a[10 + i * 5]));
-                            infolist.Add(info);
-                        }
-                        planes.Remove(dxcall);
-                        if (infolist.Count > 0)
-                        {
-                            infolist.Sort(new PlaneInfoComparer());
-                            planes.Add(dxcall, infolist);
-                            foreach (ListViewItem call_lvi in lv_Calls.Items)
+                            string newtext = infolist[0].Potential.ToString();
+                            if (call_lvi.SubItems[4].Text != newtext)
                             {
-                                if (call_lvi.Text.IndexOf(dxcall) >= 0)
-                                {
-                                    string newtext = infolist[0].Potential.ToString();
-                                    if (call_lvi.SubItems[4].Text != newtext)
-                                    {
-                                        call_lvi.SubItems[4].Text = newtext;
-                                        lv_Calls.Refresh();
-                                    }
-                                    break;
-                                }
+                                call_lvi.SubItems[4].Text = newtext;
+                                lv_Calls.Refresh();
                             }
+                            break;
                         }
-                    }
-                    catch (Exception e1_211)
-                    {
                     }
                 }
             }
@@ -2727,7 +2533,7 @@ namespace wtKST
                 {
                     try
                     {
-                        planes.Clear();
+                        AS_if.planes.Clear();
                         foreach (ListViewItem lvi in lv_Calls.Items)
                         {
                             lvi.SubItems[4].Text = "";
@@ -2740,7 +2546,7 @@ namespace wtKST
                 }
                 else
                 {
-                    planes.Remove(dxcall);
+                    AS_if.planes.Remove(dxcall);
                     foreach (ListViewItem lvi in lv_Calls.Items)
                     {
                         if (lvi.Text.IndexOf(dxcall) >= 0)
@@ -2756,24 +2562,10 @@ namespace wtKST
                     }
                 }
             }
-            else
+            else /* e.ProgressPercentage <0 */
             {
                 wtMessage Msg = (wtMessage)e.UserState;
-                if (Msg.Msg == WTMESSAGES.ASSETPATH)
-                {
-                    try
-                    {
-                        string[] a = Msg.Data.Split(new char[]{ ',' });
-                        string mycall = a[0];
-                        string myloc = a[1];
-                        string dxcall = a[2];
-                        string dxloc = a[3];
-                        planes.Remove(dxcall);
-                    }
-                    catch (Exception e1_211)
-                    {
-                    }
-                }
+                AS_if.process_msg_setpath(Msg);
             }
         }
 

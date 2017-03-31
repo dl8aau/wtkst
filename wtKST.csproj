@@ -85,6 +85,7 @@
     <Compile Include="WCCheck\WCCheck.cs" />
     <Compile Include="WCCheck\WCUtils.cs" />
     <Compile Include="wtKST.Properties\Resources.cs" />
+    <Compile Include="wtKST\AirScoutIF.cs" />
     <Compile Include="wtKST\LogWriter.cs">
       <SubType>Component</SubType>
     </Compile>
