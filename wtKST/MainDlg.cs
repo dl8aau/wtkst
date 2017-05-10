@@ -220,6 +220,13 @@ namespace wtKST
         public MainDlg()
         {
             InitializeComponent();
+
+            if (Settings.Default.UpgradeRequired)
+            {
+                Settings.Default.Upgrade();
+                Settings.Default.UpgradeRequired = false;
+                Settings.Default.Save();
+            }
             MainDlg.Log.FileFormat = "wtKST_{0:d}.log";
             MainDlg.Log.MessageFormat = "{0:u}: {1}";
             MainDlg.Log.WriteMessage("Startup.");
