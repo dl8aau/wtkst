@@ -1146,6 +1146,8 @@ namespace wtKST
                                 KST_Process_QRV(row, qrvcall, call_new_in_userlist);
 
                                 CALL.Rows.Add(row);
+                                if (call_new_in_userlist)
+                                    Check_QSO(row);
                             }
                         }
                         break;
@@ -1468,6 +1470,31 @@ namespace wtKST
             KST_Send();
         }
 
+        private void Check_QSO(DataRow call_row)
+        {
+            string call = call_row["CALL"].ToString();
+            call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
+            if (call.IndexOf("-") > 0)
+            {
+                call = call.Remove(call.IndexOf("-"));
+            }
+            foreach (string band in BANDS)
+            {
+                DataRow qso_row = wtQSO.QSO.Rows.Find(new object[] { call, band });
+                if (qso_row != null)
+                {
+                    call_row[band] = (int)QRV_STATE.worked;
+                    // check locator
+                    if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
+                    {
+                        Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                        WinTestLocatorWarning = true;
+                        Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                    }
+                }
+            }
+        }
+
         private void Check_QSOs()
         {
             WinTestLocatorWarning = false;
@@ -1475,27 +1502,7 @@ namespace wtKST
             {
                 foreach (DataRow call_row in CALL.Rows)
                 {
-                    string call = call_row["CALL"].ToString();
-                    call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
-                    if (call.IndexOf("-") > 0)
-                    {
-                        call = call.Remove(call.IndexOf("-"));
-                    }
-                    foreach (string band in new string[] { "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G" })
-                    {
-                        DataRow qso_row = wtQSO.QSO.Rows.Find(new object[] { call, band });
-                        if (qso_row != null)
-                        {
-                            call_row[band] = 2;
-                            // check locator
-                            if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
-                            {
-                                Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
-                                WinTestLocatorWarning = true;
-                                Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
-                            }
-                        }
-                    }
+                    Check_QSO(call_row);
                 }
             }
             catch (Exception e)
