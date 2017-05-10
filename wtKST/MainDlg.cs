@@ -384,6 +384,7 @@ namespace wtKST
                 tw.Close();
                 MsgQueue.Clear();
                 KSTBuffer = "";
+                Say("Disconnected from KST chat...");
             }
             catch
             {
