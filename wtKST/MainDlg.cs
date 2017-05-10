@@ -71,7 +71,7 @@ namespace wtKST
 
         private string MyLoc = "JO50IW";
 
-        private MainDlg.KST_STATE KSTState;
+        private MainDlg.KST_STATE KSTState = KST_STATE.Standby;
 
         private MainDlg.USER_STATE UserState;
 
@@ -3123,7 +3123,7 @@ namespace wtKST
             // 
             // ti_Reconnect
             // 
-            ti_Reconnect.Enabled = true;
+            ti_Reconnect.Enabled = false;
             ti_Reconnect.Interval = 30000;
             ti_Reconnect.Tick += new System.EventHandler(ti_Reconnect_Tick);
             // 
