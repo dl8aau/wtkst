@@ -1059,7 +1059,7 @@ namespace wtKST
                 else
                     newrow["TIME"] = DateTime.MinValue;
                 foreach (string band in BANDS)
-                    newrow[band] = 0;
+                    newrow[band] = QRV_STATE.unknown;
                 try
                 {
                     QRV.Rows.Add(newrow);
@@ -1379,25 +1379,25 @@ namespace wtKST
 
         bool check_in_log(DataRow row)
         {
-            if (Settings.Default.Band_144 && (int)row["144M"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_144 && (QRV_STATE)row["144M"] != QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_432 && (int)row["432M"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_432 && (QRV_STATE)row["432M"] != QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_1296 && (int)row["1_2G"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_1296 && (QRV_STATE)row["1_2G"] != QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_2320 && (int)row["2_3G"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_2320 && (QRV_STATE)row["2_3G"] != QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_3400 && (int)row["3_4G"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_3400 && (QRV_STATE)row["3_4G"] != QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_5760 && (int)row["5_7G"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_5760 && (QRV_STATE)row["5_7G"] != QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_10368 && (int)row["10G"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_10368 && (QRV_STATE)row["10G"] != QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_24GHz && (int)row["24G"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_24GHz && (QRV_STATE)row["24G"] != QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_47GHz && (int)row["47G"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_47GHz && (QRV_STATE)row["47G"] != QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_76GHz && (int)row["76G"] != (int)QRV_STATE.worked)
+            if (Settings.Default.Band_76GHz && (QRV_STATE)row["76G"] != QRV_STATE.worked)
                 return false;
             return true;
         }
@@ -1721,26 +1721,26 @@ namespace wtKST
         {
             if (e.Header.Text[0] > '0' && e.Header.Text[0] < '9')
             {
-                int state = 0;
+                QRV_STATE state = QRV_STATE.unknown;
                 try
                 {
-                    state = Convert.ToInt32(e.SubItem.Text);
+                    Enum.TryParse<QRV_STATE>(e.SubItem.Text, out state);
                 }
                 catch
                 {
                 }
                 switch (state)
                 {
-                case (int)QRV_STATE.unknown:
+                case QRV_STATE.unknown:
                     e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
                     break;
-                case (int)QRV_STATE.qrv:
+                case QRV_STATE.qrv:
                     e.Graphics.FillRectangle(Brushes.Red, e.Bounds);
                     break;
-                case (int)QRV_STATE.worked:
+                case QRV_STATE.worked:
                     e.Graphics.FillRectangle(Brushes.Green, e.Bounds);
                     break;
-                case (int)QRV_STATE.not_qrv:
+                case QRV_STATE.not_qrv:
                     e.Graphics.FillRectangle(Brushes.Black, e.Bounds);
                     break;
                 default:
@@ -1961,7 +1961,7 @@ namespace wtKST
                         state = QRV_STATE.unknown;
                         try
                         {
-                            state = (QRV_STATE)Convert.ToInt32(info.SubItem.Text);
+                            Enum.TryParse<QRV_STATE>(info.SubItem.Text, out state);
                         }
                         catch
                         {
@@ -1969,13 +1969,13 @@ namespace wtKST
                         switch (state)
                         {
                             case QRV_STATE.unknown:
-                                info.SubItem.Text = Convert.ToString((int)QRV_STATE.qrv); // "1"
+                                info.SubItem.Text = QRV_STATE.qrv.ToString();
                                 break;
                             case QRV_STATE.qrv:
-                                info.SubItem.Text = Convert.ToString((int)QRV_STATE.not_qrv); // "3"
+                                info.SubItem.Text = QRV_STATE.not_qrv.ToString();
                                 break;
                             case QRV_STATE.not_qrv:
-                                info.SubItem.Text = Convert.ToString((int)QRV_STATE.unknown); // "0"
+                                info.SubItem.Text = QRV_STATE.unknown.ToString();
                                 break;
                         }
                         Row = QRV.Rows.Find(info.Item.Text);
@@ -2008,7 +2008,7 @@ namespace wtKST
                             state = QRV_STATE.unknown;
                             try
                             {
-                                state = (QRV_STATE)Convert.ToInt32(Row[info.SubItem.Name].ToString());
+                                Enum.TryParse<QRV_STATE>(Row[info.SubItem.Name].ToString(), out state);
                             }
                             catch
                             {
