@@ -37,6 +37,12 @@ namespace wtKST
             Away
         }
 
+        private enum QRV_STATE : int
+        {
+            unknown = 0, qrv = 1, worked = 2, not_qrv = 3
+        }
+
+        private static readonly string[] BANDS = new string[] { "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G" };
         public DataTable MSG = new DataTable("MSG");
 
         public DataTable MYMSG = new DataTable("MYMSG");
@@ -252,16 +258,8 @@ namespace wtKST
             MSG.PrimaryKey = MSGkeys;
             QRV.Columns.Add("CALL");
             QRV.Columns.Add("TIME", typeof(DateTime));
-            QRV.Columns.Add("144M", typeof(int));
-            QRV.Columns.Add("432M", typeof(int));
-            QRV.Columns.Add("1_2G", typeof(int));
-            QRV.Columns.Add("2_3G", typeof(int));
-            QRV.Columns.Add("3_4G", typeof(int));
-            QRV.Columns.Add("5_7G", typeof(int));
-            QRV.Columns.Add("10G", typeof(int));
-            QRV.Columns.Add("24G", typeof(int));
-            QRV.Columns.Add("47G", typeof(int));
-            QRV.Columns.Add("76G", typeof(int));
+            foreach (string band in BANDS)
+                QRV.Columns.Add(band, typeof(int));
             DataColumn[] QRVkeys = new DataColumn[]
             {
                 QRV.Columns["CALL"]
@@ -281,16 +279,8 @@ namespace wtKST
             CALL.Columns.Add("DIR", typeof(int));
             CALL.Columns.Add("AWAY", typeof(bool));
             CALL.Columns.Add("AS", typeof(int));
-            CALL.Columns.Add("144M", typeof(int));
-            CALL.Columns.Add("432M", typeof(int));
-            CALL.Columns.Add("1_2G", typeof(int));
-            CALL.Columns.Add("2_3G", typeof(int));
-            CALL.Columns.Add("3_4G", typeof(int));
-            CALL.Columns.Add("5_7G", typeof(int));
-            CALL.Columns.Add("10G", typeof(int));
-            CALL.Columns.Add("24G", typeof(int));
-            CALL.Columns.Add("47G", typeof(int));
-            CALL.Columns.Add("76G", typeof(int));
+            foreach (string band in BANDS)
+                CALL.Columns.Add(band, typeof(int));
             DataColumn[] CALLkeys = new DataColumn[]
             {
                 CALL.Columns["CALL"]
@@ -359,93 +349,16 @@ namespace wtKST
                             Row["CALL"] = line.Split(new char[0])[0];
                             Row["TIME"] = DateTime.Parse(line.Split(new char[0])[1].TrimStart(
                                 new char[]{ '[' }).TrimEnd(new char[]{ ']' }) + " 00:00:00");
-                            if (line.IndexOf("144M") > 0)
+                            foreach (string band in BANDS)
                             {
-                                Row["144M"] = 1;
-                            }
-                            else
-                            {
-                                Row["144M"] = 0;
-                            }
-                            if (line.IndexOf("144M") > 0)
-                            {
-                                Row["144M"] = 1;
-                            }
-                            else
-                            {
-                                Row["432M"] = 0;
-                            }
-                            if (line.IndexOf("432M") > 0)
-                            {
-                                Row["432M"] = 1;
-                            }
-                            else
-                            {
-                                Row["432M"] = 0;
-                            }
-                            if (line.IndexOf("1.2G") > 0)
-                            {
-                                Row["1_2G"] = 1;
-                            }
-                            else
-                            {
-                                Row["1_2G"] = 0;
-                            }
-                            if (line.IndexOf("2.3G") > 0)
-                            {
-                                Row["2_3G"] = 1;
-                            }
-                            else
-                            {
-                                Row["2_3G"] = 0;
-                            }
-                            if (line.IndexOf("3.4G") > 0)
-                            {
-                                Row["3_4G"] = 1;
-                            }
-                            else
-                            {
-                                Row["3_4G"] = 0;
-                            }
-                            if (line.IndexOf("5.7G") > 0)
-                            {
-                                Row["5_7G"] = 1;
-                            }
-                            else
-                            {
-                                Row["5_7G"] = 0;
-                            }
-                            if (line.IndexOf("10G") > 0)
-                            {
-                                Row["10G"] = 1;
-                            }
-                            else
-                            {
-                                Row["10G"] = 0;
-                            }
-                            if (line.IndexOf("24G") > 0)
-                            {
-                                Row["24G"] = 1;
-                            }
-                            else
-                            {
-                                Row["24G"] = 0;
-                            }
-                            if (line.IndexOf("47G") > 0)
-                            {
-                                Row["47G"] = 1;
-                            }
-                            else
-                            {
-                                Row["47G"] = 0;
-                            }
-                            if (line.IndexOf("76G") > 0)
-                            {
-                                Row["76G"] = 1;
-                            }
-                            else
-                            {
-                                Row["76G"] = 0;
+                                if (line.IndexOf(band) > 0)
+                                {
+                                    Row[band] = QRV_STATE.qrv;
+                                }
+                                else
+                                {
+                                    Row[band] = QRV_STATE.unknown;
+                                }
                             }
                             QRV.Rows.Add(Row);
                         }
@@ -1055,16 +968,9 @@ namespace wtKST
                     {
                         LV.SubItems.Add("0");
                     }
-                    LV.SubItems.Add(row["144M"].ToString());
-                    LV.SubItems.Add(row["432M"].ToString());
-                    LV.SubItems.Add(row["1_2G"].ToString());
-                    LV.SubItems.Add(row["2_3G"].ToString());
-                    LV.SubItems.Add(row["3_4G"].ToString());
-                    LV.SubItems.Add(row["5_7G"].ToString());
-                    LV.SubItems.Add(row["10G"].ToString());
-                    LV.SubItems.Add(row["24G"].ToString());
-                    LV.SubItems.Add(row["47G"].ToString());
-                    LV.SubItems.Add(row["76G"].ToString());
+                    foreach (string band in BANDS)
+                        LV.SubItems.Add(row[band].ToString());
+
                     for (int j = 0; j < lv_Calls.Columns.Count; j++)
                     {
                         LV.SubItems[j].Name = lv_Calls.Columns[j].Text.Replace(".", "_");
@@ -1105,16 +1011,8 @@ namespace wtKST
                             row["LOC"] = bs.Split(new char[] { ' ' })[1].Trim();
                             row["TIME"] = DateTime.MinValue;
                             row["CONTACTED"] = 0;
-                            row["144M"] = 0;
-                            row["432M"] = 0;
-                            row["1_2G"] = 0;
-                            row["2_3G"] = 0;
-                            row["3_4G"] = 0;
-                            row["5_7G"] = 0;
-                            row["10G"] = 0;
-                            row["24G"] = 0;
-                            row["47G"] = 0;
-                            row["76G"] = 0;
+                            foreach (string band in BANDS)
+                                row[band] = QRV_STATE.unknown;
                             CALL.Rows.Add(row);
                         }
                         catch
@@ -1143,16 +1041,8 @@ namespace wtKST
                 }
                 else
                     row["TIME"] = findrow["TIME"];
-                row["144M"] = findrow["144M"];
-                row["432M"] = findrow["432M"];
-                row["1_2G"] = findrow["1_2G"];
-                row["2_3G"] = findrow["2_3G"];
-                row["3_4G"] = findrow["3_4G"];
-                row["5_7G"] = findrow["5_7G"];
-                row["10G"] = findrow["10G"];
-                row["24G"] = findrow["24G"];
-                row["47G"] = findrow["47G"];
-                row["76G"] = findrow["76G"];
+                foreach (string band in BANDS)
+                    row[band] = findrow[band];
             }
             else
             {
@@ -1160,32 +1050,16 @@ namespace wtKST
                     row["TIME"] = row["LOGINTIME"];
                 else
                     row["TIME"] = DateTime.MinValue;
-                row["144M"] = 0;
-                row["432M"] = 0;
-                row["1_2G"] = 0;
-                row["2_3G"] = 0;
-                row["3_4G"] = 0;
-                row["5_7G"] = 0;
-                row["10G"] = 0;
-                row["24G"] = 0;
-                row["47G"] = 0;
-                row["76G"] = 0;
+                foreach (string band in BANDS)
+                    row[band] = QRV_STATE.unknown;
                 DataRow newrow = QRV.NewRow();
                 newrow["CALL"] = qrvcall;
                 if (call_new_in_userlist)
                     newrow["TIME"] = row["LOGINTIME"];
                 else
                     newrow["TIME"] = DateTime.MinValue;
-                newrow["144M"] = 0;
-                newrow["432M"] = 0;
-                newrow["1_2G"] = 0;
-                newrow["2_3G"] = 0;
-                newrow["3_4G"] = 0;
-                newrow["5_7G"] = 0;
-                newrow["10G"] = 0;
-                newrow["24G"] = 0;
-                newrow["47G"] = 0;
-                newrow["76G"] = 0;
+                foreach (string band in BANDS)
+                    newrow[band] = 0;
                 try
                 {
                     QRV.Rows.Add(newrow);
@@ -1503,25 +1377,25 @@ namespace wtKST
 
         bool check_in_log(DataRow row)
         {
-            if (Settings.Default.Band_144 && (int)row["144M"] != 2)
+            if (Settings.Default.Band_144 && (int)row["144M"] != (int)QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_432 && (int)row["432M"] != 2)
+            if (Settings.Default.Band_432 && (int)row["432M"] != (int)QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_1296 && (int)row["1_2G"] != 2)
+            if (Settings.Default.Band_1296 && (int)row["1_2G"] != (int)QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_2320 && (int)row["2_3G"] != 2)
+            if (Settings.Default.Band_2320 && (int)row["2_3G"] != (int)QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_3400 && (int)row["3_4G"] != 2)
+            if (Settings.Default.Band_3400 && (int)row["3_4G"] != (int)QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_5760 && (int)row["5_7G"] != 2)
+            if (Settings.Default.Band_5760 && (int)row["5_7G"] != (int)QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_10368 && (int)row["10G"] != 2)
+            if (Settings.Default.Band_10368 && (int)row["10G"] != (int)QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_24GHz && (int)row["24G"] != 2)
+            if (Settings.Default.Band_24GHz && (int)row["24G"] != (int)QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_47GHz && (int)row["47G"] != 2)
+            if (Settings.Default.Band_47GHz && (int)row["47G"] != (int)QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_76GHz && (int)row["76G"] != 2)
+            if (Settings.Default.Band_76GHz && (int)row["76G"] != (int)QRV_STATE.worked)
                 return false;
             return true;
         }
@@ -1850,14 +1724,17 @@ namespace wtKST
                 }
                 switch (state)
                 {
-                case 0:
+                case (int)QRV_STATE.unknown:
                     e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
                     break;
-                case 1:
+                case (int)QRV_STATE.qrv:
                     e.Graphics.FillRectangle(Brushes.Red, e.Bounds);
                     break;
-                case 2:
+                case (int)QRV_STATE.worked:
                     e.Graphics.FillRectangle(Brushes.Green, e.Bounds);
+                    break;
+                case (int)QRV_STATE.not_qrv:
+                    e.Graphics.FillRectangle(Brushes.Black, e.Bounds);
                     break;
                 default:
                     e.DrawDefault = true;
@@ -2050,7 +1927,7 @@ namespace wtKST
             if (e.Button == MouseButtons.Left)
             {
                 Point p = new Point(e.X, e.Y);
-                int state = 0;
+                QRV_STATE state = QRV_STATE.unknown;
                 DataRow Row = null;
                 ListViewHitTestInfo info = lv_Calls.HitTest(p);
                 if (info != null && info.SubItem != null)
@@ -2073,63 +1950,73 @@ namespace wtKST
                     }
                     if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
                     {
-                        state = 0;
+                        // band columns
+                        state = QRV_STATE.unknown;
                         try
                         {
-                            state = Convert.ToInt32(info.SubItem.Text);
+                            state = (QRV_STATE)Convert.ToInt32(info.SubItem.Text);
                         }
                         catch
                         {
                         }
                         switch (state)
                         {
-                        case 0:
-                            info.SubItem.Text = "1";
-                            break;
-                        case 1:
-                            info.SubItem.Text = "0";
-                            break;
+                            case QRV_STATE.unknown:
+                                info.SubItem.Text = Convert.ToString((int)QRV_STATE.qrv); // "1"
+                                break;
+                            case QRV_STATE.qrv:
+                                info.SubItem.Text = Convert.ToString((int)QRV_STATE.not_qrv); // "3"
+                                break;
+                            case QRV_STATE.not_qrv:
+                                info.SubItem.Text = Convert.ToString((int)QRV_STATE.unknown); // "0"
+                                break;
                         }
                         Row = QRV.Rows.Find(info.Item.Text);
                         if (Row != null)
                         {
-                            state = 0;
+                            state = QRV_STATE.unknown;
                             try
                             {
-                                state = Convert.ToInt32(Row[info.SubItem.Name].ToString());
+                                state = (QRV_STATE)Convert.ToInt32(Row[info.SubItem.Name].ToString());
                             }
                             catch
                             {
                             }
                             switch (state)
                             {
-                            case 0:
-                                Row[info.SubItem.Name] = 1;
+                                case QRV_STATE.unknown:
+                                    Row[info.SubItem.Name] = QRV_STATE.qrv;
                                 break;
-                            case 1:
-                                Row[info.SubItem.Name] = 0;
-                                break;
+                                case QRV_STATE.qrv:
+                                    Row[info.SubItem.Name] = QRV_STATE.not_qrv;
+                                    break;
+                                case QRV_STATE.not_qrv:
+                                    Row[info.SubItem.Name] = QRV_STATE.unknown;
+                                    break;
                             }
                         }
                         Row = CALL.Rows.Find(info.Item.Text);
                         if (Row != null)
                         {
-                            state = 0;
+                            state = QRV_STATE.unknown;
                             try
                             {
-                                state = Convert.ToInt32(Row[info.SubItem.Name].ToString());
+                                state = (QRV_STATE)Convert.ToInt32(Row[info.SubItem.Name].ToString());
                             }
                             catch
                             {
                             }
                             switch (state)
                             {
-                            case 0:
-                                Row[info.SubItem.Name] = 1;
-                                break;
-                            case 1:
-                                Row[info.SubItem.Name] = 0;
-                                break;
+                                case QRV_STATE.unknown:
+                                    Row[info.SubItem.Name] = QRV_STATE.qrv;
+                                    break;
+                                case QRV_STATE.qrv:
+                                    Row[info.SubItem.Name] = QRV_STATE.not_qrv;
+                                    break;
+                                case QRV_STATE.not_qrv:
+                                    Row[info.SubItem.Name] = QRV_STATE.unknown;
+                                    break;
                             }
                         }
                         lv_Calls.Refresh();
