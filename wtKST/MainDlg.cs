@@ -1573,14 +1573,22 @@ namespace wtKST
             {
                 if (wtQSO != null && Settings.Default.WinTest_Activate)
                 {
-                    MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
-                    wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
-                    if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
+                    try
                     {
+                        MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
+
+                        wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
+                        if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
+                        {
                             MyLoc = wtQSO.MyLoc;
                             set_KST_Status();
+                        }
+                        Check_QSOs();
                     }
-                    Check_QSOs();
+                    catch
+                    {
+
+                    }
                 }
                 KST_Update_USR_Window();
                 if (Settings.Default.AS_Active)
