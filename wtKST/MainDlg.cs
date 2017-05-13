@@ -1848,7 +1848,15 @@ namespace wtKST
                 }
                 if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
                 {
-                    if (info.SubItem.Text != "2")
+                    QRV_STATE state = QRV_STATE.unknown;
+                    try
+                    {
+                        Enum.TryParse<QRV_STATE>(info.SubItem.Text, out state);
+                    }
+                    catch
+                    {
+                    }
+                    if (state != QRV_STATE.worked)
                     {
                         ToolTipText = info.SubItem.Name.Replace("_", ".") + ": Left click to \ntoggle QRV info";
                     }
