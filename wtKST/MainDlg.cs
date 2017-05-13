@@ -1678,10 +1678,16 @@ namespace wtKST
         {
             int BorderWith = (base.Width - base.ClientSize.Width) / 2;
             int TitleBarHeight = base.Height - base.ClientSize.Height - 2 * BorderWith;
-            p = control.PointToScreen(p);
-            p = base.PointToClient(p);
+            int TextBlockHeight = TextRenderer.MeasureText(text, control.Font).Height;
+            int TextLineHeight = TextRenderer.MeasureText("M", control.Font).Height;
+            Point sp = control.PointToScreen(p);
+            p = base.PointToClient(sp);
             p.X += BorderWith;
-            p.Y = p.Y + TitleBarHeight + Cursor.Size.Height;
+            // check if (in screen coordinates) the text would lie outside or too close to the bottom of the current screen
+            if (Screen.FromControl(control).Bounds.Height - (sp.Y + TitleBarHeight + Cursor.Size.Height + TextBlockHeight) > 0)
+                p.Y += TitleBarHeight + Cursor.Size.Height;
+            else // move text above the mouse pointer
+                p.Y += TitleBarHeight - Cursor.Size.Height + TextLineHeight - TextBlockHeight;
             tt_Info.Show(text, this, p, 5000);
         }
 
