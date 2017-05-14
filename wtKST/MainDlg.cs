@@ -1429,6 +1429,8 @@ namespace wtKST
                 if (oldchat != Settings.Default.KST_Chat)
                 {
                     CALL.Clear();
+                    MSG.Clear();
+                    latestMessageTimestampSet = false;
                     lv_Calls.Items.Clear();
                     lv_Msg.Items.Clear();
                     lv_MyMsg.Items.Clear();
