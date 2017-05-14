@@ -153,7 +153,7 @@ namespace De.Mud.Telnet
 			try
 			{
 				// Establish the remote endpoint for the socket.
-				IPHostEntry ipHostInfo = Dns.Resolve(host);
+				IPHostEntry ipHostInfo = Dns.GetHostEntry(host);
 				IPAddress ipAddress = ipHostInfo.AddressList[0];
 				IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
