@@ -9,7 +9,7 @@ using System.Threading;
 using WinTest;
 using wtKST.Properties;
 
-namespace wtKST.wtKST
+namespace wtKST
 {
     class AirScoutInterface
     {
