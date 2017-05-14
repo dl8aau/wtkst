@@ -1960,7 +1960,6 @@ namespace wtKST
             {
                 Point p = new Point(e.X, e.Y);
                 QRV_STATE state = QRV_STATE.unknown;
-                DataRow Row = null;
                 ListViewHitTestInfo info = lv_Calls.HitTest(p);
                 if (info != null && info.SubItem != null)
                 {
@@ -1985,6 +1984,9 @@ namespace wtKST
                     if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
                     {
                         // band columns
+                        DataRow CallsRow = CALL.Rows.Find(call);
+                        DataRow QRVRow = QRV.Rows.Find(call);
+                        string band = info.SubItem.Name;
                         state = QRV_STATE.unknown;
                         try
                         {
@@ -1997,61 +1999,25 @@ namespace wtKST
                         {
                             case QRV_STATE.unknown:
                                 info.SubItem.Text = QRV_STATE.qrv.ToString();
+                                if (QRVRow != null)
+                                    QRVRow[band] = QRV_STATE.qrv;
+                                if (CallsRow != null)
+                                    CallsRow[band] = QRV_STATE.qrv;
                                 break;
                             case QRV_STATE.qrv:
                                 info.SubItem.Text = QRV_STATE.not_qrv.ToString();
+                                if (QRVRow != null)
+                                    QRVRow[band] = QRV_STATE.not_qrv;
+                                if (CallsRow != null)
+                                    CallsRow[band] = QRV_STATE.not_qrv;
                                 break;
                             case QRV_STATE.not_qrv:
                                 info.SubItem.Text = QRV_STATE.unknown.ToString();
+                                if (QRVRow != null)
+                                    QRVRow[band] = QRV_STATE.unknown;
+                                if (CallsRow != null)
+                                    CallsRow[band] = QRV_STATE.unknown;
                                 break;
-                        }
-                        Row = QRV.Rows.Find(info.Item.Text);
-                        if (Row != null)
-                        {
-                            state = QRV_STATE.unknown;
-                            try
-                            {
-                                state = (QRV_STATE)Convert.ToInt32(Row[info.SubItem.Name].ToString());
-                            }
-                            catch
-                            {
-                            }
-                            switch (state)
-                            {
-                                case QRV_STATE.unknown:
-                                    Row[info.SubItem.Name] = QRV_STATE.qrv;
-                                break;
-                                case QRV_STATE.qrv:
-                                    Row[info.SubItem.Name] = QRV_STATE.not_qrv;
-                                    break;
-                                case QRV_STATE.not_qrv:
-                                    Row[info.SubItem.Name] = QRV_STATE.unknown;
-                                    break;
-                            }
-                        }
-                        Row = CALL.Rows.Find(info.Item.Text);
-                        if (Row != null)
-                        {
-                            state = QRV_STATE.unknown;
-                            try
-                            {
-                                Enum.TryParse<QRV_STATE>(Row[info.SubItem.Name].ToString(), out state);
-                            }
-                            catch
-                            {
-                            }
-                            switch (state)
-                            {
-                                case QRV_STATE.unknown:
-                                    Row[info.SubItem.Name] = QRV_STATE.qrv;
-                                    break;
-                                case QRV_STATE.qrv:
-                                    Row[info.SubItem.Name] = QRV_STATE.not_qrv;
-                                    break;
-                                case QRV_STATE.not_qrv:
-                                    Row[info.SubItem.Name] = QRV_STATE.unknown;
-                                    break;
-                            }
                         }
                         lv_Calls.Refresh();
                     }
