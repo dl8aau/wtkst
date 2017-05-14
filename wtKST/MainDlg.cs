@@ -1520,7 +1520,6 @@ namespace wtKST
 
         public string GetNearestPlanes(string call)
         {
-            call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
             PlaneInfoList infolist = null;
             string result;
             if (AS_if.planes.TryGetValue(call, out infolist))
@@ -1833,7 +1832,8 @@ namespace wtKST
                 }
                 if (info.SubItem.Name == "AS")
                 {
-                    string s = GetNearestPlanes(info.Item.Text);
+                    string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
+                    string s = GetNearestPlanes(call);
                     if (string.IsNullOrEmpty(s))
                     {
                         ToolTipText = "No planes\n\nLeft click for map";
@@ -1903,7 +1903,7 @@ namespace wtKST
         {
             if (lv_Calls.SelectedItems != null && lv_Calls.SelectedItems[0].Text.Length > 0)
             {
-                cb_Command.Text = "/cq " + lv_Calls.SelectedItems[0].Text + " ";
+                cb_Command.Text = "/cq " + lv_Calls.SelectedItems[0].Text.Replace("(", "").Replace(")", "") + " ";
                 cb_Command.Focus();
                 cb_Command.SelectionStart = cb_Command.Text.Length;
                 cb_Command.SelectionLength = 0;
@@ -1964,18 +1964,20 @@ namespace wtKST
                 ListViewHitTestInfo info = lv_Calls.HitTest(p);
                 if (info != null && info.SubItem != null)
                 {
+                    string username = info.Item.Text.Replace("(", "").Replace(")", "");
+                    string call = WCCheck.WCCheck.Cut(username);
+
                     if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "UTC")
                     {
-                        if (info.Item.Text.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                        if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
                         {
-                            cb_Command.Text = "/cq " + info.Item.Text.Replace("(", "").Replace(")", "") + " ";
+                            cb_Command.Text = "/cq " + username + " ";
                             cb_Command.SelectionStart = cb_Command.Text.Length;
                             cb_Command.SelectionLength = 0;
                         }
                     }
                     if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
                     {
-                        string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
                         string loc = info.Item.SubItems[2].Text;
 
                         AS_if.show_path(call, loc, MyCall, MyLoc);
@@ -2064,7 +2066,8 @@ namespace wtKST
                 {
                     if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
                     {
-                        string s = GetNearestPlanes(info.Item.Text);
+                        string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
+                        string s = GetNearestPlanes(call);
                         if (string.IsNullOrEmpty(s))
                         {
                             ToolTipText = "No planes\n\nLeft click for map";
@@ -2094,9 +2097,11 @@ namespace wtKST
             ListViewHitTestInfo info = lv_Msg.HitTest(p);
             if (info != null && info.Item != null)
             {
-                if (info.Item.SubItems[1].Text.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                string username = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
+
+                if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
                 {
-                    cb_Command.Text = "/cq " + info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "") + " ";
+                    cb_Command.Text = "/cq " + username + " ";
                     cb_Command.SelectionStart = cb_Command.Text.Length;
                     cb_Command.SelectionLength = 0;
                 }
@@ -2109,9 +2114,11 @@ namespace wtKST
             ListViewHitTestInfo info = lv_MyMsg.HitTest(p);
             if (info != null && info.Item != null)
             {
-                if (info.Item.SubItems[1].Text.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                string username = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
+
+                if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
                 {
-                    cb_Command.Text = "/cq " + info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "") + " ";
+                    cb_Command.Text = "/cq " + username + " ";
                     cb_Command.SelectionStart = cb_Command.Text.Length;
                     cb_Command.SelectionLength = 0;
                 }
