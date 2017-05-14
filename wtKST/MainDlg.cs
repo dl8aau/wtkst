@@ -37,17 +37,12 @@ namespace wtKST
             Away
         }
 
-        private enum QRV_STATE : int
-        {
-            unknown = 0, qrv = 1, worked = 2, not_qrv = 3
-        }
-
         private static readonly string[] BANDS = new string[] { "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G" };
         public DataTable MSG = new DataTable("MSG");
 
         public DataTable MYMSG = new DataTable("MYMSG");
 
-        public DataTable QRV = new DataTable("QRV");
+        private QRVdb qrv = new QRVdb(BANDS);
 
         public DataTable CALL = new DataTable("CALL");
 
@@ -256,16 +251,6 @@ namespace wtKST
                 MSG.Columns["MSG"]
             };
             MSG.PrimaryKey = MSGkeys;
-            QRV.Columns.Add("CALL");
-            QRV.Columns.Add("TIME", typeof(DateTime));
-            foreach (string band in BANDS)
-                QRV.Columns.Add(band, typeof(int));
-            DataColumn[] QRVkeys = new DataColumn[]
-            {
-                QRV.Columns["CALL"]
-            };
-            QRV.PrimaryKey = QRVkeys;
-            InitializeQRV(false);
 
             CALL.Columns.Add("CALL");
             CALL.Columns.Add("NAME");
@@ -304,72 +289,6 @@ namespace wtKST
             }
         }
 
-        private void InitializeQRV(bool ForceReload)
-        {
-            QRV.Clear();
-            try
-            {
-                string QRV_Table_Filename = Path.Combine(Application.LocalUserAppDataPath, Settings.Default.WinTest_QRV_Table_FileName);
-                TimeSpan ts = DateTime.Now - File.GetLastWriteTime(QRV_Table_Filename);
-                if (!ForceReload && File.Exists(QRV_Table_Filename) && ts.Hours < 48)
-                {
-                    try
-                    {
-                        QRV.BeginLoadData();
-                        QRV.ReadXml(QRV_Table_Filename);
-                        QRV.EndLoadData();
-                    }
-                    catch (Exception e)
-                    {
-                        Error(MethodBase.GetCurrentMethod().Name, "(QRV.xml): " + e.Message);
-                    }
-                }
-                // if we cannot read qrv.xml from appdata path, try current directoy (=previous default)
-                if (QRV.Rows.Count == 0 && !ForceReload && File.Exists(Settings.Default.WinTest_QRV_Table_FileName))
-                {
-                    try
-                    {
-                        QRV.BeginLoadData();
-                        QRV.ReadXml(Settings.Default.WinTest_QRV_Table_FileName);
-                        QRV.EndLoadData();
-                    }
-                    catch (Exception e)
-                    {
-                        Error(MethodBase.GetCurrentMethod().Name, "(QRV.xml): " + e.Message);
-                    }
-                }
-                if (QRV.Rows.Count == 0)
-                {
-                    using (StreamReader sr = new StreamReader(Settings.Default.WinTest_QRV_FileName))
-                    {
-                        while (!sr.EndOfStream)
-                        {
-                            string line = sr.ReadLine();
-                            DataRow Row = QRV.NewRow();
-                            Row["CALL"] = line.Split(new char[0])[0];
-                            Row["TIME"] = DateTime.Parse(line.Split(new char[0])[1].TrimStart(
-                                new char[]{ '[' }).TrimEnd(new char[]{ ']' }) + " 00:00:00");
-                            foreach (string band in BANDS)
-                            {
-                                if (line.IndexOf(band) > 0)
-                                {
-                                    Row[band] = QRV_STATE.qrv;
-                                }
-                                else
-                                {
-                                    Row[band] = QRV_STATE.unknown;
-                                }
-                            }
-                            QRV.Rows.Add(Row);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Error(MethodBase.GetCurrentMethod().Name, "(" + Settings.Default.WinTest_QRV_FileName + "): " + e.Message);
-            }
-        }
 
         private void tw_Disconnected(object sender, TelnetWrapperDisconnctedEventArgs e)
         {
@@ -754,14 +673,10 @@ namespace wtKST
 
                 DateTime dt = (DateTime)Row["TIME"];
 
-                DataRow findrow = QRV.Rows.Find(Row["CALL"].ToString().Trim());
                 // TODO: what if user is not in user list yet? time not updated then
                 // -> count appearing on user list as "activity", too
-                if (findrow != null)
-                {
-                    if ((DateTime)findrow["TIME"] < dt)
-                        findrow["TIME"] = Row["TIME"];
-                }
+                qrv.set_time(Row["CALL"].ToString().Trim(), dt);
+
                 ListViewItem LV = new ListViewItem();
                 LV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
                 LV.Tag = dt; // store the timestamp in the tag field
@@ -840,7 +755,7 @@ namespace wtKST
                     lv_Msg.Items[current_index].BackColor = Color.FromArgb(16745026);
                 }
                 // check the recipient of the message
-                findrow = CALL.Rows.Find(Row["RECIPIENT"].ToString());
+                DataRow findrow = CALL.Rows.Find(Row["RECIPIENT"].ToString());
                 if (findrow != null)
                 {
                     findrow["CONTACTED"] = (int)findrow["CONTACTED"] + 1;
@@ -1013,7 +928,7 @@ namespace wtKST
                             row["TIME"] = DateTime.MinValue;
                             row["CONTACTED"] = 0;
                             foreach (string band in BANDS)
-                                row[band] = QRV_STATE.unknown;
+                                row[band] = QRVdb.QRV_STATE.unknown;
                             CALL.Rows.Add(row);
                         }
                         catch
@@ -1025,50 +940,6 @@ namespace wtKST
             catch (Exception e)
             {
                 Error(MethodBase.GetCurrentMethod().Name, e.Message);
-            }
-        }
-
-        private void KST_Process_QRV(DataRow row, string qrvcall, bool call_new_in_userlist=false)
-        {
-            DataRow findrow = QRV.Rows.Find(qrvcall);
-            if (findrow != null)
-            {
-                if (call_new_in_userlist)
-                {
-                    // if we have not just started (oldCALL empty) treat connecting
-                    // to KST as activity
-                    row["TIME"] = row["LOGINTIME"];
-                    findrow["TIME"] = row["LOGINTIME"];
-                }
-                else
-                    row["TIME"] = findrow["TIME"];
-                foreach (string band in BANDS)
-                    row[band] = findrow[band];
-            }
-            else
-            {
-                if (call_new_in_userlist)
-                    row["TIME"] = row["LOGINTIME"];
-                else
-                    row["TIME"] = DateTime.MinValue;
-                foreach (string band in BANDS)
-                    row[band] = QRV_STATE.unknown;
-                DataRow newrow = QRV.NewRow();
-                newrow["CALL"] = qrvcall;
-                if (call_new_in_userlist)
-                    newrow["TIME"] = row["LOGINTIME"];
-                else
-                    newrow["TIME"] = DateTime.MinValue;
-                foreach (string band in BANDS)
-                    newrow[band] = QRV_STATE.unknown;
-                try
-                {
-                    QRV.Rows.Add(newrow);
-                }
-                catch (Exception e)
-                {
-                    Error(MethodBase.GetCurrentMethod().Name, e.Message);
-                }
             }
         }
 
@@ -1144,7 +1015,7 @@ namespace wtKST
                                 }
                                 row["CONTACTED"] = 0;
 
-                                KST_Process_QRV(row, qrvcall, call_new_in_userlist);
+                                qrv.Process_QRV(row, qrvcall, call_new_in_userlist);
 
                                 CALL.Rows.Add(row);
                                 if (call_new_in_userlist)
@@ -1380,25 +1251,25 @@ namespace wtKST
 
         bool check_in_log(DataRow row)
         {
-            if (Settings.Default.Band_144 && (QRV_STATE)row["144M"] != QRV_STATE.worked)
+            if (Settings.Default.Band_144 && (QRVdb.QRV_STATE)row["144M"] != QRVdb.QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_432 && (QRV_STATE)row["432M"] != QRV_STATE.worked)
+            if (Settings.Default.Band_432 && (QRVdb.QRV_STATE)row["432M"] != QRVdb.QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_1296 && (QRV_STATE)row["1_2G"] != QRV_STATE.worked)
+            if (Settings.Default.Band_1296 && (QRVdb.QRV_STATE)row["1_2G"] != QRVdb.QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_2320 && (QRV_STATE)row["2_3G"] != QRV_STATE.worked)
+            if (Settings.Default.Band_2320 && (QRVdb.QRV_STATE)row["2_3G"] != QRVdb.QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_3400 && (QRV_STATE)row["3_4G"] != QRV_STATE.worked)
+            if (Settings.Default.Band_3400 && (QRVdb.QRV_STATE)row["3_4G"] != QRVdb.QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_5760 && (QRV_STATE)row["5_7G"] != QRV_STATE.worked)
+            if (Settings.Default.Band_5760 && (QRVdb.QRV_STATE)row["5_7G"] != QRVdb.QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_10368 && (QRV_STATE)row["10G"] != QRV_STATE.worked)
+            if (Settings.Default.Band_10368 && (QRVdb.QRV_STATE)row["10G"] != QRVdb.QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_24GHz && (QRV_STATE)row["24G"] != QRV_STATE.worked)
+            if (Settings.Default.Band_24GHz && (QRVdb.QRV_STATE)row["24G"] != QRVdb.QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_47GHz && (QRV_STATE)row["47G"] != QRV_STATE.worked)
+            if (Settings.Default.Band_47GHz && (QRVdb.QRV_STATE)row["47G"] != QRVdb.QRV_STATE.worked)
                 return false;
-            if (Settings.Default.Band_76GHz && (QRV_STATE)row["76G"] != QRV_STATE.worked)
+            if (Settings.Default.Band_76GHz && (QRVdb.QRV_STATE)row["76G"] != QRVdb.QRV_STATE.worked)
                 return false;
             return true;
         }
@@ -1486,7 +1357,7 @@ namespace wtKST
                 DataRow qso_row = wtQSO.QSO.Rows.Find(new object[] { call, band });
                 if (qso_row != null)
                 {
-                    call_row[band] = (int)QRV_STATE.worked;
+                    call_row[band] = (int)QRVdb.QRV_STATE.worked;
                     // check locator
                     if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
                     {
@@ -1644,9 +1515,8 @@ namespace wtKST
             {
                 bw_GetPlanes.CancelAsync();
                 ni_Main.Visible = false; // hide NotificationIcon
-                string FileName = Path.Combine(Application.LocalUserAppDataPath, Settings.Default.WinTest_QRV_Table_FileName);
-                Say("Saving QRV-Database to " + FileName + "...");
-                QRV.WriteXml(FileName, XmlWriteMode.IgnoreSchema);
+                Say("Saving QRV-Database");
+                qrv.save_db();
             }
             catch (Exception e2)
             {
@@ -1737,26 +1607,26 @@ namespace wtKST
         {
             if (e.Header.Text[0] > '0' && e.Header.Text[0] < '9')
             {
-                QRV_STATE state = QRV_STATE.unknown;
+                QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
                 try
                 {
-                    Enum.TryParse<QRV_STATE>(e.SubItem.Text, out state);
+                    Enum.TryParse<QRVdb.QRV_STATE>(e.SubItem.Text, out state);
                 }
                 catch
                 {
                 }
                 switch (state)
                 {
-                case QRV_STATE.unknown:
+                case QRVdb.QRV_STATE.unknown:
                     e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
                     break;
-                case QRV_STATE.qrv:
+                case QRVdb.QRV_STATE.qrv:
                     e.Graphics.FillRectangle(Brushes.Red, e.Bounds);
                     break;
-                case QRV_STATE.worked:
+                case QRVdb.QRV_STATE.worked:
                     e.Graphics.FillRectangle(Brushes.Green, e.Bounds);
                     break;
-                case QRV_STATE.not_qrv:
+                case QRVdb.QRV_STATE.not_qrv:
                     e.Graphics.FillRectangle(Brushes.Black, e.Bounds);
                     break;
                 default:
@@ -1856,15 +1726,15 @@ namespace wtKST
                 }
                 if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
                 {
-                    QRV_STATE state = QRV_STATE.unknown;
+                    QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
                     try
                     {
-                        Enum.TryParse<QRV_STATE>(info.SubItem.Text, out state);
+                        Enum.TryParse<QRVdb.QRV_STATE>(info.SubItem.Text, out state);
                     }
                     catch
                     {
                     }
-                    if (state != QRV_STATE.worked)
+                    if (state != QRVdb.QRV_STATE.worked)
                     {
                         ToolTipText = info.SubItem.Name.Replace("_", ".") + ": Left click to \ntoggle QRV info";
                     }
@@ -1959,7 +1829,7 @@ namespace wtKST
             if (e.Button == MouseButtons.Left)
             {
                 Point p = new Point(e.X, e.Y);
-                QRV_STATE state = QRV_STATE.unknown;
+                QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
                 ListViewHitTestInfo info = lv_Calls.HitTest(p);
                 if (info != null && info.SubItem != null)
                 {
@@ -1985,40 +1855,37 @@ namespace wtKST
                     {
                         // band columns
                         DataRow CallsRow = CALL.Rows.Find(call);
-                        DataRow QRVRow = QRV.Rows.Find(call);
                         string band = info.SubItem.Name;
-                        state = QRV_STATE.unknown;
+                        state = QRVdb.QRV_STATE.unknown;
                         try
                         {
-                            Enum.TryParse<QRV_STATE>(info.SubItem.Text, out state);
+                            Enum.TryParse<QRVdb.QRV_STATE>(info.SubItem.Text, out state);
                         }
                         catch
                         {
                         }
                         switch (state)
                         {
-                            case QRV_STATE.unknown:
-                                info.SubItem.Text = QRV_STATE.qrv.ToString();
-                                if (QRVRow != null)
-                                    QRVRow[band] = QRV_STATE.qrv;
+                            case QRVdb.QRV_STATE.unknown:
+                                info.SubItem.Text = QRVdb.QRV_STATE.qrv.ToString();
+                                qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.qrv);
                                 if (CallsRow != null)
-                                    CallsRow[band] = QRV_STATE.qrv;
+                                    CallsRow[band] = QRVdb.QRV_STATE.qrv;
                                 break;
-                            case QRV_STATE.qrv:
-                                info.SubItem.Text = QRV_STATE.not_qrv.ToString();
-                                if (QRVRow != null)
-                                    QRVRow[band] = QRV_STATE.not_qrv;
+                            case QRVdb.QRV_STATE.qrv:
+                                info.SubItem.Text = QRVdb.QRV_STATE.not_qrv.ToString();
+                                qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.not_qrv);
                                 if (CallsRow != null)
-                                    CallsRow[band] = QRV_STATE.not_qrv;
+                                    CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
                                 break;
-                            case QRV_STATE.not_qrv:
-                                info.SubItem.Text = QRV_STATE.unknown.ToString();
-                                if (QRVRow != null)
-                                    QRVRow[band] = QRV_STATE.unknown;
+                            case QRVdb.QRV_STATE.not_qrv:
+                                info.SubItem.Text = QRVdb.QRV_STATE.unknown.ToString();
+                                qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.unknown);
                                 if (CallsRow != null)
-                                    CallsRow[band] = QRV_STATE.unknown;
+                                    CallsRow[band] = QRVdb.QRV_STATE.unknown;
                                 break;
                         }
+
                         lv_Calls.Refresh();
                     }
                 }
