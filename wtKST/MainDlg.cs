@@ -1320,7 +1320,8 @@ namespace wtKST
 
         private void tsi_KST_Disconnect_Click(object sender, EventArgs e)
         {
-            if (Settings.Default.KST_AutoConnect && MessageBox.Show("The KSTAutoConnect function is on. You will be reconnected automatically after 30secs. Do you want to switch this function off?", "KSTAutoConnect", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (Settings.Default.KST_AutoConnect 
+                && MessageBox.Show("The KSTAutoConnect function is on. You will be reconnected automatically after 30secs. Do you want to switch this function off?", "KSTAutoConnect", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Settings.Default.KST_AutoConnect = false;
                 Settings.Default.Save();
