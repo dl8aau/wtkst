@@ -1468,6 +1468,10 @@ namespace wtKST
 
                     }
                 }
+                if ( !Settings.Default.WinTest_Activate && wtQSO.QSO.Rows.Count > 0)
+                {
+                    wtQSO.Clear_QSOs();
+                }
                 KST_Update_USR_Window();
                 if (Settings.Default.AS_Active)
                     AS_send_ASWATCHLIST();

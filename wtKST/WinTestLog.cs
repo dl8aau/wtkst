@@ -37,6 +37,11 @@ namespace WinTest
         {
             return WinTest_FileName;
         }
+        
+        public void Clear_QSOs()
+        {
+            QSO.Clear();
+        }
 
         public void Get_QSOs(string WinTest_INI_FileName)
         {
