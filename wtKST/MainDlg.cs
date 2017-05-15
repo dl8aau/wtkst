@@ -746,13 +746,12 @@ namespace wtKST
                 }
 
                 if (lv_Msg.Items.Count % 2 == 0)
-                    lv_Msg.Items[current_index].BackColor = Color.FromArgb(16777200);
+                    lv_Msg.Items[current_index].BackColor = Color.Ivory;
                 else
-                    lv_Msg.Items[current_index].BackColor = Color.FromArgb(11516905);
-
+                    lv_Msg.Items[current_index].BackColor = Color.FromArgb(0xAFBBE9); //approx. Pale cornflower blue or LightSteelBlue?
                 if (Row["RECIPIENT"].ToString().Equals(MyCall))
                 {
-                    lv_Msg.Items[current_index].BackColor = Color.FromArgb(16745026);
+                    lv_Msg.Items[current_index].BackColor = Color.Coral;
                 }
                 // check the recipient of the message
                 DataRow findrow = CALL.Rows.Find(Row["RECIPIENT"].ToString());
