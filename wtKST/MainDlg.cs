@@ -765,13 +765,19 @@ namespace wtKST
                 {
                     findrow["CONTACTED"] = 0; // clear counter on activity
                 }
-                if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(MyCall))
+                bool fromMe = Row["CALL"].ToString().ToUpper().StartsWith(MyCall);
+
+                if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(MyCall) 
+                    || ( fromMe && Settings.Default.KST_Show_Own_Messages ))
                 {
                     ListViewItem MyLV = new ListViewItem();
                     if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")"))
                     {
                         MyLV.BackColor = Color.BlanchedAlmond;
                     }
+                    else if (fromMe)
+                    {
+                        MyLV.BackColor = Color.Coral;
                     else
                     {
                         MyLV.BackColor = Color.Cornsilk;
@@ -789,9 +795,8 @@ namespace wtKST
                     int hwnd = MainDlg.GetForegroundWindow();
                     if (hwnd != base.Handle.ToInt32())
                     {
-                        if (Settings.Default.KST_ShowBalloon)
+                        if (Settings.Default.KST_ShowBalloon && !fromMe)
                         {
-                            // TODO: statt MSG war das s... s.Remove(0, s.IndexOf("> ") + 2).Trim();
                             ni_Main.ShowBalloonTip(30000, "New MyMessage received", Row["MSG"].ToString(), ToolTipIcon.Info);
                         }
                     }

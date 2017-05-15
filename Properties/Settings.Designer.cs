@@ -550,5 +550,17 @@ namespace wtKST.Properties {
                 this["UpgradeRequired"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool KST_Show_Own_Messages {
+            get {
+                return ((bool)(this["KST_Show_Own_Messages"]));
+            }
+            set {
+                this["KST_Show_Own_Messages"] = value;
+            }
+        }
     }
 }
