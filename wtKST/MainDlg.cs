@@ -1462,7 +1462,8 @@ namespace wtKST
                         wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
                         if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
                         {
-                            MyLoc = wtQSO.MyLoc;
+                            MessageBox.Show("KST locator " + MyLoc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             set_KST_Status();
                         }
                         Check_QSOs();
