@@ -524,7 +524,8 @@ namespace wtKST
                                 string[] subs = s.Split('|');
                                 if (subs[2].Equals("Wrong password!")) // maybe test subs[1] for 114? OK seems 100
                                 {
-                                    Say("Password wrong.");
+                                    MessageBox.Show("Password wrong", "Login failed", 
+                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     tw.Close();
                                     MainDlg.Log.WriteMessage("Password wrong ");
                                     break;
