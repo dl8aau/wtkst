@@ -1360,13 +1360,15 @@ namespace wtKST
             }
             foreach (string band in BANDS)
             {
+                bool found = false;
                 string findCall = string.Format("[CALL] LIKE '*{0}*'", call);
                 DataRow[] selectRow = wtQSO.QSO.Select(findCall);
                 foreach (var qso_row in selectRow)
                 {
                     if (qso_row != null && qso_row["BAND"].ToString() == band)
                     {
-                        call_row[band] = (int)QRVdb.QRV_STATE.worked;
+                        call_row[band] = QRVdb.QRV_STATE.worked;
+                        found = true;
                         // check locator
                         if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
                         {
@@ -1376,6 +1378,8 @@ namespace wtKST
                         }
                     }
                 }
+                if (!found && (QRVdb.QRV_STATE)call_row[band] == QRVdb.QRV_STATE.worked)
+                        call_row[band] = QRVdb.QRV_STATE.qrv;
             }
         }
 
