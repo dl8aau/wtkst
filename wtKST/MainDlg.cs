@@ -1360,16 +1360,20 @@ namespace wtKST
             }
             foreach (string band in BANDS)
             {
-                DataRow qso_row = wtQSO.QSO.Rows.Find(new object[] { call, band });
-                if (qso_row != null)
+                string findCall = string.Format("[CALL] LIKE '*{0}*'", call);
+                DataRow[] selectRow = wtQSO.QSO.Select(findCall);
+                foreach (var qso_row in selectRow)
                 {
-                    call_row[band] = (int)QRVdb.QRV_STATE.worked;
-                    // check locator
-                    if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
+                    if (qso_row != null && qso_row["BAND"].ToString() == band)
                     {
-                        Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
-                        WinTestLocatorWarning = true;
-                        Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                        call_row[band] = (int)QRVdb.QRV_STATE.worked;
+                        // check locator
+                        if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
+                        {
+                            Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                            WinTestLocatorWarning = true;
+                            Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                        }
                     }
                 }
             }
