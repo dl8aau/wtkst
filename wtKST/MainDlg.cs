@@ -1023,7 +1023,7 @@ namespace wtKST
                                 qrv.Process_QRV(row, qrvcall, call_new_in_userlist);
 
                                 CALL.Rows.Add(row);
-                                if (call_new_in_userlist)
+                                if (call_new_in_userlist && wtQSO != null && wtQSO.QSO.Rows.Count > 0)
                                     Check_QSO(row);
                             }
                         }
@@ -1457,29 +1457,32 @@ namespace wtKST
             ti_Main.Stop();
             if (KSTState == MainDlg.KST_STATE.Connected)
             {
-                if (wtQSO != null && Settings.Default.WinTest_Activate)
+                if (wtQSO != null)
                 {
-                    try
+                    if (Settings.Default.WinTest_Activate)
                     {
-                        MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
-
-                        wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
-                        if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
+                        try
                         {
-                            MessageBox.Show("KST locator " + MyLoc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            set_KST_Status();
-                        }
-                        Check_QSOs();
-                    }
-                    catch
-                    {
+                            MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
 
+                            wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
+                            if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
+                            {
+                                MessageBox.Show("KST locator " + MyLoc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
+                                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                set_KST_Status();
+                            }
+                            Check_QSOs();
+                        }
+                        catch
+                        {
+
+                        }
                     }
-                }
-                if ( !Settings.Default.WinTest_Activate && wtQSO.QSO.Rows.Count > 0)
-                {
-                    wtQSO.Clear_QSOs();
+                    if (!Settings.Default.WinTest_Activate && wtQSO.QSO.Rows.Count > 0)
+                    {
+                        wtQSO.Clear_QSOs();
+                    }
                 }
                 KST_Update_USR_Window();
                 if (Settings.Default.AS_Active)
