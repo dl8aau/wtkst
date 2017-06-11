@@ -278,96 +278,43 @@ namespace WCCheck
 
 		public static int QRB(string MyLoc, string Loc)
 		{
-			return WCCheck.QRB(WCCheck.Lat(MyLoc), WCCheck.Lon(MyLoc), WCCheck.Lat(Loc), WCCheck.Lon(Loc));
+			return (int)WCCheck.QRB(WCCheck.Lat(MyLoc), WCCheck.Lon(MyLoc), WCCheck.Lat(Loc), WCCheck.Lon(Loc));
 		}
 
-		public static int QRB(double MyLat, double MyLon, double Lat, double Lon)
-		{
-			int result;
-			try
-			{
-				double F = 111.2;
-				if (MyLon < -180.0 || MyLon > 180.0 || MyLat < -90.0 || MyLat > 90.0 || Lon < -180.0 || Lon > 180.0 || Lat < -90.0 || Lat > 90.0)
-				{
-					result = -1;
-				}
-				else
-				{
-					double E = Math.Sin(MyLat / 180.0 * 3.1415926535897931) * Math.Sin(Lat / 180.0 * 3.1415926535897931) + Math.Cos(MyLat / 180.0 * 3.1415926535897931) * Math.Cos(Lat / 180.0 * 3.1415926535897931) * Math.Cos((MyLon - Lon) / 180.0 * 3.1415926535897931);
-					if (E == 0.0)
-					{
-						result = 0;
-					}
-					else
-					{
-						E = Math.Sqrt(1.0 - E * E) / E;
-						E = Math.Atan(E) / 3.1415926535897931 * 180.0 * F + 0.5;
-						result = Convert.ToInt32(Math.Round(E, 0));
-					}
-				}
-			}
-			catch
-			{
-				result = -1;
-			}
-			return result;
-		}
+        public static double QRB(double mylat, double mylon, double lat, double lon)
+        {
+            if (mylon < -180.0 || mylon > 180.0 || mylat < -90.0 || mylat > 90.0 || lon < -180.0 || lon > 180.0 || lat < -90.0 || lat > 90.0)
+            {
+                return -1.0;
+            }
+            double R = Radius;
+            double dLat = mylat - lat;
+            double dLon = mylon - lon;
+            double a = Math.Sin(dLat / 180.0 * Math.PI / 2.0) * Math.Sin(dLat / 180.0 * Math.PI / 2.0) 
+                + Math.Sin(dLon / 180.0 * Math.PI / 2.0) * Math.Sin(dLon / 180.0 * Math.PI / 2.0)
+                * Math.Cos(mylat / 180.0 * Math.PI) * Math.Cos(lat / 180.0 * Math.PI);
+            return R * 2.0 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1.0 - a));
+        }
 
 		public static double QTF(string MyLoc, string Loc)
 		{
-			return WCCheck.QTF(WCCheck.Lat(MyLoc), WCCheck.Lon(MyLoc), WCCheck.Lat(Loc), WCCheck.Lon(Loc));
-		}
+            return WCCheck.QTF(WCCheck.Lat(MyLoc), WCCheck.Lon(MyLoc), WCCheck.Lat(Loc), WCCheck.Lon(Loc));
+        }
 
-		public static double QTF(double MyLat, double MyLon, double Lat, double Lon)
-		{
-			double result;
-			try
-			{
-				double F = 6.2831853071795862 * WCCheck.Radius / 360.0;
-				if (MyLon < -180.0 || MyLon > 180.0 || MyLat < -90.0 || MyLat > 90.0 || Lon < -180.0 || Lon > 180.0 || Lat < -90.0 || Lat > 90.0)
-				{
-					result = -1.0;
-				}
-				else
-				{
-					double DL = Lon - MyLon;
-					double CE = (Math.Tan(Lat / 180.0 * 3.1415926535897931) * Math.Cos(MyLat / 180.0 * 3.1415926535897931) - Math.Sin(MyLat / 180.0 * 3.1415926535897931)) * Math.Cos(DL / 180.0 * 3.1415926535897931);
-					if (CE == 0.0)
-					{
-						if (DL < 0.0)
-						{
-							result = 270.0;
-						}
-						else if (DL > 0.0)
-						{
-							result = 90.0;
-						}
-						else
-						{
-							result = 0.0;
-						}
-					}
-					else
-					{
-						double E = Math.Atan(Math.Sin(DL / 180.0 * 3.1415926535897931) / CE) / 3.1415926535897931 * 180.0;
-						if (CE < 0.0)
-						{
-							E += 180.0;
-						}
-						if (CE > 0.0 && E < 0.0)
-						{
-							E += 360.0;
-						}
-						result = E;
-					}
-				}
-			}
-			catch
-			{
-				result = -1.0;
-			}
-			return result;
-		}
+        // from Airscout ScoutBase.Core.LatLon
+        public static double QTF(double mylat, double mylon, double lat, double lon)
+        {
+            if (mylon < -180.0 || mylon > 180.0 || mylat < -90.0 || mylat > 90.0 || lon < -180.0 || lon > 180.0 || lat < -90.0 || lat > 90.0)
+            {
+                return -1.0;
+            }
+            double dLat = lat - mylat;
+            double dLon = lon - mylon;
+            double y = Math.Sin(dLon / 180.0 * Math.PI) * Math.Cos(lat / 180.0 * Math.PI);
+            double x = Math.Cos(mylat / 180.0 * Math.PI) * Math.Sin(lat / 180.0 * Math.PI) 
+                - Math.Sin(mylat / 180.0 * Math.PI) * Math.Cos(lat / 180.0 * Math.PI) * Math.Cos(dLon / 180.0 * Math.PI);
+            return (Math.Atan2(y, x) / Math.PI * 180.0 + 360.0) % 360.0;
+        }
 
 		public static string Cut(string S)
 		{
