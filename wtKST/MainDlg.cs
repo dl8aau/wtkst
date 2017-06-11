@@ -1953,6 +1953,11 @@ namespace wtKST
             if (info != null && info.Item != null)
             {
                 string username = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
+                if (username.Equals(MyCall))
+                {
+                    // if we would be sending to ourselves, use recipient call instead
+                    username = info.Item.SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
+                }
 
                 if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
                 {
@@ -1970,7 +1975,11 @@ namespace wtKST
             if (info != null && info.Item != null)
             {
                 string username = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
-
+                if (username.Equals(MyCall)) 
+                {
+                    // if we would be sending to ourselves, use recipient call instead
+                    username = info.Item.SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
+                }
                 if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
                 {
                     cb_Command.Text = "/cq " + username + " ";
