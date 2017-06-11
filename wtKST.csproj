@@ -81,7 +81,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SphericalEarth\LatLon.cs" />
     <Compile Include="WCCheck\WCCheck.cs" />
     <Compile Include="WCCheck\WCUtils.cs" />
     <Compile Include="wtKST.Properties\Resources.cs" />
