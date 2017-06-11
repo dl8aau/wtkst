@@ -764,6 +764,7 @@ namespace wtKST
                 if (findrow != null)
                 {
                     findrow["CONTACTED"] = 0; // clear counter on activity
+                    findrow["TIME"] = dt; // store time of activity
                 }
                 bool fromMe = Row["CALL"].ToString().ToUpper().StartsWith(MyCall);
 
