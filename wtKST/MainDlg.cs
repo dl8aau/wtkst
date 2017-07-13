@@ -1366,7 +1366,8 @@ namespace wtKST
                 DataRow[] selectRow = wtQSO.QSO.Select(findCall);
                 foreach (var qso_row in selectRow)
                 {
-                    if (qso_row != null && qso_row["BAND"].ToString() == band)
+                    if (qso_row != null && WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(call) &&
+                        qso_row["BAND"].ToString() == band)
                     {
                         call_row[band] = QRVdb.QRV_STATE.worked;
                         found = true;
