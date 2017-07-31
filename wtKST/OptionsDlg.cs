@@ -98,9 +98,7 @@ namespace wtKST
             ofd.Filter = "Win-Test Extradatenbanken | *.xdt";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Settings.Default.WinTest_QRV_FileName = ofd.FileName;
-                Settings.Default.Save();
-                Settings.Default.Reload();
+                this.tb_Options_WinTest_QRV.Text = ofd.FileName;
             }
         }
 
@@ -113,9 +111,7 @@ namespace wtKST
             ofd.Filter = "Win-Test Einstellung | *.ini";
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Settings.Default.WinTest_INI_FileName = ofd.FileName;
-                Settings.Default.Save();
-                Settings.Default.Reload();
+                this.tb_Options_WinTest_INI.Text = ofd.FileName;
             }
         }
 
