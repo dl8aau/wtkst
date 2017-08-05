@@ -2372,6 +2372,14 @@ namespace wtKST
         {
         }
 
+        class DoubleBufferedListView : ListView
+        {
+            public DoubleBufferedListView()
+            {
+                this.DoubleBuffered = true;
+            }
+        }
+
         [DllImport("user32.dll")]
         private static extern int GetForegroundWindow();
 
@@ -2410,7 +2418,7 @@ namespace wtKST
             columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             lbl_KST_MyMsg = new System.Windows.Forms.Label();
-            lv_Calls = new System.Windows.Forms.ListView();
+            lv_Calls = new DoubleBufferedListView();
             ch_Call = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ch_Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ch_Loc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
