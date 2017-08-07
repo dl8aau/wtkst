@@ -175,13 +175,14 @@ namespace wtKST
             }
         }
 
-        public void process_msg_asnearest(wtMessage Msg, PlaneInfoList infolist, out string dxcall)
+        public bool process_msg_asnearest(wtMessage Msg, out string dxcall)
         {
             dxcall = "";
             if (Msg.Msg == WTMESSAGES.ASNEAREST)
             {
                 try
                 {
+                    PlaneInfoList infolist = new PlaneInfoList();
                     string[] a = Msg.Data.Split(new char[] { ',' });
                     DateTime utc = Convert.ToDateTime(a[0]).ToUniversalTime();
                     string mycall = a[1];
@@ -200,12 +201,14 @@ namespace wtKST
                     {
                         infolist.Sort(new PlaneInfoComparer());
                         planes.Add(dxcall, infolist);
+                        return true;
                     }
                 }
                 catch (Exception e1_211)
                 {
                 }
             }
+            return false;
         }
 
         public void show_path(string call, string loc, string MyCall, string MyLoc)
@@ -242,5 +245,55 @@ namespace wtKST
                 }
             }
         }
+
+        public string GetNearestPlanes(string call)
+        {
+            PlaneInfoList infolist = null;
+            string result;
+            if (planes.TryGetValue(call, out infolist))
+            {
+                string s = DateTime.UtcNow.ToString("HH:mm") + " [" + (DateTime.UtcNow - infolist.UTC).Minutes.ToString() + "mins ago]\n\n";
+                foreach (PlaneInfo info in infolist)
+                {
+                    s = string.Concat(new object[]
+                    {
+                        s,
+                        info.Potential.ToString(),
+                        " : ",
+                        info.Call,
+                        "[",
+                        info.Category,
+                        "] --> ",
+                        info.IntQRB.ToString(),
+                        "km [",
+                        info.Mins,
+                        "mins]\n"
+                    });
+                }
+                result = s;
+            }
+            else
+            {
+                result = "";
+            }
+            return result;
+        }
+
+        public string GetNearestPlanePotential(string call)
+        {
+            call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
+            PlaneInfoList infolist = null;
+            string result;
+            if (planes.TryGetValue(call, out infolist))
+            {
+                result = infolist[0].Potential.ToString();
+            }
+            else
+            {
+                result = "0";
+            }
+            return result;
+        }
+
     }
 }

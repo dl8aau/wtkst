@@ -884,7 +884,7 @@ namespace wtKST
                     int qrb = (int)row["QRB"];
                     if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
                     {
-                        LV.SubItems.Add(GetNearestPlanePotential(row["CALL"].ToString()).ToString());
+                        LV.SubItems.Add(AS_if.GetNearestPlanePotential(row["CALL"].ToString()));
                     }
                     else
                     {
@@ -1401,58 +1401,8 @@ namespace wtKST
             }
         }
 
-        private void Get_Planes()
-        {
-        }
 
-        public string GetNearestPlanes(string call)
-        {
-            PlaneInfoList infolist = null;
-            string result;
-            if (AS_if.planes.TryGetValue(call, out infolist))
-            {
-                string s = DateTime.UtcNow.ToString("HH:mm") + " [" + (DateTime.UtcNow - infolist.UTC).Minutes.ToString() + "mins ago]\n\n";
-                foreach (PlaneInfo info in infolist)
-                {
-                    s = string.Concat(new object[]
-                    {
-                        s,
-                        info.Potential.ToString(),
-                        " : ",
-                        info.Call,
-                        "[",
-                        info.Category,
-                        "] --> ",
-                        info.IntQRB.ToString(),
-                        "km [",
-                        info.Mins,
-                        "mins]\n"
-                    });
-                }
-                result = s;
-            }
-            else
-            {
-                result = "";
-            }
-            return result;
-        }
 
-        public int GetNearestPlanePotential(string call)
-        {
-            call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
-            PlaneInfoList infolist = null;
-            int result;
-            if (AS_if.planes.TryGetValue(call, out infolist))
-            {
-                result = infolist[0].Potential;
-            }
-            else
-            {
-                result = 0;
-            }
-            return result;
-        }
 
         private void ti_Main_Tick(object sender, EventArgs e)
         {
@@ -1727,7 +1677,7 @@ namespace wtKST
                 if (info.SubItem.Name == "AS")
                 {
                     string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
-                    string s = GetNearestPlanes(call);
+                    string s = AS_if.GetNearestPlanes(call);
                     if (string.IsNullOrEmpty(s))
                     {
                         ToolTipText = "No planes\n\nLeft click for map";
@@ -1924,7 +1874,7 @@ namespace wtKST
                     if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
                     {
                         string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
-                        string s = GetNearestPlanes(call);
+                        string s = AS_if.GetNearestPlanes(call);
                         if (string.IsNullOrEmpty(s))
                         {
                             ToolTipText = "No planes\n\nLeft click for map";
@@ -2304,17 +2254,15 @@ namespace wtKST
             if (e.ProgressPercentage > 0)
             {
                 wtMessage Msg = (wtMessage)e.UserState;
-                PlaneInfoList infolist = new PlaneInfoList();
 
                 string dxcall;
-                AS_if.process_msg_asnearest(Msg, infolist, out dxcall);
-                if (infolist.Count > 0)
+                if(AS_if.process_msg_asnearest(Msg, out dxcall))
                 {
                     foreach (ListViewItem call_lvi in lv_Calls.Items)
                     {
                         if (call_lvi.Text.IndexOf(dxcall) >= 0)
                         {
-                            string newtext = infolist[0].Potential.ToString();
+                            string newtext = AS_if.GetNearestPlanePotential(dxcall);
                             if (call_lvi.SubItems[4].Text != newtext)
                             {
                                 call_lvi.SubItems[4].Text = newtext;
