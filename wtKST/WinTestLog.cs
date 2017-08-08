@@ -154,6 +154,7 @@ namespace WinTest
             catch (Exception e)
             {
                 // FIXME Error(MethodBase.GetCurrentMethod().Name, "(" + Settings.Default.WinTest_FileName + "): " + e.Message);
+                throw e;
             }
         }
 
