@@ -2298,6 +2298,7 @@ namespace wtKST
 
         private void bw_GetPlanes_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            bool refresh_needed = false;
             if (e.ProgressPercentage > 0)
             {
                 wtMessage Msg = (wtMessage)e.UserState;
@@ -2313,7 +2314,7 @@ namespace wtKST
                             if (call_lvi.SubItems[4].Text != newtext)
                             {
                                 call_lvi.SubItems[4].Text = newtext;
-                                lv_Calls.Refresh();
+                                refresh_needed = true;
                             }
                             break;
                         }
@@ -2332,7 +2333,7 @@ namespace wtKST
                         {
                             lvi.SubItems[4].Text = "";
                         }
-                        lv_Calls.Refresh();
+                        refresh_needed = true;
                     }
                     catch
                     {
@@ -2349,12 +2350,15 @@ namespace wtKST
                             if (lvi.SubItems[4].Text != newtext)
                             {
                                 lvi.SubItems[4].Text = newtext;
-                                lv_Calls.Refresh();
+                                refresh_needed = true;
                             }
                             break;
                         }
                     }
                 }
+                if (refresh_needed)
+                    lv_Calls.Refresh();
+
             }
             else /* e.ProgressPercentage <0 */
             {
