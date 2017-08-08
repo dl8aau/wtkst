@@ -25,7 +25,8 @@ namespace wtKST
             }));
             try
             {
-                UdpClient client = new UdpClient();
+                IPEndPoint localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
+                UdpClient client = new UdpClient(localep);
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
                 client.Client.ReceiveTimeout = 10000;
                 IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, Settings.Default.AS_Port);
