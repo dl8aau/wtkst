@@ -286,7 +286,7 @@ namespace wtKST
             string result;
             if (planes.TryGetValue(call, out infolist))
             {
-                result = infolist[0].Potential.ToString();
+                result = infolist[0].Potential + "," + infolist[0].Category;
             }
             else
             {

@@ -1650,27 +1650,40 @@ namespace wtKST
                     if (e.SubItem.Text.Length > 0)
                     {
                         e.DrawBackground();
-                        int pot = Convert.ToInt32(e.SubItem.Text);
-                        Rectangle b = e.Bounds;
-                        b.Inflate(-2, -2);
-                        int num = pot;
-                        if (num != 50)
+                        string[] a = e.SubItem.Text.Split(new char[] { ',' });
+                        int pot = Convert.ToInt32(a[0]);
+                        if (pot > 0)
                         {
-                            if (num != 75)
+                            if (a.Length < 2)
+                                Console.WriteLine("ups " + a.Length + " " + e.SubItem.Text);
+                            var cat = a[1];
+                            Rectangle b = e.Bounds;
+                            if (cat.Equals("S"))
+                                b.Inflate(-1, -1);
+                            else if (cat.Equals("H"))
+                                b.Inflate(-2, -2);
+                            else if (cat.Equals("M") || cat.Equals("[unknown]"))
+                                b.Inflate(-4, -4);
+                            else if (cat.Equals("L"))
+                                b.Inflate(-6, -6);
+                            else // unknown
+                                b.Inflate(-5, -5);
+                            int num = pot;
+                            if (num == 100)
                             {
-                                if (num == 100)
-                                {
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
-                                }
+                                // 100
+                                e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
+                            }
+                            else if (num > 50)
+                            {
+                                // 51..99
+                                e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
                             }
                             else
                             {
-                                e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
+                                // 0..50
+                                e.Graphics.FillEllipse(new SolidBrush(Color.DarkOrange), b);
                             }
-                        }
-                        else
-                        {
-                            e.Graphics.FillEllipse(new SolidBrush(Color.DarkOrange), b);
                         }
                     }
                 }
