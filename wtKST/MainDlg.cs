@@ -407,7 +407,10 @@ namespace wtKST
             }
             if (KSTState == MainDlg.KST_STATE.Disconnected)
             {
-                CALL.Clear();
+                lock(CALL)
+                {
+                    CALL.Clear();
+                }
                 lv_Calls.Items.Clear();
                 tsi_KST_Connect.Enabled = true;
                 tsi_KST_Disconnect.Enabled = false;
@@ -754,17 +757,20 @@ namespace wtKST
                 {
                     lv_Msg.Items[current_index].BackColor = Color.Coral;
                 }
-                // check the recipient of the message
-                DataRow findrow = CALL.Rows.Find(Row["RECIPIENT"].ToString());
-                if (findrow != null)
+                lock (CALL)
                 {
-                    findrow["CONTACTED"] = (int)findrow["CONTACTED"] + 1;
-                }
-                findrow = CALL.Rows.Find(Row["CALL"].ToString().Trim());
-                if (findrow != null)
-                {
-                    findrow["CONTACTED"] = 0; // clear counter on activity
-                    findrow["TIME"] = dt; // store time of activity
+                    // check the recipient of the message
+                    DataRow findrow = CALL.Rows.Find(Row["RECIPIENT"].ToString());
+                    if (findrow != null)
+                    {
+                        findrow["CONTACTED"] = (int)findrow["CONTACTED"] + 1;
+                    }
+                    findrow = CALL.Rows.Find(Row["CALL"].ToString().Trim());
+                    if (findrow != null)
+                    {
+                        findrow["CONTACTED"] = 0; // clear counter on activity
+                        findrow["TIME"] = dt; // store time of activity
+                    }
                 }
                 bool fromMe = Row["CALL"].ToString().ToUpper().StartsWith(MyCall);
 
@@ -779,6 +785,7 @@ namespace wtKST
                     else if (fromMe)
                     {
                         MyLV.BackColor = Color.Coral;
+                    }
                     else
                     {
                         MyLV.BackColor = Color.Cornsilk;
@@ -823,7 +830,11 @@ namespace wtKST
                 }
                 lv_Calls.Items.Clear();
                 lv_Calls.BeginUpdate();
-                DataView view = CALL.DefaultView;
+                DataView view;
+                lock (CALL)
+                {
+                    view = CALL.DefaultView;
+                }
                 if (sort_by_dir)
                     view.Sort = "DIR ASC";
                 else
@@ -935,7 +946,10 @@ namespace wtKST
                             row["CONTACTED"] = 0;
                             foreach (string band in BANDS)
                                 row[band] = QRVdb.QRV_STATE.unknown;
-                            CALL.Rows.Add(row);
+                            lock (CALL)
+                            {
+                                CALL.Rows.Add(row);
+                            }
                         }
                         catch
                         {
@@ -1023,9 +1037,12 @@ namespace wtKST
 
                                 qrv.Process_QRV(row, qrvcall, call_new_in_userlist);
 
-                                CALL.Rows.Add(row);
-                                if (call_new_in_userlist && wtQSO != null && wtQSO.QSO.Rows.Count > 0)
-                                    Check_QSO(row);
+                                lock (CALL)
+                                {
+                                    CALL.Rows.Add(row);
+                                    if (call_new_in_userlist && wtQSO != null && wtQSO.QSO.Rows.Count > 0)
+                                        Check_QSO(row);
+                                }
                             }
                         }
                         break;
@@ -1035,23 +1052,26 @@ namespace wtKST
 
                     case "UM":
                         {
-                            string call = usr[2].Trim();
-                            DataRow row = CALL.Rows.Find(call);
-                            string loc = usr[4].Trim();
-
-                            if (WCCheck.WCCheck.IsLoc(loc) >= 0)
+                            lock (CALL)
                             {
-                                row["CALL"] = call;
-                                row["NAME"] = usr[3].Trim();
-                                row["LOC"] = loc;
+                                string call = usr[2].Trim();
+                                DataRow row = CALL.Rows.Find(call);
+                                string loc = usr[4].Trim();
 
-                                int qrb = WCCheck.WCCheck.QRB(MyLoc, loc);
-                                int qtf = (int)WCCheck.WCCheck.QTF(MyLoc, loc);
-                                row["QRB"] = qrb;
-                                row["DIR"] = qtf;
+                                if (WCCheck.WCCheck.IsLoc(loc) >= 0)
+                                {
+                                    row["CALL"] = call;
+                                    row["NAME"] = usr[3].Trim();
+                                    row["LOC"] = loc;
 
-                                Int32 usr_state = Int32.Parse(usr[5]);
-                                row["AWAY"] = (usr_state & 1) == 1;
+                                    int qrb = WCCheck.WCCheck.QRB(MyLoc, loc);
+                                    int qtf = (int)WCCheck.WCCheck.QTF(MyLoc, loc);
+                                    row["QRB"] = qrb;
+                                    row["DIR"] = qtf;
+
+                                    Int32 usr_state = Int32.Parse(usr[5]);
+                                    row["AWAY"] = (usr_state & 1) == 1;
+                                }
                             }
                         }
                         break;
@@ -1060,10 +1080,13 @@ namespace wtKST
                         // US4 | chat id | callsign | state |
                     case "US":
                         {
-                            string call = usr[2].Trim();
-                            DataRow row = CALL.Rows.Find(call);
-                            Int32 usr_state = Int32.Parse(usr[3]);
-                            row["AWAY"] = (usr_state & 1) == 1;
+                            lock (CALL)
+                            {
+                                string call = usr[2].Trim();
+                                DataRow row = CALL.Rows.Find(call);
+                                Int32 usr_state = Int32.Parse(usr[3]);
+                                row["AWAY"] = (usr_state & 1) == 1;
+                            }
                         }
                         break;
 
@@ -1072,9 +1095,12 @@ namespace wtKST
 
                     case "UR":
                         {
-                            string call = usr[2].Trim();
-                            DataRow row = CALL.Rows.Find(call);
-                            row.Delete();
+                            lock (CALL)
+                            {
+                                string call = usr[2].Trim();
+                                DataRow row = CALL.Rows.Find(call);
+                                row.Delete();
+                            }
                         }
                         break;
 
@@ -1117,7 +1143,10 @@ namespace wtKST
                     tw.Connect(Settings.Default.KST_ServerName, Convert.ToInt32(Settings.Default.KST_ServerPort));
                     tw.Receive();
                     KSTState = MainDlg.KST_STATE.WaitLogin;
-                    CALL.Clear();
+                    lock (CALL)
+                    {
+                        CALL.Clear();
+                    }
                     if (Settings.Default.ShowBeacons)
                         KST_Add_Beacons_USR();
                     ti_Main.Interval = 5000;
@@ -1305,7 +1334,10 @@ namespace wtKST
                 Settings.Default.Reload();
                 if (oldchat != Settings.Default.KST_Chat)
                 {
-                    CALL.Clear();
+                    lock (CALL)
+                    {
+                        CALL.Clear();
+                    }
                     MSG.Clear();
                     latestMessageTimestampSet = false;
                     lv_Calls.Items.Clear();
@@ -1390,9 +1422,12 @@ namespace wtKST
             WinTestLocatorWarning = false;
             try
             {
-                foreach (DataRow call_row in CALL.Rows)
+                lock (CALL)
                 {
-                    Check_QSO(call_row);
+                    foreach (DataRow call_row in CALL.Rows) // FIXME: CALL muss gelockt werden, während foreach drüber läuft
+                    {
+                        Check_QSO(call_row);
+                    }
                 }
             }
             catch (Exception e)
@@ -1681,14 +1716,17 @@ namespace wtKST
                     if (string.IsNullOrEmpty(s))
                     {
                         ToolTipText = "No planes\n\nLeft click for map";
-                        DataRow Row = CALL.Rows.Find(info.Item.Text);
-                        if (Row != null && Settings.Default.AS_Active)
+                        lock (CALL)
                         {
-                            int qrb = (int)Row["QRB"];
-                            if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
-                                ToolTipText = "Too close for planes\n\nLeft click for map";
-                            else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
-                                ToolTipText = "Too far away for planes\n\nLeft click for map";
+                            DataRow Row = CALL.Rows.Find(info.Item.Text);
+                            if (Row != null && Settings.Default.AS_Active)
+                            {
+                                int qrb = (int)Row["QRB"];
+                                if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                                    ToolTipText = "Too close for planes\n\nLeft click for map";
+                                else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
+                                    ToolTipText = "Too far away for planes\n\nLeft click for map";
+                            }
                         }
                     }
                     else
@@ -1827,39 +1865,41 @@ namespace wtKST
                     }
                     if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
                     {
-                        // band columns
-                        DataRow CallsRow = CALL.Rows.Find(call);
-                        string band = info.SubItem.Name;
-                        state = QRVdb.QRV_STATE.unknown;
-                        try
+                        lock (CALL)
                         {
-                            Enum.TryParse<QRVdb.QRV_STATE>(info.SubItem.Text, out state);
+                            // band columns
+                            DataRow CallsRow = CALL.Rows.Find(call);
+                            string band = info.SubItem.Name;
+                            state = QRVdb.QRV_STATE.unknown;
+                            try
+                            {
+                                Enum.TryParse<QRVdb.QRV_STATE>(info.SubItem.Text, out state);
+                            }
+                            catch
+                            {
+                            }
+                            switch (state)
+                            {
+                                case QRVdb.QRV_STATE.unknown:
+                                    info.SubItem.Text = QRVdb.QRV_STATE.qrv.ToString();
+                                    qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.qrv);
+                                    if (CallsRow != null)
+                                        CallsRow[band] = QRVdb.QRV_STATE.qrv;
+                                    break;
+                                case QRVdb.QRV_STATE.qrv:
+                                    info.SubItem.Text = QRVdb.QRV_STATE.not_qrv.ToString();
+                                    qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.not_qrv);
+                                    if (CallsRow != null)
+                                        CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
+                                    break;
+                                case QRVdb.QRV_STATE.not_qrv:
+                                    info.SubItem.Text = QRVdb.QRV_STATE.unknown.ToString();
+                                    qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.unknown);
+                                    if (CallsRow != null)
+                                        CallsRow[band] = QRVdb.QRV_STATE.unknown;
+                                    break;
+                            }
                         }
-                        catch
-                        {
-                        }
-                        switch (state)
-                        {
-                            case QRVdb.QRV_STATE.unknown:
-                                info.SubItem.Text = QRVdb.QRV_STATE.qrv.ToString();
-                                qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.qrv);
-                                if (CallsRow != null)
-                                    CallsRow[band] = QRVdb.QRV_STATE.qrv;
-                                break;
-                            case QRVdb.QRV_STATE.qrv:
-                                info.SubItem.Text = QRVdb.QRV_STATE.not_qrv.ToString();
-                                qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.not_qrv);
-                                if (CallsRow != null)
-                                    CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
-                                break;
-                            case QRVdb.QRV_STATE.not_qrv:
-                                info.SubItem.Text = QRVdb.QRV_STATE.unknown.ToString();
-                                qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.unknown);
-                                if (CallsRow != null)
-                                    CallsRow[band] = QRVdb.QRV_STATE.unknown;
-                                break;
-                        }
-
                         lv_Calls.Refresh();
                     }
                 }
@@ -1878,14 +1918,17 @@ namespace wtKST
                         if (string.IsNullOrEmpty(s))
                         {
                             ToolTipText = "No planes\n\nLeft click for map";
-                            DataRow Row = CALL.Rows.Find(info.Item.Text);
-                            if (Row != null && Settings.Default.AS_Active)
+                            lock (CALL)
                             {
-                                int qrb = (int)Row["QRB"];
-                                if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
-                                    ToolTipText = "Too close for planes\n\nLeft click for map";
-                                else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
-                                    ToolTipText = "Too far away for planes\n\nLeft click for map";
+                                DataRow Row = CALL.Rows.Find(info.Item.Text);
+                                if (Row != null && Settings.Default.AS_Active)
+                                {
+                                    int qrb = (int)Row["QRB"];
+                                    if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                                        ToolTipText = "Too close for planes\n\nLeft click for map";
+                                    else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
+                                        ToolTipText = "Too far away for planes\n\nLeft click for map";
+                                }
                             }
                         }
                         else
@@ -2197,12 +2240,15 @@ namespace wtKST
         {
             //return; // FIXME!!! altes AS
             string watchlist = "";
-            foreach (DataRow row in CALL.Rows)
+            lock (CALL)
             {
-                string dxcall = WCCheck.WCCheck.Cut(row["CALL"].ToString().TrimStart(
-                    new char[] { '(' }).TrimEnd(new char[] { ')' }));
-                string dxloc = row["LOC"].ToString();
-                watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
+                foreach (DataRow row in CALL.Rows)
+                {
+                    string dxcall = WCCheck.WCCheck.Cut(row["CALL"].ToString().TrimStart(
+                        new char[] { '(' }).TrimEnd(new char[] { ')' }));
+                    string dxloc = row["LOC"].ToString();
+                    watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
+                }
             }
             AS_if.send_watchlist(watchlist, MyCall, MyLoc);
         }
@@ -2217,6 +2263,7 @@ namespace wtKST
                     continue;
                 }
                 int errors = 0;
+                //FIXME - lock (CALL) not possible here, as it keeps CALL locked -> deadlock
                 for (int i = 0; Settings.Default.AS_Active && i < CALL.Rows.Count; i++)
                 {
                     try
