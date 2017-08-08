@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -68,6 +69,19 @@ namespace wtKST
             return qrg;
         }
 
+        public static IPAddress GetIpIFDefaultGateway()
+        {
+            return NetworkInterface
+                .GetAllNetworkInterfaces()
+                .Where(n => n.OperationalStatus == OperationalStatus.Up)
+                .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                .Where(n => n.GetIPProperties().GatewayAddresses.Count > 0 ) // only interfaces with a gateway
+                .SelectMany(n => n.GetIPProperties()?.UnicastAddresses)
+                .Where(g => g.Address.AddressFamily == AddressFamily.InterNetwork) // filter IPv4
+                .Select(g => g?.Address)
+                .FirstOrDefault(a => a != null);
+        }
+
         /* called from BackgroundWorker bw_GetPlanes - reports results through bw_GetPlanes.ReportProgress */
         public bool GetPlanes(string mycall, string myloc, string dxcall, string dxloc, ref BackgroundWorker bw_GetPlanes)
         {
@@ -80,7 +94,10 @@ namespace wtKST
                 string.Concat(new string[] { qrg, ",", mycall, ",", myloc, ",", dxcall, ",", dxloc }));
             try
             {
-                UdpClient client = new UdpClient();
+                // https://stackoverflow.com/a/3297590
+                // https://stackoverflow.com/questions/13634868/get-the-default-gateway/13635038#13635038
+                IPEndPoint localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
+                UdpClient client = new UdpClient(localep);
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
                 client.Client.ReceiveTimeout = 10000;
                 IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, Settings.Default.AS_Port);
