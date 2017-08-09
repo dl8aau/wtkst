@@ -1391,14 +1391,15 @@ namespace wtKST
             {
                 call = call.Remove(call.IndexOf("-"));
             }
+            string wcall = WCCheck.WCCheck.Cut(call);
             foreach (string band in BANDS)
             {
                 bool found = false;
-                string findCall = string.Format("[CALL] LIKE '*{0}*'", call);
+                string findCall = string.Format("[CALL] LIKE '*{0}*'", wcall);
                 DataRow[] selectRow = wtQSO.QSO.Select(findCall);
                 foreach (var qso_row in selectRow)
                 {
-                    if (qso_row != null && WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(call) &&
+                    if (qso_row != null && WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall) &&
                         qso_row["BAND"].ToString() == band)
                     {
                         call_row[band] = QRVdb.QRV_STATE.worked;
