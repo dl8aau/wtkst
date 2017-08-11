@@ -179,9 +179,9 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3FABB827AA8042A0B72F3AE631469D44"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_46F82EC6C1F0416B840A4F54ABDA1086"
             {
-            "SourcePath" = "8:..\\wtKST\\bin\\Release\\qrv.xml"
+            "SourcePath" = "8:..\\qrv.xml"
             "TargetName" = "8:qrv.xml"
             "Tag" = "8:"
             "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
@@ -199,14 +199,14 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_6305EF8BDC293EF1BFA909132274E014"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2E49AED82F595CB4244E1139EE86E9D2"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:Telnet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_6305EF8BDC293EF1BFA909132274E014"
+                    "_2E49AED82F595CB4244E1139EE86E9D2"
                     {
                     "Name" = "8:Telnet.dll"
                     "Attributes" = "3:512"
@@ -232,7 +232,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6A8256019C164899AB4C3672F37459A8"
             {
-            "SourcePath" = "8:..\\wtKST\\Main.Icon.ico"
+            "SourcePath" = "8:..\\Main.Icon.ico"
             "TargetName" = "8:Main.Icon.ico"
             "Tag" = "8:"
             "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
@@ -250,14 +250,14 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_8F9596516181F9557A2437803006DA6A"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D96F21F4DE8E15FAFCCC30C579DF3380"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:WinTest, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_8F9596516181F9557A2437803006DA6A"
+                    "_D96F21F4DE8E15FAFCCC30C579DF3380"
                     {
                     "Name" = "8:WinTest.dll"
                     "Attributes" = "3:512"
@@ -281,9 +281,9 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D443F4EFFFEE44FB8038905E0A0E18B2"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_85D2FFA074C7453D9A8DF06709C79670"
             {
-            "SourcePath" = "8:..\\wtKST\\bin\\Release\\beacons.lst"
+            "SourcePath" = "8:..\\beacons.lst"
             "TargetName" = "8:beacons.lst"
             "Tag" = "8:"
             "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
@@ -377,7 +377,7 @@
         "ARPURLINFOABOUT" = "8:"
         "ARPPRODUCTICON" = "8:_6A8256019C164899AB4C3672F37459A8"
         "ARPIconIndex" = "3:0"
-        "SearchPath" = "8:..\\wtKST\\bin\\Release"
+        "SearchPath" = "8:bin\\Release"
         "UseSystemSearchPath" = "11:TRUE"
         "TargetPlatform" = "3:0"
         "PreBuildEvent" = "8:"
@@ -893,7 +893,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E1FE572876094762A4D99AAFDF813752"
             {
-            "SourcePath" = "8:..\\wtKST\\obj\\x86\\Debug\\wtKST.exe"
+            "SourcePath" = "8:..\\obj\\x86\\Release\\wtKST.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
