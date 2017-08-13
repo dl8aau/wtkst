@@ -1706,7 +1706,7 @@ namespace wtKST
             if (OldMousePos != p && info != null && info.SubItem != null)
             {
                 OldMousePos = p;
-                if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "UTC" || info.SubItem.Name == "AS")
+                if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act" )
                 {
                     ToolTipText = string.Concat(new object[]
                     {
@@ -1862,7 +1862,7 @@ namespace wtKST
                     string username = info.Item.Text.Replace("(", "").Replace(")", "");
                     string call = WCCheck.WCCheck.Cut(username);
 
-                    if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "UTC")
+                    if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act")
                     {
                         if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
                         {
