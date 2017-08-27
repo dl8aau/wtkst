@@ -1732,7 +1732,7 @@ namespace wtKST
                         ToolTipText = "No planes\n\nLeft click for map";
                         lock (CALL)
                         {
-                            DataRow Row = CALL.Rows.Find(info.Item.Text);
+                            DataRow Row = CALL.Rows.Find(call);
                             if (Row != null && Settings.Default.AS_Active)
                             {
                                 int qrb = (int)Row["QRB"];
@@ -1934,7 +1934,7 @@ namespace wtKST
                             ToolTipText = "No planes\n\nLeft click for map";
                             lock (CALL)
                             {
-                                DataRow Row = CALL.Rows.Find(info.Item.Text);
+                                DataRow Row = CALL.Rows.Find(call);
                                 if (Row != null && Settings.Default.AS_Active)
                                 {
                                     int qrb = (int)Row["QRB"];
