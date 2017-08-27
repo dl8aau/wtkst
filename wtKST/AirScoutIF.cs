@@ -164,6 +164,7 @@ namespace wtKST
                     }
                     catch
                     {
+                        Msg.Msg = WTMESSAGES.NONE; // clear
                     }
                     finally
                     {
