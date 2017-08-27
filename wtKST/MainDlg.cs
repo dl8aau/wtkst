@@ -48,7 +48,7 @@ namespace wtKST
 
         private WinTest.WinTestLog wtQSO = null;
 
-        private wtKST.AirScoutInterface AS_if = new wtKST.AirScoutInterface();
+        private wtKST.AirScoutInterface AS_if;
 
         private bool DLLNotLoaded = false;
 
@@ -283,6 +283,7 @@ namespace wtKST
             }
             UpdateUserBandsWidth();
             bw_GetPlanes.RunWorkerAsync();
+            AS_if = new wtKST.AirScoutInterface(ref bw_GetPlanes);
             if (Settings.Default.KST_AutoConnect)
             {
                 KST_Connect();
@@ -2290,7 +2291,7 @@ namespace wtKST
                         if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) 
                             && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
                         {
-                            if (!AS_if.GetPlanes(mycall, MyLoc, dxcall, dxloc, ref bw_GetPlanes))
+                            if (!AS_if.GetPlanes(mycall, MyLoc, dxcall, dxloc))
                             {
                                 errors++;
                                 if (errors > 10)
@@ -2312,33 +2313,10 @@ namespace wtKST
 
         private void bw_GetPlanes_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            bool refresh_needed = false;
-            if (e.ProgressPercentage > 0)
+            string dxcall = (string)e.UserState;
+            if (dxcall == null)
             {
-                wtMessage Msg = (wtMessage)e.UserState;
-
-                string dxcall;
-                if(AS_if.process_msg_asnearest(Msg, out dxcall))
-                {
-                    foreach (ListViewItem call_lvi in lv_Calls.Items)
-                    {
-                        if (call_lvi.Text.IndexOf(dxcall) >= 0)
-                        {
-                            string newtext = AS_if.GetNearestPlanePotential(dxcall);
-                            if (call_lvi.SubItems[4].Text != newtext)
-                            {
-                                call_lvi.SubItems[4].Text = newtext;
-                                refresh_needed = true;
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-            else if (e.ProgressPercentage == 0)
-            {
-                string dxcall = (string)e.UserState;
-                if (dxcall == null)
+                if (e.ProgressPercentage == 0)
                 {
                     try
                     {
@@ -2347,37 +2325,48 @@ namespace wtKST
                         {
                             lvi.SubItems[4].Text = "";
                         }
-                        refresh_needed = true;
+                        lv_Calls.Refresh();
                     }
                     catch
                     {
                     }
                 }
-                else
+                return;
+            }
+
+            ListViewItem call_lvi = lv_Calls.FindItemWithText(dxcall, false, 0, false);
+            if (call_lvi == null)
+            {
+                // try with () around to catch users that are away
+                call_lvi = lv_Calls.FindItemWithText(string.Concat(new string[] { "(", dxcall, ")" }),
+                    false, 0, false);
+            }
+
+            if (e.ProgressPercentage > 0)
+            {
+                if (call_lvi != null)
                 {
-                    AS_if.planes.Remove(dxcall);
-                    foreach (ListViewItem lvi in lv_Calls.Items)
+                    string newtext = AS_if.GetNearestPlanePotential(dxcall);
+                    if (call_lvi.SubItems[4].Text != newtext)
                     {
-                        if (lvi.Text.IndexOf(dxcall) >= 0)
-                        {
-                            string newtext = "";
-                            if (lvi.SubItems[4].Text != newtext)
-                            {
-                                lvi.SubItems[4].Text = newtext;
-                                refresh_needed = true;
-                            }
-                            break;
-                        }
+                        call_lvi.SubItems[4].Text = newtext;
+                        lv_Calls.Refresh();
                     }
                 }
-                if (refresh_needed)
-                    lv_Calls.Refresh();
-
             }
-            else /* e.ProgressPercentage <0 */
+            else /* e.ProgressPercentage == 0 or e.ProgressPercentage <0 */
             {
-                wtMessage Msg = (wtMessage)e.UserState;
-                AS_if.process_msg_setpath(Msg);
+                Console.WriteLine("remove " + dxcall);
+                AS_if.planes.Remove(dxcall);
+                if (call_lvi != null)
+                {
+                    string newtext = "";
+                    if (call_lvi.SubItems[4].Text != newtext)
+                    {
+                        call_lvi.SubItems[4].Text = newtext;
+                        lv_Calls.Refresh();
+                    }
+                }
             }
         }
 

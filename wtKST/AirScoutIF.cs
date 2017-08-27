@@ -16,10 +16,42 @@ namespace wtKST
     {
         public Dictionary<string, PlaneInfoList> planes = new Dictionary<string, PlaneInfoList>();
         private IPEndPoint localep;
+        private WinTest.wtListener wtl;
+        private BackgroundWorker bw_GetPlanes;
 
-        public AirScoutInterface()
+        private string mycall;
+        private string dxcall;
+        private EventWaitHandle waitHandle;
+
+        public AirScoutInterface(ref BackgroundWorker bw_GetPlanes)
         {
             localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
+
+            this.bw_GetPlanes = bw_GetPlanes;
+            waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+            wtl = new WinTest.wtListener(Settings.Default.AS_Port);
+            wtl.wtMessageReceived += wtMessageReceivedHandler;
+        }
+
+        private void wtMessageReceivedHandler(object sender, WinTest.wtListener.wtMessageEventArgs e)
+        {
+            if (e.Msg.Msg == WTMESSAGES.ASNEAREST && e.Msg.HasChecksum)
+            {
+                string[] a = e.Msg.Data.Split(new char[] { ',' });
+                var rxmycall = a[1];
+                var rxdxcall = a[3];
+
+                if (e.Msg.Dst == Settings.Default.AS_My_Name && e.Msg.Msg == WTMESSAGES.ASNEAREST
+                    && mycall == rxmycall)
+                {
+                    if (process_msg_asnearest(e.Msg))
+                    {
+                        bw_GetPlanes.ReportProgress(1, rxdxcall);
+                    }
+                    if (dxcall == rxdxcall)
+                        waitHandle.Set();
+            }
         }
 
         public void send_watchlist(string watchlist, string MyCall, string MyLoc)
@@ -89,13 +121,13 @@ namespace wtKST
         }
 
         /* called from BackgroundWorker bw_GetPlanes - reports results through bw_GetPlanes.ReportProgress */
-        public bool GetPlanes(string mycall, string myloc, string dxcall, string dxloc, ref BackgroundWorker bw_GetPlanes)
+        public bool GetPlanes(string mycall, string myloc, string dxcall, string dxloc)
         {
 
-            string rxmycall = "";
-            string rxdxcall = "";
             string qrg = qrg_from_settings();
 
+            this.mycall = mycall;
+            this.dxcall = dxcall;
             wtMessage Msg = new wtMessage(WTMESSAGES.ASSETPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, 
                 string.Concat(new string[] { qrg, ",", mycall, ",", myloc, ",", dxcall, ",", dxloc }));
             try
@@ -120,59 +152,8 @@ namespace wtKST
                 {
                     rcvtimeout = 30;
                 }
-                int elapsed;
-                bool match;
-                do
-                {
-                    IPEndPoint ep = new IPEndPoint(IPAddress.Any, Settings.Default.AS_Port);
-                    UdpClient u = new UdpClient();
-                    u.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                    u.Client.ReceiveTimeout = 1000;
-                    u.Client.Bind(ep);
-                    try
-                    {
-                        byte[] data = u.Receive(ref ep);
-                        if (data.Length > 0)
-                        {
-                            string text = Encoding.ASCII.GetString(data);
-                            text = text.Remove(text.Length - 1);
-                            Console.WriteLine(string.Concat(new object[]
-                            {
-                                ep.Address,
-                                " >> ",
-                                text,
-                            }));
-                            Msg = new wtMessage(data);
-                            if (Msg.Msg == WTMESSAGES.ASNEAREST && Msg.HasChecksum)
-                            {
-                                string[] a = Msg.Data.Split(new char[] { ',' });
-                                rxmycall = a[1];
-                                rxdxcall = a[3];
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        Msg.Msg = WTMESSAGES.NONE; // clear
-                    }
-                    finally
-                    {
-                        if (u != null)
-                        {
-                            u.Close();
-                        }
-                    }
-                    elapsed = (DateTime.UtcNow - start).Seconds;
-                    match = (Msg.Dst == Settings.Default.AS_My_Name && Msg.Msg == WTMESSAGES.ASNEAREST 
-                        && mycall == rxmycall && dxcall == rxdxcall);
-                    if (match)
-                    {
-                        bw_GetPlanes.ReportProgress(1, Msg);
-                    }
-                    Thread.Sleep(100);
-                } while (!match && elapsed < rcvtimeout);
-
-                if (elapsed >= rcvtimeout)
+                waitHandle.Reset();
+                if (!waitHandle.WaitOne(rcvtimeout * 1000))
                 {
                     bw_GetPlanes.ReportProgress(0, dxcall);
                     return false;
@@ -182,14 +163,13 @@ namespace wtKST
             catch (Exception e1_596)
             {
                 bw_GetPlanes.ReportProgress(0, null);
-                bw_GetPlanes.ReportProgress(-1, Msg);
+                bw_GetPlanes.ReportProgress(-1, dxcall);
                 return false;
             }
         }
 
-        public bool process_msg_asnearest(wtMessage Msg, out string dxcall)
+        private bool process_msg_asnearest(wtMessage Msg)
         {
-            dxcall = "";
             if (Msg.Msg == WTMESSAGES.ASNEAREST)
             {
                 try
@@ -199,7 +179,7 @@ namespace wtKST
                     DateTime utc = Convert.ToDateTime(a[0]).ToUniversalTime();
                     string mycall = a[1];
                     string myloc = a[2];
-                           dxcall = a[3];
+                    string dxcall = a[3];
                     string dxloc = a[4];
                     int planecount = Convert.ToInt32(a[5]);
                     infolist.UTC = utc;
@@ -237,25 +217,6 @@ namespace wtKST
             byte[] b = Msg.ToBytes();
             client.Send(b, b.Length);
             client.Close();
-        }
-
-        public void process_msg_setpath(wtMessage Msg)
-        {
-            if (Msg.Msg == WTMESSAGES.ASSETPATH)
-            {
-                try
-                {
-                    string[] a = Msg.Data.Split(new char[] { ',' });
-                    string mycall = a[0];
-                    string myloc = a[1];
-                    string dxcall = a[2];
-                    string dxloc = a[3];
-                    planes.Remove(dxcall);
-                }
-                catch (Exception e1_211)
-                {
-                }
-            }
         }
 
         public string GetNearestPlanes(string call)
