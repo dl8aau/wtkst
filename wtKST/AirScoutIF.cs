@@ -15,6 +15,12 @@ namespace wtKST
     class AirScoutInterface
     {
         public Dictionary<string, PlaneInfoList> planes = new Dictionary<string, PlaneInfoList>();
+        private IPEndPoint localep;
+
+        public AirScoutInterface()
+        {
+            localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
+        }
 
         public void send_watchlist(string watchlist, string MyCall, string MyLoc)
         {
@@ -25,7 +31,6 @@ namespace wtKST
             }));
             try
             {
-                IPEndPoint localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
                 UdpClient client = new UdpClient(localep);
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
                 client.Client.ReceiveTimeout = 10000;
@@ -97,7 +102,6 @@ namespace wtKST
             {
                 // https://stackoverflow.com/a/3297590
                 // https://stackoverflow.com/questions/13634868/get-the-default-gateway/13635038#13635038
-                IPEndPoint localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
                 UdpClient client = new UdpClient(localep);
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
                 client.Client.ReceiveTimeout = 10000;
