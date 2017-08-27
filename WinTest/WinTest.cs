@@ -76,6 +76,15 @@ namespace WinTest
             {
                 Msg = WTMESSAGES.UNKNOWN;
             }
+            var Length = bytes.Length;
+            // FIXME: maybe do this for anything but WTMESSAGES.ASNEAREST
+            if (bytes[Length - 1] == 0)
+            {
+                if (Length > 1)
+                    Length--; // skip trailing zero
+                if (text.Length > 1)
+                    text = text.Substring(0, text.Length - 1); // skip trailing zero
+            }
             text = text.Remove(0, text.IndexOf(": ") + 2);
             Src = text.Substring(0, text.IndexOf(" ")).Replace("\"", "");
             text = text.Remove(0, text.IndexOf(" ") + 1);
@@ -86,9 +95,9 @@ namespace WinTest
             // convert bytes coded in UTF8 to text
             Data = text.Substring(0, text.Length);
             // get checksum
-            Checksum = (byte)(bytes[bytes.Length - 1] | 0x80);
+            Checksum = bytes[Length - 1];
             byte sum = 0;
-            for (int i = 0; i < bytes.Length-1; i++)
+            for (int i = 0; i < Length-1; i++)
                 sum += bytes[i];
             sum = (byte)(sum | 0x80);
             if (Checksum == sum)
@@ -123,16 +132,16 @@ namespace WinTest
                     case WTMESSAGES.UNKNOWN:
                         break;
                     default:
-                        // combine all fields to string incl. placeholder for checksum
-                        s = Msg + ": " + "\"" + Src + "\" \"" + Dst + "\" \"" + Data + "\"" + Extra + "??";
+                        // combine all fields to string incl. placeholder for checksum and a \0 at the end
+                        s = Msg + ": " + "\"" + Src + "\" \"" + Dst + "\" \"" + Data + "\"" + Extra + "?\0";
                         // translate into ASCII bytes
                         b = Encoding.ASCII.GetBytes(s);
                         // calculate checksum
                         sum = 0;
-                        for (int i = 0; i < b.Length-1; i++)
+                        for (int i = 0; i < b.Length-2; i++)
                             sum += b[i];
                         sum = (byte)(sum | (byte)0x80);
-                        b[b.Length - 1] = sum;
+                        b[b.Length - 2] = sum;
                         break;
                 }
             }
