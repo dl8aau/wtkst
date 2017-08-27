@@ -10,6 +10,21 @@ namespace WinTest
         NONE = 0,
         STATUS = 1,
         PKTRCVD = 2,
+
+        NEEDQSO,
+        IHAVE,
+        ADDQSO,
+        UPDQSO,
+        BANDMAP,
+        RCVDPKT,
+        TIME,
+        HELLO,
+        SUMMARY,
+        GAB,
+        LOCKSKED,
+        UNLOCKSKED,
+        ADDSKED,
+        READAZIMUTH,
         SETAZIMUTH = 100,
         SETELEVATION = 101,
         ASWATCHLIST = 249,
@@ -17,6 +32,20 @@ namespace WinTest
         ASSHOWPATH = 253,
         ASNEAREST = 254,
         UNKNOWN = 255
+    }
+
+    public enum WTBANDS
+    {
+        Band144MHz = 12,
+        Band432MHz = 14,
+        Band1_2GHz = 16,
+        Band2_3GHz = 17,
+        Band3_4GHz = 18,
+        Band5_7GHz = 19,
+        Band10GHz = 20,
+        Band24GHz = 21,
+        Band46GHz = 22,
+        Band76GHz = 23
     }
 
     public class wtMessage
