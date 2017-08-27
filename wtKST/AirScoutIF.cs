@@ -136,25 +136,14 @@ namespace wtKST
                         {
                             string text = Encoding.ASCII.GetString(data);
                             text = text.Remove(text.Length - 1);
-                            byte sum = 0;
-                            for (int j = 0; j < data.Length - 1; j++)
-                            {
-                                sum += data[j];
-                            }
-                            sum |= 128;
                             Console.WriteLine(string.Concat(new object[]
                             {
                                 ep.Address,
                                 " >> ",
                                 text,
-                                "[",
-                                data[data.Length - 1].ToString("X2"),
-                                "<>",
-                                sum.ToString("X2"),
-                                "]"
                             }));
                             Msg = new wtMessage(data);
-                            if (Msg.Msg == WTMESSAGES.ASNEAREST)
+                            if (Msg.Msg == WTMESSAGES.ASNEAREST && Msg.HasChecksum)
                             {
                                 string[] a = Msg.Data.Split(new char[] { ',' });
                                 rxmycall = a[1];
