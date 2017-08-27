@@ -2302,6 +2302,8 @@ namespace wtKST
                         string mycall = WCCheck.WCCheck.Cut(MyCall);
                         string dxcall = WCCheck.WCCheck.Cut(CALL.Rows[i]["CALL"].ToString().TrimStart(
                             new char[]{ '(' }).TrimEnd(new char[]{ ')' }));
+                        if (mycall.Equals(dxcall))
+                            continue;
                         string dxloc = CALL.Rows[i]["LOC"].ToString();
                         if (Settings.Default.AS_Active)
                         {
