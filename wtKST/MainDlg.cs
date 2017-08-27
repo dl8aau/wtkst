@@ -894,9 +894,20 @@ namespace wtKST
                             LV.SubItems.Add("xxx"); // if contacted 3 times without answer then probably really not available
                     }
                     int qrb = (int)row["QRB"];
-                    if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
+                    if (Settings.Default.AS_Active)
                     {
-                        LV.SubItems.Add(AS_if.GetNearestPlanePotential(row["CALL"].ToString()));
+                        if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
+                        {
+                            LV.SubItems.Add(AS_if.GetNearestPlanePotential(row["CALL"].ToString()));
+                        }
+                        else if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist))
+                        {
+                            LV.SubItems.Add("<");
+                        }
+                        else
+                        {
+                            LV.SubItems.Add(">");
+                        }
                     }
                     else
                     {
@@ -1650,6 +1661,11 @@ namespace wtKST
                 {
                     if (e.SubItem.Text.Length > 0)
                     {
+                        if (e.SubItem.Text.Equals("<") || e.SubItem.Text.Equals(">"))
+                        {
+                            e.DrawDefault = true;
+                            return;
+                        }
                         e.DrawBackground();
                         string[] a = e.SubItem.Text.Split(new char[] { ',' });
                         int pot = Convert.ToInt32(a[0]);
@@ -2287,17 +2303,28 @@ namespace wtKST
                         string dxcall = WCCheck.WCCheck.Cut(CALL.Rows[i]["CALL"].ToString().TrimStart(
                             new char[]{ '(' }).TrimEnd(new char[]{ ')' }));
                         string dxloc = CALL.Rows[i]["LOC"].ToString();
-                        if (Settings.Default.AS_Active && qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) 
-                            && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
+                        if (Settings.Default.AS_Active)
                         {
-                            if (!AS_if.GetPlanes(mycall, MyLoc, dxcall, dxloc))
+                            if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
+                            && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
                             {
-                                errors++;
-                                if (errors > 10)
+                                if (!AS_if.GetPlanes(mycall, MyLoc, dxcall, dxloc))
                                 {
-                                    bw_GetPlanes.ReportProgress(0, null);
-                                    break;
+                                    errors++;
+                                    if (errors > 10)
+                                    {
+                                        bw_GetPlanes.ReportProgress(0, null);
+                                        break;
+                                    }
+
                                 }
+                            }
+                            else
+                            {
+                                if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist))
+                                    bw_GetPlanes.ReportProgress(-2, dxcall);
+                                else
+                                    bw_GetPlanes.ReportProgress(-3, dxcall);
 
                             }
                         }
@@ -2353,7 +2380,33 @@ namespace wtKST
                     }
                 }
             }
-            else /* e.ProgressPercentage == 0 or e.ProgressPercentage <0 */
+            else if (e.ProgressPercentage == -2) // too far
+            {
+                AS_if.planes.Remove(dxcall);
+                if (call_lvi != null)
+                {
+                    string newtext = ">";
+                    if (call_lvi.SubItems[4].Text != newtext)
+                    {
+                        call_lvi.SubItems[4].Text = newtext;
+                        lv_Calls.Refresh();
+                    }
+                }
+            }
+            else if (e.ProgressPercentage == -3) // too close
+            {
+                AS_if.planes.Remove(dxcall);
+                if (call_lvi != null)
+                {
+                    string newtext = "<";
+                    if (call_lvi.SubItems[4].Text != newtext)
+                    {
+                        call_lvi.SubItems[4].Text = newtext;
+                        lv_Calls.Refresh();
+                    }
+                }
+            }
+            else /* e.ProgressPercentage == 0 or e.ProgressPercentage == -1 */
             {
                 Console.WriteLine("remove " + dxcall);
                 AS_if.planes.Remove(dxcall);
