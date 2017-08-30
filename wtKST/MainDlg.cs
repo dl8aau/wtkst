@@ -2323,9 +2323,12 @@ namespace wtKST
                             }
                             else
                             {
-                                if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist))
+                                if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist) &&
+                                    (qrb < Convert.ToInt32(Settings.Default.KST_MaxDist)))
+                                    // too far
                                     bw_GetPlanes.ReportProgress(-2, dxcall);
                                 else
+                                    // too close
                                     bw_GetPlanes.ReportProgress(-3, dxcall);
 
                             }
@@ -2361,13 +2364,17 @@ namespace wtKST
                 }
                 return;
             }
-
-            ListViewItem call_lvi = lv_Calls.FindItemWithText(dxcall, false, 0, false);
-            if (call_lvi == null)
+            // search the listview for matching call - note that dxcall is the bare callsign, whereas
+            // the list contains () for users that are away and may contain things like /p
+            // so this is safer...
+            ListViewItem call_lvi = null;
+            foreach (ListViewItem lvi in lv_Calls.Items)
             {
-                // try with () around to catch users that are away
-                call_lvi = lv_Calls.FindItemWithText(string.Concat(new string[] { "(", dxcall, ")" }),
-                    false, 0, false);
+                if (lvi.Text.IndexOf(dxcall) >= 0)
+                {
+                    call_lvi = lvi;
+                    break;
+                }
             }
 
             if (e.ProgressPercentage > 0)
