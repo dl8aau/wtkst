@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_2E49AED82F595CB4244E1139EE86E9D2"
-        "OwnerKey" = "8:_E1FE572876094762A4D99AAFDF813752"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_46F82EC6C1F0416B840A4F54ABDA1086"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -39,13 +33,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CAF3CED1BBDB6F3183113E0F7E707BC9"
+        "MsmKey" = "8:_B76B26E6887F08188B5BC08498B32642"
         "OwnerKey" = "8:_E1FE572876094762A4D99AAFDF813752"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_D96F21F4DE8E15FAFCCC30C579DF3380"
+        "MsmKey" = "8:_CBA09A66247537E777CCE911A1599241"
         "OwnerKey" = "8:_E1FE572876094762A4D99AAFDF813752"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -58,25 +52,25 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_CAF3CED1BBDB6F3183113E0F7E707BC9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_E1FE572876094762A4D99AAFDF813752"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_D96F21F4DE8E15FAFCCC30C579DF3380"
+        "OwnerKey" = "8:_CBA09A66247537E777CCE911A1599241"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_2E49AED82F595CB4244E1139EE86E9D2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_CAF3CED1BBDB6F3183113E0F7E707BC9"
+        "OwnerKey" = "8:_B76B26E6887F08188B5BC08498B32642"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -199,14 +193,54 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_2E49AED82F595CB4244E1139EE86E9D2"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6A8256019C164899AB4C3672F37459A8"
+            {
+            "SourcePath" = "8:..\\Main.Icon.ico"
+            "TargetName" = "8:Main.Icon.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_85D2FFA074C7453D9A8DF06709C79670"
+            {
+            "SourcePath" = "8:..\\beacons.lst"
+            "TargetName" = "8:beacons.lst"
+            "Tag" = "8:"
+            "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_B76B26E6887F08188B5BC08498B32642"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:Telnet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_2E49AED82F595CB4244E1139EE86E9D2"
+                    "_B76B26E6887F08188B5BC08498B32642"
                     {
                     "Name" = "8:Telnet.dll"
                     "Attributes" = "3:512"
@@ -230,34 +264,14 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6A8256019C164899AB4C3672F37459A8"
-            {
-            "SourcePath" = "8:..\\Main.Icon.ico"
-            "TargetName" = "8:Main.Icon.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_D96F21F4DE8E15FAFCCC30C579DF3380"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_CBA09A66247537E777CCE911A1599241"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:WinTest, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_D96F21F4DE8E15FAFCCC30C579DF3380"
+                    "_CBA09A66247537E777CCE911A1599241"
                     {
                     "Name" = "8:WinTest.dll"
                     "Attributes" = "3:512"
@@ -279,26 +293,6 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_85D2FFA074C7453D9A8DF06709C79670"
-            {
-            "SourcePath" = "8:..\\beacons.lst"
-            "TargetName" = "8:beacons.lst"
-            "Tag" = "8:"
-            "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
         }
@@ -368,15 +362,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:wtKST"
-        "ProductCode" = "8:{EC9C42B7-370A-412E-95FA-B640D826B84D}"
-        "PackageCode" = "8:{AEA827D9-B0DA-4132-B7A6-96E93C20809F}"
+        "ProductCode" = "8:{EBC52D4C-40B5-466F-AA7A-3B8645D1CDC9}"
+        "PackageCode" = "8:{C9BEBF6D-012D-488F-900B-24D0343996F2}"
         "UpgradeCode" = "8:{5472AA0A-2E6D-4606-B2F1-C2A5C741C5BA}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:3.01.0106"
+        "ProductVersion" = "8:3.01.0107"
         "Manufacturer" = "8:wtKST"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
