@@ -51,6 +51,7 @@ namespace wtKST
                     }
                     if (dxcall == rxdxcall)
                         waitHandle.Set();
+                }
             }
         }
 
