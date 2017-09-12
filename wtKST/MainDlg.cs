@@ -903,11 +903,13 @@ namespace wtKST
                         }
                         else if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist))
                         {
-                            LV.SubItems.Add("<");
+                            // too far
+                            LV.SubItems.Add(">");
                         }
                         else
                         {
-                            LV.SubItems.Add(">");
+                            // too close
+                            LV.SubItems.Add("<");
                         }
                     }
                     else
