@@ -1546,16 +1546,17 @@ namespace wtKST
             {
                 Error(MethodBase.GetCurrentMethod().Name, "(qrv.xml): " + e2.Message);
             }
-            // Copy window location to app settings
-            Settings.Default.WindowLocation = Location;
 
             // Copy window size to app settings
             if (WindowState == FormWindowState.Normal)
             {
+                // Copy window location to app settings
+                Settings.Default.WindowLocation = Location;
                 Settings.Default.WindowSize = Size;
             }
             else
             {
+                Settings.Default.WindowLocation = RestoreBounds.Location;
                 Settings.Default.WindowSize = RestoreBounds.Size;
             }
 
