@@ -800,7 +800,14 @@ namespace wtKST
                     {
                         MyLV.SubItems[i].Name = lv_MyMsg.Columns[i].Text;
                     }
-                    lv_MyMsg.Items.Insert(0, MyLV);
+                    if (msg_latest_first)
+                    {
+                        lv_MyMsg.Items.Insert(lv_MyMsg.Items.Count, MyLV);
+                    }
+                    else
+                    {
+                        lv_MyMsg.Items.Insert(0, MyLV);
+                    }
                     lv_MyMsg.Items[0].EnsureVisible();
                     int hwnd = MainDlg.GetForegroundWindow();
                     if (hwnd != base.Handle.ToInt32())
