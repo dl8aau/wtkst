@@ -10,7 +10,7 @@ using System.Runtime.Versioning;
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCopyright("Copyright ©  2012 by DL2ALF")]
-[assembly: AssemblyDescription("ON4KST client for Win-Test")]
+[assembly: AssemblyDescription("ON4KST client with Win-Test support")]
 [assembly: AssemblyFileVersion("3.1.1.8")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyTitle("wtKST")]
