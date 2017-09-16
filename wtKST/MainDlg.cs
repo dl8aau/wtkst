@@ -134,10 +134,10 @@ namespace wtKST
 
         private ToolStripMenuItem aboutToolStripMenuItem;
 
+        private AboutBox aboutBox1 = new AboutBox();
+
         private System.Windows.Forms.Timer ti_Main;
-
-        private ListView lv_Calls;
-
+        private wtKST.MainDlg.DoubleBufferedListView lv_Calls;
         private ColumnHeader ch_Call;
 
         private ColumnHeader ch_Name;
@@ -487,7 +487,8 @@ namespace wtKST
             set_KST_Status();
 
             ni_Main.Text = "wtKST\nLeft click to activate";
-            if (!cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture)
+
+            if (!aboutBox1.Visible &&!cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture)
             {
                 cb_Command.Focus();
                 cb_Command.SelectionLength = 0;
@@ -1214,7 +1215,7 @@ namespace wtKST
 
         private void KST_Send()
         {
-            if (tw.Connected && cb_Command.Text.Length > 0)
+            if (tw != null && tw.Connected && cb_Command.Text.Length > 0)
             {
                 if (!cb_Command.Text.StartsWith("/") || cb_Command.Text.ToUpper().StartsWith("/CQ"))
                 {
@@ -2468,706 +2469,711 @@ namespace wtKST
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainDlg));
-            ss_Main = new System.Windows.Forms.StatusStrip();
-            tsl_Info = new System.Windows.Forms.ToolStripStatusLabel();
-            tsl_Error = new System.Windows.Forms.ToolStripStatusLabel();
-            splitContainer1 = new System.Windows.Forms.SplitContainer();
-            splitContainer2 = new System.Windows.Forms.SplitContainer();
-            splitContainer3 = new System.Windows.Forms.SplitContainer();
-            cb_Command = new System.Windows.Forms.ComboBox();
-            btn_KST_Send = new System.Windows.Forms.Button();
-            lbl_KST_Status = new System.Windows.Forms.Label();
-            lbl_Call = new System.Windows.Forms.Label();
-            lv_Msg = new System.Windows.Forms.ListView();
-            lvh_Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            lvh_Call = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            lvh_Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            lvh_Msg = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            lbl_KST_Msg = new System.Windows.Forms.Label();
-            lv_MyMsg = new System.Windows.Forms.ListView();
-            columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            lbl_KST_MyMsg = new System.Windows.Forms.Label();
-            lv_Calls = new DoubleBufferedListView();
-            ch_Call = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            ch_Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            ch_Loc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            ch_Act = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            ch_AS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader144 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader432 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader1296 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader2320 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader3400 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader5760 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader10368 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader24GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader47GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            columnHeader76GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            il_Calls = new System.Windows.Forms.ImageList(components);
-            lbl_KST_Calls = new System.Windows.Forms.Label();
-            mn_Main = new System.Windows.Forms.MenuStrip();
-            tsm_File = new System.Windows.Forms.ToolStripMenuItem();
-            toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            tsi_File_Exit = new System.Windows.Forms.ToolStripMenuItem();
-            tsm_KST = new System.Windows.Forms.ToolStripMenuItem();
-            tsi_KST_Connect = new System.Windows.Forms.ToolStripMenuItem();
-            tsi_KST_Disconnect = new System.Windows.Forms.ToolStripMenuItem();
-            toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            tsi_KST_Here = new System.Windows.Forms.ToolStripMenuItem();
-            tsi_KST_Away = new System.Windows.Forms.ToolStripMenuItem();
-            tsi_Options = new System.Windows.Forms.ToolStripMenuItem();
-            toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ti_Main = new System.Windows.Forms.Timer(components);
-            ni_Main = new System.Windows.Forms.NotifyIcon(components);
-            cmn_Notify = new System.Windows.Forms.ContextMenuStrip(components);
-            cmi_Notify_Restore = new System.Windows.Forms.ToolStripMenuItem();
-            toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            cmi_Notify_Quit = new System.Windows.Forms.ToolStripMenuItem();
-            ti_Receive = new System.Windows.Forms.Timer(components);
-            ti_Error = new System.Windows.Forms.Timer(components);
-            ti_Top = new System.Windows.Forms.Timer(components);
-            ti_Reconnect = new System.Windows.Forms.Timer(components);
-            ti_Linkcheck = new System.Timers.Timer();
-            il_Planes = new System.Windows.Forms.ImageList(components);
-            tt_Info = new System.Windows.Forms.ToolTip(components);
-            bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
-            ss_Main.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(splitContainer1)).BeginInit();
-            splitContainer1.Panel1.SuspendLayout();
-            splitContainer1.Panel2.SuspendLayout();
-            splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(splitContainer2)).BeginInit();
-            splitContainer2.Panel1.SuspendLayout();
-            splitContainer2.Panel2.SuspendLayout();
-            splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(splitContainer3)).BeginInit();
-            splitContainer3.Panel1.SuspendLayout();
-            splitContainer3.Panel2.SuspendLayout();
-            splitContainer3.SuspendLayout();
-            mn_Main.SuspendLayout();
-            cmn_Notify.SuspendLayout();
-            SuspendLayout();
+            this.ss_Main = new System.Windows.Forms.StatusStrip();
+            this.tsl_Info = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsl_Error = new System.Windows.Forms.ToolStripStatusLabel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.cb_Command = new System.Windows.Forms.ComboBox();
+            this.btn_KST_Send = new System.Windows.Forms.Button();
+            this.lbl_KST_Status = new System.Windows.Forms.Label();
+            this.lbl_Call = new System.Windows.Forms.Label();
+            this.lv_Msg = new System.Windows.Forms.ListView();
+            this.lvh_Time = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lvh_Call = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lvh_Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lvh_Msg = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lbl_KST_Msg = new System.Windows.Forms.Label();
+            this.lv_MyMsg = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lbl_KST_MyMsg = new System.Windows.Forms.Label();
+            this.lv_Calls = new wtKST.MainDlg.DoubleBufferedListView();
+            this.ch_Call = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ch_Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ch_Loc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ch_Act = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ch_AS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader144 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader432 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1296 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2320 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3400 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5760 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader10368 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader24GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader47GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader76GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.il_Calls = new System.Windows.Forms.ImageList(this.components);
+            this.lbl_KST_Calls = new System.Windows.Forms.Label();
+            this.mn_Main = new System.Windows.Forms.MenuStrip();
+            this.tsm_File = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsi_File_Exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsm_KST = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsi_KST_Connect = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsi_KST_Disconnect = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.tsi_KST_Here = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsi_KST_Away = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsi_Options = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ti_Main = new System.Windows.Forms.Timer(this.components);
+            this.ni_Main = new System.Windows.Forms.NotifyIcon(this.components);
+            this.cmn_Notify = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmi_Notify_Restore = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmi_Notify_Quit = new System.Windows.Forms.ToolStripMenuItem();
+            this.ti_Receive = new System.Windows.Forms.Timer(this.components);
+            this.ti_Error = new System.Windows.Forms.Timer(this.components);
+            this.ti_Top = new System.Windows.Forms.Timer(this.components);
+            this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
+            this.ti_Linkcheck = new System.Timers.Timer();
+            this.il_Planes = new System.Windows.Forms.ImageList(this.components);
+            this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
+            this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
+            this.ss_Main.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+            this.splitContainer3.Panel1.SuspendLayout();
+            this.splitContainer3.Panel2.SuspendLayout();
+            this.splitContainer3.SuspendLayout();
+            this.mn_Main.SuspendLayout();
+            this.cmn_Notify.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ti_Linkcheck)).BeginInit();
+            this.SuspendLayout();
             // 
             // ss_Main
             // 
-            ss_Main.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            tsl_Info,
-            tsl_Error});
-            ss_Main.Location = new System.Drawing.Point(0, 708);
-            ss_Main.Name = "ss_Main";
-            ss_Main.Size = new System.Drawing.Size(1202, 22);
-            ss_Main.TabIndex = 9;
-            ss_Main.Text = "statusStrip1";
+            this.ss_Main.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsl_Info,
+            this.tsl_Error});
+            this.ss_Main.Location = new System.Drawing.Point(0, 708);
+            this.ss_Main.Name = "ss_Main";
+            this.ss_Main.Size = new System.Drawing.Size(1202, 22);
+            this.ss_Main.TabIndex = 9;
+            this.ss_Main.Text = "statusStrip1";
             // 
             // tsl_Info
             // 
-            tsl_Info.Name = "tsl_Info";
-            tsl_Info.Size = new System.Drawing.Size(28, 17);
-            tsl_Info.Text = "Info";
+            this.tsl_Info.Name = "tsl_Info";
+            this.tsl_Info.Size = new System.Drawing.Size(28, 17);
+            this.tsl_Info.Text = "Info";
             // 
             // tsl_Error
             // 
-            tsl_Error.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            tsl_Error.ForeColor = System.Drawing.Color.Red;
-            tsl_Error.Name = "tsl_Error";
-            tsl_Error.Size = new System.Drawing.Size(1159, 17);
-            tsl_Error.Spring = true;
-            tsl_Error.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.tsl_Error.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tsl_Error.ForeColor = System.Drawing.Color.Red;
+            this.tsl_Error.Name = "tsl_Error";
+            this.tsl_Error.Size = new System.Drawing.Size(1159, 17);
+            this.tsl_Error.Spring = true;
+            this.tsl_Error.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // splitContainer1
             // 
-            splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            splitContainer1.Location = new System.Drawing.Point(0, 24);
-            splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
-            splitContainer1.Panel1.Controls.Add(splitContainer2);
+            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
             // 
             // splitContainer1.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(lv_Calls);
-            splitContainer1.Panel2.Controls.Add(lbl_KST_Calls);
-            splitContainer1.Size = new System.Drawing.Size(1202, 684);
-            splitContainer1.SplitterDistance = 843;
-            splitContainer1.TabIndex = 10;
+            this.splitContainer1.Panel2.Controls.Add(this.lv_Calls);
+            this.splitContainer1.Panel2.Controls.Add(this.lbl_KST_Calls);
+            this.splitContainer1.Size = new System.Drawing.Size(1202, 684);
+            this.splitContainer1.SplitterDistance = 843;
+            this.splitContainer1.TabIndex = 10;
             // 
             // splitContainer2
             // 
-            splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            splitContainer2.Location = new System.Drawing.Point(0, 0);
-            splitContainer2.Name = "splitContainer2";
-            splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer2.Panel1
             // 
-            splitContainer2.Panel1.Controls.Add(splitContainer3);
-            splitContainer2.Panel1MinSize = 75;
+            this.splitContainer2.Panel1.Controls.Add(this.splitContainer3);
+            this.splitContainer2.Panel1MinSize = 75;
             // 
             // splitContainer2.Panel2
             // 
-            splitContainer2.Panel2.Controls.Add(lv_MyMsg);
-            splitContainer2.Panel2.Controls.Add(lbl_KST_MyMsg);
-            splitContainer2.Panel2MinSize = 75;
-            splitContainer2.Size = new System.Drawing.Size(843, 684);
-            splitContainer2.SplitterDistance = 346;
-            splitContainer2.TabIndex = 0;
+            this.splitContainer2.Panel2.Controls.Add(this.lv_MyMsg);
+            this.splitContainer2.Panel2.Controls.Add(this.lbl_KST_MyMsg);
+            this.splitContainer2.Panel2MinSize = 75;
+            this.splitContainer2.Size = new System.Drawing.Size(843, 684);
+            this.splitContainer2.SplitterDistance = 346;
+            this.splitContainer2.TabIndex = 0;
             // 
             // splitContainer3
             // 
-            splitContainer3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-            splitContainer3.Location = new System.Drawing.Point(0, 0);
-            splitContainer3.Name = "splitContainer3";
-            splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.splitContainer3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer3.Name = "splitContainer3";
+            this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer3.Panel1
             // 
-            splitContainer3.Panel1.Controls.Add(cb_Command);
-            splitContainer3.Panel1.Controls.Add(btn_KST_Send);
-            splitContainer3.Panel1.Controls.Add(lbl_KST_Status);
-            splitContainer3.Panel1.Controls.Add(lbl_Call);
-            splitContainer3.Panel1MinSize = 80;
+            this.splitContainer3.Panel1.Controls.Add(this.cb_Command);
+            this.splitContainer3.Panel1.Controls.Add(this.btn_KST_Send);
+            this.splitContainer3.Panel1.Controls.Add(this.lbl_KST_Status);
+            this.splitContainer3.Panel1.Controls.Add(this.lbl_Call);
+            this.splitContainer3.Panel1MinSize = 80;
             // 
             // splitContainer3.Panel2
             // 
-            splitContainer3.Panel2.Controls.Add(lv_Msg);
-            splitContainer3.Panel2.Controls.Add(lbl_KST_Msg);
-            splitContainer3.Size = new System.Drawing.Size(843, 346);
-            splitContainer3.SplitterDistance = 80;
-            splitContainer3.TabIndex = 0;
+            this.splitContainer3.Panel2.Controls.Add(this.lv_Msg);
+            this.splitContainer3.Panel2.Controls.Add(this.lbl_KST_Msg);
+            this.splitContainer3.Size = new System.Drawing.Size(843, 346);
+            this.splitContainer3.SplitterDistance = 80;
+            this.splitContainer3.TabIndex = 0;
             // 
             // cb_Command
             // 
-            cb_Command.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            cb_Command.FormattingEnabled = true;
-            cb_Command.Location = new System.Drawing.Point(11, 41);
-            cb_Command.MaxDropDownItems = 5;
-            cb_Command.Name = "cb_Command";
-            cb_Command.Size = new System.Drawing.Size(469, 24);
-            cb_Command.TabIndex = 17;
-            cb_Command.TextUpdate += new System.EventHandler(cb_Command_TextUpdate);
-            cb_Command.DropDownClosed += new System.EventHandler(cb_Command_DropDownClosed);
-            cb_Command.TextChanged += new System.EventHandler(cb_Command_TextChanged);
+            this.cb_Command.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_Command.FormattingEnabled = true;
+            this.cb_Command.Location = new System.Drawing.Point(11, 41);
+            this.cb_Command.MaxDropDownItems = 5;
+            this.cb_Command.Name = "cb_Command";
+            this.cb_Command.Size = new System.Drawing.Size(469, 24);
+            this.cb_Command.TabIndex = 17;
+            this.cb_Command.TextUpdate += new System.EventHandler(this.cb_Command_TextUpdate);
+            this.cb_Command.DropDownClosed += new System.EventHandler(this.cb_Command_DropDownClosed);
+            this.cb_Command.TextChanged += new System.EventHandler(this.cb_Command_TextChanged);
             // 
             // btn_KST_Send
             // 
-            btn_KST_Send.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            btn_KST_Send.Location = new System.Drawing.Point(508, 41);
-            btn_KST_Send.Name = "btn_KST_Send";
-            btn_KST_Send.Size = new System.Drawing.Size(75, 23);
-            btn_KST_Send.TabIndex = 16;
-            btn_KST_Send.Text = "Send";
-            btn_KST_Send.UseVisualStyleBackColor = true;
-            btn_KST_Send.Click += new System.EventHandler(btn_KST_Send_Click_1);
+            this.btn_KST_Send.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_KST_Send.Location = new System.Drawing.Point(508, 41);
+            this.btn_KST_Send.Name = "btn_KST_Send";
+            this.btn_KST_Send.Size = new System.Drawing.Size(75, 23);
+            this.btn_KST_Send.TabIndex = 16;
+            this.btn_KST_Send.Text = "Send";
+            this.btn_KST_Send.UseVisualStyleBackColor = true;
+            this.btn_KST_Send.Click += new System.EventHandler(this.btn_KST_Send_Click_1);
             // 
             // lbl_KST_Status
             // 
-            lbl_KST_Status.BackColor = System.Drawing.SystemColors.ScrollBar;
-            lbl_KST_Status.Dock = System.Windows.Forms.DockStyle.Top;
-            lbl_KST_Status.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            lbl_KST_Status.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            lbl_KST_Status.Location = new System.Drawing.Point(0, 0);
-            lbl_KST_Status.Name = "lbl_KST_Status";
-            lbl_KST_Status.Padding = new System.Windows.Forms.Padding(4);
-            lbl_KST_Status.Size = new System.Drawing.Size(841, 26);
-            lbl_KST_Status.TabIndex = 15;
-            lbl_KST_Status.Text = "Status";
-            lbl_KST_Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_KST_Status.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.lbl_KST_Status.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lbl_KST_Status.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.lbl_KST_Status.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_KST_Status.Location = new System.Drawing.Point(0, 0);
+            this.lbl_KST_Status.Name = "lbl_KST_Status";
+            this.lbl_KST_Status.Padding = new System.Windows.Forms.Padding(4);
+            this.lbl_KST_Status.Size = new System.Drawing.Size(841, 26);
+            this.lbl_KST_Status.TabIndex = 15;
+            this.lbl_KST_Status.Text = "Status";
+            this.lbl_KST_Status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lbl_Call
             // 
-            lbl_Call.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            lbl_Call.Location = new System.Drawing.Point(589, 41);
-            lbl_Call.Name = "lbl_Call";
-            lbl_Call.Size = new System.Drawing.Size(100, 23);
-            lbl_Call.TabIndex = 14;
-            lbl_Call.Text = "Call";
-            lbl_Call.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lbl_Call.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_Call.Location = new System.Drawing.Point(589, 41);
+            this.lbl_Call.Name = "lbl_Call";
+            this.lbl_Call.Size = new System.Drawing.Size(100, 23);
+            this.lbl_Call.TabIndex = 14;
+            this.lbl_Call.Text = "Call";
+            this.lbl_Call.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // lv_Msg
             // 
-            lv_Msg.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            lvh_Time,
-            lvh_Call,
-            lvh_Name,
-            lvh_Msg});
-            lv_Msg.Dock = System.Windows.Forms.DockStyle.Fill;
-            lv_Msg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            lv_Msg.FullRowSelect = true;
-            lv_Msg.GridLines = true;
-            lv_Msg.Location = new System.Drawing.Point(0, 26);
-            lv_Msg.MultiSelect = false;
-            lv_Msg.Name = "lv_Msg";
-            lv_Msg.Size = new System.Drawing.Size(841, 234);
-            lv_Msg.TabIndex = 12;
-            lv_Msg.UseCompatibleStateImageBehavior = false;
-            lv_Msg.View = System.Windows.Forms.View.Details;
-            lv_Msg.MouseDown += new System.Windows.Forms.MouseEventHandler(lv_Msg_MouseDown);
-            lv_Msg.MouseMove += new System.Windows.Forms.MouseEventHandler(lv_Msg_MouseMove);
-            lv_Msg.Resize += new System.EventHandler(lv_Msg_Resize);
+            this.lv_Msg.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.lvh_Time,
+            this.lvh_Call,
+            this.lvh_Name,
+            this.lvh_Msg});
+            this.lv_Msg.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lv_Msg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lv_Msg.FullRowSelect = true;
+            this.lv_Msg.GridLines = true;
+            this.lv_Msg.Location = new System.Drawing.Point(0, 26);
+            this.lv_Msg.MultiSelect = false;
+            this.lv_Msg.Name = "lv_Msg";
+            this.lv_Msg.Size = new System.Drawing.Size(841, 234);
+            this.lv_Msg.TabIndex = 12;
+            this.lv_Msg.UseCompatibleStateImageBehavior = false;
+            this.lv_Msg.View = System.Windows.Forms.View.Details;
+            this.lv_Msg.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lv_Msg_MouseDown);
+            this.lv_Msg.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lv_Msg_MouseMove);
+            this.lv_Msg.Resize += new System.EventHandler(this.lv_Msg_Resize);
             // 
             // lvh_Time
             // 
-            lvh_Time.Text = "Time";
-            lvh_Time.Width = 50;
+            this.lvh_Time.Text = "Time";
+            this.lvh_Time.Width = 50;
             // 
             // lvh_Call
             // 
-            lvh_Call.Text = "Call";
-            lvh_Call.Width = 100;
+            this.lvh_Call.Text = "Call";
+            this.lvh_Call.Width = 100;
             // 
             // lvh_Name
             // 
-            lvh_Name.Text = "Name";
-            lvh_Name.Width = 150;
+            this.lvh_Name.Text = "Name";
+            this.lvh_Name.Width = 150;
             // 
             // lvh_Msg
             // 
-            lvh_Msg.Text = "Messages";
-            lvh_Msg.Width = 600;
+            this.lvh_Msg.Text = "Messages";
+            this.lvh_Msg.Width = 600;
             // 
             // lbl_KST_Msg
             // 
-            lbl_KST_Msg.BackColor = System.Drawing.SystemColors.ScrollBar;
-            lbl_KST_Msg.Dock = System.Windows.Forms.DockStyle.Top;
-            lbl_KST_Msg.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            lbl_KST_Msg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            lbl_KST_Msg.Location = new System.Drawing.Point(0, 0);
-            lbl_KST_Msg.Name = "lbl_KST_Msg";
-            lbl_KST_Msg.Padding = new System.Windows.Forms.Padding(4);
-            lbl_KST_Msg.Size = new System.Drawing.Size(841, 26);
-            lbl_KST_Msg.TabIndex = 11;
-            lbl_KST_Msg.Text = "Messages";
-            lbl_KST_Msg.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_KST_Msg.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.lbl_KST_Msg.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lbl_KST_Msg.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.lbl_KST_Msg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_KST_Msg.Location = new System.Drawing.Point(0, 0);
+            this.lbl_KST_Msg.Name = "lbl_KST_Msg";
+            this.lbl_KST_Msg.Padding = new System.Windows.Forms.Padding(4);
+            this.lbl_KST_Msg.Size = new System.Drawing.Size(841, 26);
+            this.lbl_KST_Msg.TabIndex = 11;
+            this.lbl_KST_Msg.Text = "Messages";
+            this.lbl_KST_Msg.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lv_MyMsg
             // 
-            lv_MyMsg.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            columnHeader1,
-            columnHeader2,
-            columnHeader3,
-            columnHeader4});
-            lv_MyMsg.Dock = System.Windows.Forms.DockStyle.Fill;
-            lv_MyMsg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            lv_MyMsg.FullRowSelect = true;
-            lv_MyMsg.GridLines = true;
-            lv_MyMsg.Location = new System.Drawing.Point(0, 26);
-            lv_MyMsg.MultiSelect = false;
-            lv_MyMsg.Name = "lv_MyMsg";
-            lv_MyMsg.Size = new System.Drawing.Size(841, 306);
-            lv_MyMsg.TabIndex = 13;
-            lv_MyMsg.UseCompatibleStateImageBehavior = false;
-            lv_MyMsg.View = System.Windows.Forms.View.Details;
-            lv_MyMsg.MouseDown += new System.Windows.Forms.MouseEventHandler(lv_MyMsg_MouseDown);
-            lv_MyMsg.MouseMove += new System.Windows.Forms.MouseEventHandler(lv_MyMsg_MouseMove);
-            lv_MyMsg.Resize += new System.EventHandler(lv_MyMsg_Resize);
+            this.lv_MyMsg.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3,
+            this.columnHeader4});
+            this.lv_MyMsg.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lv_MyMsg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lv_MyMsg.FullRowSelect = true;
+            this.lv_MyMsg.GridLines = true;
+            this.lv_MyMsg.Location = new System.Drawing.Point(0, 26);
+            this.lv_MyMsg.MultiSelect = false;
+            this.lv_MyMsg.Name = "lv_MyMsg";
+            this.lv_MyMsg.Size = new System.Drawing.Size(841, 306);
+            this.lv_MyMsg.TabIndex = 13;
+            this.lv_MyMsg.UseCompatibleStateImageBehavior = false;
+            this.lv_MyMsg.View = System.Windows.Forms.View.Details;
+            this.lv_MyMsg.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lv_MyMsg_MouseDown);
+            this.lv_MyMsg.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lv_MyMsg_MouseMove);
+            this.lv_MyMsg.Resize += new System.EventHandler(this.lv_MyMsg_Resize);
             // 
             // columnHeader1
             // 
-            columnHeader1.Text = "Time";
-            columnHeader1.Width = 50;
+            this.columnHeader1.Text = "Time";
+            this.columnHeader1.Width = 50;
             // 
             // columnHeader2
             // 
-            columnHeader2.Text = "Call";
-            columnHeader2.Width = 100;
+            this.columnHeader2.Text = "Call";
+            this.columnHeader2.Width = 100;
             // 
             // columnHeader3
             // 
-            columnHeader3.Text = "Name";
-            columnHeader3.Width = 150;
+            this.columnHeader3.Text = "Name";
+            this.columnHeader3.Width = 150;
             // 
             // columnHeader4
             // 
-            columnHeader4.Text = "Messages";
-            columnHeader4.Width = 600;
+            this.columnHeader4.Text = "Messages";
+            this.columnHeader4.Width = 600;
             // 
             // lbl_KST_MyMsg
             // 
-            lbl_KST_MyMsg.BackColor = System.Drawing.Color.BlanchedAlmond;
-            lbl_KST_MyMsg.Dock = System.Windows.Forms.DockStyle.Top;
-            lbl_KST_MyMsg.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            lbl_KST_MyMsg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            lbl_KST_MyMsg.Location = new System.Drawing.Point(0, 0);
-            lbl_KST_MyMsg.Name = "lbl_KST_MyMsg";
-            lbl_KST_MyMsg.Padding = new System.Windows.Forms.Padding(4);
-            lbl_KST_MyMsg.Size = new System.Drawing.Size(841, 26);
-            lbl_KST_MyMsg.TabIndex = 10;
-            lbl_KST_MyMsg.Text = "My Messages";
-            lbl_KST_MyMsg.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_KST_MyMsg.BackColor = System.Drawing.Color.BlanchedAlmond;
+            this.lbl_KST_MyMsg.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lbl_KST_MyMsg.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.lbl_KST_MyMsg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_KST_MyMsg.Location = new System.Drawing.Point(0, 0);
+            this.lbl_KST_MyMsg.Name = "lbl_KST_MyMsg";
+            this.lbl_KST_MyMsg.Padding = new System.Windows.Forms.Padding(4);
+            this.lbl_KST_MyMsg.Size = new System.Drawing.Size(841, 26);
+            this.lbl_KST_MyMsg.TabIndex = 10;
+            this.lbl_KST_MyMsg.Text = "My Messages";
+            this.lbl_KST_MyMsg.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // lv_Calls
             // 
-            lv_Calls.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            ch_Call,
-            ch_Name,
-            ch_Loc,
-            ch_Act,
-            ch_AS,
-            columnHeader144,
-            columnHeader432,
-            columnHeader1296,
-            columnHeader2320,
-            columnHeader3400,
-            columnHeader5760,
-            columnHeader10368,
-            columnHeader24GHz,
-            columnHeader47GHz,
-            columnHeader76GHz});
-            lv_Calls.Dock = System.Windows.Forms.DockStyle.Fill;
-            lv_Calls.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            lv_Calls.GridLines = true;
-            lv_Calls.Location = new System.Drawing.Point(0, 24);
-            lv_Calls.MultiSelect = false;
-            lv_Calls.Name = "lv_Calls";
-            lv_Calls.OwnerDraw = true;
-            lv_Calls.Size = new System.Drawing.Size(353, 658);
-            lv_Calls.SmallImageList = il_Calls;
-            lv_Calls.TabIndex = 14;
-            lv_Calls.UseCompatibleStateImageBehavior = false;
-            lv_Calls.View = System.Windows.Forms.View.Details;
-            lv_Calls.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(lv_Calls_ColumnClick);
-            lv_Calls.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(lv_Calls_DrawColumnHeader);
-            lv_Calls.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(lv_Calls_DrawItem);
-            lv_Calls.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(lv_Calls_DrawSubItem);
-            lv_Calls.MouseDown += new System.Windows.Forms.MouseEventHandler(lv_Calls_MouseDown);
-            lv_Calls.MouseMove += new System.Windows.Forms.MouseEventHandler(lv_Calls_MouseMove);
+            this.lv_Calls.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ch_Call,
+            this.ch_Name,
+            this.ch_Loc,
+            this.ch_Act,
+            this.ch_AS,
+            this.columnHeader144,
+            this.columnHeader432,
+            this.columnHeader1296,
+            this.columnHeader2320,
+            this.columnHeader3400,
+            this.columnHeader5760,
+            this.columnHeader10368,
+            this.columnHeader24GHz,
+            this.columnHeader47GHz,
+            this.columnHeader76GHz});
+            this.lv_Calls.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lv_Calls.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lv_Calls.GridLines = true;
+            this.lv_Calls.Location = new System.Drawing.Point(0, 24);
+            this.lv_Calls.MultiSelect = false;
+            this.lv_Calls.Name = "lv_Calls";
+            this.lv_Calls.OwnerDraw = true;
+            this.lv_Calls.Size = new System.Drawing.Size(353, 658);
+            this.lv_Calls.SmallImageList = this.il_Calls;
+            this.lv_Calls.TabIndex = 14;
+            this.lv_Calls.UseCompatibleStateImageBehavior = false;
+            this.lv_Calls.View = System.Windows.Forms.View.Details;
+            this.lv_Calls.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lv_Calls_ColumnClick);
+            this.lv_Calls.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.lv_Calls_DrawColumnHeader);
+            this.lv_Calls.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.lv_Calls_DrawItem);
+            this.lv_Calls.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.lv_Calls_DrawSubItem);
+            this.lv_Calls.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_MouseDown);
+            this.lv_Calls.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_MouseMove);
             // 
             // ch_Call
             // 
-            ch_Call.Text = "Call";
-            ch_Call.Width = 80;
+            this.ch_Call.Text = "Call";
+            this.ch_Call.Width = 80;
             // 
             // ch_Name
             // 
-            ch_Name.Text = "Name";
-            ch_Name.Width = 100;
+            this.ch_Name.Text = "Name";
+            this.ch_Name.Width = 100;
             // 
             // ch_Loc
             // 
-            ch_Loc.Text = "Locator";
+            this.ch_Loc.Text = "Locator";
             // 
             // ch_Act
             // 
-            ch_Act.Text = "Act";
-            ch_Act.Width = 30;
+            this.ch_Act.Text = "Act";
+            this.ch_Act.Width = 30;
             // 
             // ch_AS
             // 
-            ch_AS.Text = "AS";
-            ch_AS.Width = 20;
+            this.ch_AS.Text = "AS";
+            this.ch_AS.Width = 20;
             // 
             // columnHeader144
             // 
-            columnHeader144.Text = "144M";
-            columnHeader144.Width = 20;
+            this.columnHeader144.Text = "144M";
+            this.columnHeader144.Width = 20;
             // 
             // columnHeader432
             // 
-            columnHeader432.Text = "432M";
-            columnHeader432.Width = 20;
+            this.columnHeader432.Text = "432M";
+            this.columnHeader432.Width = 20;
             // 
             // columnHeader1296
             // 
-            columnHeader1296.Text = "1.2G";
-            columnHeader1296.Width = 20;
+            this.columnHeader1296.Text = "1.2G";
+            this.columnHeader1296.Width = 20;
             // 
             // columnHeader2320
             // 
-            columnHeader2320.Text = "2.3G";
-            columnHeader2320.Width = 20;
+            this.columnHeader2320.Text = "2.3G";
+            this.columnHeader2320.Width = 20;
             // 
             // columnHeader3400
             // 
-            columnHeader3400.Text = "3.4G";
-            columnHeader3400.Width = 20;
+            this.columnHeader3400.Text = "3.4G";
+            this.columnHeader3400.Width = 20;
             // 
             // columnHeader5760
             // 
-            columnHeader5760.Text = "5.7G";
-            columnHeader5760.Width = 20;
+            this.columnHeader5760.Text = "5.7G";
+            this.columnHeader5760.Width = 20;
             // 
             // columnHeader10368
             // 
-            columnHeader10368.Text = "10G";
-            columnHeader10368.Width = 20;
+            this.columnHeader10368.Text = "10G";
+            this.columnHeader10368.Width = 20;
             // 
             // columnHeader24GHz
             // 
-            columnHeader24GHz.Text = "24G";
-            columnHeader24GHz.Width = 20;
+            this.columnHeader24GHz.Text = "24G";
+            this.columnHeader24GHz.Width = 20;
             // 
             // columnHeader47GHz
             // 
-            columnHeader47GHz.Text = "47G";
-            columnHeader47GHz.Width = 20;
+            this.columnHeader47GHz.Text = "47G";
+            this.columnHeader47GHz.Width = 20;
             // 
             // columnHeader76GHz
             // 
-            columnHeader76GHz.Text = "76G";
-            columnHeader76GHz.Width = 20;
+            this.columnHeader76GHz.Text = "76G";
+            this.columnHeader76GHz.Width = 20;
             // 
             // il_Calls
             // 
-            il_Calls.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("il_Calls.ImageStream")));
-            il_Calls.TransparentColor = System.Drawing.Color.Transparent;
-            il_Calls.Images.SetKeyName(0, "JEWEL_GRAY.PNG");
-            il_Calls.Images.SetKeyName(1, "JEWEL_GREEN.PNG");
-            il_Calls.Images.SetKeyName(2, "JEWEL_RED.PNG");
-            il_Calls.Images.SetKeyName(3, "JEWEL_YELLWO.PNG");
+            this.il_Calls.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("il_Calls.ImageStream")));
+            this.il_Calls.TransparentColor = System.Drawing.Color.Transparent;
+            this.il_Calls.Images.SetKeyName(0, "JEWEL_GRAY.PNG");
+            this.il_Calls.Images.SetKeyName(1, "JEWEL_GREEN.PNG");
+            this.il_Calls.Images.SetKeyName(2, "JEWEL_RED.PNG");
+            this.il_Calls.Images.SetKeyName(3, "JEWEL_YELLWO.PNG");
             // 
             // lbl_KST_Calls
             // 
-            lbl_KST_Calls.BackColor = System.Drawing.SystemColors.ScrollBar;
-            lbl_KST_Calls.Dock = System.Windows.Forms.DockStyle.Top;
-            lbl_KST_Calls.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            lbl_KST_Calls.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            lbl_KST_Calls.Location = new System.Drawing.Point(0, 0);
-            lbl_KST_Calls.Name = "lbl_KST_Calls";
-            lbl_KST_Calls.Padding = new System.Windows.Forms.Padding(4);
-            lbl_KST_Calls.Size = new System.Drawing.Size(353, 24);
-            lbl_KST_Calls.TabIndex = 0;
-            lbl_KST_Calls.Text = "Calls";
-            lbl_KST_Calls.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            lbl_KST_Calls.UseMnemonic = false;
+            this.lbl_KST_Calls.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.lbl_KST_Calls.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lbl_KST_Calls.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.lbl_KST_Calls.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_KST_Calls.Location = new System.Drawing.Point(0, 0);
+            this.lbl_KST_Calls.Name = "lbl_KST_Calls";
+            this.lbl_KST_Calls.Padding = new System.Windows.Forms.Padding(4);
+            this.lbl_KST_Calls.Size = new System.Drawing.Size(353, 24);
+            this.lbl_KST_Calls.TabIndex = 0;
+            this.lbl_KST_Calls.Text = "Calls";
+            this.lbl_KST_Calls.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lbl_KST_Calls.UseMnemonic = false;
             // 
             // mn_Main
             // 
-            mn_Main.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            tsm_File,
-            tsm_KST,
-            tsi_Options,
-            toolStripMenuItem1});
-            mn_Main.Location = new System.Drawing.Point(0, 0);
-            mn_Main.Name = "mn_Main";
-            mn_Main.Size = new System.Drawing.Size(1202, 24);
-            mn_Main.TabIndex = 11;
-            mn_Main.Text = "menuStrip1";
+            this.mn_Main.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsm_File,
+            this.tsm_KST,
+            this.tsi_Options,
+            this.toolStripMenuItem1});
+            this.mn_Main.Location = new System.Drawing.Point(0, 0);
+            this.mn_Main.Name = "mn_Main";
+            this.mn_Main.Size = new System.Drawing.Size(1202, 24);
+            this.mn_Main.TabIndex = 11;
+            this.mn_Main.Text = "menuStrip1";
             // 
             // tsm_File
             // 
-            tsm_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            toolStripSeparator1,
-            tsi_File_Exit});
-            tsm_File.Name = "tsm_File";
-            tsm_File.Size = new System.Drawing.Size(37, 20);
-            tsm_File.Text = "&File";
+            this.tsm_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripSeparator1,
+            this.tsi_File_Exit});
+            this.tsm_File.Name = "tsm_File";
+            this.tsm_File.Size = new System.Drawing.Size(37, 20);
+            this.tsm_File.Text = "&File";
             // 
             // toolStripSeparator1
             // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(89, 6);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(89, 6);
             // 
             // tsi_File_Exit
             // 
-            tsi_File_Exit.Name = "tsi_File_Exit";
-            tsi_File_Exit.Size = new System.Drawing.Size(92, 22);
-            tsi_File_Exit.Text = "E&xit";
-            tsi_File_Exit.Click += new System.EventHandler(tsi_File_Exit_Click);
+            this.tsi_File_Exit.Name = "tsi_File_Exit";
+            this.tsi_File_Exit.Size = new System.Drawing.Size(92, 22);
+            this.tsi_File_Exit.Text = "E&xit";
+            this.tsi_File_Exit.Click += new System.EventHandler(this.tsi_File_Exit_Click);
             // 
             // tsm_KST
             // 
-            tsm_KST.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            tsi_KST_Connect,
-            tsi_KST_Disconnect,
-            toolStripSeparator2,
-            tsi_KST_Here,
-            tsi_KST_Away});
-            tsm_KST.Name = "tsm_KST";
-            tsm_KST.Size = new System.Drawing.Size(39, 20);
-            tsm_KST.Text = "&KST";
+            this.tsm_KST.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsi_KST_Connect,
+            this.tsi_KST_Disconnect,
+            this.toolStripSeparator2,
+            this.tsi_KST_Here,
+            this.tsi_KST_Away});
+            this.tsm_KST.Name = "tsm_KST";
+            this.tsm_KST.Size = new System.Drawing.Size(39, 20);
+            this.tsm_KST.Text = "&KST";
             // 
             // tsi_KST_Connect
             // 
-            tsi_KST_Connect.Name = "tsi_KST_Connect";
-            tsi_KST_Connect.Size = new System.Drawing.Size(160, 22);
-            tsi_KST_Connect.Text = "&Connect";
-            tsi_KST_Connect.Click += new System.EventHandler(tsi_KST_Connect_Click);
+            this.tsi_KST_Connect.Name = "tsi_KST_Connect";
+            this.tsi_KST_Connect.Size = new System.Drawing.Size(160, 22);
+            this.tsi_KST_Connect.Text = "&Connect";
+            this.tsi_KST_Connect.Click += new System.EventHandler(this.tsi_KST_Connect_Click);
             // 
             // tsi_KST_Disconnect
             // 
-            tsi_KST_Disconnect.Enabled = false;
-            tsi_KST_Disconnect.Name = "tsi_KST_Disconnect";
-            tsi_KST_Disconnect.Size = new System.Drawing.Size(160, 22);
-            tsi_KST_Disconnect.Text = "&Disconnect";
-            tsi_KST_Disconnect.Click += new System.EventHandler(tsi_KST_Disconnect_Click);
+            this.tsi_KST_Disconnect.Enabled = false;
+            this.tsi_KST_Disconnect.Name = "tsi_KST_Disconnect";
+            this.tsi_KST_Disconnect.Size = new System.Drawing.Size(160, 22);
+            this.tsi_KST_Disconnect.Text = "&Disconnect";
+            this.tsi_KST_Disconnect.Click += new System.EventHandler(this.tsi_KST_Disconnect_Click);
             // 
             // toolStripSeparator2
             // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
             // 
             // tsi_KST_Here
             // 
-            tsi_KST_Here.Name = "tsi_KST_Here";
-            tsi_KST_Here.Size = new System.Drawing.Size(160, 22);
-            tsi_KST_Here.Text = "&I am on the chat";
-            tsi_KST_Here.Click += new System.EventHandler(tsi_KST_Here_Click);
+            this.tsi_KST_Here.Name = "tsi_KST_Here";
+            this.tsi_KST_Here.Size = new System.Drawing.Size(160, 22);
+            this.tsi_KST_Here.Text = "&I am on the chat";
+            this.tsi_KST_Here.Click += new System.EventHandler(this.tsi_KST_Here_Click);
             // 
             // tsi_KST_Away
             // 
-            tsi_KST_Away.Name = "tsi_KST_Away";
-            tsi_KST_Away.Size = new System.Drawing.Size(160, 22);
-            tsi_KST_Away.Text = "I am &away";
-            tsi_KST_Away.Click += new System.EventHandler(tsi_KST_Away_Click);
+            this.tsi_KST_Away.Name = "tsi_KST_Away";
+            this.tsi_KST_Away.Size = new System.Drawing.Size(160, 22);
+            this.tsi_KST_Away.Text = "I am &away";
+            this.tsi_KST_Away.Click += new System.EventHandler(this.tsi_KST_Away_Click);
             // 
             // tsi_Options
             // 
-            tsi_Options.Name = "tsi_Options";
-            tsi_Options.Size = new System.Drawing.Size(61, 20);
-            tsi_Options.Text = "&Options";
-            tsi_Options.Click += new System.EventHandler(tsi_Options_Click);
+            this.tsi_Options.Name = "tsi_Options";
+            this.tsi_Options.Size = new System.Drawing.Size(61, 20);
+            this.tsi_Options.Text = "&Options";
+            this.tsi_Options.Click += new System.EventHandler(this.tsi_Options_Click);
             // 
             // toolStripMenuItem1
             // 
-            toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            aboutToolStripMenuItem});
-            toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new System.Drawing.Size(24, 20);
-            toolStripMenuItem1.Text = "&?";
+            this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(24, 20);
+            this.toolStripMenuItem1.Text = "&?";
             // 
             // aboutToolStripMenuItem
             // 
-            aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
-            aboutToolStripMenuItem.Text = "&About";
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Text = "&About";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // ti_Main
             // 
-            ti_Main.Enabled = true;
-            ti_Main.Interval = 30000;
-            ti_Main.Tick += new System.EventHandler(ti_Main_Tick);
+            this.ti_Main.Enabled = true;
+            this.ti_Main.Interval = 30000;
+            this.ti_Main.Tick += new System.EventHandler(this.ti_Main_Tick);
             // 
             // ni_Main
             // 
-            ni_Main.ContextMenuStrip = cmn_Notify;
-            ni_Main.Icon = ((System.Drawing.Icon)(resources.GetObject("ni_Main.Icon")));
-            ni_Main.Text = "wtKST";
-            ni_Main.Visible = true;
-            ni_Main.BalloonTipClicked += new System.EventHandler(ni_Main_BalloonTipClicked);
-            ni_Main.MouseClick += new System.Windows.Forms.MouseEventHandler(ni_Main_MouseClick);
+            this.ni_Main.ContextMenuStrip = this.cmn_Notify;
+            this.ni_Main.Icon = ((System.Drawing.Icon)(resources.GetObject("ni_Main.Icon")));
+            this.ni_Main.Text = "wtKST";
+            this.ni_Main.Visible = true;
+            this.ni_Main.BalloonTipClicked += new System.EventHandler(this.ni_Main_BalloonTipClicked);
+            this.ni_Main.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ni_Main_MouseClick);
             // 
             // cmn_Notify
             // 
-            cmn_Notify.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            cmi_Notify_Restore,
-            toolStripSeparator3,
-            cmi_Notify_Quit});
-            cmn_Notify.Name = "cmn_Notify";
-            cmn_Notify.Size = new System.Drawing.Size(119, 54);
+            this.cmn_Notify.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmi_Notify_Restore,
+            this.toolStripSeparator3,
+            this.cmi_Notify_Quit});
+            this.cmn_Notify.Name = "cmn_Notify";
+            this.cmn_Notify.Size = new System.Drawing.Size(119, 54);
             // 
             // cmi_Notify_Restore
             // 
-            cmi_Notify_Restore.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            cmi_Notify_Restore.Name = "cmi_Notify_Restore";
-            cmi_Notify_Restore.Size = new System.Drawing.Size(118, 22);
-            cmi_Notify_Restore.Text = "&Restore";
-            cmi_Notify_Restore.Click += new System.EventHandler(cmi_Notify_Restore_Click);
+            this.cmi_Notify_Restore.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmi_Notify_Restore.Name = "cmi_Notify_Restore";
+            this.cmi_Notify_Restore.Size = new System.Drawing.Size(118, 22);
+            this.cmi_Notify_Restore.Text = "&Restore";
+            this.cmi_Notify_Restore.Click += new System.EventHandler(this.cmi_Notify_Restore_Click);
             // 
             // toolStripSeparator3
             // 
-            toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new System.Drawing.Size(115, 6);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(115, 6);
             // 
             // cmi_Notify_Quit
             // 
-            cmi_Notify_Quit.Name = "cmi_Notify_Quit";
-            cmi_Notify_Quit.Size = new System.Drawing.Size(118, 22);
-            cmi_Notify_Quit.Text = "&Quit";
-            cmi_Notify_Quit.Click += new System.EventHandler(cmi_Notify_Quit_Click);
+            this.cmi_Notify_Quit.Name = "cmi_Notify_Quit";
+            this.cmi_Notify_Quit.Size = new System.Drawing.Size(118, 22);
+            this.cmi_Notify_Quit.Text = "&Quit";
+            this.cmi_Notify_Quit.Click += new System.EventHandler(this.cmi_Notify_Quit_Click);
             // 
             // ti_Receive
             // 
-            ti_Receive.Enabled = true;
-            ti_Receive.Interval = 1000;
-            ti_Receive.Tick += new System.EventHandler(ti_Receive_Tick);
+            this.ti_Receive.Enabled = true;
+            this.ti_Receive.Interval = 1000;
+            this.ti_Receive.Tick += new System.EventHandler(this.ti_Receive_Tick);
             // 
             // ti_Error
             // 
-            ti_Error.Interval = 10000;
-            ti_Error.Tick += new System.EventHandler(ti_Error_Tick);
+            this.ti_Error.Interval = 10000;
+            this.ti_Error.Tick += new System.EventHandler(this.ti_Error_Tick);
             // 
             // ti_Top
             // 
-            ti_Top.Interval = 60000;
-            ti_Top.Tick += new System.EventHandler(ti_Top_Tick);
+            this.ti_Top.Interval = 60000;
+            this.ti_Top.Tick += new System.EventHandler(this.ti_Top_Tick);
             // 
             // ti_Reconnect
             // 
-            ti_Reconnect.Enabled = false;
-            ti_Reconnect.Interval = 30000;
-            ti_Reconnect.Tick += new System.EventHandler(ti_Reconnect_Tick);
+            this.ti_Reconnect.Interval = 30000;
+            this.ti_Reconnect.Tick += new System.EventHandler(this.ti_Reconnect_Tick);
             // 
             // ti_Linkcheck
             // 
-            ti_Linkcheck.Enabled = false;
-            ti_Linkcheck.AutoReset = true;
-            ti_Linkcheck.Interval = 120000;
-            ti_Linkcheck.Elapsed += ti_Linkcheck_Tick;
+            this.ti_Linkcheck.Interval = 120000D;
+            this.ti_Linkcheck.SynchronizingObject = this;
             // 
             // il_Planes
             // 
-            il_Planes.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("il_Planes.ImageStream")));
-            il_Planes.TransparentColor = System.Drawing.Color.Transparent;
-            il_Planes.Images.SetKeyName(0, "Green");
-            il_Planes.Images.SetKeyName(1, "Orange");
-            il_Planes.Images.SetKeyName(2, "Blue");
+            this.il_Planes.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("il_Planes.ImageStream")));
+            this.il_Planes.TransparentColor = System.Drawing.Color.Transparent;
+            this.il_Planes.Images.SetKeyName(0, "Green");
+            this.il_Planes.Images.SetKeyName(1, "Orange");
+            this.il_Planes.Images.SetKeyName(2, "Blue");
             // 
             // tt_Info
             // 
-            tt_Info.ShowAlways = true;
+            this.tt_Info.ShowAlways = true;
             // 
             // bw_GetPlanes
             // 
-            bw_GetPlanes.WorkerReportsProgress = true;
-            bw_GetPlanes.WorkerSupportsCancellation = true;
-            bw_GetPlanes.DoWork += new System.ComponentModel.DoWorkEventHandler(bw_GetPlanes_DoWork);
-            bw_GetPlanes.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(bw_GetPlanes_ProgressChanged);
-            bw_GetPlanes.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(bw_GetPlanes_RunWorkerCompleted);
+            this.bw_GetPlanes.WorkerReportsProgress = true;
+            this.bw_GetPlanes.WorkerSupportsCancellation = true;
+            this.bw_GetPlanes.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bw_GetPlanes_DoWork);
+            this.bw_GetPlanes.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bw_GetPlanes_ProgressChanged);
+            this.bw_GetPlanes.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bw_GetPlanes_RunWorkerCompleted);
             // 
             // MainDlg
             // 
-            AcceptButton = btn_KST_Send;
-            ClientSize = new System.Drawing.Size(1202, 730);
-            Controls.Add(splitContainer1);
-            Controls.Add(ss_Main);
-            Controls.Add(mn_Main);
-            DataBindings.Add(new System.Windows.Forms.Binding("Location", global::wtKST.Properties.Settings.Default, "WindowLocation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            Location = global::wtKST.Properties.Settings.Default.WindowLocation;
-            Name = "MainDlg";
-            Text = "wtKST";
-            FormClosing += new System.Windows.Forms.FormClosingEventHandler(MainDlg_FormClosing);
-            Load += new System.EventHandler(MainDlg_Load);
-            ss_Main.ResumeLayout(false);
-            ss_Main.PerformLayout();
-            splitContainer1.Panel1.ResumeLayout(false);
-            splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(splitContainer1)).EndInit();
-            splitContainer1.ResumeLayout(false);
-            splitContainer2.Panel1.ResumeLayout(false);
-            splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(splitContainer2)).EndInit();
-            splitContainer2.ResumeLayout(false);
-            splitContainer3.Panel1.ResumeLayout(false);
-            splitContainer3.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(splitContainer3)).EndInit();
-            splitContainer3.ResumeLayout(false);
-            mn_Main.ResumeLayout(false);
-            mn_Main.PerformLayout();
-            cmn_Notify.ResumeLayout(false);
-            ResumeLayout(false);
-            PerformLayout();
+            this.AcceptButton = this.btn_KST_Send;
+            this.ClientSize = new System.Drawing.Size(1202, 730);
+            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.ss_Main);
+            this.Controls.Add(this.mn_Main);
+            this.DataBindings.Add(new System.Windows.Forms.Binding("Location", global::wtKST.Properties.Settings.Default, "WindowLocation", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Location = global::wtKST.Properties.Settings.Default.WindowLocation;
+            this.Name = "MainDlg";
+            this.Text = "wtKST";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainDlg_FormClosing);
+            this.Load += new System.EventHandler(this.MainDlg_Load);
+            this.ss_Main.ResumeLayout(false);
+            this.ss_Main.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
+            this.splitContainer3.Panel1.ResumeLayout(false);
+            this.splitContainer3.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
+            this.splitContainer3.ResumeLayout(false);
+            this.mn_Main.ResumeLayout(false);
+            this.mn_Main.PerformLayout();
+            this.cmn_Notify.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.ti_Linkcheck)).EndInit();
+            this.ResumeLayout(false);
+            this.PerformLayout();
 
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            aboutBox1.ShowDialog();
         }
     }
 }
