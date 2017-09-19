@@ -634,7 +634,17 @@ namespace wtKST
                         Row["NAME"] = msg[4].Trim();
                         var recipient = msg[7].Trim();
                         if (recipient.Equals("0"))
+                        {
+                            // check if forgotten "/cq" -> recipient just part of the message
+                            int index = msg[6].IndexOf(' ');
+                            if (index > 0)
+                            {
+                                string check_recipient = msg[6].Substring(0, index);
+                                if (WCCheck.WCCheck.IsCall(check_recipient) >= 0)
+                                    recipient = check_recipient;
+                            }
                             Row["MSG"] = msg[6].Trim();
+                        }
                         else
                             Row["MSG"] = "(" + recipient + ") " + msg[6].Trim();
                         Row["RECIPIENT"] = recipient;
