@@ -150,8 +150,6 @@ namespace wtKST
 
         private ColumnHeader columnHeader432;
 
-        private ImageList il_Calls;
-
         private ColumnHeader columnHeader1296;
 
         private ColumnHeader columnHeader2320;
@@ -201,8 +199,6 @@ namespace wtKST
         private System.Timers.Timer ti_Linkcheck;
 
         private ColumnHeader ch_AS;
-
-        public ImageList il_Planes;
 
         private ToolTip tt_Info;
 
@@ -2519,7 +2515,6 @@ namespace wtKST
             this.columnHeader24GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader47GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader76GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.il_Calls = new System.Windows.Forms.ImageList(this.components);
             this.lbl_KST_Calls = new System.Windows.Forms.Label();
             this.mn_Main = new System.Windows.Forms.MenuStrip();
             this.tsm_File = new System.Windows.Forms.ToolStripMenuItem();
@@ -2545,7 +2540,6 @@ namespace wtKST
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
             this.ti_Linkcheck = new System.Timers.Timer();
-            this.il_Planes = new System.Windows.Forms.ImageList(this.components);
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.ss_Main.SuspendLayout();
@@ -2843,7 +2837,6 @@ namespace wtKST
             this.lv_Calls.Name = "lv_Calls";
             this.lv_Calls.OwnerDraw = true;
             this.lv_Calls.Size = new System.Drawing.Size(353, 658);
-            this.lv_Calls.SmallImageList = this.il_Calls;
             this.lv_Calls.TabIndex = 14;
             this.lv_Calls.UseCompatibleStateImageBehavior = false;
             this.lv_Calls.View = System.Windows.Forms.View.Details;
@@ -2927,15 +2920,6 @@ namespace wtKST
             // 
             this.columnHeader76GHz.Text = "76G";
             this.columnHeader76GHz.Width = 20;
-            // 
-            // il_Calls
-            // 
-            this.il_Calls.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("il_Calls.ImageStream")));
-            this.il_Calls.TransparentColor = System.Drawing.Color.Transparent;
-            this.il_Calls.Images.SetKeyName(0, "JEWEL_GRAY.PNG");
-            this.il_Calls.Images.SetKeyName(1, "JEWEL_GREEN.PNG");
-            this.il_Calls.Images.SetKeyName(2, "JEWEL_RED.PNG");
-            this.il_Calls.Images.SetKeyName(3, "JEWEL_YELLWO.PNG");
             // 
             // lbl_KST_Calls
             // 
@@ -3123,14 +3107,6 @@ namespace wtKST
             // 
             this.ti_Linkcheck.Interval = 120000D;
             this.ti_Linkcheck.SynchronizingObject = this;
-            // 
-            // il_Planes
-            // 
-            this.il_Planes.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("il_Planes.ImageStream")));
-            this.il_Planes.TransparentColor = System.Drawing.Color.Transparent;
-            this.il_Planes.Images.SetKeyName(0, "Green");
-            this.il_Planes.Images.SetKeyName(1, "Orange");
-            this.il_Planes.Images.SetKeyName(2, "Blue");
             // 
             // tt_Info
             // 
