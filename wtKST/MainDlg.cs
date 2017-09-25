@@ -407,6 +407,7 @@ namespace wtKST
                 tsi_KST_Disconnect.Enabled = false;
                 tsi_KST_Here.Enabled = false;
                 tsi_KST_Away.Enabled = false;
+                cb_Command.Text = "";
                 cb_Command.Enabled = false;
                 btn_KST_Send.Enabled = false;
                 lbl_Call.Enabled = false;
