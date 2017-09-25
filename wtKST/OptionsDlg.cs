@@ -552,7 +552,7 @@ namespace wtKST
             this.cb_WinTest_Active.Name = "cb_WinTest_Active";
             this.cb_WinTest_Active.Size = new System.Drawing.Size(297, 17);
             this.cb_WinTest_Active.TabIndex = 14;
-            this.cb_WinTest_Active.Text = "Activate (only DL0GTH crew members, not for public use)";
+            this.cb_WinTest_Active.Text = "Activate";
             this.cb_WinTest_Active.UseVisualStyleBackColor = true;
             // 
             // tb_Options_WinTest_INI
