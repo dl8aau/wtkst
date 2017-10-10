@@ -322,6 +322,10 @@ namespace WCCheck
 			try
 			{
 				S.Trim().ToUpper();
+				if (S.IndexOf('-') >= 0)
+				{
+					S = S.Remove(S.IndexOf('-'));
+				}
 				if (S.IndexOf('/') >= 0)
 				{
 					if (S.IndexOf('/') >= S.Length - 4)
@@ -336,10 +340,6 @@ namespace WCCheck
 					{
 						S = S.Remove(S.IndexOf('/'), S.Length - S.IndexOf('/'));
 					}
-				}
-				if (S.IndexOf('-') >= 0)
-				{
-					S = S.Remove(S.IndexOf('-'));
 				}
 				result = S;
 			}
