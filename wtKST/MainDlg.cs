@@ -1002,7 +1002,7 @@ namespace wtKST
 
         private void KST_Receive_USR(string s)
         {
-            string[] usr = s.Split('|'); ;
+            string[] usr = s.Split('|');
             try
             {
                 MainDlg.Log.WriteMessage("KST user: " + s);
@@ -1067,6 +1067,10 @@ namespace wtKST
                                         Check_QSO(row);
                                 }
                             }
+                            else
+                            {
+                                MainDlg.Log.WriteMessage("KST user UA: " + s + "not valid");
+                            }
                         }
                         break;
 
@@ -1108,7 +1112,8 @@ namespace wtKST
                                 string call = usr[2].Trim();
                                 DataRow row = CALL.Rows.Find(call);
                                 Int32 usr_state = Int32.Parse(usr[3]);
-                                row["AWAY"] = (usr_state & 1) == 1;
+                                if (row != null)
+                                    row["AWAY"] = (usr_state & 1) == 1;
                             }
                         }
                         break;
@@ -1122,7 +1127,8 @@ namespace wtKST
                             {
                                 string call = usr[2].Trim();
                                 DataRow row = CALL.Rows.Find(call);
-                                row.Delete();
+                                if (row != null)
+                                    row.Delete();
                             }
                         }
                         break;
@@ -1148,7 +1154,7 @@ namespace wtKST
             }
             catch (Exception e)
             {
-                Error(MethodBase.GetCurrentMethod().Name, "(" + s + "): " + e.Message);
+                Error(MethodBase.GetCurrentMethod().Name, "(" + s + "): " + e.Message + e.StackTrace);
             }
         }
 
