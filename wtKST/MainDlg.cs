@@ -1421,30 +1421,36 @@ namespace wtKST
                 call = call.Remove(call.IndexOf("-"));
             }
             string wcall = WCCheck.WCCheck.Cut(call);
-            foreach (string band in BANDS)
+            string findCall = string.Format("[CALL] LIKE '*{0}*'", wcall);
+            DataRow[] selectRow = wtQSO.QSO.Select(findCall);
+            if (selectRow.Length == 0)
+                Console.WriteLine("empty " + wcall);
+            bool[] found = new bool[BANDS.Length];
+            for (int i = 0; i<found.Length; i++) { found[i] = false; }
+            foreach (var qso_row in selectRow)
             {
-                bool found = false;
-                string findCall = string.Format("[CALL] LIKE '*{0}*'", wcall);
-                DataRow[] selectRow = wtQSO.QSO.Select(findCall);
-                foreach (var qso_row in selectRow)
+                var band = qso_row["BAND"].ToString();
+
+                if ( WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall))
                 {
-                    if (qso_row != null && WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall) &&
-                        qso_row["BAND"].ToString() == band)
+                    call_row[band] = QRVdb.QRV_STATE.worked;
+                    found[Array.IndexOf(BANDS, band)] = true;
+                    // check locator
+                    if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
                     {
-                        call_row[band] = QRVdb.QRV_STATE.worked;
-                        found = true;
-                        // check locator
-                        if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
-                        {
-                            Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
-                            WinTestLocatorWarning = true;
-                            Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
-                        }
+                        Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                        WinTestLocatorWarning = true;
+                        Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
                     }
                 }
-                if (!found && (QRVdb.QRV_STATE)call_row[band] == QRVdb.QRV_STATE.worked)
-                        call_row[band] = QRVdb.QRV_STATE.qrv;
             }
+            foreach (string band in BANDS)
+            {
+                // if marked as worked - but not in the log anymore, just leave it as "qrv"
+                if (!found[Array.IndexOf(BANDS, band)] && (QRVdb.QRV_STATE)call_row[band] == QRVdb.QRV_STATE.worked)
+                    call_row[band] = QRVdb.QRV_STATE.qrv;
+            }
+
         }
 
         private void Check_QSOs()
