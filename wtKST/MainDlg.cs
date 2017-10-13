@@ -1423,10 +1423,9 @@ namespace wtKST
             string wcall = WCCheck.WCCheck.Cut(call);
             string findCall = string.Format("[CALL] LIKE '*{0}*'", wcall);
             DataRow[] selectRow = wtQSO.QSO.Select(findCall);
-            if (selectRow.Length == 0)
-                Console.WriteLine("empty " + wcall);
-            bool[] found = new bool[BANDS.Length];
-            for (int i = 0; i<found.Length; i++) { found[i] = false; }
+
+            bool[] found = new bool[BANDS.Length]; // defaults to false
+
             foreach (var qso_row in selectRow)
             {
                 var band = qso_row["BAND"].ToString();
