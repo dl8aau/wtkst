@@ -2066,7 +2066,14 @@ namespace wtKST
             if (OldMousePos != p && info != null && info.SubItem != null)
             {
                 OldMousePos = p;
-                ShowToolTip("Left click to\nSend Message.", lv_MyMsg, p);
+                if (info.SubItem.Name == "Messages")
+                {
+                    ShowToolTip(info.Item.SubItems[3].Text, lv_MyMsg, p);
+                }
+                else
+                {
+                    ShowToolTip("Left click to\nSend Message.", lv_MyMsg, p);
+                }
             }
         }
 
