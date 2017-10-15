@@ -938,6 +938,8 @@ namespace wtKST
                 ListViewItem toplv = lv_Calls.FindItemWithText(topcall);
                 if (toplv != null)
                 {
+                    // strange behavior of ListView... you need to set the TopItem to the end, otherwise the list
+                    // starts to scroll even the TopItem is set correctly... thanks Frank
                     lv_Calls.TopItem = lv_Calls.Items[lv_Calls.Items.Count - 1];
                     lv_Calls.TopItem = toplv;
                 }
