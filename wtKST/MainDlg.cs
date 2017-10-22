@@ -789,11 +789,11 @@ namespace wtKST
                     ListViewItem MyLV = new ListViewItem();
                     if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")"))
                     {
-                        MyLV.BackColor = Color.BlanchedAlmond;
+                        MyLV.BackColor = Color.Coral;
                     }
                     else if (fromMe)
                     {
-                        MyLV.BackColor = Color.Coral;
+                        MyLV.BackColor = Color.BlanchedAlmond;
                     }
                     else
                     {
