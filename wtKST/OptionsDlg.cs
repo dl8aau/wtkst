@@ -37,8 +37,6 @@ namespace wtKST
         public CheckBox cb_KST_ShowBalloon;
 
         public CheckBox cb_ShowBeacons;
-        private Label label1;
-        public TextBox tb_KST_ServerName;
         private Label label3;
         public TextBox tb_KST_UserName;
         private Label label4;
@@ -149,7 +147,6 @@ namespace wtKST
             this.label7 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cb_KST_ShowBalloon = new System.Windows.Forms.CheckBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -158,7 +155,6 @@ namespace wtKST
             this.rb_KST_StartAsAway = new System.Windows.Forms.RadioButton();
             this.rb_KST_StartAsHere = new System.Windows.Forms.RadioButton();
             this.cb_KST_AutoConnect = new System.Windows.Forms.CheckBox();
-            this.tb_KST_ServerName = new System.Windows.Forms.TextBox();
             this.cbb_KST_Chat = new System.Windows.Forms.ComboBox();
             this.tb_KST_Password = new System.Windows.Forms.TextBox();
             this.tb_KST_UserName = new System.Windows.Forms.TextBox();
@@ -363,16 +359,6 @@ namespace wtKST
             this.cb_KST_ShowBalloon.Text = "On new MyMessages show ballon notification";
             this.cb_KST_ShowBalloon.UseVisualStyleBackColor = true;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(15, 18);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Server :";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -420,9 +406,7 @@ namespace wtKST
             this.tabPage1.Controls.Add(this.checkBox_KST_Show_Own_Messages);
             this.tabPage1.Controls.Add(this.rb_KST_StartAsAway);
             this.tabPage1.Controls.Add(this.rb_KST_StartAsHere);
-            this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.cb_KST_AutoConnect);
-            this.tabPage1.Controls.Add(this.tb_KST_ServerName);
             this.tabPage1.Controls.Add(this.label5);
             this.tabPage1.Controls.Add(this.cbb_KST_Chat);
             this.tabPage1.Controls.Add(this.label3);
@@ -477,16 +461,6 @@ namespace wtKST
             this.cb_KST_AutoConnect.TabIndex = 10;
             this.cb_KST_AutoConnect.Text = "Auto connect";
             this.cb_KST_AutoConnect.UseVisualStyleBackColor = true;
-            // 
-            // tb_KST_ServerName
-            // 
-            this.tb_KST_ServerName.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_ServerName", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tb_KST_ServerName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_KST_ServerName.Location = new System.Drawing.Point(120, 18);
-            this.tb_KST_ServerName.Name = "tb_KST_ServerName";
-            this.tb_KST_ServerName.Size = new System.Drawing.Size(123, 20);
-            this.tb_KST_ServerName.TabIndex = 1;
-            this.tb_KST_ServerName.Text = global::wtKST.Properties.Settings.Default.KST_ServerName;
             // 
             // cbb_KST_Chat
             // 
