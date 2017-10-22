@@ -266,8 +266,7 @@ namespace wtKST
                 CALL.Columns["CALL"]
             };
             CALL.PrimaryKey = CALLkeys;
-            // FIXME try to load wtlog dll...
-            // only temporary solution... (checked only at program start...)
+
             string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName.ToUpper());
             wtQSO = new WinTestLog(MainDlg.Log.WriteMessage);
             UpdateUserBandsWidth();
@@ -664,6 +663,8 @@ namespace wtKST
             catch (Exception e)
             {
                 Error(MethodBase.GetCurrentMethod().Name, "(" + s + "): " + e.Message);
+                MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + "(" + s + "): " + e.Message + "\n" + e.StackTrace);
+
             }
         }
 
@@ -955,6 +956,7 @@ namespace wtKST
             catch (Exception e)
             {
                 Error(MethodBase.GetCurrentMethod().Name, e.Message);
+                MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + e.Message + "\n" + e.StackTrace);
             }
         }
 
@@ -1484,6 +1486,7 @@ namespace wtKST
             catch (Exception e)
             {
                 Error(MethodBase.GetCurrentMethod().Name, "(" + wtQSO.getFileName() + "): " + e.Message);
+                MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + "(" + wtQSO.getFileName() + "): " + e.Message + "\n" + e.StackTrace);
             }
         }
 
