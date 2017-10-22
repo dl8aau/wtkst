@@ -80,6 +80,10 @@ namespace wtKST
         public TextBox tb_KST_MaxDist;
         private Label label17;
         public CheckBox checkBox_KST_Show_Own_Messages;
+        public TextBox tb_KST_Name;
+        private Label label2;
+        public TextBox tb_KST_Locator;
+        private Label label1;
         public CheckBox cb_WinTest_Active;
 
         public OptionsDlg()
@@ -152,6 +156,10 @@ namespace wtKST
             this.label5 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tb_KST_Name = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tb_KST_Locator = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.rb_KST_StartAsAway = new System.Windows.Forms.RadioButton();
             this.rb_KST_StartAsHere = new System.Windows.Forms.RadioButton();
             this.cb_KST_AutoConnect = new System.Windows.Forms.CheckBox();
@@ -363,7 +371,7 @@ namespace wtKST
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(15, 71);
+            this.label3.Location = new System.Drawing.Point(15, 26);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
             this.label3.TabIndex = 4;
@@ -373,7 +381,7 @@ namespace wtKST
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(15, 98);
+            this.label4.Location = new System.Drawing.Point(15, 53);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(59, 13);
             this.label4.TabIndex = 6;
@@ -383,7 +391,7 @@ namespace wtKST
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(15, 124);
+            this.label5.Location = new System.Drawing.Point(15, 79);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(35, 13);
             this.label5.TabIndex = 9;
@@ -403,6 +411,10 @@ namespace wtKST
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.tb_KST_Name);
+            this.tabPage1.Controls.Add(this.label2);
+            this.tabPage1.Controls.Add(this.tb_KST_Locator);
+            this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.checkBox_KST_Show_Own_Messages);
             this.tabPage1.Controls.Add(this.rb_KST_StartAsAway);
             this.tabPage1.Controls.Add(this.rb_KST_StartAsHere);
@@ -420,6 +432,47 @@ namespace wtKST
             this.tabPage1.Text = "KST";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // tb_KST_Name
+            // 
+            this.tb_KST_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Name", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_KST_Name.Enabled = false;
+            this.tb_KST_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_KST_Name.Location = new System.Drawing.Point(120, 142);
+            this.tb_KST_Name.Name = "tb_KST_Name";
+            this.tb_KST_Name.Size = new System.Drawing.Size(121, 20);
+            this.tb_KST_Name.TabIndex = 17;
+            this.tb_KST_Name.Text = global::wtKST.Properties.Settings.Default.KST_Name;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(15, 142);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 13);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "Name :";
+            // 
+            // tb_KST_Locator
+            // 
+            this.tb_KST_Locator.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Loc", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_KST_Locator.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_KST_Locator.Location = new System.Drawing.Point(120, 116);
+            this.tb_KST_Locator.Name = "tb_KST_Locator";
+            this.tb_KST_Locator.Size = new System.Drawing.Size(121, 20);
+            this.tb_KST_Locator.TabIndex = 15;
+            this.tb_KST_Locator.Text = global::wtKST.Properties.Settings.Default.KST_Loc;
+            this.tb_KST_Locator.CharacterCasing = CharacterCasing.Upper;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(15, 116);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(49, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Locator :";
             // rb_KST_StartAsAway
             // 
             this.rb_KST_StartAsAway.AutoSize = true;
@@ -473,9 +526,9 @@ namespace wtKST
             "3 - Microwave",
             "4 - EME/JT65",
             "5 - Low Band"});
-            this.cbb_KST_Chat.Location = new System.Drawing.Point(120, 124);
+            this.cbb_KST_Chat.Location = new System.Drawing.Point(120, 79);
             this.cbb_KST_Chat.Name = "cbb_KST_Chat";
-            this.cbb_KST_Chat.Size = new System.Drawing.Size(121, 21);
+            this.cbb_KST_Chat.Size = new System.Drawing.Size(121, 20);
             this.cbb_KST_Chat.TabIndex = 8;
             this.cbb_KST_Chat.Text = global::wtKST.Properties.Settings.Default.KST_Chat;
             // 
@@ -483,10 +536,10 @@ namespace wtKST
             // 
             this.tb_KST_Password.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Password", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tb_KST_Password.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_KST_Password.Location = new System.Drawing.Point(120, 98);
+            this.tb_KST_Password.Location = new System.Drawing.Point(120, 53);
             this.tb_KST_Password.Name = "tb_KST_Password";
             this.tb_KST_Password.PasswordChar = '*';
-            this.tb_KST_Password.Size = new System.Drawing.Size(123, 20);
+            this.tb_KST_Password.Size = new System.Drawing.Size(121, 20);
             this.tb_KST_Password.TabIndex = 7;
             this.tb_KST_Password.Text = global::wtKST.Properties.Settings.Default.KST_Password;
             // 
@@ -494,9 +547,9 @@ namespace wtKST
             // 
             this.tb_KST_UserName.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_UserName", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tb_KST_UserName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_KST_UserName.Location = new System.Drawing.Point(120, 71);
+            this.tb_KST_UserName.Location = new System.Drawing.Point(120, 26);
             this.tb_KST_UserName.Name = "tb_KST_UserName";
-            this.tb_KST_UserName.Size = new System.Drawing.Size(123, 20);
+            this.tb_KST_UserName.Size = new System.Drawing.Size(121, 20);
             this.tb_KST_UserName.TabIndex = 5;
             this.tb_KST_UserName.Text = global::wtKST.Properties.Settings.Default.KST_UserName;
             // 
@@ -524,7 +577,7 @@ namespace wtKST
             this.cb_WinTest_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_WinTest_Active.Location = new System.Drawing.Point(24, 29);
             this.cb_WinTest_Active.Name = "cb_WinTest_Active";
-            this.cb_WinTest_Active.Size = new System.Drawing.Size(297, 17);
+            this.cb_WinTest_Active.Size = new System.Drawing.Size(65, 17);
             this.cb_WinTest_Active.TabIndex = 14;
             this.cb_WinTest_Active.Text = "Activate";
             this.cb_WinTest_Active.UseVisualStyleBackColor = true;

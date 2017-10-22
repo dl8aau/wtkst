@@ -64,8 +64,6 @@ namespace wtKST
 
         private string MyCall = "DL2ALF";
 
-        private string MyLoc = "JO50IW";
-
         private MainDlg.KST_STATE KSTState = KST_STATE.Standby;
 
         private MainDlg.USER_STATE UserState;
@@ -213,6 +211,7 @@ namespace wtKST
         private DateTime latestMessageTimestamp = DateTime.MinValue;
         private bool latestMessageTimestampSet = false;
         private bool CheckStartUpAway = true;
+        private bool SendMyLocator = false;
 
         public MainDlg()
         {
@@ -320,7 +319,7 @@ namespace wtKST
                 " ",
                 Settings.Default.KST_Name,
                 " ",
-                MyLoc,
+                Settings.Default.KST_Loc,
                 "]"
             });
         }
@@ -527,11 +526,11 @@ namespace wtKST
                                     MainDlg.Log.WriteMessage("Password wrong ");
                                     break;
                                 }
+                                //FIXME currently no way to set the name... so just take it from ON4KST
                                 Settings.Default.KST_Name = subs[6];
-                                Settings.Default.KST_Loc = subs[8];
-                                if (WCCheck.WCCheck.IsLoc(Settings.Default.KST_Loc) > 0)
+                                if (WCCheck.WCCheck.IsLoc(Settings.Default.KST_Loc) > 0 && !Settings.Default.KST_Loc.Equals(subs[8]))
                                 {
-                                    MyLoc = Settings.Default.KST_Loc;
+                                    SendMyLocator = true;
                                 }
                             }
                         }
@@ -574,6 +573,12 @@ namespace wtKST
                         MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
                         msg_latest_first = true;
                         CheckStartUpAway = true;
+
+                        if (SendMyLocator)
+                        {
+                            KST_Setloc(Settings.Default.KST_Loc);
+                            SendMyLocator = false;
+                        }
 
                         ti_Linkcheck.Stop();   // restart the linkcheck timer
                         ti_Linkcheck.Start();
@@ -1036,8 +1041,8 @@ namespace wtKST
                                 row["NAME"] = usr[3].Trim();
                                 row["LOC"] = loc;
 
-                                int qrb = WCCheck.WCCheck.QRB(MyLoc, loc);
-                                int qtf = (int)WCCheck.WCCheck.QTF(MyLoc, loc);
+                                int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                                int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
                                 row["QRB"] = qrb;
                                 row["DIR"] = qtf;
 
@@ -1094,8 +1099,8 @@ namespace wtKST
                                     row["NAME"] = usr[3].Trim();
                                     row["LOC"] = loc;
 
-                                    int qrb = WCCheck.WCCheck.QRB(MyLoc, loc);
-                                    int qtf = (int)WCCheck.WCCheck.QTF(MyLoc, loc);
+                                    int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                                    int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
                                     row["QRB"] = qrb;
                                     row["DIR"] = qtf;
 
@@ -1218,8 +1223,16 @@ namespace wtKST
         {
             if (KSTState >= MainDlg.KST_STATE.Connected)
             {
-                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1)+"|0|/AWAY|0|\r");
+                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/AWAY|0|\r");
                 UserState = MainDlg.USER_STATE.Away;
+            }
+        }
+
+        private void KST_Setloc(string locator)
+        {
+            if (KSTState >= MainDlg.KST_STATE.Connected)
+            {
+                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/SETLOC " + locator + "|0|\r");
             }
         }
 
@@ -1348,9 +1361,9 @@ namespace wtKST
             if (KSTState != MainDlg.KST_STATE.Standby)
             {
                 Dlg.tb_KST_Password.Enabled = false;
-                Dlg.tb_KST_ServerName.Enabled = false;
                 Dlg.tb_KST_UserName.Enabled = false;
                 Dlg.cbb_KST_Chat.Enabled = false;
+                Dlg.tb_KST_Locator.Enabled = false;
             }
             if(wtQSO == null)
             {
@@ -1493,7 +1506,7 @@ namespace wtKST
                             wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
                             if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
                             {
-                                MessageBox.Show("KST locator " + MyLoc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
+                                MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
                                             MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 set_KST_Status();
                             }
@@ -1760,9 +1773,9 @@ namespace wtKST
                         "\nLoc:\t",
                         info.Item.SubItems[2].Text,
                         "\nQTF:\t",
-                        WCCheck.WCCheck.QTF(MyLoc, info.Item.SubItems[2].Text).ToString("000"),
+                        WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, info.Item.SubItems[2].Text).ToString("000"),
                         "°\nQRB:\t",
-                        WCCheck.WCCheck.QRB(MyLoc, info.Item.SubItems[2].Text),
+                        WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, info.Item.SubItems[2].Text),
                         " km\n\nLeft click to\nSend Message."
                     });
                 }
@@ -1918,7 +1931,7 @@ namespace wtKST
                     {
                         string loc = info.Item.SubItems[2].Text;
 
-                        AS_if.show_path(call, loc, MyCall, MyLoc);
+                        AS_if.show_path(call, loc, MyCall, Settings.Default.KST_Loc);
                     }
                     if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
                     {
@@ -2314,7 +2327,7 @@ namespace wtKST
                     watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
                 }
             }
-            AS_if.send_watchlist(watchlist, MyCall, MyLoc);
+            AS_if.send_watchlist(watchlist, MyCall, Settings.Default.KST_Loc);
         }
 
         private void bw_GetPlanes_DoWork(object sender, DoWorkEventArgs e)
@@ -2344,7 +2357,7 @@ namespace wtKST
                             if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
                             && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
                             {
-                                if (!AS_if.GetPlanes(mycall, MyLoc, dxcall, dxloc))
+                                if (!AS_if.GetPlanes(mycall, Settings.Default.KST_Loc, dxcall, dxloc))
                                 {
                                     errors++;
                                     if (errors > 10)
