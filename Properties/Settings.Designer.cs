@@ -562,5 +562,29 @@ namespace wtKST.Properties {
                 this["KST_Show_Own_Messages"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int WindowSplitterDistance1 {
+            get {
+                return ((int)(this["WindowSplitterDistance1"]));
+            }
+            set {
+                this["WindowSplitterDistance1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int WindowSplitterDistance2 {
+            get {
+                return ((int)(this["WindowSplitterDistance2"]));
+            }
+            set {
+                this["WindowSplitterDistance2"] = value;
+            }
+        }
     }
 }

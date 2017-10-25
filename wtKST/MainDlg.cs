@@ -1574,6 +1574,12 @@ namespace wtKST
             {
                 Size = Settings.Default.WindowSize;
             }
+            // horizontal splitter between user list and messages
+            if (Settings.Default.WindowSplitterDistance1 > 200)
+                this.splitContainer1.SplitterDistance = Settings.Default.WindowSplitterDistance1;
+            // vertical between messages and mymessages
+            if (Settings.Default.WindowSplitterDistance2 > 200)
+                this.splitContainer2.SplitterDistance = Settings.Default.WindowSplitterDistance2;
         }
 
         private void MainDlg_FormClosing(object sender, FormClosingEventArgs e)
@@ -1602,6 +1608,11 @@ namespace wtKST
                 Settings.Default.WindowLocation = RestoreBounds.Location;
                 Settings.Default.WindowSize = RestoreBounds.Size;
             }
+
+            // horizontal splitter between user list and messages
+            Settings.Default.WindowSplitterDistance1 = this.splitContainer1.SplitterDistance;
+            // vertical between messages and mymessages
+            Settings.Default.WindowSplitterDistance2 = this.splitContainer2.SplitterDistance;
 
             // Save settings
             Settings.Default.Save();
