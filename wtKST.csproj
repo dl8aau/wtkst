@@ -98,7 +98,6 @@
     <Compile Include="wtKST\LogWriter.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="wtKST\LogWriterEventArgs.cs" />
     <Compile Include="wtKST\MainDlg.cs">
       <SubType>Form</SubType>
     </Compile>
