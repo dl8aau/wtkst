@@ -1242,7 +1242,11 @@ namespace wtKST
         {
             if (tw != null && tw.Connected && cb_Command.Text.Length > 0)
             {
-                if (!cb_Command.Text.StartsWith("/") || cb_Command.Text.ToUpper().StartsWith("/CQ"))
+                if ( !cb_Command.Text.StartsWith("/")
+                    || cb_Command.Text.ToUpper().StartsWith("/CQ")
+                    || cb_Command.Text.ToUpper().StartsWith("/SHLOC")
+                    || cb_Command.Text.ToUpper().StartsWith("/SHUSER")
+                    )
                 {
                     try
                     {
@@ -1268,7 +1272,7 @@ namespace wtKST
                 }
                 else
                 {
-                    MessageBox.Show("Sending commands except /cq is not allowed!", "KST SendCommand");
+                    MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
                 }
                 cb_Command.ResetText();
             }
