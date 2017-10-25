@@ -79,14 +79,14 @@ namespace wtKST
             }
         }
 
-        private void InitializeQRV(bool ForceReload)
+        private void InitializeQRV()
         {
             QRV.Clear();
             try
             {
                 string QRV_Table_Filename = Path.Combine(Application.LocalUserAppDataPath, Settings.Default.WinTest_QRV_Table_FileName);
                 TimeSpan ts = DateTime.Now - File.GetLastWriteTime(QRV_Table_Filename);
-                if (!ForceReload && File.Exists(QRV_Table_Filename) && ts.Hours < 48)
+                if (File.Exists(QRV_Table_Filename) && ts.Hours < 48)
                 {
                     try
                     {
@@ -100,7 +100,7 @@ namespace wtKST
                     }
                 }
                 // if we cannot read qrv.xml from appdata path, try current directoy (=previous default)
-                if (QRV.Rows.Count == 0 && !ForceReload && File.Exists(Settings.Default.WinTest_QRV_Table_FileName))
+                if (QRV.Rows.Count == 0 && File.Exists(Settings.Default.WinTest_QRV_Table_FileName))
                 {
                     try
                     {
@@ -176,7 +176,7 @@ namespace wtKST
                 QRV.Columns["CALL"]
             };
             QRV.PrimaryKey = QRVkeys;
-            InitializeQRV(false);
+            InitializeQRV();
         }
 
     }
