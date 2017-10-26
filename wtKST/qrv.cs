@@ -126,7 +126,7 @@ namespace wtKST
                                 new char[] { '[' }).TrimEnd(new char[] { ']' }) + " 00:00:00");
                             foreach (string band in BANDS)
                             {
-                                if (line.IndexOf(band) > 0)
+                                if (line.Replace(".", "_").IndexOf(band) > 0)
                                 {
                                     Row[band] = QRV_STATE.qrv;
                                 }
