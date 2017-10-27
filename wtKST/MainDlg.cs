@@ -1455,6 +1455,7 @@ namespace wtKST
                 if ( WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall))
                 {
                     call_row[band] = QRVdb.QRV_STATE.worked;
+                    qrv.set_qrv_state(wcall, band, QRVdb.QRV_STATE.qrv); // if worked, mark as QRV in data base - FIXME locator...
                     found[Array.IndexOf(BANDS, band)] = true;
                     // check locator
                     if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
