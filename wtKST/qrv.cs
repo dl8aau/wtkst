@@ -110,7 +110,7 @@ namespace wtKST
                     }
                     catch (Exception e)
                     {
-                        Error(MethodBase.GetCurrentMethod().Name, "(QRV.xml): " + e.Message);
+                            Error(MethodBase.GetCurrentMethod().Name, "(QRV.xml in program dir): " + e.Message + "\n" + e.StackTrace);
                     }
                 }
                 if (QRV.Rows.Count == 0)
@@ -142,7 +142,7 @@ namespace wtKST
             }
             catch (Exception e)
             {
-                //Error(MethodBase.GetCurrentMethod().Name, "(" + Settings.Default.WinTest_QRV_FileName + "): " + e.Message);
+                Error(MethodBase.GetCurrentMethod().Name, "(" + Settings.Default.WinTest_QRV_FileName + "): " + e.Message + "\n" + e.StackTrace);
             }
         }
 

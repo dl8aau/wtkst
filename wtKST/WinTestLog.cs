@@ -33,6 +33,12 @@ namespace WinTest
             LogWrite = mylog;
         }
 
+        private void Error(string methodname, string Text)
+        {
+            if (LogWrite != null)
+                LogWrite("Error - <" + methodname + "> " + Text);
+        }
+
         public string getFileName()
         {
             return WinTest_FileName;
@@ -145,7 +151,7 @@ namespace WinTest
                         }
                         catch (Exception e)
                         {
-                            // FIXME Error(MethodBase.GetCurrentMethod().Name, "(" + row["CALL"].ToString() + "): " + e.Message);
+                            Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "(" + row["CALL"].ToString() + "): " + e.Message);
                         }
 
                     } /* while */
@@ -153,7 +159,7 @@ namespace WinTest
             }
             catch (Exception e)
             {
-                // FIXME Error(MethodBase.GetCurrentMethod().Name, "(" + Settings.Default.WinTest_FileName + "): " + e.Message);
+                Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "(" + WinTest_INI_FileName + "): " + e.Message);
                 throw e;
             }
         }
