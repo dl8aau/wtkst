@@ -1337,25 +1337,45 @@ namespace wtKST
 
         bool check_in_log(DataRow row)
         {
-            if (Settings.Default.Band_144 && (QRVdb.QRV_STATE)row["144M"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_144 && 
+                (QRVdb.QRV_STATE)row["144M"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["144M"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
-            if (Settings.Default.Band_432 && (QRVdb.QRV_STATE)row["432M"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_432 && 
+                (QRVdb.QRV_STATE)row["432M"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["432M"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
-            if (Settings.Default.Band_1296 && (QRVdb.QRV_STATE)row["1_2G"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_1296 && 
+                (QRVdb.QRV_STATE)row["1_2G"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["1_2G"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
-            if (Settings.Default.Band_2320 && (QRVdb.QRV_STATE)row["2_3G"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_2320 && 
+                (QRVdb.QRV_STATE)row["2_3G"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["2_3G"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
-            if (Settings.Default.Band_3400 && (QRVdb.QRV_STATE)row["3_4G"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_3400 && 
+                (QRVdb.QRV_STATE)row["3_4G"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["3_4G"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
-            if (Settings.Default.Band_5760 && (QRVdb.QRV_STATE)row["5_7G"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_5760 && 
+                (QRVdb.QRV_STATE)row["5_7G"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["5_7G"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
-            if (Settings.Default.Band_10368 && (QRVdb.QRV_STATE)row["10G"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_10368 && 
+                (QRVdb.QRV_STATE)row["10G"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["10G"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
-            if (Settings.Default.Band_24GHz && (QRVdb.QRV_STATE)row["24G"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_24GHz && 
+                (QRVdb.QRV_STATE)row["24G"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["24G"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
-            if (Settings.Default.Band_47GHz && (QRVdb.QRV_STATE)row["47G"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_47GHz && 
+                (QRVdb.QRV_STATE)row["47G"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["47G"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
-            if (Settings.Default.Band_76GHz && (QRVdb.QRV_STATE)row["76G"] != QRVdb.QRV_STATE.worked)
+            if (Settings.Default.Band_76GHz && 
+                (QRVdb.QRV_STATE)row["76G"] != QRVdb.QRV_STATE.worked &&
+                (QRVdb.QRV_STATE)row["76G"] != QRVdb.QRV_STATE.not_qrv)
                 return false;
             return true;
         }
