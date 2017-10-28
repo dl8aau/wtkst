@@ -84,7 +84,8 @@ namespace wtKST
             QRV.Clear();
             try
             {
-                string QRV_Table_Filename = Path.Combine(Application.LocalUserAppDataPath, Settings.Default.WinTest_QRV_Table_FileName);
+                string QRV_Table_Filename = Path.Combine(Directory.GetParent(Application.LocalUserAppDataPath).ToString(),
+                    Settings.Default.WinTest_QRV_Table_FileName);
                 TimeSpan ts = DateTime.Now - File.GetLastWriteTime(QRV_Table_Filename);
                 if (File.Exists(QRV_Table_Filename) && ts.Hours < 48)
                 {
@@ -148,7 +149,8 @@ namespace wtKST
 
         public void save_db()
         {
-            string FileName = Path.Combine(Application.LocalUserAppDataPath, Settings.Default.WinTest_QRV_Table_FileName);
+            string FileName = Path.Combine(Directory.GetParent(Application.LocalUserAppDataPath).ToString(), 
+                Settings.Default.WinTest_QRV_Table_FileName);
             QRV.WriteXml(FileName, XmlWriteMode.IgnoreSchema);
         }
 
