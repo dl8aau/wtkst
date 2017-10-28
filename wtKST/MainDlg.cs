@@ -261,6 +261,7 @@ namespace wtKST
             CALL.Columns.Add("AS", typeof(int));
             foreach (string band in BANDS)
                 CALL.Columns.Add(band, typeof(int));
+            CALL.Columns.Add("COLOR", typeof(int));
             DataColumn[] CALLkeys = new DataColumn[]
             {
                 CALL.Columns["CALL"]
@@ -668,6 +669,8 @@ namespace wtKST
             }
         }
 
+        private int next_color = 1;
+
         private void KST_Process_new_message(DataRow Row)
         {
             try
@@ -787,18 +790,77 @@ namespace wtKST
                 if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(MyCall) 
                     || ( fromMe && Settings.Default.KST_Show_Own_Messages ))
                 {
+                    // https://material.io/guidelines/style/color.html#color-color-palette
+                    DataRow findrow;
+                    if (fromMe)
+                        findrow = CALL.Rows.Find(Row["RECIPIENT"].ToString().Trim());
+                    else
+                        findrow = CALL.Rows.Find(Row["CALL"].ToString().Trim());
+
+                    int color_index = next_color;
+
+                    if (findrow != null)
+                    {
+                        color_index = (int)findrow["COLOR"];
+
+                        if (color_index == 0)
+                        {
+                            color_index = next_color;
+                            next_color++;
+                            if (next_color > 9)
+                                next_color = 1;
+                            lock (CALL)
+                            {
+                                findrow["COLOR"] = color_index;
+                            }
+                        }
+                    }
+
                     ListViewItem MyLV = new ListViewItem();
                     if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")"))
                     {
-                        MyLV.BackColor = Color.Coral;
+                        switch(color_index)
+                        {
+                            case 1: MyLV.BackColor = Color.FromArgb(0xEF9A9A); break;// red 200
+                            case 2: MyLV.BackColor = Color.FromArgb(0xCE93D8); break;// purple 200
+                            case 3: MyLV.BackColor = Color.FromArgb(0x9FA8DA); break;// indigo 200
+                            case 4: MyLV.BackColor = Color.FromArgb(0x80DEEA); break;// cyan 200
+                            case 5: MyLV.BackColor = Color.FromArgb(0xA5D6A7); break;// green 200
+                            case 6: MyLV.BackColor = Color.FromArgb(0xE6EE9C); break;// lime 200
+                            case 7: MyLV.BackColor = Color.FromArgb(0xFFE082); break;// amber 200
+                            case 8: MyLV.BackColor = Color.FromArgb(0xBCAAA4); break;// brown 200
+                            case 9: MyLV.BackColor = Color.FromArgb(0x90CAF9); break;// blue 200
+                        }
                     }
                     else if (fromMe)
                     {
-                        MyLV.BackColor = Color.BlanchedAlmond;
+                        switch (color_index)
+                        {
+                            case 1: MyLV.BackColor = Color.FromArgb(0xFFEBEE); break;// red 50
+                            case 2: MyLV.BackColor = Color.FromArgb(0xF3E5F5); break;// purple 50
+                            case 3: MyLV.BackColor = Color.FromArgb(0xE8EAF6); break;// indigo 50
+                            case 4: MyLV.BackColor = Color.FromArgb(0xE0F7FA); break;// cyan 50
+                            case 5: MyLV.BackColor = Color.FromArgb(0xE8F5E9); break;// green 50
+                            case 6: MyLV.BackColor = Color.FromArgb(0xF9FBE7); break;// lime 50
+                            case 7: MyLV.BackColor = Color.FromArgb(0xFFF8E1); break;// amber 50
+                            case 8: MyLV.BackColor = Color.FromArgb(0xEFEBE9); break;// brown 50
+                            case 9: MyLV.BackColor = Color.FromArgb(0xE3F2FD); break;// blue 50
+                        }
                     }
                     else
                     {
-                        MyLV.BackColor = Color.Cornsilk;
+                        switch (color_index)
+                        {
+                            case 1: MyLV.BackColor = Color.FromArgb(0xFFCDD2); break;// red 100
+                            case 2: MyLV.BackColor = Color.FromArgb(0xE1BEE7); break;// purple 100
+                            case 3: MyLV.BackColor = Color.FromArgb(0xC5CAE9); break;// indigo 100
+                            case 4: MyLV.BackColor = Color.FromArgb(0xB2EBF2); break;// cyan 100
+                            case 5: MyLV.BackColor = Color.FromArgb(0xC8E6C9); break;// green 100
+                            case 6: MyLV.BackColor = Color.FromArgb(0xF0F4C3); break;// lime 100
+                            case 7: MyLV.BackColor = Color.FromArgb(0xFFECB3); break;// amber 100
+                            case 8: MyLV.BackColor = Color.FromArgb(0xD7CCC8); break;// brown 100
+                            case 9: MyLV.BackColor = Color.FromArgb(0xBBDEFB); break;// blue 100
+                        }
                     }
                     MyLV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
                     MyLV.SubItems.Add(Row["CALL"].ToString());
@@ -1047,6 +1109,8 @@ namespace wtKST
                                 int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
                                 row["QRB"] = qrb;
                                 row["DIR"] = qtf;
+
+                                row["COLOR"] = 0;
 
                                 Int32 usr_state = Int32.Parse(usr[5]);
                                 row["AWAY"] = (usr_state & 1) == 1;
