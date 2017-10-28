@@ -1721,9 +1721,18 @@ namespace wtKST
             p.X += BorderWith;
             // check if (in screen coordinates) the text would lie outside or too close to the bottom of the current screen
             if (Screen.FromControl(control).Bounds.Height - (sp.Y + TitleBarHeight + Cursor.Size.Height + TextBlockHeight) > 0)
+            {
                 p.Y += TitleBarHeight + Cursor.Size.Height;
-            else // move text above the mouse pointer
+            }
+            else 
+            if( p.Y + TitleBarHeight - Cursor.Size.Height + TextLineHeight - TextBlockHeight > 0)// move text above the mouse pointer
+            {
                 p.Y += TitleBarHeight - Cursor.Size.Height + TextLineHeight - TextBlockHeight;
+            }
+            else
+            {
+                p.Y = 0;
+            }
             tt_Info.Show(text, this, p, 5000);
         }
 
