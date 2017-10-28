@@ -652,7 +652,8 @@ namespace wtKST
                         // CK |
 
                     case "CK": // Link Check
-                        tw.Send("\r\n"); // need to reply
+                        if (tw!= null)
+                            tw.Send("\r\n"); // need to reply
                         break;
 
                         // End of CR frames 
