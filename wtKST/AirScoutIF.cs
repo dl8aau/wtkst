@@ -227,8 +227,18 @@ namespace wtKST
             if (planes.TryGetValue(call, out infolist))
             {
                 string s = DateTime.UtcNow.ToString("HH:mm") + " [" + (DateTime.UtcNow - infolist.UTC).Minutes.ToString() + "mins ago]\n\n";
+                int planes_per_Potential = 0;
+                int current_Potential = 0;
+
                 foreach (PlaneInfo info in infolist)
                 {
+                    if (current_Potential != info.Potential)
+                    {
+                        current_Potential = info.Potential;
+                        planes_per_Potential = 0;
+                    }
+                    if (++planes_per_Potential > 5)
+                        continue;
                     s = string.Concat(new object[]
                     {
                         s,
