@@ -22,7 +22,14 @@ namespace wtKST.Properties {
                 return defaultInstance;
             }
         }
-        
+
+        public Settings()
+        {
+            // MONO hack to assure that default values get serialized
+            Reset();
+            Reload();
+        }
+
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
