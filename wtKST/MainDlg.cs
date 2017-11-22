@@ -222,6 +222,8 @@ namespace wtKST
         private bool CheckStartUpAway = true;
         private bool SendMyLocator = false;
         private bool SendMyName = false;
+        private ContextMenuStrip cmn_userlist;
+        private ToolStripMenuItem cmn_userlist_chatReviewT;
 
 
         public MainDlg()
@@ -616,7 +618,7 @@ namespace wtKST
                                 //FIXME currently no way to set the name... so just take it from ON4KST
                                 if (Settings.Default.KST_Name.Length == 0)
                                 {
-                                    Settings.Default.KST_Name = subs[6];
+                                Settings.Default.KST_Name = subs[6];
                                 } 
                                 else
                                 {
@@ -635,14 +637,14 @@ namespace wtKST
                                     if (!Settings.Default.KST_Loc.Equals(subs[8]))
                                     {
                                         // if KST_Loc option is set, set it on KST side if it does not match
-                                        SendMyLocator = true;
-                                    }
+                                    SendMyLocator = true;
                                 }
+                            }
                                 else
                                 {
                                     // store the locator in settings
                                     Settings.Default.KST_Loc = subs[8];
-                                }
+                        }
                             }
                         }
                         catch (Exception e)
@@ -658,43 +660,43 @@ namespace wtKST
                 }
                 break;
             case MainDlg.KST_STATE.WaitSPR:
-                /* PRAU|time|Aurora level|
-                    Aurora level:
-                    2: High lat. AU warning
-                    3: High lat. AU alert
-                    5 :Mid lat. AU warning
-                    6:Mid lat. AU alert
-                    8:Low lat. AU warning
-                    9:Low lat. AU alert
-                    Other values: no alert
-                */
-                if (s.IndexOf("PRAU") >= 0)
-                {
-                    try
+                    /* PRAU|time|Aurora level|
+                        Aurora level:
+                        2: High lat. AU warning
+                        3: High lat. AU alert
+                        5 :Mid lat. AU warning
+                        6:Mid lat. AU alert
+                        8:Low lat. AU warning
+                        9:Low lat. AU alert
+                        Other values: no alert
+                    */
+                    if (s.IndexOf("PRAU") >= 0)
                     {
-                        MainDlg.Log.WriteMessage("Login at " + s.Split('|')[2] + " - " + s);
+                        try
+                        {
+                            MainDlg.Log.WriteMessage("Login at " + s.Split('|')[2] + " - " + s);
+                        }
+                        catch { }
+                        // End of the settings frames (session only)
+                        // SDONE | chat id |
+
+                        tw.Send("SDONE|" + Settings.Default.KST_Chat.Substring(0, 1) + "|\r");
+                        KSTState = MainDlg.KST_STATE.Connected;
+                        Say("Connected to KST chat.");
+                        MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
+                        msg_latest_first = true;
+                        CheckStartUpAway = true;
+
+                        if (SendMyLocator)
+                        {
+                            KST_Setloc(Settings.Default.KST_Loc);
+                            SendMyLocator = false;
+                        }
+
+                        ti_Linkcheck.Stop();   // restart the linkcheck timer
+                        ti_Linkcheck.Start();
                     }
-                    catch { }
-                    // End of the settings frames (session only)
-                    // SDONE | chat id |
-
-                    tw.Send("SDONE|" + Settings.Default.KST_Chat.Substring(0, 1) + "|\r");
-                    KSTState = MainDlg.KST_STATE.Connected;
-                    Say("Connected to KST chat.");
-                    MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
-                    msg_latest_first = true;
-                    CheckStartUpAway = true;
-
-                    if (SendMyLocator)
-                    {
-                        KST_Setloc(Settings.Default.KST_Loc);
-                        SendMyLocator = false;
-                    }
-
-                    ti_Linkcheck.Stop();   // restart the linkcheck timer
-                    ti_Linkcheck.Start();
-                }
-                break;
+                    break;
 
             // special parts called while doing Telnet to set Name
             case MainDlg.KST_STATE.WaitTelnetUserName:
@@ -2246,7 +2248,17 @@ namespace wtKST
                 ListViewHitTestInfo info = lv_Calls.HitTest(p);
                 if (info != null && info.SubItem != null)
                 {
-                    if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
+                    if (info.SubItem.Name == "Call" /*|| info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act"*/)
+                    {
+                        string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
+                        string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
+                        DataRow[] selectRow = MSG.Select(findCall);
+
+                        this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
+
+                        this.cmn_userlist.Show(lv_Calls, p);
+                    }
+                    else if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
                     {
                         string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
                         string s = AS_if.GetNearestPlanes(call);
@@ -2373,6 +2385,33 @@ namespace wtKST
                 colwidth += lv_MyMsg.Columns[i].Width;
             }
             lv_MyMsg.Columns[lv_MyMsg.Columns.Count - 1].Width = lv_MyMsg.Width - colwidth - 3;
+        }
+
+        private void cmn_userlist_chatReviewT_Click(object sender, EventArgs e)
+        {
+            ToolStripItem clickedItem =  sender as ToolStripItem;
+            var contextMenu = clickedItem.Owner as ContextMenuStrip;
+            var yourControl = contextMenu.SourceControl as DoubleBufferedListView;
+            if (yourControl.SelectedItems.Count > 0) // FIXME: geht nur in 1. Spalte (Call)
+            {
+                string call = yourControl.SelectedItems[0].Text.Replace("(", "").Replace(")", "");
+                Console.WriteLine("clicked " + call);
+
+                DataTable chat_review_table = new DataTable("ChatReviewTable");
+                chat_review_table.Columns.Add("Time", typeof(DateTime));
+                chat_review_table.Columns.Add("Message");
+
+                string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
+                DataRow[] selectRow = MSG.Select(findCall);
+                foreach (var msg_row in selectRow)
+                {
+                    Console.WriteLine(msg_row["TIME"].ToString() + " " + msg_row["CALL"].ToString() + " -> " + msg_row["RECIPIENT"].ToString() + " " + msg_row["MSG"].ToString());
+                    chat_review_table.Rows.Add(msg_row["TIME"], msg_row["MSG"] );
+                }
+                ChatReview cr = new ChatReview(chat_review_table, call);
+                cr.ShowDialog();
+            }
+
         }
 
         private void btn_KST_Send_Click_1(object sender, EventArgs e)
@@ -2838,6 +2877,8 @@ namespace wtKST
             this.ti_Linkcheck = new System.Timers.Timer();
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
+            this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmn_userlist_chatReviewT = new System.Windows.Forms.ToolStripMenuItem();
             this.ss_Main.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -2854,6 +2895,7 @@ namespace wtKST
             this.mn_Main.SuspendLayout();
             this.cmn_Notify.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ti_Linkcheck)).BeginInit();
+            this.cmn_userlist.SuspendLayout();
             this.SuspendLayout();
             // 
             // ss_Main
@@ -3418,6 +3460,21 @@ namespace wtKST
             this.bw_GetPlanes.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bw_GetPlanes_ProgressChanged);
             this.bw_GetPlanes.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bw_GetPlanes_RunWorkerCompleted);
             // 
+            // cmn_userlist
+            // 
+            this.cmn_userlist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmn_userlist_chatReviewT});
+            this.cmn_userlist.Name = "cmn_userlist";
+            this.cmn_userlist.Size = new System.Drawing.Size(150, 92);
+            // 
+            // cmn_userlist_chatReviewT
+            // 
+            this.cmn_userlist_chatReviewT.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.cmn_userlist_chatReviewT.Name = "cmn_userlist_chatReviewT";
+            this.cmn_userlist_chatReviewT.Size = new System.Drawing.Size(149, 22);
+            this.cmn_userlist_chatReviewT.Text = "Chat &Review";
+            this.cmn_userlist_chatReviewT.Click += new System.EventHandler(this.cmn_userlist_chatReviewT_Click);
+            // 
             // MainDlg
             // 
             this.AcceptButton = this.btn_KST_Send;
@@ -3450,6 +3507,7 @@ namespace wtKST
             this.mn_Main.PerformLayout();
             this.cmn_Notify.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ti_Linkcheck)).EndInit();
+            this.cmn_userlist.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
