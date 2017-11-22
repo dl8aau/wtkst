@@ -269,7 +269,11 @@ namespace wtKST
             CALL.PrimaryKey = CALLkeys;
 
             string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName.ToUpper());
-            wtQSO = new WinTestLog(MainDlg.Log.WriteMessage);
+            // check if we are running on Windows, otherwise Win-Test will not run
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                wtQSO = new WinTestLog(MainDlg.Log.WriteMessage);
+            }
             UpdateUserBandsWidth();
             bw_GetPlanes.RunWorkerAsync();
             AS_if = new wtKST.AirScoutInterface(ref bw_GetPlanes);
