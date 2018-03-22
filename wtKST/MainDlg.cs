@@ -551,43 +551,45 @@ namespace wtKST
                 }
                 break;
             case MainDlg.KST_STATE.WaitSPR:
-                    /* PRAU|time|Aurora level|
-                        Aurora level:
-                        2: High lat. AU warning
-                        3: High lat. AU alert
-                        5 :Mid lat. AU warning
-                        6:Mid lat. AU alert
-                        8:Low lat. AU warning
-                        9:Low lat. AU alert
-                        Other values: no alert
-                    */
-                    if (s.IndexOf("PRAU") >= 0)
+                /* PRAU|time|Aurora level|
+                    Aurora level:
+                    2: High lat. AU warning
+                    3: High lat. AU alert
+                    5 :Mid lat. AU warning
+                    6:Mid lat. AU alert
+                    8:Low lat. AU warning
+                    9:Low lat. AU alert
+                    Other values: no alert
+                */
+                if (s.IndexOf("PRAU") >= 0)
+                {
+                    try
                     {
-                        try
-                        {
-                            MainDlg.Log.WriteMessage("Login at " + s.Split('|')[2] + " - " + s);
-                        }
-                        catch { }
-                        // End of the settings frames (session only)
-                        // SDONE | chat id |
-
-                        tw.Send("SDONE|" + Settings.Default.KST_Chat.Substring(0, 1) + "|\r");
-                        KSTState = MainDlg.KST_STATE.Connected;
-                        Say("Connected to KST chat.");
-                        MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
-                        msg_latest_first = true;
-                        CheckStartUpAway = true;
-
-                        if (SendMyLocator)
-                        {
-                            KST_Setloc(Settings.Default.KST_Loc);
-                            SendMyLocator = false;
-                        }
-
-                        ti_Linkcheck.Stop();   // restart the linkcheck timer
-                        ti_Linkcheck.Start();
+                        MainDlg.Log.WriteMessage("Login at " + s.Split('|')[2] + " - " + s);
                     }
-                    break;
+                    catch { }
+                    // End of the settings frames (session only)
+                    // SDONE | chat id |
+
+                    tw.Send("SDONE|" + Settings.Default.KST_Chat.Substring(0, 1) + "|\r");
+                    KSTState = MainDlg.KST_STATE.Connected;
+                    Say("Connected to KST chat.");
+                    MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
+                    msg_latest_first = true;
+                    CheckStartUpAway = true;
+
+                    if (SendMyLocator)
+                    {
+                        KST_Setloc(Settings.Default.KST_Loc);
+                        SendMyLocator = false;
+                    }
+
+                    ti_Linkcheck.Stop();   // restart the linkcheck timer
+                    ti_Linkcheck.Start();
+                }
+                break;
+
+                    }
             default:
                 switch (kSTState)
                 {
