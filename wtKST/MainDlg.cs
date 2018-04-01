@@ -532,9 +532,18 @@ namespace wtKST
                                 }
                                 //FIXME currently no way to set the name... so just take it from ON4KST
                                 Settings.Default.KST_Name = subs[6];
-                                if (WCCheck.WCCheck.IsLoc(Settings.Default.KST_Loc) > 0 && !Settings.Default.KST_Loc.Equals(subs[8]))
+                                if (WCCheck.WCCheck.IsLoc(Settings.Default.KST_Loc) > 0)
                                 {
-                                    SendMyLocator = true;
+                                    if (!Settings.Default.KST_Loc.Equals(subs[8]))
+                                    {
+                                        // if KST_Loc option is set, set it on KST side if it does not match
+                                        SendMyLocator = true;
+                                    }
+                                }
+                                else
+                                {
+                                    // store the locator in settings
+                                    Settings.Default.KST_Loc = subs[8];
                                 }
                             }
                         }
