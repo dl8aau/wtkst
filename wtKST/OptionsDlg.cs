@@ -28,10 +28,6 @@ namespace wtKST
 
         private GroupBox groupBox3;
 
-        public TextBox tb_Options_UpdateInterval;
-
-        private Label label7;
-
         private GroupBox groupBox5;
 
         public CheckBox cb_KST_ShowBalloon;
@@ -147,8 +143,6 @@ namespace wtKST
             this.tb_KST_MaxDist = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
             this.cb_ShowBeacons = new System.Windows.Forms.CheckBox();
-            this.tb_Options_UpdateInterval = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cb_KST_ShowBalloon = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -278,8 +272,6 @@ namespace wtKST
             this.groupBox3.Controls.Add(this.tb_KST_MaxDist);
             this.groupBox3.Controls.Add(this.label17);
             this.groupBox3.Controls.Add(this.cb_ShowBeacons);
-            this.groupBox3.Controls.Add(this.tb_Options_UpdateInterval);
-            this.groupBox3.Controls.Add(this.label7);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.Location = new System.Drawing.Point(9, 19);
             this.groupBox3.Name = "groupBox3";
@@ -292,7 +284,7 @@ namespace wtKST
             // 
             this.tb_KST_MaxDist.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_MaxDist", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tb_KST_MaxDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_KST_MaxDist.Location = new System.Drawing.Point(384, 29);
+            this.tb_KST_MaxDist.Location = new System.Drawing.Point(241, 29);
             this.tb_KST_MaxDist.Name = "tb_KST_MaxDist";
             this.tb_KST_MaxDist.Size = new System.Drawing.Size(45, 20);
             this.tb_KST_MaxDist.TabIndex = 15;
@@ -302,7 +294,7 @@ namespace wtKST
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(279, 32);
+            this.label17.Location = new System.Drawing.Point(124, 32);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(101, 13);
             this.label17.TabIndex = 14;
@@ -314,33 +306,12 @@ namespace wtKST
             this.cb_ShowBeacons.Checked = global::wtKST.Properties.Settings.Default.ShowBeacons;
             this.cb_ShowBeacons.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "ShowBeacons", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.cb_ShowBeacons.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_ShowBeacons.Location = new System.Drawing.Point(163, 32);
+            this.cb_ShowBeacons.Location = new System.Drawing.Point(9, 32);
             this.cb_ShowBeacons.Name = "cb_ShowBeacons";
             this.cb_ShowBeacons.Size = new System.Drawing.Size(98, 17);
             this.cb_ShowBeacons.TabIndex = 13;
             this.cb_ShowBeacons.Text = "Show Beacons";
             this.cb_ShowBeacons.UseVisualStyleBackColor = true;
-            // 
-            // tb_Options_UpdateInterval
-            // 
-            this.tb_Options_UpdateInterval.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "UpdateInterval", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tb_Options_UpdateInterval.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_UpdateInterval.Location = new System.Drawing.Point(111, 29);
-            this.tb_Options_UpdateInterval.Name = "tb_Options_UpdateInterval";
-            this.tb_Options_UpdateInterval.Size = new System.Drawing.Size(33, 20);
-            this.tb_Options_UpdateInterval.TabIndex = 12;
-            this.tb_Options_UpdateInterval.Text = global::wtKST.Properties.Settings.Default.UpdateInterval;
-            this.tb_Options_UpdateInterval.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tb_Options_UpdateInterval_KeyPress);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(6, 32);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(99, 13);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "Update interval [s] :";
             // 
             // groupBox5
             // 
@@ -454,6 +425,7 @@ namespace wtKST
             // 
             // tb_KST_Locator
             // 
+            this.tb_KST_Locator.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
             this.tb_KST_Locator.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Loc", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.tb_KST_Locator.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_KST_Locator.Location = new System.Drawing.Point(120, 116);
@@ -461,7 +433,6 @@ namespace wtKST
             this.tb_KST_Locator.Size = new System.Drawing.Size(121, 20);
             this.tb_KST_Locator.TabIndex = 15;
             this.tb_KST_Locator.Text = global::wtKST.Properties.Settings.Default.KST_Loc;
-            this.tb_KST_Locator.CharacterCasing = CharacterCasing.Upper;
             // 
             // label1
             // 
