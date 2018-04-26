@@ -130,6 +130,8 @@ namespace wtKST
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionsDlg));
@@ -984,6 +986,7 @@ namespace wtKST
             this.ResumeLayout(false);
 
         }
+        #endregion
 
         private void rb_KST_StartAsAwayHere_Click(object sender, EventArgs e)
         {
