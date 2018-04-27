@@ -44,8 +44,14 @@ namespace WinTest
         Band5_7GHz = 19,
         Band10GHz = 20,
         Band24GHz = 21,
-        Band46GHz = 22,
+        Band47GHz = 22,
         Band76GHz = 23
+    }
+
+    public enum WTMODE
+    {
+        ModeCW = 0,
+        ModeSSB = 1,
     }
 
     public class wtMessage
@@ -54,7 +60,6 @@ namespace WinTest
         public string Src;
         public string Dst;
         public string Data;
-        public string Extra;
         public byte Checksum;
         public bool HasChecksum;
 
@@ -64,7 +69,6 @@ namespace WinTest
             Src = "";
             Dst = "";
             Data = "";
-            Extra = "";
             Checksum = 0;
             HasChecksum = false;
             this.FromBytes(bytes);
