@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="wtStatus.cs" />
     <Compile Include="wtListener.cs" />
     <Compile Include="WinTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
