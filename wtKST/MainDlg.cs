@@ -1508,6 +1508,50 @@ namespace wtKST
             base.Close();
         }
 
+        public class bandinfo
+        {
+            public string band_name { get; set; }
+            public int band_start { get; set; }
+            public int band_stop { get; set; }
+            public bool in_band(int freq)
+            {
+                return (freq >= band_start && freq <= band_stop);
+            }
+
+            public bandinfo (string n, int start, int stop)
+            {
+                band_name = n;
+                band_start = start;
+                band_stop = stop;
+            }
+        }
+
+        private IList<bandinfo> selected_bands()
+        {
+            List<bandinfo> b = new List<bandinfo>();
+            if (Settings.Default.Band_144)
+                b.Add(new bandinfo( "144MHz", 144000, 146000 )) ;
+            if (Settings.Default.Band_432)
+                b.Add(new bandinfo("432MHz", 430000, 440000));
+            if (Settings.Default.Band_1296)
+                b.Add(new bandinfo("1296MHz", 1240000, 1300000));
+            if (Settings.Default.Band_2320)
+                b.Add(new bandinfo("2320Hz", 2320000, 2450000));
+            if (Settings.Default.Band_3400)
+                b.Add(new bandinfo("3400Hz", 3400000, 3475000));
+            if (Settings.Default.Band_5760)
+                b.Add(new bandinfo("5760Hz", 5650000, 5850000));
+            if (Settings.Default.Band_10368)
+                b.Add(new bandinfo("10GHz", 10000000, 10500000));
+            if (Settings.Default.Band_24GHz)
+                b.Add(new bandinfo("24GHz", 24000000, 24250000));
+            if (Settings.Default.Band_47GHz)
+                b.Add(new bandinfo("47GHz", 47000000, 47200000));
+            if (Settings.Default.Band_76GHz)
+                b.Add(new bandinfo("76GHz", 75500000, 81500000));
+            return b;
+        }
+
         // hide bands that should not be displayed by making their width = 0
         private void UpdateUserBandsWidth()
         {
