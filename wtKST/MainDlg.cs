@@ -223,7 +223,11 @@ namespace wtKST
         private bool SendMyLocator = false;
         private bool SendMyName = false;
         private ContextMenuStrip cmn_userlist;
+        private ToolStripMenuItem cmn_userlist_wtsked;
         private ToolStripMenuItem cmn_userlist_chatReviewT;
+        private WinTest.wtStatus wts;
+        private WTSkedDlg wtskdlg;
+        private int last_sked_qrg;
 
 
         public MainDlg()
@@ -294,6 +298,7 @@ namespace wtKST
             {
                 KST_Connect();
             }
+            wts = new WinTest.wtStatus();
         }
 
 
@@ -567,7 +572,8 @@ namespace wtKST
 
             ni_Main.Text = "wtKST\nLeft click to activate";
 
-            if (!aboutBox1.Visible &&!cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture)
+            if (!aboutBox1.Visible &&!cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture 
+                && (wtskdlg != null && !wtskdlg.Visible))
             {
                 cb_Command.Focus();
                 cb_Command.SelectionLength = 0;
@@ -2299,6 +2305,7 @@ namespace wtKST
                         DataRow[] selectRow = MSG.Select(findCall);
 
                         this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
+                        this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count>0);
 
                         this.cmn_userlist.Show(lv_Calls, p);
                     }
@@ -2429,6 +2436,31 @@ namespace wtKST
                 colwidth += lv_MyMsg.Columns[i].Width;
             }
             lv_MyMsg.Columns[lv_MyMsg.Columns.Count - 1].Width = lv_MyMsg.Width - colwidth - 3;
+        }
+        private void cmn_userlist_wtsked_Click(object sender, EventArgs e)
+        {
+            ToolStripItem clickedItem = sender as ToolStripItem;
+            var contextMenu = clickedItem.Owner as ContextMenuStrip;
+            var yourControl = contextMenu.SourceControl as DoubleBufferedListView;
+            if (yourControl.SelectedItems.Count > 0) // FIXME: geht nur in 1. Spalte (Call)
+            {
+                string call = yourControl.SelectedItems[0].Text.Replace("(", "").Replace(")", "");
+
+                DataRow findrow = CALL.Rows.Find(call);
+                // [JO02OB - 113\\260] AP in 2min
+                string notes = String.Format("[{0} - {1}°]", findrow["LOC"].ToString(), findrow["DIR"].ToString());
+                wtskdlg = new WTSkedDlg(call, wts.wtStatusList, selected_bands(), notes, last_sked_qrg);
+                if (wtskdlg.ShowDialog() == DialogResult.OK)
+                {
+                    WinTest.wtSked wtsked = new WinTest.wtSked();
+
+                    wtsked.send_locksked(wtskdlg.target_wt);
+                    last_sked_qrg = wtskdlg.qrg;
+                    wtsked.send_addsked(wtskdlg.target_wt, wtskdlg.sked_time, wtskdlg.qrg, wtskdlg.band, wtskdlg.mode, 
+                        wtskdlg.call, wtskdlg.notes);
+                    wtsked.send_unlocksked(wtskdlg.target_wt);
+                }
+            }
         }
 
         private void cmn_userlist_chatReviewT_Click(object sender, EventArgs e)
@@ -2922,6 +2954,7 @@ namespace wtKST
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_userlist_chatReviewT = new System.Windows.Forms.ToolStripMenuItem();
             this.ss_Main.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -3507,9 +3540,17 @@ namespace wtKST
             // cmn_userlist
             // 
             this.cmn_userlist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmn_userlist_wtsked,
             this.cmn_userlist_chatReviewT});
             this.cmn_userlist.Name = "cmn_userlist";
             this.cmn_userlist.Size = new System.Drawing.Size(150, 92);
+            // 
+            // cmn_userlist_wtsked
+            // 
+            this.cmn_userlist_wtsked.Name = "cmn_userlist_wtsked";
+            this.cmn_userlist_wtsked.Size = new System.Drawing.Size(149, 22);
+            this.cmn_userlist_wtsked.Text = "Win-Test &Sked";
+            this.cmn_userlist_wtsked.Click += new System.EventHandler(this.cmn_userlist_wtsked_Click);
             // 
             // cmn_userlist_chatReviewT
             // 
