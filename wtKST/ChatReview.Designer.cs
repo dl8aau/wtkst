@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.TBColumnTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TBColumnMessage = new System.Windows.Forms.DataGridViewTextBoxColumn();
