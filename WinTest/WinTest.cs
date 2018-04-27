@@ -156,6 +156,7 @@ namespace WinTest
                     case WTMESSAGES.UNKNOWN:
                         break;
                     default:
+                        Data = Data.Replace("°", "\\260");
                         // combine all fields to string incl. placeholder for checksum and a \0 at the end
                         s = Msg + ": " + "\"" + Src + "\" \"" + Dst + "\" " + Data + "?\0";
                         // translate into ASCII bytes
