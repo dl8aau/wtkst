@@ -83,18 +83,6 @@ namespace WinTest
             Src = src;
             Dst = dst;
             Data = data;
-            Extra = "";
-            Checksum = 0;
-            HasChecksum = false;
-        }
-
-        public wtMessage(WTMESSAGES MSG, string src, string dst, string data, string extra)
-        {
-            Msg = MSG;
-            Src = src;
-            Dst = dst;
-            Data = data;
-            Extra = extra;
             Checksum = 0;
             HasChecksum = false;
         }
@@ -155,7 +143,7 @@ namespace WinTest
                     case WTMESSAGES.ASNEAREST:
                         // emulate old WinTest DLL for wtKST
                         // combine all fields to string incl. placeholder for checksum
-                        s = Msg + ": " + "\"" + Src + "\" \"" + Dst + "\" \"" + Data + "\"" + Extra + "?";
+                        s = Msg + ": " + "\"" + Src + "\" \"" + Dst + "\" \"" + Data + "\"?";
                         // translate into ASCII bytes
                         b = Encoding.ASCII.GetBytes(s);
                         // calculate checksum
@@ -169,7 +157,7 @@ namespace WinTest
                         break;
                     default:
                         // combine all fields to string incl. placeholder for checksum and a \0 at the end
-                        s = Msg + ": " + "\"" + Src + "\" \"" + Dst + "\" \"" + Data + "\"" + Extra + "?\0";
+                        s = Msg + ": " + "\"" + Src + "\" \"" + Dst + "\" " + Data + "?\0";
                         // translate into ASCII bytes
                         b = Encoding.ASCII.GetBytes(s);
                         // calculate checksum
