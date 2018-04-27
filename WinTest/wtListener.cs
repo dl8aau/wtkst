@@ -10,8 +10,6 @@ namespace WinTest
 {
     public class wtListener
     {
-        public const int WinTestDefaultPort = 9871;
-
         private volatile bool Listen;
         private UdpClient u;
 

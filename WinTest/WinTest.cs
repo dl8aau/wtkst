@@ -179,5 +179,6 @@ namespace WinTest
 
     public class WinTest
     {
+        public const int WinTestDefaultPort = 9871;
     }
 }
