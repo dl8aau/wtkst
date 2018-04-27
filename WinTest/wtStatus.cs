@@ -37,9 +37,9 @@ namespace WinTest
 
         private void wtMessageReceivedHandler(object sender, wtListener.wtMessageEventArgs e)
         {
-            Console.WriteLine("WT Msg " + e.Msg.Msg + " src " +
-            e.Msg.Src + " dest " + e.Msg.Dst + " data " + e.Msg.Data + " checksum "
-            + e.Msg.HasChecksum);
+            //Console.WriteLine("WT Msg " + e.Msg.Msg + " src " +
+            //e.Msg.Src + " dest " + e.Msg.Dst + " data " + e.Msg.Data + " checksum "
+            //+ e.Msg.HasChecksum);
             if (e.Msg.Msg == WTMESSAGES.STATUS && e.Msg.HasChecksum)
             {
                 string[] data = e.Msg.Data.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -63,8 +63,8 @@ namespace WinTest
                     mode = "";
                 }
 
-                Console.WriteLine("STATUS: from " + e.Msg.Src + " band " + band + " mode " + mode +
-                    " freq " + data[4] + " pass " + data[8]);
+                //Console.WriteLine("STATUS: from " + e.Msg.Src + " band " + band + " mode " + mode +
+                //    " freq " + data[4] + " pass " + data[8]);
                 int index = _wtStatusList.FindIndex(x => x.from == e.Msg.Src );
                 wtStat w = new wtStat(e.Msg.Src, band, mode, 
                     Convert.ToInt32(data[4])*100, Convert.ToInt32(data[8])*100);
