@@ -88,7 +88,8 @@ WT Msg UNLOCKSKED src STN1 dest  data STN1 checksum True
         {
             wtMessage Msg = new wtMessage(WTMESSAGES.ADDSKED, my_wtname, "", string.Concat(new string[]
             {
-                ((Int64)((t.ToUniversalTime() - new DateTime (1970, 1, 1)).TotalSeconds)+60).ToString(),
+                // the time stamp for Win-Test seems to be 1 minute off, os use 1.1.1970 00:01:00 as reference
+                ((Int64)((t.ToUniversalTime() - new DateTime (1970, 1, 1, 0, 1, 0, DateTimeKind.Utc)).TotalSeconds)+60).ToString(),
                 " ", (10*qrg).ToString(), " ", ((int)band).ToString(),
                 " ", ((int)mode).ToString(), " \"", call, "\" \"", notes, "\""
             }));
