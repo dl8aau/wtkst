@@ -26,8 +26,8 @@ namespace wtKST.Properties {
         public Settings()
         {
             // MONO hack to assure that default values get serialized
-            Reset();
-            Reload();
+            //Reset();
+            //Reload();
         }
 
         [global::System.Configuration.UserScopedSettingAttribute()]
