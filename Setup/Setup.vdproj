@@ -70,18 +70,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E19182F47A384AFC90DF7538AB8EBE47"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_35A9088FD3CD4EDFB791EF1568F14FDA"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_E1FE572876094762A4D99AAFDF813752"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -95,6 +83,18 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_3B301A87C518DC06AED6163F710EF313"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_E19182F47A384AFC90DF7538AB8EBE47"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_35A9088FD3CD4EDFB791EF1568F14FDA"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -386,15 +386,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:wtKST"
-        "ProductCode" = "8:{479FB721-251B-4241-B54A-837C95EB59E6}"
-        "PackageCode" = "8:{6603884B-AC05-493F-89AD-478D3E4FBA82}"
+        "ProductCode" = "8:{13432F48-8745-4AFE-948F-8C7EEC9509EC}"
+        "PackageCode" = "8:{4C562157-629C-490F-A87C-9856DA7E0026}"
         "UpgradeCode" = "8:{5472AA0A-2E6D-4606-B2F1-C2A5C741C5BA}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:3.01.0112"
+        "ProductVersion" = "8:3.01.0113"
         "Manufacturer" = "8:wtKST"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
