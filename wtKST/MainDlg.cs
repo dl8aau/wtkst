@@ -541,7 +541,8 @@ namespace wtKST
             string KST_Calls_Text = lbl_KST_Calls.Text;
             if (lv_Calls.Items.Count > 0)
             {
-                KST_Calls_Text = "Calls [" + lv_Calls.Items.Count.ToString() + "]";
+                /* show number of calls in list and total number of users (-1 for own call) */
+                KST_Calls_Text = "Calls [" + lv_Calls.Items.Count.ToString() + " / " + (CALL.Rows.Count - 1) + "]";
                 if (wtQSO != null && Settings.Default.WinTest_Activate)
                     KST_Calls_Text += " - " + Path.GetFileName(wtQSO.getFileName());
             }
