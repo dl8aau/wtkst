@@ -622,7 +622,7 @@ namespace wtKST
                                     MainDlg.Log.WriteMessage("Password wrong ");
                                     break;
                                 }
-                                //FIXME currently no way to set the name... so just take it from ON4KST
+                                // If name not set... take it from ON4KST
                                 if (Settings.Default.KST_Name.Length == 0)
                                 {
                                 Settings.Default.KST_Name = subs[6];
