@@ -143,5 +143,11 @@
     <Setting Name="WindowSplitterDistance2" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="AS_Local_Name" Type="System.String" Scope="User">
+      <Value Profile="(Default)">AS</Value>
+    </Setting>
+    <Setting Name="AS_Local_Active" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

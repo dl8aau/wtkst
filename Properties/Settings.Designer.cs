@@ -593,5 +593,32 @@ namespace wtKST.Properties {
                 this["WindowSplitterDistance2"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("AS")]
+        public string AS_Local_Name {
+            get {
+                return ((string)(this["AS_Local_Name"]));
+            }
+            set {
+                this["AS_Local_Name"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AS_Local_Active
+        {
+            get
+            {
+                return ((bool)(this["AS_Local_Active"]));
+            }
+            set
+            {
+                this["AS_Local_Active"] = value;
+            }
+        }
     }
 }

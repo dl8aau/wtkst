@@ -58,7 +58,9 @@ namespace wtKST
         public void send_watchlist(string watchlist, string MyCall, string MyLoc)
         {
             string qrg = qrg_from_settings();
-            wtMessage Msg = new wtMessage(WTMESSAGES.ASWATCHLIST, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, string.Concat(new string[]
+            wtMessage Msg = new wtMessage(WTMESSAGES.ASWATCHLIST, Settings.Default.AS_My_Name,
+                                Settings.Default.AS_Local_Active ? Settings.Default.AS_Local_Name : Settings.Default.AS_Server_Name, 
+                                string.Concat(new string[]
             {
                 qrg, ",", WCCheck.WCCheck.Cut(MyCall), ",", MyLoc, watchlist
             }));
@@ -207,7 +209,8 @@ namespace wtKST
         public void show_path(string call, string loc, string MyCall, string MyLoc)
         {
             string qrg = qrg_from_settings();
-            wtMessage Msg = new wtMessage(WTMESSAGES.ASSHOWPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, 
+            wtMessage Msg = new wtMessage(WTMESSAGES.ASSHOWPATH, Settings.Default.AS_My_Name,
+                Settings.Default.AS_Local_Active ? Settings.Default.AS_Local_Name : Settings.Default.AS_Server_Name,
                 string.Concat(new string[] { qrg, ",",  WCCheck.WCCheck.Cut(MyCall), ",",  MyLoc, ",",
                     WCCheck.WCCheck.Cut(call), ",", loc }));
             UdpClient client = new UdpClient();
