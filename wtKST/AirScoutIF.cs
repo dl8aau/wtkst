@@ -270,7 +270,7 @@ namespace wtKST
             string result;
             if (planes.TryGetValue(call, out infolist))
             {
-                result = infolist[0].Potential + "," + infolist[0].Category;
+                result = infolist[0].Potential + "," + infolist[0].Category + "," + infolist[0].Mins;
             }
             else
             {

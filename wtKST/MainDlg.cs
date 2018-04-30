@@ -1995,6 +1995,7 @@ namespace wtKST
 
         private void lv_Calls_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
         {
+            ListView listView = sender as ListView;
             if (e.Header.Text[0] > '0' && e.Header.Text[0] < '9')
             {
                 QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
@@ -2038,12 +2039,16 @@ namespace wtKST
                         e.DrawBackground();
                         string[] a = e.SubItem.Text.Split(new char[] { ',' });
                         int pot = Convert.ToInt32(a[0]);
+                        int Mins = Convert.ToInt32(a[2]);
+                        if (Mins > 99)
+                            Mins = 99;
                         if (pot > 0)
                         {
                             if (a.Length < 2)
                                 Console.WriteLine("ups " + a.Length + " " + e.SubItem.Text);
                             var cat = a[1];
                             Rectangle b = e.Bounds;
+                            b.Inflate(-5,0); // width -10 for the text
                             if (cat.Equals("S"))
                                 b.Inflate(-1, -1);
                             else if (cat.Equals("H"))
@@ -2054,21 +2059,39 @@ namespace wtKST
                                 b.Inflate(-6, -6);
                             else // unknown
                                 b.Inflate(-5, -5);
-                            int num = pot;
-                            if (num == 100)
+                            b.X = e.Bounds.X + 1;
+                            if (pot == 100)
                             {
                                 // 100
                                 e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
                             }
-                            else if (num > 50)
+                            else if (pot > 50)
                             {
                                 // 51..99
-                                e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
+                                if (Mins > 15)
+                                    e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b);
+                                else if (Mins > 5)
+                                    e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b);
+                                else
+                                    e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
+
+                                using (StringFormat sf = new StringFormat())
+                                {
+                                    using (Font headerFont = new Font(listView.Font.Name, listView.Font.Size*0.8F, FontStyle.Regular))
+                                    {
+                                        sf.Alignment = StringAlignment.Center;
+                                        sf.LineAlignment = StringAlignment.Center;
+                                        Rectangle tb = e.Bounds;
+                                        tb.X = tb.X + e.Bounds.Width - 15;
+                                        tb.Width = 15;
+                                        e.Graphics.DrawString(Mins.ToString(), headerFont, Brushes.Black, tb, sf);
+                                    }
+                                }
                             }
                             else
                             {
                                 // 0..50
-                                e.Graphics.FillEllipse(new SolidBrush(Color.DarkOrange), b);
+                                e.Graphics.FillEllipse(new SolidBrush(Color.Orange), b);
                             }
                         }
                     }
@@ -3353,7 +3376,7 @@ namespace wtKST
             // ch_AS
             // 
             this.ch_AS.Text = "AS";
-            this.ch_AS.Width = 20;
+            this.ch_AS.Width = 30;
             // 
             // columnHeader144
             // 
