@@ -2747,16 +2747,6 @@ namespace wtKST
                                     }
 
                                 }
-                            }
-                            else
-                            {
-                                if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist) &&
-                                    (qrb < Convert.ToInt32(Settings.Default.KST_MaxDist)))
-                                    // too far
-                                    bw_GetPlanes.ReportProgress(-2, dxcall);
-                                else
-                                    // too close
-                                    bw_GetPlanes.ReportProgress(-3, dxcall);
 
                             }
                         }
@@ -2809,32 +2799,6 @@ namespace wtKST
                 if (call_lvi != null)
                 {
                     string newtext = AS_if.GetNearestPlanePotential(dxcall);
-                    if (call_lvi.SubItems[4].Text != newtext)
-                    {
-                        call_lvi.SubItems[4].Text = newtext;
-                        lv_Calls.Refresh();
-                    }
-                }
-            }
-            else if (e.ProgressPercentage == -2) // too far
-            {
-                AS_if.planes.Remove(dxcall);
-                if (call_lvi != null)
-                {
-                    string newtext = ">";
-                    if (call_lvi.SubItems[4].Text != newtext)
-                    {
-                        call_lvi.SubItems[4].Text = newtext;
-                        lv_Calls.Refresh();
-                    }
-                }
-            }
-            else if (e.ProgressPercentage == -3) // too close
-            {
-                AS_if.planes.Remove(dxcall);
-                if (call_lvi != null)
-                {
-                    string newtext = "<";
                     if (call_lvi.SubItems[4].Text != newtext)
                     {
                         call_lvi.SubItems[4].Text = newtext;
