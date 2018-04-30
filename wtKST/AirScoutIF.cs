@@ -161,7 +161,7 @@ namespace wtKST
                 }
                 return true;
             }
-            catch (Exception e1_596)
+            catch
             {
                 bw_GetPlanes.ReportProgress(0, null);
                 bw_GetPlanes.ReportProgress(-1, dxcall);
@@ -197,7 +197,7 @@ namespace wtKST
                         return true;
                     }
                 }
-                catch (Exception e1_211)
+                catch
                 {
                 }
             }
