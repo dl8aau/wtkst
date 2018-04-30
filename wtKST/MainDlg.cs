@@ -229,6 +229,16 @@ namespace wtKST
         private WTSkedDlg wtskdlg;
         private int last_sked_qrg;
 
+        private class AS_Calls
+        {
+            public string Call;
+            public string Locator;
+
+            public AS_Calls(string call, string loc) { Call = call;  Locator = loc; }
+        };
+
+        private List<AS_Calls> AS_list = new List<AS_Calls>();
+
 
         public MainDlg()
         {
@@ -1172,6 +1182,7 @@ namespace wtKST
                     lv_Calls.TopItem = lv_Calls.Items[lv_Calls.Items.Count - 1];
                     lv_Calls.TopItem = toplv;
                 }
+                fill_AS_list();
                 if (wtQSO != null & WinTestLocatorWarning)
                     Say("");
                 MainDlg.Log.WriteMessage("KST GetUsers finished: " + lv_Calls.Items.Count.ToString() + " Calls.");
@@ -2169,6 +2180,67 @@ namespace wtKST
             }
         }
 
+        private void lv_Calls_scroll(object sender, ScrollEventArgs e)
+        {
+            if (e.Type == ScrollEventType.EndScroll)
+            {
+                fill_AS_list();
+            }
+        }
+
+        private void lv_Calls_clientSizeChanged(object sender, EventArgs e)
+        {
+            fill_AS_list();
+        }
+
+        private void fill_AS_list()
+        {
+            if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.TopItem == null)
+                return;
+            // called if the user list changes
+            lock (AS_list)
+            {
+                AS_list.Clear();
+
+                string mycall = WCCheck.WCCheck.Cut(MyCall);
+
+                // find visible users
+                string loc = lv_Calls.TopItem.SubItems[2].Text;
+                string dxcall = WCCheck.WCCheck.Cut(lv_Calls.TopItem.Text.TrimStart(
+                    new char[] { '(' }).TrimEnd(new char[] { ')' }));
+
+                int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
+                            && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist)
+                            && !mycall.Equals(dxcall))
+                    AS_list.Add(new AS_Calls( dxcall, loc ));
+
+                try
+                {
+                    for (int i = lv_Calls.TopItem.Index + 1; i < lv_Calls.Items.Count; i++)
+                    {
+                        if (lv_Calls.ClientRectangle.IntersectsWith(lv_Calls.Items[i].Bounds))
+                        {
+                            loc = lv_Calls.Items[i].SubItems[2].Text;
+                            dxcall = WCCheck.WCCheck.Cut(lv_Calls.Items[i].Text.TrimStart(
+                                new char[] { '(' }).TrimEnd(new char[] { ')' }));
+                            qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                            if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
+                                        && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist)
+                                        && !mycall.Equals(dxcall))
+                                AS_list.Add(new AS_Calls( dxcall, loc ));
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch
+                { }
+            }
+        }
+
         private void cmi_Calls_SendMessage_Click(object sender, EventArgs e)
         {
             if (lv_Calls.SelectedItems != null && lv_Calls.SelectedItems[0].Text.Length > 0)
@@ -2721,32 +2793,38 @@ namespace wtKST
                     continue;
                 }
                 int errors = 0;
-                //FIXME - lock (CALL) not possible here, as it keeps CALL locked -> deadlock
-                for (int i = 0; Settings.Default.AS_Active && i < CALL.Rows.Count; i++)
+                string mycall = WCCheck.WCCheck.Cut(MyCall);
+
+                // here we make a local copy of the current AS_list
+                AS_Calls[] myAs_List;
+
+                if (AS_list.Count == 0)
+                        continue;
+                lock (AS_list)
                 {
+                    myAs_List = new AS_Calls[AS_list.Count];
+                    AS_list.CopyTo(myAs_List);
+                }
+
+                foreach(AS_Calls a in myAs_List)
+                {
+                    if (!Settings.Default.AS_Active)
+                        break;
                     try
                     {
-                        int qrb = (int)CALL.Rows[i]["QRB"];
-                        string mycall = WCCheck.WCCheck.Cut(MyCall);
-                        string dxcall = WCCheck.WCCheck.Cut(CALL.Rows[i]["CALL"].ToString().TrimStart(
-                            new char[]{ '(' }).TrimEnd(new char[]{ ')' }));
-                        if (mycall.Equals(dxcall))
-                            continue;
-                        string dxloc = CALL.Rows[i]["LOC"].ToString();
+                        string dxloc = a.Locator;
+                        // FIXME: handle /p etc.
+                        string dxcall = a.Call;
+
                         if (Settings.Default.AS_Active)
                         {
-                            if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
-                            && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
+                            if (!AS_if.GetPlanes(mycall, Settings.Default.KST_Loc, dxcall, dxloc))
                             {
-                                if (!AS_if.GetPlanes(mycall, Settings.Default.KST_Loc, dxcall, dxloc))
+                                errors++;
+                                if (errors > 10)
                                 {
-                                    errors++;
-                                    if (errors > 10)
-                                    {
-                                        bw_GetPlanes.ReportProgress(0, null);
-                                        break;
-                                    }
-
+                                    bw_GetPlanes.ReportProgress(0, null);
+                                    break;
                                 }
 
                             }
@@ -3250,6 +3328,8 @@ namespace wtKST
             this.lv_Calls.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.lv_Calls_DrawSubItem);
             this.lv_Calls.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_MouseDown);
             this.lv_Calls.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_MouseMove);
+            this.lv_Calls.Scroll += new ScrollEventHandler(this.lv_Calls_scroll);
+            this.lv_Calls.ClientSizeChanged += new EventHandler(this.lv_Calls_clientSizeChanged);
             // 
             // ch_Call
             // 
