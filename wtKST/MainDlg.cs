@@ -2833,6 +2833,28 @@ namespace wtKST
             {
                 this.DoubleBuffered = true;
             }
+
+            // https://stackoverflow.com/a/1852053
+            // https://stackoverflow.com/a/9964086
+            public event ScrollEventHandler Scroll;
+            protected virtual void OnScroll(ScrollEventArgs e)
+            {
+                ScrollEventHandler handler = this.Scroll;
+                if (handler != null) handler(this, e);
+            }
+
+            private const int WM_VSCROLL = 0x115;
+            private const int MOUSEWHEEL = 0x020A;
+            private const int KEYDOWN = 0x0100;
+
+            protected override void WndProc(ref Message m)
+            {
+                base.WndProc(ref m);
+                if (m.Msg == MOUSEWHEEL || m.Msg == WM_VSCROLL || (m.Msg == KEYDOWN && (m.WParam == (IntPtr)40 || m.WParam == (IntPtr)35)))
+                {
+                    OnScroll(new ScrollEventArgs((ScrollEventType)(m.WParam.ToInt32() & 0xffff), 0));
+                }
+            }
         }
 
         [DllImport("user32.dll")]
