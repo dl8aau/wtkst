@@ -112,8 +112,13 @@ namespace WinTest
             text = text.Remove(0, text.IndexOf(": ") + 2);
             Src = text.Substring(0, text.IndexOf(" ")).Replace("\"", "");
             text = text.Remove(0, text.IndexOf(" ") + 1);
-            Dst = text.Substring(0, text.IndexOf(" ")).Replace("\"", "");
-            text = text.Remove(0, text.IndexOf(" ") + 1);
+            if (text.IndexOf(" ") > 0)
+            {
+                Dst = text.Substring(0, text.IndexOf(" ")).Replace("\"", "");
+                text = text.Remove(0, text.IndexOf(" ") + 1);
+            }
+            else
+                Dst = "";
             // Clean up the message --> scrub last byte
             text = text.Substring(0, text.Length - 1).Replace("\"", "");
             // convert bytes coded in UTF8 to text
