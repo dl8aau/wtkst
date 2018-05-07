@@ -584,7 +584,7 @@ namespace wtKST
             ni_Main.Text = "wtKST\nLeft click to activate";
 
             if (!aboutBox1.Visible &&!cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture 
-                && (wtskdlg != null && !wtskdlg.Visible))
+                 && (wtskdlg == null || !wtskdlg.Visible) )
             {
                 cb_Command.Focus();
                 cb_Command.SelectionLength = 0;
