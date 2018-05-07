@@ -28,6 +28,8 @@ namespace WinTest
         UPDATESKED,
         READAZIMUTH,
         VIOLATION,
+        LOGIN,
+        LOGOUT,
         SETAZIMUTH = 100,
         SETELEVATION = 101,
         ASWATCHLIST = 249,
