@@ -3614,6 +3614,7 @@ namespace wtKST
             // 
             this.ti_Linkcheck.Interval = 120000D;
             this.ti_Linkcheck.SynchronizingObject = this;
+            this.ti_Linkcheck.Elapsed += new System.Timers.ElapsedEventHandler(this.ti_Linkcheck_Tick);
             // 
             // tt_Info
             // 
