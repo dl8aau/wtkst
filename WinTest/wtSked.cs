@@ -10,25 +10,31 @@ namespace WinTest
 {
     public class wtSked
     {
-        private IPEndPoint localep;
+        private IPAddress localbroadcastIP;
 
-        /* fixme - taken from AirScoutIF.cs - move somewhere else? */
-        private static IPAddress GetIpIFDefaultGateway()
+        private static IPAddress GetIpIFBroadcastAddress()
         {
-            return NetworkInterface
+            var unicast = NetworkInterface
                 .GetAllNetworkInterfaces()
                 .Where(n => n.OperationalStatus == OperationalStatus.Up)
                 .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
                 .Where(n => n.GetIPProperties().GatewayAddresses.Count > 0) // only interfaces with a gateway
                 .SelectMany(n => n.GetIPProperties()?.UnicastAddresses)
                 .Where(g => g.Address.AddressFamily == AddressFamily.InterNetwork) // filter IPv4
-                .Select(g => g?.Address)
-                .FirstOrDefault(a => a != null);
+                .FirstOrDefault(g => g != null);
+
+            var address = unicast.Address;
+            var mask = unicast.IPv4Mask;
+            var addressInt = BitConverter.ToInt32(address.GetAddressBytes(), 0);
+            var maskInt = BitConverter.ToInt32(mask.GetAddressBytes(), 0);
+            var broadcastInt = addressInt | ~maskInt;
+            var broadcastAddress = new IPAddress(BitConverter.GetBytes(broadcastInt));
+            return broadcastAddress;
         }
 
         public wtSked()
         {
-            localep = new IPEndPoint(GetIpIFDefaultGateway(), WinTest.WinTestDefaultPort);
+            localbroadcastIP = GetIpIFBroadcastAddress();
         }
 
         private const string my_wtname = "KST"; // FIXME!!!
@@ -37,10 +43,12 @@ namespace WinTest
         {
             try
             {
-                UdpClient client = new UdpClient(localep);
+                UdpClient client = new UdpClient();
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast , 1);
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
                 client.Client.ReceiveTimeout = 10000;
-                IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, WinTest.WinTestDefaultPort);
+                IPEndPoint groupEp = new IPEndPoint(localbroadcastIP, WinTest.WinTestDefaultPort);
                 client.Connect(groupEp);
                 Console.WriteLine("send: " + Msg.Data);
                 byte[] b = Msg.ToBytes();
