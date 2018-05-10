@@ -2441,18 +2441,30 @@ namespace wtKST
             ListViewHitTestInfo info = lv_Msg.HitTest(p);
             if (info != null && info.Item != null)
             {
-                string username = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
-                if (username.Equals(MyCall))
+                string call = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
+                if (call.Equals(MyCall))
                 {
                     // if we would be sending to ourselves, use recipient call instead
-                    username = info.Item.SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
+                    call = info.Item.SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
                 }
-
-                if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                if (e.Button == MouseButtons.Left)
                 {
-                    cb_Command.Text = "/cq " + username + " ";
-                    cb_Command.SelectionStart = cb_Command.Text.Length;
-                    cb_Command.SelectionLength = 0;
+                    if (call.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                    {
+                        cb_Command.Text = "/cq " + call + " ";
+                        cb_Command.SelectionStart = cb_Command.Text.Length;
+                        cb_Command.SelectionLength = 0;
+                    }
+                }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
+                    DataRow[] selectRow = MSG.Select(findCall);
+
+                    this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
+                    this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
+
+                    this.cmn_userlist.Show(lv_Msg, p);
                 }
             }
         }
@@ -2463,17 +2475,30 @@ namespace wtKST
             ListViewHitTestInfo info = lv_MyMsg.HitTest(p);
             if (info != null && info.Item != null)
             {
-                string username = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
-                if (username.Equals(MyCall)) 
+                string call = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
+                if (call.Equals(MyCall))
                 {
                     // if we would be sending to ourselves, use recipient call instead
-                    username = info.Item.SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
+                    call = info.Item.SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
                 }
-                if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                if (e.Button == MouseButtons.Left)
                 {
-                    cb_Command.Text = "/cq " + username + " ";
-                    cb_Command.SelectionStart = cb_Command.Text.Length;
-                    cb_Command.SelectionLength = 0;
+                    if (call.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                    {
+                        cb_Command.Text = "/cq " + call + " ";
+                        cb_Command.SelectionStart = cb_Command.Text.Length;
+                        cb_Command.SelectionLength = 0;
+                    }
+                }
+                else if (e.Button == MouseButtons.Right)
+                {
+                    string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
+                    DataRow[] selectRow = MSG.Select(findCall);
+
+                    this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
+                    this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
+
+                    this.cmn_userlist.Show(lv_MyMsg, p);
                 }
             }
         }
@@ -2491,7 +2516,7 @@ namespace wtKST
                 }
                 else
                 {
-                    ShowToolTip("Left click to\nSend Message.", lv_Msg, p);
+                    ShowToolTip("Left click to\nSend Message.\nRight click for more", lv_Msg, p);
                 }
             }
         }
@@ -2509,7 +2534,7 @@ namespace wtKST
                 }
                 else
                 {
-                    ShowToolTip("Left click to\nSend Message.", lv_MyMsg, p);
+                    ShowToolTip("Left click to\nSend Message.\nRight click for more", lv_MyMsg, p);
                 }
             }
         }
@@ -2546,6 +2571,16 @@ namespace wtKST
                 {
                     string call = yourControl.SelectedItems[0].Text.Replace("(", "").Replace(")", "");
                     Console.WriteLine("clicked " + call);
+                    return call;
+                }
+            }
+            else if (Control.Name.Equals("lv_Msg") || Control.Name.Equals("lv_MyMsg"))
+            {
+                Console.WriteLine(Control.GetType().ToString());
+                var yourControl = contextMenu.SourceControl as System.Windows.Forms.ListView;
+                if (yourControl.SelectedItems.Count > 0)
+                {
+                    string call = yourControl.SelectedItems[0].SubItems[1].Text.Replace("(", "").Replace(")", "");
                     return call;
                 }
             }
