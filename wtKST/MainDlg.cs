@@ -2158,7 +2158,7 @@ namespace wtKST
                         ToolTipText = t + "\n\nLeft click for map\nRight click for more";
                     }
                 }
-                if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
+                if (!String.IsNullOrEmpty(info.SubItem.Name) && info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
                 {
                     QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
                     try
