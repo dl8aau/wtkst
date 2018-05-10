@@ -2533,15 +2533,33 @@ namespace wtKST
             }
             lv_MyMsg.Columns[lv_MyMsg.Columns.Count - 1].Width = lv_MyMsg.Width - colwidth - 3;
         }
+
+        private string cmn_userlist_get_call_from_contextMenu(ContextMenuStrip contextMenu)
+        {
+            var Control = contextMenu.SourceControl as Control;
+
+            if (Control.Name.Equals("lv_Calls"))
+            {
+                Console.WriteLine(Control.GetType().ToString());
+                var yourControl = contextMenu.SourceControl as DoubleBufferedListView;
+                if (yourControl.SelectedItems.Count > 0)
+                {
+                    string call = yourControl.SelectedItems[0].Text.Replace("(", "").Replace(")", "");
+                    Console.WriteLine("clicked " + call);
+                    return call;
+                }
+            }
+            return "";
+        }
+
+
         private void cmn_userlist_wtsked_Click(object sender, EventArgs e)
         {
             ToolStripItem clickedItem = sender as ToolStripItem;
-            var contextMenu = clickedItem.Owner as ContextMenuStrip;
-            var yourControl = contextMenu.SourceControl as DoubleBufferedListView;
-            if (yourControl.SelectedItems.Count > 0) // FIXME: geht nur in 1. Spalte (Call)
-            {
-                string call = yourControl.SelectedItems[0].Text.Replace("(", "").Replace(")", "");
+            string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
 
+            if (!String.IsNullOrEmpty(call))
+            {
                 DataRow findrow = CALL.Rows.Find(call);
                 // [JO02OB - 113\\260] AP in 2min
                 string notes = String.Format("[{0} - {1}°]", findrow["LOC"].ToString(), findrow["DIR"].ToString());
@@ -2562,13 +2580,10 @@ namespace wtKST
         private void cmn_userlist_chatReviewT_Click(object sender, EventArgs e)
         {
             ToolStripItem clickedItem =  sender as ToolStripItem;
-            var contextMenu = clickedItem.Owner as ContextMenuStrip;
-            var yourControl = contextMenu.SourceControl as DoubleBufferedListView;
-            if (yourControl.SelectedItems.Count > 0) // FIXME: geht nur in 1. Spalte (Call)
-            {
-                string call = yourControl.SelectedItems[0].Text.Replace("(", "").Replace(")", "");
-                Console.WriteLine("clicked " + call);
+            string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
 
+            if (!String.IsNullOrEmpty(call))
+            {
                 DataTable chat_review_table = new DataTable("ChatReviewTable");
                 chat_review_table.Columns.Add("Time", typeof(DateTime));
                 chat_review_table.Columns.Add("Message");
@@ -2578,12 +2593,11 @@ namespace wtKST
                 foreach (var msg_row in selectRow)
                 {
                     Console.WriteLine(msg_row["TIME"].ToString() + " " + msg_row["CALL"].ToString() + " -> " + msg_row["RECIPIENT"].ToString() + " " + msg_row["MSG"].ToString());
-                    chat_review_table.Rows.Add(msg_row["TIME"], msg_row["MSG"] );
+                    chat_review_table.Rows.Add(msg_row["TIME"], msg_row["MSG"]);
                 }
                 ChatReview cr = new ChatReview(chat_review_table, call);
                 cr.ShowDialog();
             }
-
         }
 
         private void btn_KST_Send_Click_1(object sender, EventArgs e)
