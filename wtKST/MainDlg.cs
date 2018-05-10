@@ -1208,9 +1208,19 @@ namespace wtKST
                             DataRow row = CALL.NewRow();
                             row["CALL"] = bs.Split(new char[] { ' ' })[0].Trim();
                             row["NAME"] = "Beacon";
-                            row["LOC"] = bs.Split(new char[] { ' ' })[1].Trim();
+                            string locator = bs.Split(new char[] { ' ' })[1].Trim();
+                            row["LOC"] = locator;
                             row["TIME"] = DateTime.MinValue;
                             row["CONTACTED"] = 0;
+                            row["AWAY"] = true;
+
+                            int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, locator);
+                            int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, locator);
+                            row["QRB"] = qrb;
+                            row["DIR"] = qtf;
+
+                            row["LOGINTIME"] = DateTime.MinValue;
+
                             foreach (string band in BANDS)
                                 row[band] = QRVdb.QRV_STATE.unknown;
                             lock (CALL)
