@@ -14,11 +14,11 @@ namespace WinTest
             public string from { get; set; }
             public string band;
             public string mode;
-            public int freq;
-            public int passfreq;
+            public ulong freq;
+            public ulong passfreq;
             public DateTime timestamp;
 
-            public wtStat(string from, string band, string mode, int freq, int passfreq)
+            public wtStat(string from, string band, string mode, ulong freq, ulong passfreq)
             {
                 this.from = from; this.band = band; this.mode = mode;
                 this.freq = freq; this.passfreq = passfreq;
@@ -67,7 +67,7 @@ namespace WinTest
                 //    " freq " + data[4] + " pass " + data[8]);
                 int index = _wtStatusList.FindIndex(x => x.from == e.Msg.Src );
                 wtStat w = new wtStat(e.Msg.Src, band, mode, 
-                    Convert.ToInt32(data[4])*100, Convert.ToInt32(data[8])*100);
+                    Convert.ToUInt64(data[4])*100UL, Convert.ToUInt64(data[8])*100UL);
                 if (index >= 0)
                 {
                     _wtStatusList[index] = w;

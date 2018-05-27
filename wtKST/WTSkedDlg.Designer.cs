@@ -191,7 +191,7 @@ namespace wtKST
             // 
             this.num_frequency.Location = new System.Drawing.Point(69, 37);
             this.num_frequency.Maximum = new decimal(new int[] {
-            10000000,
+            500000000,
             0,
             0,
             0});

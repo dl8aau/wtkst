@@ -92,7 +92,7 @@ WT Msg UNLOCKSKED src STN1 dest  data STN1 checksum True
             send(Msg);
         }
 
-        public void send_addsked(string target_wt, DateTime t, int qrg, WTBANDS band, WTMODE mode, string call, string notes)
+        public void send_addsked(string target_wt, DateTime t, uint qrg, WTBANDS band, WTMODE mode, string call, string notes)
         {
             wtMessage Msg = new wtMessage(WTMESSAGES.ADDSKED, my_wtname, "", string.Concat(new string[]
             {

@@ -227,7 +227,7 @@ namespace wtKST
         private ToolStripMenuItem cmn_userlist_chatReviewT;
         private WinTest.wtStatus wts;
         private WTSkedDlg wtskdlg;
-        private int last_sked_qrg;
+        private uint last_sked_qrg;
 
         private class AS_Calls
         {

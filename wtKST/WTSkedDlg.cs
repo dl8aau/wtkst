@@ -13,7 +13,7 @@ namespace wtKST
     {
         public string target_wt { get { return (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).from; } }
         public DateTime sked_time { get { return validated_sked_time; } }
-        public int qrg { get { return (int)this.num_frequency.Value; } }
+        public uint qrg { get { return (uint)this.num_frequency.Value; } }
         public WinTest.WTBANDS band { get { return convert_band(this.cb_band.SelectedItem as MainDlg.bandinfo); }  }
         public WinTest.WTMODE mode { get { return this.cb_mode.SelectedItem.Equals("SSB") ? WinTest.WTMODE.ModeSSB : WinTest.WTMODE.ModeCW; } }
         public string call { get { return this.tb_Call.Text; } }
@@ -22,7 +22,7 @@ namespace wtKST
         private DateTime current_time, validated_sked_time;
 
         public WTSkedDlg(String call, IList<WinTest.wtStatus.wtStat> wts,
-            IList<MainDlg.bandinfo> band_info, string notes, int last_freq = 0)
+            IList<MainDlg.bandinfo> band_info, string notes, uint last_freq = 0)
         {
             InitializeComponent();
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
@@ -48,7 +48,7 @@ namespace wtKST
 
             // use a good starting point for frequency - if not passed in constructor, use first station radio frequency
             if(last_freq == 0)
-                this.num_frequency.Value = (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000;
+                this.num_frequency.Value = (decimal)((this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000UL);
             else
                 this.num_frequency.Value = last_freq;
 
@@ -83,9 +83,9 @@ namespace wtKST
         {
             // check if qsy and radio frequency are inside the selected band
             this.bt_qsyqrg.Enabled = ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
-                (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).passfreq / 1000));
+                (int)(this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).passfreq / 1000));
             this.bt_radioqrg.Enabled = ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
-                (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000));
+                (int)(this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000));
         }
 
         private void cb_band_SelectedIndexChanged(object sender, EventArgs e)
@@ -98,9 +98,9 @@ namespace wtKST
                 foreach (var cb_stat in cb_station.Items)
                 {
                     if ( ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
-                          (cb_stat as WinTest.wtStatus.wtStat).freq / 1000)) ||
+                          (int)(cb_stat as WinTest.wtStatus.wtStat).freq / 1000)) ||
                          ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
-                          (cb_stat as WinTest.wtStatus.wtStat).passfreq / 1000)) )
+                          (int)(cb_stat as WinTest.wtStatus.wtStat).passfreq / 1000)) )
                     {
                         cb_station.SelectedItem = cb_stat;
                         break;
