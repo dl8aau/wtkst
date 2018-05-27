@@ -14,8 +14,8 @@ namespace WinTest
             public string from { get; set; }
             public string band;
             public string mode;
-            public ulong freq;
-            public ulong passfreq;
+            public ulong freq; // current radio frequency in Hz
+            public ulong passfreq; // current passfrequency in Hz
             public DateTime timestamp;
 
             public wtStat(string from, string band, string mode, ulong freq, ulong passfreq)
@@ -66,8 +66,12 @@ namespace WinTest
                 //Console.WriteLine("STATUS: from " + e.Msg.Src + " band " + band + " mode " + mode +
                 //    " freq " + data[4] + " pass " + data[8]);
                 int index = _wtStatusList.FindIndex(x => x.from == e.Msg.Src );
-                wtStat w = new wtStat(e.Msg.Src, band, mode, 
-                    Convert.ToUInt64(data[4])*100UL, Convert.ToUInt64(data[8])*100UL);
+                ulong freq, passfreq;
+                if (!UInt64.TryParse(data[4], out freq))
+                    freq = 0;
+                if (!UInt64.TryParse(data[8], out passfreq))
+                    passfreq = 0;
+                wtStat w = new wtStat(e.Msg.Src, band, mode, freq*100UL, passfreq*100UL);
                 if (index >= 0)
                 {
                     _wtStatusList[index] = w;
