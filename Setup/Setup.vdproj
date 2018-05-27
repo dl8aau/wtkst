@@ -15,20 +15,20 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_0A92FBCEAD1074C33C3EB8421CE29F19"
+        "OwnerKey" = "8:_E1FE572876094762A4D99AAFDF813752"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_0FD768D9404683F5102ADF427A7895A4"
+        "OwnerKey" = "8:_E1FE572876094762A4D99AAFDF813752"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_35A9088FD3CD4EDFB791EF1568F14FDA"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3B301A87C518DC06AED6163F710EF313"
-        "OwnerKey" = "8:_E1FE572876094762A4D99AAFDF813752"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_42C83D24B06EB78D687868A033B50566"
-        "OwnerKey" = "8:_E1FE572876094762A4D99AAFDF813752"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -76,13 +76,13 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_42C83D24B06EB78D687868A033B50566"
+        "OwnerKey" = "8:_0A92FBCEAD1074C33C3EB8421CE29F19"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_3B301A87C518DC06AED6163F710EF313"
+        "OwnerKey" = "8:_0FD768D9404683F5102ADF427A7895A4"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -197,20 +197,20 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_3B301A87C518DC06AED6163F710EF313"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0A92FBCEAD1074C33C3EB8421CE29F19"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:Telnet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:WinTest, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_3B301A87C518DC06AED6163F710EF313"
+                    "_0A92FBCEAD1074C33C3EB8421CE29F19"
                     {
-                    "Name" = "8:Telnet.dll"
+                    "Name" = "8:WinTest.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:Telnet.dll"
+            "SourcePath" = "8:WinTest.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
@@ -228,20 +228,20 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_42C83D24B06EB78D687868A033B50566"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_0FD768D9404683F5102ADF427A7895A4"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:WinTest, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+            "AssemblyAsmDisplayName" = "8:Telnet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_42C83D24B06EB78D687868A033B50566"
+                    "_0FD768D9404683F5102ADF427A7895A4"
                     {
-                    "Name" = "8:WinTest.dll"
+                    "Name" = "8:Telnet.dll"
                     "Attributes" = "3:512"
                     }
                 }
-            "SourcePath" = "8:WinTest.dll"
+            "SourcePath" = "8:Telnet.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_438329C0BEA74D969CFC50719E16053E"
@@ -394,7 +394,7 @@
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:3.01.0115"
+        "ProductVersion" = "8:3.01.0116"
         "Manufacturer" = "8:wtKST"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
