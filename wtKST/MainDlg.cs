@@ -2591,6 +2591,11 @@ namespace wtKST
                 if (yourControl.SelectedItems.Count > 0)
                 {
                     string call = yourControl.SelectedItems[0].SubItems[1].Text.Replace("(", "").Replace(")", "");
+                    if (call.Equals(MyCall))
+                    {
+                        // if we clicked on our own call use recipient call instead (in SubItems[3] column)
+                        call = yourControl.SelectedItems[0].SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
+                    }
                     return call;
                 }
             }
