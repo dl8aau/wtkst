@@ -33,3 +33,7 @@ $RECYCLE.BIN/
 *.pdb
 
 publish
+
+# Debug/Release directories
+**/Debug
+**/Release
