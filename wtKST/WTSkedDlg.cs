@@ -15,7 +15,7 @@ namespace wtKST
         public DateTime sked_time { get { return validated_sked_time; } }
         public uint qrg { get { return (uint)this.num_frequency.Value; } }
         public WinTest.WTBANDS band { get { return convert_band(this.cb_band.SelectedItem as MainDlg.bandinfo); }  }
-        public WinTest.WTMODE mode { get { return this.cb_mode.SelectedItem.Equals("SSB") ? WinTest.WTMODE.ModeSSB : WinTest.WTMODE.ModeCW; } }
+        public WinTest.WTMODE mode { get { return (this.cb_mode.SelectedItem != null && this.cb_mode.SelectedItem.Equals("SSB")) ? WinTest.WTMODE.ModeSSB : WinTest.WTMODE.ModeCW; } }
         public string call { get { return this.tb_Call.Text; } }
         public string notes { get { return this.tb_notes.Text; } }
 
