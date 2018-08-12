@@ -62,7 +62,7 @@ namespace wtKST
                                 Settings.Default.AS_Local_Active ? Settings.Default.AS_Local_Name : Settings.Default.AS_Server_Name, 
                                 string.Concat(new string[]
             {
-                qrg, ",", WCCheck.WCCheck.Cut(MyCall), ",", MyLoc, watchlist
+                qrg, ",", WCCheck.WCCheck.SanitizeCall(MyCall), ",", MyLoc, watchlist
             }));
             try
             {
@@ -211,8 +211,8 @@ namespace wtKST
             string qrg = qrg_from_settings();
             wtMessage Msg = new wtMessage(WTMESSAGES.ASSHOWPATH, Settings.Default.AS_My_Name,
                 Settings.Default.AS_Local_Active ? Settings.Default.AS_Local_Name : Settings.Default.AS_Server_Name,
-                string.Concat(new string[] { qrg, ",",  WCCheck.WCCheck.Cut(MyCall), ",",  MyLoc, ",",
-                    WCCheck.WCCheck.Cut(call), ",", loc }));
+                string.Concat(new string[] { qrg, ",",  WCCheck.WCCheck.SanitizeCall(MyCall), ",",  MyLoc, ",",
+                    WCCheck.WCCheck.SanitizeCall(call), ",", loc }));
             UdpClient client = new UdpClient();
             client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             client.Client.ReceiveTimeout = 10000;
