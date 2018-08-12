@@ -2143,7 +2143,7 @@ namespace wtKST
                 }
                 if (info.SubItem.Name == "AS")
                 {
-                    string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
+                    string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
                     string s = AS_if.GetNearestPlanes(call);
                     if (string.IsNullOrEmpty(s))
                     {
@@ -2235,11 +2235,11 @@ namespace wtKST
             {
                 AS_list.Clear();
 
-                string mycall = WCCheck.WCCheck.Cut(MyCall);
+                string mycall = WCCheck.WCCheck.SanitizeCall(MyCall);
 
                 // find visible users
                 string loc = lv_Calls.TopItem.SubItems[2].Text;
-                string dxcall = WCCheck.WCCheck.Cut(lv_Calls.TopItem.Text.TrimStart(
+                string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.TopItem.Text.TrimStart(
                     new char[] { '(' }).TrimEnd(new char[] { ')' }));
 
                 int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
@@ -2255,7 +2255,7 @@ namespace wtKST
                         if (lv_Calls.ClientRectangle.IntersectsWith(lv_Calls.Items[i].Bounds))
                         {
                             loc = lv_Calls.Items[i].SubItems[2].Text;
-                            dxcall = WCCheck.WCCheck.Cut(lv_Calls.Items[i].Text.TrimStart(
+                            dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Items[i].Text.TrimStart(
                                 new char[] { '(' }).TrimEnd(new char[] { ')' }));
                             qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
                             if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
@@ -2339,7 +2339,7 @@ namespace wtKST
                 if (info != null && info.SubItem != null)
                 {
                     string username = info.Item.Text.Replace("(", "").Replace(")", "");
-                    string call = WCCheck.WCCheck.Cut(username);
+                    string call = WCCheck.WCCheck.SanitizeCall(username);
 
                     if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act")
                     {
@@ -2417,7 +2417,7 @@ namespace wtKST
                     }
                     else if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
                     {
-                        string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
+                        string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
                         string s = AS_if.GetNearestPlanes(call);
                         if (string.IsNullOrEmpty(s))
                         {
@@ -2861,7 +2861,7 @@ namespace wtKST
             {
                 foreach (DataRow row in CALL.Rows)
                 {
-                    string dxcall = WCCheck.WCCheck.Cut(row["CALL"].ToString().TrimStart(
+                    string dxcall = WCCheck.WCCheck.SanitizeCall(row["CALL"].ToString().TrimStart(
                         new char[] { '(' }).TrimEnd(new char[] { ')' }));
                     string dxloc = row["LOC"].ToString();
                     watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
@@ -2880,7 +2880,7 @@ namespace wtKST
                     continue;
                 }
                 int errors = 0;
-                string mycall = WCCheck.WCCheck.Cut(MyCall);
+                string mycall = WCCheck.WCCheck.SanitizeCall(MyCall);
 
                 // here we make a local copy of the current AS_list
                 AS_Calls[] myAs_List;
