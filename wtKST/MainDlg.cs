@@ -847,7 +847,7 @@ namespace wtKST
             try
             {
                 // check if the message is already in the list
-                DataRow check_row = MSG.Rows.Find(new string[] { Row["TIME"].ToString(), Row["CALL"].ToString(), Row["MSG"].ToString() });
+                DataRow check_row = MSG.Rows.Find(new object[] { Row["TIME"], Row["CALL"], Row["MSG"] });
 
                 if (check_row != null)
                 {
