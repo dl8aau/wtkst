@@ -316,7 +316,31 @@ namespace WCCheck
             return (Math.Atan2(y, x) / Math.PI * 180.0 + 360.0) % 360.0;
         }
 
-		public static string Cut(string S)
+
+        /* SanitizeCall() tries to remove anything from .e. the KST user name that does not belong to a call sign (e.g. -2, -7 etc.)
+        */
+        public static string SanitizeCall(string S)
+        {
+            string result;
+            try
+            {
+                S.Trim().ToUpper();
+                if (S.IndexOf('-') >= 0)
+                {
+                    S = S.Remove(S.IndexOf('-'));
+                }
+                result = S;
+            }
+            catch
+            {
+                result = "";
+            }
+            return result;
+        }
+
+        /* Cut() tries to remove everything that does not belong to the inner call sign
+         */
+        public static string Cut(string S)
 		{
 			string result;
 			try
