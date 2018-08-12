@@ -5,13 +5,13 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
-[assembly: AssemblyVersion("3.1.1.16")]
+[assembly: AssemblyVersion("3.1.1.17")]
 [assembly: Debuggable(DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints | DebuggableAttribute.DebuggingModes.EnableEditAndContinue)]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCopyright("Copyright ©  2012 by DL2ALF")]
 [assembly: AssemblyDescription("ON4KST client with Win-Test support")]
-[assembly: AssemblyFileVersion("3.1.1.16")]
+[assembly: AssemblyFileVersion("3.1.1.17")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyTitle("wtKST")]
 [assembly: AssemblyTrademark("")]
