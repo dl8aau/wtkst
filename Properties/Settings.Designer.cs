@@ -56,7 +56,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("www.on4kst.org")]
+        [global::System.Configuration.DefaultSettingValueAttribute("www.on4kst.info")]
         public string KST_ServerName {
             get {
                 return ((string)(this["KST_ServerName"]));
