@@ -2645,7 +2645,11 @@ namespace wtKST
                     Console.WriteLine(msg_row["TIME"].ToString() + " " + msg_row["CALL"].ToString() + " -> " + msg_row["RECIPIENT"].ToString() + " " + msg_row["MSG"].ToString());
                     chat_review_table.Rows.Add(msg_row["TIME"], msg_row["MSG"]);
                 }
-                ChatReview cr = new ChatReview(chat_review_table, call);
+                // we need to sort by time - so that the newest entry is the first
+                DataView view = chat_review_table.DefaultView;
+                view.Sort = "TIME DESC";
+
+                ChatReview cr = new ChatReview(view, call);
                 cr.ShowDialog();
             }
         }

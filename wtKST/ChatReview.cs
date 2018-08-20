@@ -11,7 +11,7 @@ namespace wtKST
 {
     public partial class ChatReview : Form
     {
-        public ChatReview(DataTable table, string call)
+        public ChatReview(DataView table, string call)
         {
             InitializeComponent();
             this.dataGridView1.DataSource = table;
