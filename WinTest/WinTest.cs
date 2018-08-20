@@ -128,14 +128,14 @@ namespace WinTest
             // get checksum
             Checksum = bytes[Length - 1];
             byte sum = 0;
-            for (int i = 0; i < Length-1; i++)
+            for (int i = 0; i < Length - 1; i++)
                 sum += bytes[i];
             sum = (byte)(sum | 0x80);
             if (Checksum == sum)
                 HasChecksum = true;
             else
                 HasChecksum = false;
-            }
+        }
 
         public byte[] ToBytes()
         {

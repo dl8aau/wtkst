@@ -290,7 +290,7 @@ namespace WCCheck
             double R = Radius;
             double dLat = mylat - lat;
             double dLon = mylon - lon;
-            double a = Math.Sin(dLat / 180.0 * Math.PI / 2.0) * Math.Sin(dLat / 180.0 * Math.PI / 2.0) 
+            double a = Math.Sin(dLat / 180.0 * Math.PI / 2.0) * Math.Sin(dLat / 180.0 * Math.PI / 2.0)
                 + Math.Sin(dLon / 180.0 * Math.PI / 2.0) * Math.Sin(dLon / 180.0 * Math.PI / 2.0)
                 * Math.Cos(mylat / 180.0 * Math.PI) * Math.Cos(lat / 180.0 * Math.PI);
             return R * 2.0 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1.0 - a));
@@ -311,7 +311,7 @@ namespace WCCheck
             double dLat = lat - mylat;
             double dLon = lon - mylon;
             double y = Math.Sin(dLon / 180.0 * Math.PI) * Math.Cos(lat / 180.0 * Math.PI);
-            double x = Math.Cos(mylat / 180.0 * Math.PI) * Math.Sin(lat / 180.0 * Math.PI) 
+            double x = Math.Cos(mylat / 180.0 * Math.PI) * Math.Sin(lat / 180.0 * Math.PI)
                 - Math.Sin(mylat / 180.0 * Math.PI) * Math.Cos(lat / 180.0 * Math.PI) * Math.Cos(dLon / 180.0 * Math.PI);
             return (Math.Atan2(y, x) / Math.PI * 180.0 + 360.0) % 360.0;
         }
