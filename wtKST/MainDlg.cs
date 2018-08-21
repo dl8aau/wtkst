@@ -1426,6 +1426,11 @@ namespace wtKST
                 try
                 {
                     tw.Connect(Settings.Default.KST_ServerName, Convert.ToInt32(Settings.Default.KST_ServerPort));
+                    if (!tw.Connected)
+                    {
+                        Say("Connection failed...");
+                        return;
+                    }
                     tw.Receive();
                     KSTState = MainDlg.KST_STATE.WaitLogin;
                     lock (CALL)

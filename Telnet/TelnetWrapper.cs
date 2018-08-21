@@ -162,21 +162,29 @@ namespace De.Mud.Telnet
 					SocketType.Stream, ProtocolType.Tcp);
 
 				// Connect to the remote endpoint.
-				socket.BeginConnect(remoteEP, 
+				socket.BeginConnect(remoteEP,
 					new AsyncCallback(ConnectCallback), socket);
 				connectDone.WaitOne();
-				Reset();
-                // Clear LastError
-                LastError = "";
+				if (!socket.Connected)
+				{
+					// send the Disconnected event to parent including a LastError messag, if one
+					Disconnected(this, new TelnetWrapperDisconnctedEventArgs(LastError));
+				}
+				else
+				{
+					Reset();
+					// Clear LastError
+					LastError = "";
+				}
 			}
 			catch (Exception e)
 			{
-                LastError = e.Message;
+				LastError = e.Message;
 				Disconnect();
-                throw;
-            }
+				throw;
+			}
 		}
-  
+
 		/// <summary>
 		/// Sends a command to the remote host. A newline is appended.
 		/// </summary>
@@ -253,17 +261,19 @@ namespace De.Mud.Telnet
 
 				// Complete the connection.
 				client.EndConnect(ar);
-
-				// Signal that the connection has been made.
-				connectDone.Set();
-			} 
-			catch (Exception e) 
+			}
+			catch (Exception e)
 			{
                 LastError = e.Message;
 				Disconnect();
-//                throw(new ApplicationException("Unable to connect to " + client.RemoteEndPoint.ToString(), e));
+                //throw (new ApplicationException("Unable to connect", e));
 			}
-		}
+            finally
+            {
+                // unblock the caller
+                connectDone.Set();
+            }
+        }
 
 		/// <summary>
 		/// Begins receiving for the data coming from the socket.
