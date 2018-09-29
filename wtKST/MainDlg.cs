@@ -373,6 +373,7 @@ namespace wtKST
                     {
                         tw.Connect(Settings.Default.KST_ServerName, 23000);
                         Console.WriteLine("connect 23000 " + tw.Connected);
+                        MainDlg.Log.WriteMessage("connect to on4kst 23000 ");
                         tw.Receive();
                         KSTState = MainDlg.KST_STATE.WaitTelnetUserName;
                     }
@@ -635,16 +636,18 @@ namespace wtKST
                                 // If name not set... take it from ON4KST
                                 if (Settings.Default.KST_Name.Length == 0)
                                 {
-                                Settings.Default.KST_Name = subs[6];
+                                    Settings.Default.KST_Name = subs[6];
                                 }
                                 else
                                 {
-                                    if (!Settings.Default.KST_Name.Equals(subs[6]))
+                                    if (!Settings.Default.KST_Name.Trim().Equals(subs[6]))
                                     {
                                         SendMyName = true;
+                                        MainDlg.Log.WriteMessage("KST Name " + Settings.Default.KST_Name + " not equal to name stored on server " + subs[6]);
                                         // we cannot set the name on KST side using port 23001 - no /setname there
                                         // but we can do this through the regular telnet port 23000, so disconnect and do it there
                                         tw.Disconnect();
+                                        MainDlg.Log.WriteMessage("disconnect and connect by telnet to set name");
                                         break;
                                     }
                                 }
@@ -744,7 +747,8 @@ namespace wtKST
                 {
                     if (SendMyName)
                     {
-                        this.tw.Send("/set name " + Settings.Default.KST_Name + "\r");
+                        this.tw.Send("/set name " + Settings.Default.KST_Name.Trim() + "\r");
+                        MainDlg.Log.WriteMessage("send name " + Settings.Default.KST_Name.Trim() + " to server");
                     }
                     this.KSTState = MainDlg.KST_STATE.WaitTelnetSetName;
                 }
