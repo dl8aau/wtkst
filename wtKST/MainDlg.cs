@@ -2647,7 +2647,7 @@ namespace wtKST
                 chat_review_table.Columns.Add("Time", typeof(DateTime));
                 chat_review_table.Columns.Add("Message");
 
-                string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
+                string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", WCCheck.WCCheck.Cut(call));
                 DataRow[] selectRow = MSG.Select(findCall);
                 foreach (var msg_row in selectRow)
                 {
