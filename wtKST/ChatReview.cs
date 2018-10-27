@@ -53,5 +53,22 @@ namespace wtKST
             if (this.dataGridView1.SelectedCells.Count != 0)
                 this.dataGridView1.ClearSelection();
         }
+
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            foreach (DataGridViewRow Myrow in dataGridView1.Rows)
+            {
+                if (Myrow.Cells["From"].Value.ToString().Equals(this.Text)) // to or from Call
+                {
+                    // green 200
+                    Myrow.DefaultCellStyle.BackColor = Color.FromArgb(0xFF, 0xA5, 0xD6, 0xA7);
+                }
+                else
+                {
+                    // green 50
+                    Myrow.DefaultCellStyle.BackColor = Color.FromArgb(0xFF, 0xE8, 0xF5, 0xE9);
+                }
+            }
+        }
     }
 }

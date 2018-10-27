@@ -2645,14 +2645,16 @@ namespace wtKST
             {
                 DataTable chat_review_table = new DataTable("ChatReviewTable");
                 chat_review_table.Columns.Add("Time", typeof(DateTime));
+                chat_review_table.Columns.Add("From");
                 chat_review_table.Columns.Add("Message");
 
-                string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", WCCheck.WCCheck.Cut(call));
+                string call_cut = WCCheck.WCCheck.Cut(call);
+                string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call_cut);
                 DataRow[] selectRow = MSG.Select(findCall);
                 foreach (var msg_row in selectRow)
                 {
                     Console.WriteLine(msg_row["TIME"].ToString() + " " + msg_row["CALL"].ToString() + " -> " + msg_row["RECIPIENT"].ToString() + " " + msg_row["MSG"].ToString());
-                    chat_review_table.Rows.Add(msg_row["TIME"], msg_row["MSG"]);
+                    chat_review_table.Rows.Add(msg_row["TIME"], msg_row["CALL"], msg_row["MSG"]);
                 }
                 // we need to sort by time - so that the newest entry is the first
                 DataView view = chat_review_table.DefaultView;
