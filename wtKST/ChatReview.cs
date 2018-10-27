@@ -18,6 +18,8 @@ namespace wtKST
             this.Text = call;
             // Message column should go full width
             this.dataGridView1.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            // Time column does not need to display date..
+            this.dataGridView1.Columns["Time"].DefaultCellStyle.Format = "HH:mm:ss";
         }
 
         private void dataGridView1_Enter(object sender, EventArgs e)
