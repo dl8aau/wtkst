@@ -16,6 +16,8 @@ namespace wtKST
             InitializeComponent();
             this.dataGridView1.DataSource = table;
             this.Text = call;
+            // Message column should go full width
+            this.dataGridView1.Columns["Message"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
         private void dataGridView1_Enter(object sender, EventArgs e)
