@@ -252,7 +252,7 @@ namespace wtKST
             }
             MainDlg.Log.FileFormat = "wtKST_{0:d}.log";
             MainDlg.Log.MessageFormat = "{0:u}: {1}";
-            MainDlg.Log.WriteMessage("Startup.");
+            MainDlg.Log.WriteMessage("Startup Version " + aboutBox1.AssemblyVersion.ToString());
             if (!File.Exists("Telnet.dll"))
             {
                 DLLNotLoaded = true;
