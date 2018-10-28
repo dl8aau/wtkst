@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace wtKST
@@ -67,6 +68,57 @@ namespace wtKST
                 {
                     // green 50
                     Myrow.DefaultCellStyle.BackColor = Color.FromArgb(0xFF, 0xE8, 0xF5, 0xE9);
+                }
+            }
+        }
+
+        // https://stackoverflow.com/a/38791349
+        private void dataGridView1_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.Value == null) return;
+
+            StringFormat sf = StringFormat.GenericDefault;
+            sf.FormatFlags = sf.FormatFlags | StringFormatFlags.MeasureTrailingSpaces | StringFormatFlags.DisplayFormatControl;
+            e.PaintBackground(e.CellBounds, true);
+
+            string text = e.Value.ToString();
+            // https://stackoverflow.com/a/11708952 - strange hack... width is width(text+text) - width(text)
+            SizeF textSize = e.Graphics.MeasureString(text, e.CellStyle.Font, e.CellBounds.Width, sf);
+            float textHeight = textSize.Height;
+            float textWidth = e.Graphics.MeasureString(text + text, e.CellStyle.Font, e.CellBounds.Width, sf).Width 
+                - textSize.Width;
+            if (e.ColumnIndex == dataGridView1.Columns["Message"].Index)
+            {
+                // only deal with the second (message) column
+                // find all matches of (nn.)nnn - at least 3 digits
+                var match = Regex.Match(text, @"[0-9]*[\.,]*[0-9][0-9][0-9]+");
+
+                if (match.Success)
+                {
+                    using (
+                        Brush br = new SolidBrush(this.dataGridView1.ForeColor),
+                              fillBrush = new SolidBrush(Color.Yellow))
+                    {
+                        int keyPos = match.Index;
+                        float textMetricWidth = 0;
+                        if (keyPos >= 1)
+                        {
+                            string textMetric = text.Substring(0, keyPos);
+                            textMetricWidth = e.Graphics.MeasureString(textMetric + textMetric, e.CellStyle.Font, e.CellBounds.Width, sf).Width -
+                                e.Graphics.MeasureString(textMetric, e.CellStyle.Font, e.CellBounds.Width, sf).Width;
+                        }
+
+                        SizeF keySize = e.Graphics.MeasureString(text.Substring(keyPos, match.Length) + text.Substring(keyPos, match.Length), e.CellStyle.Font, e.CellBounds.Width, sf) -
+                            e.Graphics.MeasureString(text.Substring(keyPos, match.Length), e.CellStyle.Font, e.CellBounds.Width, sf);
+                        float left = e.CellBounds.Left + (keyPos <= 0 ? 0 : textMetricWidth) + 2;
+                        RectangleF keyRect = new RectangleF(left, e.CellBounds.Top + 1, keySize.Width, e.CellBounds.Height - 2);
+
+
+                        e.Graphics.FillRectangle(fillBrush, keyRect);
+
+                        e.Graphics.DrawString(text, e.CellStyle.Font, br, new PointF(e.CellBounds.Left + 2, e.CellBounds.Top + (e.CellBounds.Height - textHeight) / 2), sf);
+                        e.Handled = true;
+                    }
                 }
             }
         }
