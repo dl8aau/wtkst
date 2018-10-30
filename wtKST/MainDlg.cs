@@ -238,6 +238,7 @@ namespace wtKST
         };
 
         private List<AS_Calls> AS_list = new List<AS_Calls>();
+        private string AS_watchlist = "";
 
 
         public MainDlg()
@@ -2237,8 +2238,11 @@ namespace wtKST
 
         private void fill_AS_list()
         {
-            if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.TopItem == null)
+            if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.TopItem == null || lv_Calls.Items.Count == 0)
                 return;
+
+            string watchlist = "";
+
             // called if the user list changes
             lock (AS_list)
             {
@@ -2247,39 +2251,39 @@ namespace wtKST
                 string mycall = WCCheck.WCCheck.SanitizeCall(MyCall);
 
                 // find visible users
-                string loc = lv_Calls.TopItem.SubItems[2].Text;
-                string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.TopItem.Text.TrimStart(
-                    new char[] { '(' }).TrimEnd(new char[] { ')' }));
-
-                int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
-                if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
-                            && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist)
-                            && !mycall.Equals(dxcall))
-                    AS_list.Add(new AS_Calls( dxcall, loc ));
-
-                try
+                for (int i = 0; i < lv_Calls.Items.Count; i++)
                 {
-                    for (int i = lv_Calls.TopItem.Index + 1; i < lv_Calls.Items.Count; i++)
+                    try
                     {
-                        if (lv_Calls.ClientRectangle.IntersectsWith(lv_Calls.Items[i].Bounds))
+                        string dxloc = lv_Calls.Items[i].SubItems[2].Text;
+                        string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Items[i].Text.TrimStart(
+                            new char[] { '(' }).TrimEnd(new char[] { ')' }));
+                        int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, dxloc);
+                        if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
+                                    && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist)
+                                    && !mycall.Equals(dxcall))
                         {
-                            loc = lv_Calls.Items[i].SubItems[2].Text;
-                            dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Items[i].Text.TrimStart(
-                                new char[] { '(' }).TrimEnd(new char[] { ')' }));
-                            qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
-                            if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
-                                        && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist)
-                                        && !mycall.Equals(dxcall))
-                                AS_list.Add(new AS_Calls( dxcall, loc ));
+                            watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
+                            if (i == lv_Calls.TopItem.Index ||
+                                lv_Calls.ClientRectangle.IntersectsWith(lv_Calls.Items[i].Bounds))
+                            {
+                                AS_list.Add(new AS_Calls(dxcall, dxloc));
+                            }
                         }
                         else
                         {
                             break;
                         }
                     }
+                    catch
+                    {
+                    }
                 }
-                catch
-                { }
+            }
+
+            lock(AS_watchlist)
+            {
+                AS_watchlist = watchlist;
             }
         }
 
@@ -2870,19 +2874,14 @@ namespace wtKST
          */
         private void AS_send_ASWATCHLIST()
         {
-            //return; // FIXME!!! altes AS
-            string watchlist = "";
-            lock (CALL)
+            if (AS_watchlist.Equals(""))
+                return;
+
+            lock (AS_watchlist)
             {
-                foreach (DataRow row in CALL.Rows)
-                {
-                    string dxcall = WCCheck.WCCheck.SanitizeCall(row["CALL"].ToString().TrimStart(
-                        new char[] { '(' }).TrimEnd(new char[] { ')' }));
-                    string dxloc = row["LOC"].ToString();
-                    watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
-                }
+                string mycall = WCCheck.WCCheck.SanitizeCall(MyCall);
+                AS_if.send_watchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
             }
-            AS_if.send_watchlist(watchlist, MyCall, Settings.Default.KST_Loc);
         }
 
         private void bw_GetPlanes_DoWork(object sender, DoWorkEventArgs e)
