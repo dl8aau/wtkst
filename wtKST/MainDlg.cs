@@ -2272,7 +2272,6 @@ namespace wtKST
                         }
                         else
                         {
-                            break;
                         }
                     }
                     catch
