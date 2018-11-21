@@ -1,0 +1,103 @@
+3.1.1.22
+
+- rework Airscout watchlist Now only the calls from the KST user list will be in the watchlist, if they are >300km and closer than the limit set in options for Airplane scatter and visible (e.g. not in the Win-Test log or only qrv on a band not shown)
+
+3.1.1.20
+
+- bug: Spaces at end of KST name trigger an endless loop trying to set the name. Filter white space and improve logging
+- Highlight numbers that may be frequencies in ChatRevie
+- bug: fix users that use calls with extensions (e.g. "F6DRO-QRL")
+- ChatReview should contain Sender of message
+- include wtKST version in log
+
+3.1.1.19
+
+- Chat review starts with latest message
+- fix hard hang when the connection to the server could not be established (so very likely to be triggered by autoconnect on a shaky network)
+
+3.1.1.18
+
+- URL on4kst.org -> on4kst.info
+
+3.1.1.17
+
+- if we clicked on our own call (in mymsg and msg list) use recipient call instead of (useless) own
+- fix null pointer exception in get mode for wtSked dialog
+- try to preserve call sign better when passing to e.g. Airscout (e.g. /p is not stripped off anymore)
+- fix KST username is passed to Sked dialog without filtering
+- fix issue in KST_Process_new_message() probably linked to regional settings
+
+3.1.1.16
+
+- fix skeds with frequencies >10GHz Use ulong or uint and increase the limit to 300GHz for
+- parse Win-Test Status with tryparse to avoid crash Could be a fixed for the problem see
+- context menu for sked and review also in msg and mymsg listview
+- fix "show beacons" Datatable had more entries than before that were not updated correctly
+
+3.1.1.15:
+
+- Skeds did not work in XP (different socket handling). Reworked
+- fix crash when "opon" is used in Win-Test
+- fix regression: connection was not tested anymore (so disconnection was not detected)
+- Focus handling (regression due to Win-Test Sked dialog)
+- add option to use a "local" Airscout for double click action and watchlist
+
+3.1.1.14:
+
+- show time for "red" planes in AS column
+- calculate AS planes only for users currently visible
+
+3.1.1.13
+- Changing locator through options already worked in previous version, this version supports changing name, too: it uses the "old" telnet
+interface for this (so it is an ugly hack - but I don't see any alternative)
+- trying to improve compatibility to Mono. As far as I know it starts and is mostly usable (main problem is the Listview used that is not a
+Windows form element, but a native element from the Windows Explorer that behaves differently on Mono)
+- User list now has an additional entry in the pop-up menu: Sked in Win-Test. You can send a sked to a station in the Win-Test network. The user then can automatically configure the TRX to the frequency passed. Unfortunately the locator is not transferred that way (only shown in notes)
+- Update interval for user list removed - useless
+
+
+3.1.1.12
+
+- QSOs in my message window use color per call
+- qrv.xml update based on recent qrv.xdt (DL0GTH)
+- qrv.xml moved to wtKST directory (not into the versioned subdirectory anymore)
+- qrv.xml is set to "qrv" when in wt Log
+- Calls,marked as "not qrv" (black) will be hidden like the "worked " (green) ones
+- bug: AS field – mouse right press - very sensitive to mouse movement, window closes quickly, sometimes appears above the top of the monitor.
+- Store positions of splitters
+
+3.1.1.11
+
+- support other commands than just "/cq"
+- New: Release build now with Debugging information (so stack trace yields something meaningful)
+
+3.1.1.10
+
+- my messages: mouseover displays long lines (as for "normal" messages
+- bug fix:  wt Log correctly synchronized again - fix regression
+- bug fix: "M1CRO/P-23" caused exception in user list
+- bug fix: Regression in 3.1.1.6 - User list moves on updates - "useless" code is needed nevertheless, now it doesn't move on its own
+- set own Locator from settings - name is not so easy... (so currently grayed out)
+
+3.1.1.9
+
+- bug fix: text entry field blinks if in disconnected state
+- Win-Test Support for everyone
+
+3.1.1.8
+- implement simple "About" dialog
+
+3.1.1.7
+
+- bug fix: my messages list is sorted wrong (oldest messages at top)
+- bug fix:  </> swapped for too far/too close
+- store window position only if window is not minimized
+
+3.1.1.6
+
+- first test of Windows installer
+- buf fix:: OK2K or YU7A would match OK2OE or YU7ACO (regression)
+- bug fix: changes in the Options dialog must not change properties (settings) directly, but only after OK is clicked
+- Less flicker on Userlist update (use double buffering)
+- bug fix: OZ1DLD/P would not turn green
+- better visualazation of AS column
