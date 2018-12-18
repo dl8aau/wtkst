@@ -2418,7 +2418,7 @@ namespace wtKST
                 {
                     if (info.SubItem.Name == "Call" /*|| info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act"*/)
                     {
-                        string call = WCCheck.WCCheck.Cut(info.Item.Text.Replace("(", "").Replace(")", ""));
+                        string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
                         string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
                         DataRow[] selectRow = MSG.Select(findCall);
 
@@ -2651,7 +2651,7 @@ namespace wtKST
                 chat_review_table.Columns.Add("From");
                 chat_review_table.Columns.Add("Message");
 
-                string call_cut = WCCheck.WCCheck.Cut(call);
+                string call_cut = WCCheck.WCCheck.SanitizeCall(call);
                 string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call_cut);
                 DataRow[] selectRow = MSG.Select(findCall);
                 foreach (var msg_row in selectRow)
