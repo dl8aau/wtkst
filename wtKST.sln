@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wtKST", "wtKST.csproj", "{329EC555-7D88-4D0D-900E-0E8071A88E7D}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "wtKST Setup", "Setup\Setup.vdproj", "{B7A0E091-BE5F-4A67-8802-2641EA126562}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telnet", "Telnet\Telnet.csproj", "{C0A19260-2CE0-4253-80CB-8579BCFDDED3}"
 EndProject
@@ -27,13 +25,6 @@ Global
 		{329EC555-7D88-4D0D-900E-0E8071A88E7D}.Release|x86.ActiveCfg = Release|x86
 		{329EC555-7D88-4D0D-900E-0E8071A88E7D}.Release|x86.Build.0 = Release|x86
 		{329EC555-7D88-4D0D-900E-0E8071A88E7D}.Release|x86.Deploy.0 = Release|x86
-		{B7A0E091-BE5F-4A67-8802-2641EA126562}.Debug|Any CPU.ActiveCfg = Debug
-		{B7A0E091-BE5F-4A67-8802-2641EA126562}.Debug|Any CPU.Build.0 = Debug
-		{B7A0E091-BE5F-4A67-8802-2641EA126562}.Debug|x86.ActiveCfg = Debug
-		{B7A0E091-BE5F-4A67-8802-2641EA126562}.Release|Any CPU.ActiveCfg = Release
-		{B7A0E091-BE5F-4A67-8802-2641EA126562}.Release|Any CPU.Build.0 = Release
-		{B7A0E091-BE5F-4A67-8802-2641EA126562}.Release|x86.ActiveCfg = Release
-		{B7A0E091-BE5F-4A67-8802-2641EA126562}.Release|x86.Build.0 = Release
 		{C0A19260-2CE0-4253-80CB-8579BCFDDED3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C0A19260-2CE0-4253-80CB-8579BCFDDED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0A19260-2CE0-4253-80CB-8579BCFDDED3}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -53,6 +44,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CE3E27C6-D6B6-4607-B51F-2A22F3F393C1}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = wtKST.csproj
