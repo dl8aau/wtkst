@@ -71,8 +71,6 @@ namespace wtKST
 
         private Queue<string> MsgQueue = new Queue<string>();
 
-        private string MyCall = "DL2ALF";
-
         private MainDlg.KST_STATE KSTState = KST_STATE.Standby;
 
         private MainDlg.USER_STATE UserState;
@@ -781,7 +779,6 @@ namespace wtKST
         private void KST_Receive_MSG(string s)
         {
             string[] msg = s.Split('|'); ;
-            MyCall = Settings.Default.KST_UserName.ToUpper();
             try
             {
                 MainDlg.Log.WriteMessage("KST message: " + s);
@@ -942,6 +939,7 @@ namespace wtKST
                     lv_Msg.Items[current_index].BackColor = Color.Ivory;
                 else
                     lv_Msg.Items[current_index].BackColor = Color.FromArgb(0xAFBBE9); //approx. Pale cornflower blue or LightSteelBlue?
+                string MyCall = Settings.Default.KST_UserName.ToUpper();
                 if (Row["RECIPIENT"].ToString().Equals(MyCall))
                 {
                     lv_Msg.Items[current_index].BackColor = Color.Coral;
@@ -1247,6 +1245,7 @@ namespace wtKST
 
         private void KST_Process_MyCallAway()
         {
+            string MyCall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
             DataRow row = CALL.Rows.Find(MyCall);
             if (row != null)
             {
@@ -2248,7 +2247,7 @@ namespace wtKST
             {
                 AS_list.Clear();
 
-                string mycall = WCCheck.WCCheck.SanitizeCall(MyCall);
+                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
 
                 // find visible users
                 for (int i = 0; i < lv_Calls.Items.Count; i++)
@@ -2366,7 +2365,7 @@ namespace wtKST
                     {
                         string loc = info.Item.SubItems[2].Text;
 
-                        AS_if.show_path(call, loc, MyCall, Settings.Default.KST_Loc);
+                        AS_if.show_path(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
                     }
                     if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
                     {
@@ -2464,7 +2463,7 @@ namespace wtKST
             if (info != null && info.Item != null)
             {
                 string call = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
-                if (call.Equals(MyCall))
+                if (call.Equals(Settings.Default.KST_UserName.ToUpper()))
                 {
                     // if we would be sending to ourselves, use recipient call instead
                     call = info.Item.SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
@@ -2498,7 +2497,7 @@ namespace wtKST
             if (info != null && info.Item != null)
             {
                 string call = info.Item.SubItems[1].Text.Replace("(", "").Replace(")", "");
-                if (call.Equals(MyCall))
+                if (call.Equals(Settings.Default.KST_UserName.ToUpper()))
                 {
                     // if we would be sending to ourselves, use recipient call instead
                     call = info.Item.SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
@@ -2603,7 +2602,7 @@ namespace wtKST
                 if (yourControl.SelectedItems.Count > 0)
                 {
                     string call = yourControl.SelectedItems[0].SubItems[1].Text.Replace("(", "").Replace(")", "");
-                    if (call.Equals(MyCall))
+                    if (call.Equals(Settings.Default.KST_UserName.ToUpper()))
                     {
                         // if we clicked on our own call use recipient call instead (in SubItems[3] column)
                         call = yourControl.SelectedItems[0].SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
@@ -2878,7 +2877,7 @@ namespace wtKST
 
             lock (AS_watchlist)
             {
-                string mycall = WCCheck.WCCheck.SanitizeCall(MyCall);
+                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
                 AS_if.send_watchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
             }
         }
@@ -2893,7 +2892,7 @@ namespace wtKST
                     continue;
                 }
                 int errors = 0;
-                string mycall = WCCheck.WCCheck.SanitizeCall(MyCall);
+                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
 
                 // here we make a local copy of the current AS_list
                 AS_Calls[] myAs_List;
