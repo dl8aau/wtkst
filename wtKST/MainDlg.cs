@@ -3,9 +3,6 @@
 // to debug with KST logs
 #define DEBUG_INJECT_KST
 #endif
-
-using De.Mud.Telnet;
-using Net.Graphite.Telnet;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,34 +25,10 @@ namespace wtKST
 {
     public class MainDlg : Form
     {
-        public enum KST_STATE
-        {
-            Disconnected,
-            Disconnecting,
-            Standby,
-            WaitLogin,
-            WaitLogstat,
-            WaitSPR,
-
-            WaitTelnetConnect,
-            WaitTelnetUserName,
-            WaitTelnetPassword,
-            WaitTelnetChat,
-            WaitTelnetSetName,
-            WaitReconnect,
-
-            // must be last
-            Connected = 128,
-        }
-
-        public enum USER_STATE
-        {
-            Here,
-            Away
-        }
 
         private static readonly string[] BANDS = new string[] { "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G" };
-        public DataTable MSG = new DataTable("MSG");
+
+        private KSTcom KST;
 
         public DataTable MYMSG = new DataTable("MYMSG");
 
@@ -67,21 +40,9 @@ namespace wtKST
 
         private wtKST.AirScoutInterface AS_if;
 
-        private bool DLLNotLoaded = false;
-
         private Point OldMousePos = new Point(0, 0);
 
         public static LogWriter Log = new LogWriter(Directory.GetParent(Application.LocalUserAppDataPath).ToString());
-
-        private TelnetWrapper tw;
-
-        private string KSTBuffer = "";
-
-        private Queue<string> MsgQueue = new Queue<string>();
-
-        private MainDlg.KST_STATE KSTState = KST_STATE.Standby;
-
-        private MainDlg.USER_STATE UserState;
 
         private IContainer components = null;
 
@@ -199,8 +160,6 @@ namespace wtKST
 
         private ToolStripMenuItem cmi_Notify_Quit;
 
-        private System.Windows.Forms.Timer ti_Receive;
-
         private System.Windows.Forms.Timer ti_Error;
 
         private ComboBox cb_Command;
@@ -209,8 +168,6 @@ namespace wtKST
 
         private System.Windows.Forms.Timer ti_Reconnect;
 
-        private System.Timers.Timer ti_Linkcheck;
-
         private ColumnHeader ch_AS;
 
         private ToolTip tt_Info;
@@ -218,16 +175,10 @@ namespace wtKST
         private BackgroundWorker bw_GetPlanes;
 
         private bool WinTestLocatorWarning = false;
-        private bool msg_latest_first = false;
         private bool hide_away = false;
         private bool sort_by_dir = false;
         private bool ignore_inactive = false;
         private bool hide_worked = false;
-        private DateTime latestMessageTimestamp = DateTime.MinValue;
-        private bool latestMessageTimestampSet = false;
-        private bool CheckStartUpAway = true;
-        private bool SendMyLocator = false;
-        private bool SendMyName = false;
         private ContextMenuStrip cmn_userlist;
         private ToolStripMenuItem cmn_userlist_wtsked;
         private ToolStripMenuItem cmn_userlist_chatReviewT;
@@ -278,33 +229,23 @@ namespace wtKST
             MainDlg.Log.FileFormat = "wtKST_{0:d}.log";
             MainDlg.Log.MessageFormat = "{0:u}: {1}";
             MainDlg.Log.WriteMessage("Startup Version " + aboutBox1.AssemblyVersion.ToString());
-            if (!File.Exists("Telnet.dll"))
-            {
-                DLLNotLoaded = true;
-            }
             Application.Idle += new EventHandler(OnIdle);
             Application.ApplicationExit += new EventHandler(OnApplicationExit);
 
             cb_Command.MouseWheel += new MouseEventHandler(cb_Command_MouseWheel);
-            MSG.Columns.Add("TIME", typeof(DateTime));
-            MSG.Columns.Add("CALL");
-            MSG.Columns.Add("NAME");
-            MSG.Columns.Add("MSG");
-            MSG.Columns.Add("RECIPIENT");
-            DataColumn[] MSGkeys = new DataColumn[]
-            {
-                MSG.Columns["TIME"],
-                MSG.Columns["CALL"],
-                MSG.Columns["MSG"]
-            };
-            MSG.PrimaryKey = MSGkeys;
+
+            KST = new KSTcom();
+
+            KST.process_new_message += KST_Process_new_message;
+            KST.process_user_update += KST_Process_user_update;
+            KST.update_user_state += onUserStateChanged;
 
             CALL.Columns.Add("CALL");
             CALL.Columns.Add("NAME");
             CALL.Columns.Add("LOC");
             CALL.Columns.Add("TIME", typeof(DateTime));
             CALL.Columns.Add("CONTACTED", typeof(int));
-            CALL.Columns.Add("LOGINTIME", typeof(DateTime));
+            CALL.Columns.Add("RECENTLOGIN", typeof(bool));
             CALL.Columns.Add("ASLAT", typeof(double));
             CALL.Columns.Add("ASLON", typeof(double));
             CALL.Columns.Add("QRB", typeof(int));
@@ -331,7 +272,7 @@ namespace wtKST
             AS_if = new wtKST.AirScoutInterface(ref bw_GetPlanes);
             if (Settings.Default.KST_AutoConnect)
             {
-                KST_Connect();
+                KST.Connect();
             }
             wts = new WinTest.wtStatus();
 
@@ -359,7 +300,6 @@ namespace wtKST
             int i = 0;
             while (++sr_debug_linecnt < sr_debug_first_line && !sr_debug.EndOfStream)
                 sr_debug.ReadLine();
-
             while ( ++i < 20 && ++sr_debug_linecnt <= (sr_debug_last_line + 1) && !sr_debug.EndOfStream )
             {
                 string line = sr_debug.ReadLine();
@@ -386,99 +326,17 @@ namespace wtKST
         }
 #endif
 
-        private void tw_Disconnected(object sender, TelnetWrapperDisconnctedEventArgs e)
-        {
-            if (e.Message.Length > 0)
-            {
-                MainDlg.Log.WriteMessage("Socket Error - " + e.Message);
-            }
-            MainDlg.Log.WriteMessage("Disconnected from: " + Settings.Default.KST_Chat);
-            try
-            {
-                tw.Dispose();
-                tw.Close();
-                MsgQueue.Clear();
-                KSTBuffer = "";
-                Say("Disconnected from KST chat...");
-            }
-            catch
-            {
-            }
-            if (SendMyName)
-            {
-                if (KSTState == MainDlg.KST_STATE.WaitLogstat)
-                {
-                    System.Windows.Forms.Timer tmrOnce = new System.Windows.Forms.Timer();
-                    tmrOnce.Tick += Connect_tmrOnce_Tick;
-                    tmrOnce.Interval = 500;
-                    tmrOnce.Start();
-
-                    KSTState = MainDlg.KST_STATE.WaitTelnetConnect;
-                    return;
-                }
-                if (KSTState == MainDlg.KST_STATE.WaitTelnetSetName)
-                {
-                    System.Windows.Forms.Timer tmrOnce = new System.Windows.Forms.Timer();
-                    tmrOnce.Tick += Connect_tmrOnce_Tick;
-                    tmrOnce.Interval = 500;
-                    tmrOnce.Start();
-
-                    KSTState = MainDlg.KST_STATE.WaitReconnect;
-                    return;
-                }
-            }
-            KSTState = MainDlg.KST_STATE.Disconnected;
-        }
-
-        /* one shot timer to handle the connect/reconnect during /set name */
-
-        private void Connect_tmrOnce_Tick(object sender, EventArgs ev)
-        {
-            if (KSTState == MainDlg.KST_STATE.WaitTelnetConnect ||
-                KSTState == MainDlg.KST_STATE.WaitReconnect)
-            {
-                try
-                {
-                    tw = new TelnetWrapper();
-                    tw.DataAvailable += new DataAvailableEventHandler(tw_DataAvailable);
-                    tw.Disconnected += new DisconnectedEventHandler(tw_Disconnected);
-
-                    if (KSTState == MainDlg.KST_STATE.WaitTelnetConnect)
-                    {
-                        tw.Connect(Settings.Default.KST_ServerName, 23000);
-                        Console.WriteLine("connect 23000 " + tw.Connected);
-                        MainDlg.Log.WriteMessage("connect to on4kst 23000 ");
-                        tw.Receive();
-                        KSTState = MainDlg.KST_STATE.WaitTelnetUserName;
-                    }
-                    else
-                    {
-                        tw.Connect(Settings.Default.KST_ServerName, Convert.ToInt32(Settings.Default.KST_ServerPort));
-                        Console.WriteLine("reconnect");
-                        tw.Receive();
-                        KSTState = MainDlg.KST_STATE.WaitLogin;
-                        Say("Connecting to KST chat..." + Settings.Default.KST_ServerName + " Port " + Settings.Default.KST_ServerPort);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(MethodBase.GetCurrentMethod().Name, e.Message);
-                }
-            }
-            ((System.Windows.Forms.Timer)sender).Dispose();
-        }
-
 
         private void set_KST_Status()
         {
-            if (KSTState >= MainDlg.KST_STATE.WaitTelnetConnect &&
-                KSTState <= MainDlg.KST_STATE.WaitReconnect)
+            if (KST.State >= KSTcom.KST_STATE.WaitTelnetConnect &&
+                KST.State <= KSTcom.KST_STATE.WaitReconnect)
             {
                 lbl_KST_Status.BackColor = Color.LightYellow;
                 lbl_KST_Status.Text = "Status: Setting Name ";
                 return;
             }
-            if (KSTState < MainDlg.KST_STATE.Connected)
+            if (KST.State < KSTcom.KST_STATE.Connected)
             {
                 lbl_KST_Status.BackColor = Color.LightGray;
                 lbl_KST_Status.Text = "Status: Disconnected ";
@@ -499,84 +357,31 @@ namespace wtKST
             });
         }
 
-        private void tw_DataAvailable(object sender, DataAvailableEventArgs e)
+        private void onUserStateChanged(object sender, KSTcom.userStateEventArgs args)
         {
-            string t = e.Data;
-            byte[] bytes = new byte[1];
-            try
+            if (this.InvokeRequired)
             {
-                for (byte b = 0; b <= 31; b += 1)
-                {
-                    bytes[0] = b;
-                    string esc = Encoding.GetEncoding("iso-8859-1").GetString(bytes, 0, 1);
-                    t = t.Replace(esc, "{" + b.ToString("X2") + "}");
-                }
+                this.BeginInvoke(new EventHandler<KSTcom.userStateEventArgs>(onUserStateChanged), new object[] { sender, args });
+                return;
             }
-            catch
+            if (args.state == KSTcom.USER_STATE.Here)
             {
+                lbl_Call.Text = Settings.Default.KST_UserName.ToUpper();
             }
-            Console.WriteLine(t);
-            string s = e.Data.Replace("\0", "");
-            lock (MsgQueue)
+            else
             {
-                KSTBuffer += s;
-                if (KSTBuffer.IndexOf("\r\n")>=0)
-                {
-                    string[] buffer = KSTBuffer.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries); //this.KSTBuffer.Split(new char[] {'\r', '\n' });
-                    string[] array = buffer;
-                    int number_strings = array.Length-1;
-                    if (KSTBuffer.EndsWith("\r\n"))
-                        number_strings++;
-                    for (int i = 0; i < number_strings; i++)
-                    {
-                        string buf = array[i];
-                        StringWriter bufWriter = new StringWriter();
-                        WebUtility.HtmlDecode(buf, bufWriter);
-                        MsgQueue.Enqueue(bufWriter.ToString());
-                    }
-                    if (KSTBuffer.EndsWith("\r\n"))
-                        KSTBuffer = "";
-                    else
-                        KSTBuffer = buffer[buffer.Length - 1]; // keep the tail
-                }
+                lbl_Call.Text = "(" + Settings.Default.KST_UserName.ToUpper() + ")";
             }
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                ti_Linkcheck.Stop();   // restart the linkcheck timer
-                ti_Linkcheck.Start();
-            }
-        }
 
+        }
+ 
         private void OnIdle(object sender, EventArgs args)
         {
-            if (DLLNotLoaded)
+            KST.KSTStateMachine();
+
+            if (KST.State == KSTcom.KST_STATE.Disconnected)
             {
-                MessageBox.Show("The file telnet.dll could not be found in program directory.", "Error");
-                base.Close();
-            }
-            try
-            {
-                if (tw != null && !tw.Connected
-                    && KSTState != MainDlg.KST_STATE.Standby
-                    && KSTState != MainDlg.KST_STATE.WaitTelnetConnect
-                    && KSTState != MainDlg.KST_STATE.WaitTelnetUserName
-                    && KSTState != MainDlg.KST_STATE.WaitReconnect)
-                {
-                    KSTState = MainDlg.KST_STATE.Disconnected;
-                }
-            }
-            catch
-            {
-                KSTState = MainDlg.KST_STATE.Disconnected;
-            }
-            if (KSTState == MainDlg.KST_STATE.Disconnecting)
-            {
-                if (tw != null && tw.Connected)
-                    tw.Disconnect();
-            }
-            if (KSTState == MainDlg.KST_STATE.Disconnected)
-            {
-                lock(CALL)
+                lock (CALL)
                 {
                     CALL.Clear();
                 }
@@ -595,12 +400,10 @@ namespace wtKST
                 {
                     ti_Reconnect.Start();
                 }
-                if (ti_Linkcheck.Enabled)
-                    ti_Linkcheck.Stop();
 
-                KSTState = MainDlg.KST_STATE.Standby;
+                KST.State = KSTcom.KST_STATE.Standby;
             }
-            if (KSTState >= MainDlg.KST_STATE.Connected)
+            if (KST.State >= KSTcom.KST_STATE.Connected)
             {
                 tsi_KST_Connect.Enabled = false;
                 tsi_KST_Disconnect.Enabled = true;
@@ -614,15 +417,7 @@ namespace wtKST
                     ti_Reconnect.Stop();
                 }
             }
-            // FIXME: don't touch UI elements here without checking wether they need to be updated. Otherwise CPU load may be high
-            if (UserState == MainDlg.USER_STATE.Here)
-            {
-                lbl_Call.Text = Settings.Default.KST_UserName.ToUpper();
-            }
-            else
-            {
-                lbl_Call.Text = "(" + Settings.Default.KST_UserName.ToUpper() + ")";
-            }
+
             string KST_Calls_Text = lbl_KST_Calls.Text;
             if (lv_Calls.Items.Count > 0)
             {
@@ -658,8 +453,8 @@ namespace wtKST
 
             ni_Main.Text = "wtKST\nLeft click to activate";
 
-            if (!aboutBox1.Visible &&!cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture
-                 && (wtskdlg == null || !wtskdlg.Visible) )
+            if (!aboutBox1.Visible && !cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture
+                    && (wtskdlg == null || !wtskdlg.Visible))
             {
                 cb_Command.Focus();
                 cb_Command.SelectionLength = 0;
@@ -667,274 +462,20 @@ namespace wtKST
             }
         }
 
-        private void KST_Receive(string s)
-        {
-            MainDlg.KST_STATE kSTState = KSTState;
-            switch (kSTState)
-            {
-            case MainDlg.KST_STATE.WaitLogin:
-                if (s.IndexOf("login") >= 0)
-                {
-                        // LOGINC|callsign|password|chat id|client software version|past messages number|past dx/map number|
-                        // users list/update flags|last Unix timestamp for messages|last Unix timestamp for dx/map|
-
-                        tw.Send("LOGINC|" + Settings.Default.KST_UserName + "|" + Settings.Default.KST_Password + "|"
-                        + Settings.Default.KST_Chat.Substring(0, 1) + "|wtKST " + typeof(MainDlg).Assembly.GetName().Version +
-                        "|25|0|1|" +
-                        // we try to get the messages up to our latest one
-                        (!latestMessageTimestampSet ? "0" :
-                        ((latestMessageTimestamp - new DateTime(1970, 1, 1)).TotalSeconds - 1).ToString() )
-                        +  "|0|\r");
-                        KSTState = MainDlg.KST_STATE.WaitLogstat;
-                        Say("Login " + Settings.Default.KST_UserName + " send.");
-                }
-                break;
-            case MainDlg.KST_STATE.WaitLogstat:
-                if (s.IndexOf("LOGSTAT") >= 0)
-                {
-                        try
-                        {
-                            MainDlg.Log.WriteMessage("LOGSTAT: " + s);
-                            string call = Settings.Default.KST_UserName.ToUpper();
-                            if (WCCheck.WCCheck.IsCall(call) >= 0)
-                            {
-                                string[] subs = s.Split('|');
-                                if (subs[2].Equals("Wrong password!")) // maybe test subs[1] for 114? OK seems 100
-                                {
-                                    MessageBox.Show("Password wrong", "Login failed",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    tw.Close();
-                                    MainDlg.Log.WriteMessage("Password wrong ");
-                                    break;
-                                }
-                                // If name not set... take it from ON4KST
-                                if (Settings.Default.KST_Name.Length == 0)
-                                {
-                                    Settings.Default.KST_Name = subs[6];
-                                }
-                                else
-                                {
-                                    if (!Settings.Default.KST_Name.Trim().Equals(subs[6]))
-                                    {
-                                        SendMyName = true;
-                                        MainDlg.Log.WriteMessage("KST Name " + Settings.Default.KST_Name + " not equal to name stored on server " + subs[6]);
-                                        // we cannot set the name on KST side using port 23001 - no /setname there
-                                        // but we can do this through the regular telnet port 23000, so disconnect and do it there
-                                        tw.Disconnect();
-                                        MainDlg.Log.WriteMessage("disconnect and connect by telnet to set name");
-                                        break;
-                                    }
-                                }
-
-                                if (WCCheck.WCCheck.IsLoc(Settings.Default.KST_Loc) > 0)
-                                {
-                                    if (!Settings.Default.KST_Loc.Equals(subs[8]))
-                                    {
-                                        // if KST_Loc option is set, set it on KST side if it does not match
-                                    SendMyLocator = true;
-                                }
-                            }
-                                else
-                                {
-                                    // store the locator in settings
-                                    Settings.Default.KST_Loc = subs[8];
-                        }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            MainDlg.Log.WriteMessage("Error reading user configuration: " + e.Message);
-                        }
-                        // To set/reset/PRAU only propagation reception frames
-                        // SPR | value |
-
-                        tw.Send("SPR|2|\r");
-                        KSTState = MainDlg.KST_STATE.WaitSPR;
-                        Say("LOGSTAT " + s);
-                }
-                break;
-            case MainDlg.KST_STATE.WaitSPR:
-                    /* PRAU|time|Aurora level|
-                        Aurora level:
-                        2: High lat. AU warning
-                        3: High lat. AU alert
-                        5 :Mid lat. AU warning
-                        6:Mid lat. AU alert
-                        8:Low lat. AU warning
-                        9:Low lat. AU alert
-                        Other values: no alert
-                    */
-                    if (s.IndexOf("PRAU") >= 0)
-                    {
-                        try
-                        {
-                            MainDlg.Log.WriteMessage("Login at " + s.Split('|')[2] + " - " + s);
-                        }
-                        catch { }
-                        // End of the settings frames (session only)
-                        // SDONE | chat id |
-
-                        tw.Send("SDONE|" + Settings.Default.KST_Chat.Substring(0, 1) + "|\r");
-                        KSTState = MainDlg.KST_STATE.Connected;
-                        Say("Connected to KST chat.");
-                        MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
-                        msg_latest_first = true;
-                        CheckStartUpAway = true;
-
-                        if (SendMyLocator)
-                        {
-                            KST_Setloc(Settings.Default.KST_Loc);
-                            SendMyLocator = false;
-                        }
-
-                        ti_Linkcheck.Stop();   // restart the linkcheck timer
-                        ti_Linkcheck.Start();
-                    }
-                    break;
-
-            // special parts called while doing Telnet to set Name
-            case MainDlg.KST_STATE.WaitTelnetUserName:
-                if (s.IndexOf("Login:") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.tw.Send(Settings.Default.KST_UserName + "\r");
-                    this.KSTState = MainDlg.KST_STATE.WaitTelnetPassword;
-                    this.Say("Login " + Settings.Default.KST_UserName + " send.");
-                }
-                break;
-            case MainDlg.KST_STATE.WaitTelnetPassword:
-                if (s.IndexOf("Password:") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.tw.Send(Settings.Default.KST_Password + "\r");
-                    this.KSTState = MainDlg.KST_STATE.WaitTelnetChat;
-                    this.Say("Password send.");
-                }
-                break;
-            case MainDlg.KST_STATE.WaitTelnetChat:
-                if (s.IndexOf("Your choice           :") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.tw.Send(Settings.Default.KST_Chat.Substring(0, 1) + "\r");
-                }
-                if (s.IndexOf(">") > 0)
-                {
-                    if (SendMyName)
-                    {
-                        this.tw.Send("/set name " + Settings.Default.KST_Name.Trim() + "\r");
-                        MainDlg.Log.WriteMessage("send name " + Settings.Default.KST_Name.Trim() + " to server");
-                    }
-                    this.KSTState = MainDlg.KST_STATE.WaitTelnetSetName;
-                }
-                break;
-            case MainDlg.KST_STATE.WaitTelnetSetName:
-                tw.Disconnect();
-
-                break;
-
-            default:
-                switch (kSTState)
-                {
-                case MainDlg.KST_STATE.Connected:
-                    if(s.Substring(0,1).Equals("C"))
-                    {
-                        KST_Receive_MSG(s);
-                    }
-                    else if (s.Substring(0, 1).Equals("U"))
-                    {
-                        KST_Receive_USR(s);
-                    }
-                    break;
-                }
-                break;
-            }
-        }
-
-
-        private void KST_Receive_MSG(string s)
-        {
-            string[] msg = s.Split('|'); ;
-            try
-            {
-                MainDlg.Log.WriteMessage("KST message: " + s);
-                // CR|3|1480257613|F6DKW|Maurice|0|U were here all time on poor tropo anyway|F5BUU| -> chat review
-                // CE|3|   -> end
-                // CK|     ??? maybe... end of chat review - start of "normal" list?
-                // CH|3|1480259640|F6APE|JEAN-NOEL|0|es tu tjrs present pr test 6/3cm b4 qsy garden il fait beau|F2CT|
-                switch (s.Substring(0, 2))
-                {
-                        // Chat message frame at login
-                        // CR | chat id | Unix time | callsign | firstname | destination | msg | highlight |
-                    case "CR":
-                        // Chat message frame after login
-                        // CH | chat id | Unix time | callsign | firstname | destination | msg | highlight |
-                    case "CH":
-                        DataRow Row = MSG.NewRow();
-                        DateTime dt = new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(long.Parse(msg[2]));
-                        Row["TIME"] = dt;
-                        latestMessageTimestamp = dt;
-                        Row["CALL"] = msg[3].Trim();
-                        Row["NAME"] = msg[4].Trim();
-                        var recipient = msg[7].Trim();
-                        if (recipient.Equals("0"))
-                        {
-                            // check if forgotten "/cq" -> recipient just part of the message
-                            int index = msg[6].IndexOf(' ');
-                            if (index > 0)
-                            {
-                                string check_recipient = msg[6].Substring(0, index);
-                                if (WCCheck.WCCheck.IsCall(check_recipient) >= 0)
-                                    recipient = check_recipient;
-                            }
-                            Row["MSG"] = msg[6].Trim();
-                        }
-                        else
-                            Row["MSG"] = "(" + recipient + ") " + msg[6].Trim();
-                        Row["RECIPIENT"] = recipient;
-                        msg_latest_first = (s.Substring(0, 2)).Equals("CR");
-                        KST_Process_new_message(Row);
-                        break;
-
-                        // CK: link check
-                        // CK |
-
-                    case "CK": // Link Check
-                        if (tw!= null)
-                            tw.Send("\r\n"); // need to reply
-                        break;
-
-                        // End of CR frames
-                    case "CE":
-                        latestMessageTimestampSet = true;
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                Error(MethodBase.GetCurrentMethod().Name, "(" + s + "): " + e.Message);
-                MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + "(" + s + "): " + e.Message + "\n" + e.StackTrace);
-
-            }
-        }
-
         private int next_color = 1;
 
-        private void KST_Process_new_message(DataRow Row)
+        private void KST_Process_new_message(object sender, KSTcom.newMSGEventArgs arg)
         {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new EventHandler<KSTcom.newMSGEventArgs>(KST_Process_new_message), new object[] { sender, arg });
+                return;
+            }
+
+            DataRow Row = arg.msg;
+
             try
             {
-                // check if the message is already in the list
-                DataRow check_row = MSG.Rows.Find(new object[] { Row["TIME"], Row["CALL"], Row["MSG"] });
-
-                if (check_row != null)
-                {
-                    if (check_row["MSG"].Equals(Row["MSG"]))
-                    {
-                        return;
-                    }
-                }
-                // add message to list
-                MSG.Rows.Add(Row);
 
                 DateTime dt = (DateTime)Row["TIME"];
 
@@ -963,9 +504,9 @@ namespace wtKST
 
                     DateTime dt_top = (DateTime)lv_Msg.Items[0].Tag;
 
-                    if (msg_latest_first)
+                    if (KST.msg_latest_first)
                     {
-                        if (latestMessageTimestampSet)
+                        if (KST.is_reconnect())
                         {
                             // reconnect, sort CR at begining
                             // probably better to re-generate the whole list... alternate line highlighting will not work
@@ -1015,21 +556,7 @@ namespace wtKST
                 {
                     lv_Msg.Items[current_index].BackColor = Color.Coral;
                 }
-                lock (CALL)
-                {
-                    // check the recipient of the message
-                    DataRow findrow = CALL.Rows.Find(Row["RECIPIENT"].ToString());
-                    if (findrow != null)
-                    {
-                        findrow["CONTACTED"] = (int)findrow["CONTACTED"] + 1;
-                    }
-                    findrow = CALL.Rows.Find(Row["CALL"].ToString().Trim());
-                    if (findrow != null)
-                    {
-                        findrow["CONTACTED"] = 0; // clear counter on activity
-                        findrow["TIME"] = dt; // store time of activity
-                    }
-                }
+
                 bool fromMe = Row["CALL"].ToString().ToUpper().StartsWith(MyCall);
 
                 if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(MyCall)
@@ -1115,7 +642,7 @@ namespace wtKST
                     {
                         MyLV.SubItems[i].Name = lv_MyMsg.Columns[i].Text;
                     }
-                    if (msg_latest_first)
+                    if (KST.msg_latest_first)
                     {
                         lv_MyMsg.Items.Insert(lv_MyMsg.Items.Count, MyLV);
                     }
@@ -1141,9 +668,78 @@ namespace wtKST
             }
         }
 
+        private void KST_Process_user_update(object sender, KSTcom.UserUpdateEventArgs arg)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new EventHandler<KSTcom.UserUpdateEventArgs>(KST_Process_user_update), new object[] { sender, arg });
+                return;
+            }
+
+            DataRow USER = arg.user;
+
+            switch (arg.user_op)
+            {
+                case KSTcom.USER_OP.USER_NEW:
+                    {
+                        DataRow row = CALL.NewRow();
+
+                        row["CALL"] = USER["CALL"];
+                        row["NAME"] = USER["NAME"];
+                        row["LOC"] = USER["LOC"];
+                        string loc = USER["LOC"].ToString();
+
+                        int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                        int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
+                        row["QRB"] = qrb;
+                        row["DIR"] = qtf;
+
+                        row["COLOR"] = 0;
+                        row["TIME"] = USER["TIME"];
+                        row["CONTACTED"] = USER["CONTACTED"]; // FIXME update how?
+                        row["AWAY"] = USER["AWAY"];
+                        row["RECENTLOGIN"] = USER["RECENTLOGIN"];
+
+                        string qrvcall = row["CALL"].ToString();
+                        if (qrvcall.IndexOf("-") > 0)
+                        {
+                            qrvcall = qrvcall.Remove(qrvcall.IndexOf("-"));
+                        }
+                        bool call_new_in_userlist = (bool)USER["RECENTLOGIN"];
+                        qrv.Process_QRV(row, qrvcall, call_new_in_userlist);
+
+                        if (call_new_in_userlist && wtQSO != null && wtQSO.QSO.Rows.Count > 0)
+                            Check_QSO(row);
+
+                        lock (CALL)
+                        {
+                            CALL.Rows.Add(row);
+                        }
+                    }
+                    break;
+
+                case KSTcom.USER_OP.USER_DELETE:
+                    {
+                        DataRow row = CALL.Rows.Find(USER["CALL"]);
+                        if (row != null)
+                            row.Delete();
+                    }
+                    break;
+                case KSTcom.USER_OP.USER_MODIFY:
+                    break;
+                case KSTcom.USER_OP.USER_MODIFY_STATE:
+                    break;
+                case KSTcom.USER_OP.USER_DONE:
+                    KST_Update_USR_Window();
+                    if (Settings.Default.AS_Active)
+                        AS_send_ASWATCHLIST();
+                    break;
+            }
+        }
+
         private void KST_Update_USR_Window()
         {
-            if (KSTState <= KST_STATE.WaitLogin) //FIXME needed still?
+            if (KST.State <= KSTcom.KST_STATE.WaitLogin) //FIXME needed still?
                 return;
             try
             {
@@ -1193,9 +789,7 @@ namespace wtKST
                         continue;
 
                     // login time - new calls should be bold
-                    DateTime logintime = (DateTime)row["LOGINTIME"];
-                    double loggedOnMinutes = (DateTime.UtcNow.Subtract(logintime)).TotalMinutes;
-                    if (loggedOnMinutes < 5)
+                    if ((bool)row["RECENTLOGIN"])
                         LV.Font = new Font(LV.Font, FontStyle.Bold);
 
                     LV.UseItemStyleForSubItems = false;
@@ -1293,10 +887,10 @@ namespace wtKST
                             row["QRB"] = qrb;
                             row["DIR"] = qtf;
 
-                            row["LOGINTIME"] = DateTime.MinValue;
+                            row["RECENTLOGIN"] = false;
 
                             foreach (string band in BANDS)
-                                row[band] = QRVdb.QRV_STATE.unknown;
+                                row[band] = QRVdb.QRV_STATE.not_qrv;
                             lock (CALL)
                             {
                                 CALL.Rows.Add(row);
@@ -1314,302 +908,11 @@ namespace wtKST
             }
         }
 
-        private void KST_Process_MyCallAway()
-        {
-            string MyCall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
-            DataRow row = CALL.Rows.Find(MyCall);
-            if (row != null)
-            {
-                if ( ((bool)row["AWAY"] == true && UserState == MainDlg.USER_STATE.Here) ||
-                     ((bool)row["AWAY"] == false && UserState == MainDlg.USER_STATE.Away) )
-                {
-                    UserState = (bool)row["AWAY"] ? MainDlg.USER_STATE.Away : MainDlg.USER_STATE.Here;
-                }
-            }
-        }
-
-
-        private void KST_Receive_USR(string s)
-        {
-            string[] usr = s.Split('|');
-            try
-            {
-                MainDlg.Log.WriteMessage("KST user: " + s);
-                DataRow Row = MSG.NewRow();
-                //UA0|3|DF9QX|Matthias 23-1,2|JO42HD|1| -> away
-                //UA0|3|DL7QY|Claus 1-122GHz|JN59BD|0|
-                //UA0|3|DL8AAU|Alexander|JO41VL|2| -> new
-                //UM3|3|DL8AAU|Alexander|JN49HU|2| -> modified
-                //US4|3|EA3KZ|0| -> status (2->0)
-                //UR6|3|F8DLS| -> left
-                //UE|3|7042| -> end of list/update
-                switch (s.Substring(0, 2))
-                {
-                    // User frame at login
-                    // UA0 | chat id | callsign | firstname | locator | state |
-                    // UA5 user connected (to add)
-                    // UA5 | chat id | callsign | firstname | locator | state |
-
-                    case "UA":
-                        {
-                            DataRow row = CALL.NewRow();
-
-                            string call = usr[2].Trim();
-                            string loc = usr[4].Trim();
-                            if (WCCheck.WCCheck.IsCall(WCCheck.WCCheck.Cut(call)) >= 0 && WCCheck.WCCheck.IsLoc(loc) >= 0)
-                            {
-                                row["CALL"] = call;
-                                row["NAME"] = usr[3].Trim();
-                                row["LOC"] = loc;
-
-                                int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
-                                int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
-                                row["QRB"] = qrb;
-                                row["DIR"] = qtf;
-
-                                row["COLOR"] = 0;
-
-                                Int32 usr_state = Int32.Parse(usr[5]);
-                                row["AWAY"] = (usr_state & 1) == 1;
-                                string qrvcall = usr[2].Trim();
-                                if (qrvcall.IndexOf("-") > 0)
-                                {
-                                    qrvcall = qrvcall.Remove(qrvcall.IndexOf("-"));
-                                }
-                                bool call_new_in_userlist = false;
-
-                                if ((usr_state & 2) == 2)
-                                {
-                                    call_new_in_userlist = true;
-                                    row["LOGINTIME"] = DateTime.UtcNow; // remember time of login
-                                }
-                                else
-                                {
-                                    row["LOGINTIME"] = DateTime.MinValue;
-                                }
-                                row["CONTACTED"] = 0;
-
-                                qrv.Process_QRV(row, qrvcall, call_new_in_userlist);
-
-                                lock (CALL)
-                                {
-                                    CALL.Rows.Add(row);
-                                    if (call_new_in_userlist && wtQSO != null && wtQSO.QSO.Rows.Count > 0)
-                                        Check_QSO(row);
-                                }
-                            }
-                            else
-                            {
-                                MainDlg.Log.WriteMessage("KST user UA: " + s + "not valid");
-                            }
-                        }
-                        break;
-
-                        //User already logged
-                        //UM3 | chat id | callsign | firstname | locator | state |
-
-                    case "UM":
-                        {
-                            lock (CALL)
-                            {
-                                string call = usr[2].Trim();
-                                DataRow row = CALL.Rows.Find(call);
-                                string loc = usr[4].Trim();
-
-                                if (WCCheck.WCCheck.IsLoc(loc) >= 0)
-                                {
-                                    row["CALL"] = call;
-                                    row["NAME"] = usr[3].Trim();
-                                    row["LOC"] = loc;
-
-                                    int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
-                                    int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
-                                    row["QRB"] = qrb;
-                                    row["DIR"] = qtf;
-
-                                    Int32 usr_state = Int32.Parse(usr[5]);
-                                    row["AWAY"] = (usr_state & 1) == 1;
-                                }
-                            }
-                        }
-                        break;
-
-                        // User state (here/not here/more than 5 min logged)
-                        // US4 | chat id | callsign | state |
-                    case "US":
-                        {
-                            lock (CALL)
-                            {
-                                string call = usr[2].Trim();
-                                DataRow row = CALL.Rows.Find(call);
-                                Int32 usr_state = Int32.Parse(usr[3]);
-                                if (row != null)
-                                    row["AWAY"] = (usr_state & 1) == 1;
-                            }
-                        }
-                        break;
-
-                        // User disconnected (to remove)
-                        // UR6 | chat id | callsign |
-
-                    case "UR":
-                        {
-                            lock (CALL)
-                            {
-                                string call = usr[2].Trim();
-                                DataRow row = CALL.Rows.Find(call);
-                                if (row != null)
-                                    row.Delete();
-                            }
-                        }
-                        break;
-
-                        // Users statistics/end of users frames
-                        // UE | chat id | nb registered users|
-                    case "UE":
-                        KST_Process_MyCallAway();
-                        if (CheckStartUpAway)
-                        {
-                            if (Settings.Default.KST_StartAsHere && (UserState != MainDlg.USER_STATE.Here))
-                                KST_Here();
-                            else if (!Settings.Default.KST_StartAsHere && (UserState == MainDlg.USER_STATE.Here))
-                                KST_Away();
-                            CheckStartUpAway = false;
-                        }
-                        KST_Update_USR_Window();
-                        if (Settings.Default.AS_Active)
-                            AS_send_ASWATCHLIST();
-                        // TODO wt?
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                Error(MethodBase.GetCurrentMethod().Name, "(" + s + "): " + e.Message + e.StackTrace);
-            }
-        }
-
-        private void KST_Connect()
-        {
-            if (KSTState == MainDlg.KST_STATE.Standby &&
-                !string.IsNullOrEmpty(Settings.Default.KST_ServerName) &&
-                !string.IsNullOrEmpty(Settings.Default.KST_UserName))
-            {
-                tw = new TelnetWrapper();
-                tw.DataAvailable += new DataAvailableEventHandler(tw_DataAvailable);
-                tw.Disconnected += new DisconnectedEventHandler(tw_Disconnected);
-                try
-                {
-                    tw.Connect(Settings.Default.KST_ServerName, Convert.ToInt32(Settings.Default.KST_ServerPort));
-                    if (!tw.Connected)
-                    {
-                        Say("Connection failed...");
-                        return;
-                    }
-                    tw.Receive();
-                    KSTState = MainDlg.KST_STATE.WaitLogin;
-                    lock (CALL)
-                    {
-                        CALL.Clear();
-                    }
-                    if (Settings.Default.ShowBeacons)
-                        KST_Add_Beacons_USR();
-                    ti_Main.Interval = 5000;
-                    if (!ti_Main.Enabled)
-                    {
-                        ti_Main.Start();
-                    }
-                    Say("Connecting to KST chat..." + Settings.Default.KST_ServerName + " Port "+ Settings.Default.KST_ServerPort);
-                }
-                catch (Exception e)
-                {
-                    Error(MethodBase.GetCurrentMethod().Name, e.Message);
-                }
-            }
-        }
-
-        private void KST_Disconnect()
-        {
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("/q\r");
-                Say("Disconnected from KST chat...");
-                KSTState = MainDlg.KST_STATE.Disconnecting;
-            }
-        }
-
-        private void KST_Here()
-        {
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/BACK|0|\r");
-                UserState = MainDlg.USER_STATE.Here;
-            }
-        }
-
-        private void KST_Away()
-        {
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/AWAY|0|\r");
-                UserState = MainDlg.USER_STATE.Away;
-            }
-        }
-
-        private void KST_Setloc(string locator)
-        {
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/SETLOC " + locator + "|0|\r");
-            }
-        }
-
-        private void KST_Send()
-        {
-            if (tw != null && tw.Connected && cb_Command.Text.Length > 0)
-            {
-                if ( !cb_Command.Text.StartsWith("/")
-                    || cb_Command.Text.ToUpper().StartsWith("/CQ")
-                    || cb_Command.Text.ToUpper().StartsWith("/SHLOC")
-                    || cb_Command.Text.ToUpper().StartsWith("/SHUSER")
-                    )
-                {
-                    last_cq_call = cb_Command.Text.Split(' ')[1];
-                    try
-                    {
-                        // Telnet server does not handle non-ASCII
-                        String t = cb_Command.Text;
-                        t = t.Replace("ä", "ae").Replace("ö", "oe").Replace("ü", "ue");
-                        t = t.Replace("Ä", "Ae").Replace("Ö", "Oe").Replace("Ü", "Ue");
-                        t = t.Replace("ß", "ss");
-                        System.Text.Encoding iso_8859_1 = System.Text.Encoding.GetEncoding("iso-8859-1");
-                        String to_sent = iso_8859_1.GetString(iso_8859_1.GetBytes(t));
-                        to_sent = "MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|" + to_sent + "|0|\r";
-                        tw.Send(to_sent);
-                        MainDlg.Log.WriteMessage("KST message send: " + cb_Command.Text);
-                        if (cb_Command.FindStringExact(cb_Command.Text) != 0)
-                        {
-                            cb_Command.Items.Insert(0, cb_Command.Text);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Error(MethodBase.GetCurrentMethod().Name, e.Message);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
-                }
-                cb_Command.ResetText();
-            }
-        }
-
         private void tsi_File_Exit_Click(object sender, EventArgs e)
         {
             try
             {
-                KST_Disconnect();
+                KST.Disconnect();
             }
             catch
             {
@@ -1759,7 +1062,7 @@ namespace wtKST
         {
             OptionsDlg Dlg = new OptionsDlg();
             Dlg.cbb_KST_Chat.SelectedIndex = 2;
-            if (KSTState != MainDlg.KST_STATE.Standby)
+            if (KST.State != KSTcom.KST_STATE.Standby)
             {
                 Dlg.tb_KST_Password.Enabled = false;
                 Dlg.tb_KST_UserName.Enabled = false;
@@ -1785,8 +1088,7 @@ namespace wtKST
                     {
                         CALL.Clear();
                     }
-                    MSG.Clear();
-                    latestMessageTimestampSet = false;
+                    KST.MSG_clear();
                     lv_Calls.Items.Clear();
                     lv_Msg.Items.Clear();
                     lv_MyMsg.Items.Clear();
@@ -1800,7 +1102,7 @@ namespace wtKST
         }
         private void tsi_KST_Connect_Click(object sender, EventArgs e)
         {
-            KST_Connect();
+            KST.Connect();
         }
 
         private void tsi_KST_Disconnect_Click(object sender, EventArgs e)
@@ -1812,22 +1114,26 @@ namespace wtKST
                 Settings.Default.Save();
                 Settings.Default.Reload();
             }
-            KST_Disconnect();
+            KST.Disconnect();
         }
 
         private void tsi_KST_Here_Click(object sender, EventArgs e)
         {
-            KST_Here();
+            KST.Here();
         }
 
         private void tsi_KST_Away_Click(object sender, EventArgs e)
         {
-            KST_Away();
+            KST.Away();
         }
 
         private void btn_KST_Send_Click(object sender, EventArgs e)
         {
-            KST_Send();
+            if (!KST.Send(cb_Command.Text))
+            {
+                MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
+            }
+            cb_Command.ResetText();
         }
 
         private bool wtQSO_local_lock = false;
@@ -1918,7 +1224,7 @@ namespace wtKST
         private void ti_Main_Tick(object sender, EventArgs e)
         {
             ti_Main.Stop();
-            if (KSTState == MainDlg.KST_STATE.Connected)
+            if (KST.State == KSTcom.KST_STATE.Connected)
             {
                 if (wtQSO != null)
                 {
@@ -2468,7 +1774,7 @@ namespace wtKST
 
                     if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act")
                     {
-                        if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                        if (username.Length > 0 && KST.State == KSTcom.KST_STATE.Connected)
                         {
                             cb_Command.Text = "/cq " + username + " ";
                             cb_Command.SelectionStart = cb_Command.Text.Length;
@@ -2532,8 +1838,7 @@ namespace wtKST
                     if (info.SubItem.Name == "Call" /*|| info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act"*/)
                     {
                         string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
-                        string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
-                        DataRow[] selectRow = MSG.Select(findCall);
+                        DataRow[] selectRow = KST.MSG_findcall(call);
 
                         this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
                         this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count>0);
@@ -2584,7 +1889,7 @@ namespace wtKST
                 }
                 if (e.Button == MouseButtons.Left)
                 {
-                    if (call.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                    if (call.Length > 0 && KST.State == KSTcom.KST_STATE.Connected)
                     {
                         cb_Command.Text = "/cq " + call + " ";
                         cb_Command.SelectionStart = cb_Command.Text.Length;
@@ -2593,8 +1898,7 @@ namespace wtKST
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
-                    string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
-                    DataRow[] selectRow = MSG.Select(findCall);
+                    DataRow[] selectRow = KST.MSG_findcall(call);
 
                     this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
                     this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
@@ -2618,7 +1922,7 @@ namespace wtKST
                 }
                 if (e.Button == MouseButtons.Left)
                 {
-                    if (call.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                    if (call.Length > 0 && KST.State == KSTcom.KST_STATE.Connected)
                     {
                         cb_Command.Text = "/cq " + call + " ";
                         cb_Command.SelectionStart = cb_Command.Text.Length;
@@ -2627,8 +1931,7 @@ namespace wtKST
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
-                    string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
-                    DataRow[] selectRow = MSG.Select(findCall);
+                    DataRow[] selectRow = KST.MSG_findcall(call);
 
                     this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
                     this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
@@ -2817,8 +2120,7 @@ namespace wtKST
                 chat_review_table.Columns.Add("Message");
 
                 string call_cut = WCCheck.WCCheck.SanitizeCall(call);
-                string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call_cut);
-                DataRow[] selectRow = MSG.Select(findCall);
+                DataRow[] selectRow = KST.MSG_findcall(call_cut);
                 foreach (var msg_row in selectRow)
                 {
                     Console.WriteLine(msg_row["TIME"].ToString() + " " + msg_row["CALL"].ToString() + " -> " + msg_row["RECIPIENT"].ToString() + " " + msg_row["MSG"].ToString());
@@ -2835,7 +2137,11 @@ namespace wtKST
 
         private void btn_KST_Send_Click_1(object sender, EventArgs e)
         {
-            KST_Send();
+            if (!KST.Send(cb_Command.Text))
+            {
+                MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
+            }
+            cb_Command.ResetText();
         }
 
         private void cmi_Notify_Restore_Click(object sender, EventArgs e)
@@ -2864,39 +2170,6 @@ namespace wtKST
         private void ni_Main_BalloonTipClicked(object sender, EventArgs e)
         {
             base.Activate();
-        }
-
-        private void ti_Receive_Tick(object sender, EventArgs e)
-        {
-            ti_Receive.Stop();
-            DateTime t = DateTime.Now;
-            while (true)
-            {
-                string s;
-                lock(MsgQueue)
-                {
-                    if (MsgQueue.Count > 0)
-                    {
-                        s = MsgQueue.Dequeue();
-                    }
-                    else
-                    {
-                        s = "";
-                    }
-                }
-                if (s.Length > 0)
-                {
-                    KST_Receive(s);
-                }
-                else
-                    break;
-            }
-            TimeSpan ts = DateTime.Now - t;
-            if (ts.Seconds > 1)
-            {
-                MainDlg.Log.WriteMessage("ReceiveTimer Overflow: " + ts.ToString());
-            }
-            ti_Receive.Start();
         }
 
         private void ti_Error_Tick(object sender, EventArgs e)
@@ -3019,17 +2292,9 @@ namespace wtKST
 
         private void ti_Reconnect_Tick(object sender, EventArgs e)
         {
-            if (Settings.Default.KST_AutoConnect && KSTState == MainDlg.KST_STATE.Standby)
+            if (Settings.Default.KST_AutoConnect && KST.State == KSTcom.KST_STATE.Standby)
             {
-                KST_Connect();
-            }
-        }
-
-        private void ti_Linkcheck_Tick(Object source, System.Timers.ElapsedEventArgs e)
-        {
-            if (KSTState == MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("\r\n"); // send to check if link is still up
+                KST.Connect();
             }
         }
 
@@ -3052,7 +2317,7 @@ namespace wtKST
         {
             while (!bw_GetPlanes.CancellationPending)
             {
-                if (KSTState < MainDlg.KST_STATE.Connected || !Settings.Default.AS_Active)
+                if (KST.State < KSTcom.KST_STATE.Connected || !Settings.Default.AS_Active)
                 {
                     Thread.Sleep(200); // TODO: better to use WaitHandles
                     continue;
@@ -3289,11 +2554,9 @@ namespace wtKST
             this.cmi_Notify_Restore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.cmi_Notify_Quit = new System.Windows.Forms.ToolStripMenuItem();
-            this.ti_Receive = new System.Windows.Forms.Timer(this.components);
             this.ti_Error = new System.Windows.Forms.Timer(this.components);
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
-            this.ti_Linkcheck = new System.Timers.Timer();
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -3314,7 +2577,6 @@ namespace wtKST
             this.splitContainer3.SuspendLayout();
             this.mn_Main.SuspendLayout();
             this.cmn_Notify.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ti_Linkcheck)).BeginInit();
             this.cmn_userlist.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -3967,12 +3229,6 @@ namespace wtKST
             this.cmi_Notify_Quit.Text = "&Quit";
             this.cmi_Notify_Quit.Click += new System.EventHandler(this.cmi_Notify_Quit_Click);
             // 
-            // ti_Receive
-            // 
-            this.ti_Receive.Enabled = true;
-            this.ti_Receive.Interval = 1000;
-            this.ti_Receive.Tick += new System.EventHandler(this.ti_Receive_Tick);
-            // 
             // ti_Error
             // 
             this.ti_Error.Interval = 10000;
@@ -3987,12 +3243,6 @@ namespace wtKST
             // 
             this.ti_Reconnect.Interval = 30000;
             this.ti_Reconnect.Tick += new System.EventHandler(this.ti_Reconnect_Tick);
-            // 
-            // ti_Linkcheck
-            // 
-            this.ti_Linkcheck.Interval = 120000D;
-            this.ti_Linkcheck.SynchronizingObject = this;
-            this.ti_Linkcheck.Elapsed += new System.Timers.ElapsedEventHandler(this.ti_Linkcheck_Tick);
             // 
             // tt_Info
             // 
@@ -4060,7 +3310,6 @@ namespace wtKST
             this.mn_Main.ResumeLayout(false);
             this.mn_Main.PerformLayout();
             this.cmn_Notify.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.ti_Linkcheck)).EndInit();
             this.cmn_userlist.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

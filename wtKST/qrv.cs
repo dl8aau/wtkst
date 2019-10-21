@@ -78,8 +78,8 @@ namespace wtKST
                 {
                     // if we have not just started (oldCALL empty) treat connecting
                     // to KST as activity
-                    row["TIME"] = row["LOGINTIME"];
-                    //FIXME                    findrow["TIME"] = row["LOGINTIME"];
+                    row["TIME"] = DateTime.UtcNow;
+                    //FIXME findrow["TIME"] = DateTime.UtcNow;
                 }
                 else
                     row["TIME"] = row["LOGINTIME"]; // FIXME wrong!!! Should be last time they wrote anything   StationData.Database.QRVFindLastUpdated(QRV);
@@ -94,7 +94,7 @@ namespace wtKST
                     {
                         // if we have not just started (oldCALL empty) treat connecting
                         // to KST as activity
-                        row["TIME"] = row["LOGINTIME"];
+                        row["TIME"] = DateTime.MinValue; // FIXME!row["LOGINTIME"];
                     } else
                         row["TIME"] = DateTime.MinValue; // FIXME!
 
@@ -103,10 +103,7 @@ namespace wtKST
                 }
                 else
                 {
-                    if (call_new_in_userlist)
-                        row["TIME"] = row["LOGINTIME"];
-                    else
-                        row["TIME"] = DateTime.MinValue;
+                    row["TIME"] = DateTime.MinValue;
 
                     foreach (string band in BANDS)
                         row[band] = QRV_STATE.unknown;
