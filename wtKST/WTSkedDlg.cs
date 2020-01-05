@@ -21,8 +21,8 @@ namespace wtKST
 
         private DateTime current_time, validated_sked_time;
 
-        public WTSkedDlg(String call, IList<WinTest.wtStatus.wtStat> wts,
-            IList<MainDlg.bandinfo> band_info, string notes, uint last_freq = 0)
+        public WTSkedDlg(String call, BindingList<WinTest.wtStatus.wtStat> wts,
+            BindingList<MainDlg.bandinfo> band_info, string notes, uint last_freq = 0)
         {
             InitializeComponent();
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);

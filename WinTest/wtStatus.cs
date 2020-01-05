@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace WinTest
 {
@@ -26,13 +28,17 @@ namespace WinTest
             }
         };
 
-        private List<wtStat> _wtStatusList = new List<wtStat>();
-        public IList<wtStat> wtStatusList { get { return _wtStatusList; } }
+        //private BindingList<wtStat> _wtStatusList = new BindingList<wtStat>();
+        //public BindingList<wtStat> wtStatusList { get { return _wtStatusList; } }
+        public readonly BindingList<wtStat> wtStatusList;
+
+        private readonly SynchronizationContext _context = SynchronizationContext.Current;
 
         public wtStatus()
         {
             wtl = new wtListener(WinTest.WinTestDefaultPort);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
+            wtStatusList = new BindingList<wtStat>();
         }
 
         private void wtMessageReceivedHandler(object sender, wtListener.wtMessageEventArgs e)
@@ -65,19 +71,28 @@ namespace WinTest
 
                 //Console.WriteLine("STATUS: from " + e.Msg.Src + " band " + band + " mode " + mode +
                 //    " freq " + data[4] + " pass " + data[8]);
-                int index = _wtStatusList.FindIndex(x => x.from == e.Msg.Src );
+                var el = wtStatusList.SingleOrDefault(x => x.from == e.Msg.Src );
                 ulong freq, passfreq;
                 if (!UInt64.TryParse(data[4], out freq))
                     freq = 0;
                 if (!UInt64.TryParse(data[8], out passfreq))
                     passfreq = 0;
                 wtStat w = new wtStat(e.Msg.Src, band, mode, freq*100UL, passfreq*100UL);
-                if (index >= 0)
+                // we need to make sure, wtStatusList is updated in the UI thread, otherwise the ListChanged event
+                // does not reach the UI elements
+                var th = new Thread(() =>
                 {
-                    _wtStatusList[index] = w;
+                    if (el != null)
+                    {
+                        _context.Send(o => el = w, null);
+                    }
+                    else
+                    {
+                        _context.Send(o => wtStatusList.Add(w), null);
+                    }
+                }) { IsBackground = true };
+                th.Start();
                 }
-                else
-                    _wtStatusList.Add(w);
             }
         }
     }

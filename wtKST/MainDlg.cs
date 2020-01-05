@@ -1563,7 +1563,7 @@ namespace wtKST
             }
         }
 
-        private IList<bandinfo> selected_bands()
+        private List<bandinfo> selected_bands()
         {
             List<bandinfo> b = new List<bandinfo>();
             if (Settings.Default.Band_144)
@@ -2624,7 +2624,7 @@ namespace wtKST
                 DataRow findrow = CALL.Rows.Find(call);
                 // [JO02OB - 113\\260] AP in 2min
                 string notes = String.Format("[{0} - {1}°]", findrow["LOC"].ToString(), findrow["DIR"].ToString());
-                wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, selected_bands(), notes, last_sked_qrg);
+                wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()), notes, last_sked_qrg);
                 if (wtskdlg.ShowDialog() == DialogResult.OK)
                 {
                     WinTest.wtSked wtsked = new WinTest.wtSked();
