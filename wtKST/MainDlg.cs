@@ -2057,6 +2057,11 @@ namespace wtKST
                         }
                         e.DrawBackground();
                         string[] a = e.SubItem.Text.Split(new char[] { ',' });
+                        if (a.Length<3)
+                        {
+                            e.DrawDefault = false; // draw nothing, just the background
+                            return;
+                        }
                         int pot = Convert.ToInt32(a[0]);
                         int Mins = Convert.ToInt32(a[2]);
                         if (Mins > 99)
