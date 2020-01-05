@@ -1573,11 +1573,11 @@ namespace wtKST
             if (Settings.Default.Band_1296)
                 b.Add(new bandinfo("1296MHz", 1240000, 1300000));
             if (Settings.Default.Band_2320)
-                b.Add(new bandinfo("2320Hz", 2320000, 2450000));
+                b.Add(new bandinfo("2320MHz", 2320000, 2450000));
             if (Settings.Default.Band_3400)
-                b.Add(new bandinfo("3400Hz", 3400000, 3475000));
+                b.Add(new bandinfo("3400MHz", 3400000, 3475000));
             if (Settings.Default.Band_5760)
-                b.Add(new bandinfo("5760Hz", 5650000, 5850000));
+                b.Add(new bandinfo("5760MHz", 5650000, 5850000));
             if (Settings.Default.Band_10368)
                 b.Add(new bandinfo("10GHz", 10000000, 10500000));
             if (Settings.Default.Band_24GHz)
