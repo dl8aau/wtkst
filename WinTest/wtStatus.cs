@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Timers;
 
 namespace WinTest
 {
@@ -33,12 +34,18 @@ namespace WinTest
         public readonly BindingList<wtStat> wtStatusList;
 
         private readonly SynchronizationContext _context = SynchronizationContext.Current;
+        private System.Timers.Timer ti_check_timestamps;
 
         public wtStatus()
         {
             wtl = new wtListener(WinTest.WinTestDefaultPort);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
             wtStatusList = new BindingList<wtStat>();
+
+            ti_check_timestamps = new System.Timers.Timer();
+            ti_check_timestamps.Enabled = true;
+            ti_check_timestamps.Interval = 60000; // check every minute
+            ti_check_timestamps.Elapsed += new System.Timers.ElapsedEventHandler(this.ti_check_timestamps_Tick);
         }
 
         private void wtMessageReceivedHandler(object sender, wtListener.wtMessageEventArgs e)
@@ -92,6 +99,24 @@ namespace WinTest
                     }
                 }) { IsBackground = true };
                 th.Start();
+            }
+        }
+
+        private void ti_check_timestamps_Tick(object sender, ElapsedEventArgs e)
+        {
+            foreach(var el in wtStatusList)
+            {
+                if (DateTime.Now.Subtract(el.timestamp).TotalMinutes > 3) // 3 min timeout
+                {
+                    var th = new Thread(() =>
+                    {
+                        if (el != null)
+                        {
+                            _context.Send(o => wtStatusList.Remove(el), null);
+                        }
+                    })
+                    { IsBackground = true };
+                    th.Start();
                 }
             }
         }
