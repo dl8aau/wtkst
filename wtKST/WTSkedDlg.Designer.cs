@@ -49,6 +49,7 @@ namespace wtKST
             this.num_frequency = new System.Windows.Forms.NumericUpDown();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.mtb_time = new System.Windows.Forms.MaskedTextBox();
+            this.bt_kstqrg = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.num_frequency)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
@@ -84,7 +85,7 @@ namespace wtKST
             this.bt_save.Location = new System.Drawing.Point(325, 167);
             this.bt_save.Name = "bt_save";
             this.bt_save.Size = new System.Drawing.Size(75, 23);
-            this.bt_save.TabIndex = 10;
+            this.bt_save.TabIndex = 11;
             this.bt_save.Text = "Save";
             this.bt_save.UseVisualStyleBackColor = true;
             this.bt_save.Click += new System.EventHandler(this.bt_save_Click);
@@ -155,7 +156,7 @@ namespace wtKST
             // 
             this.bt_qsyqrg.Location = new System.Drawing.Point(16, 123);
             this.bt_qsyqrg.Name = "bt_qsyqrg";
-            this.bt_qsyqrg.Size = new System.Drawing.Size(139, 23);
+            this.bt_qsyqrg.Size = new System.Drawing.Size(130, 23);
             this.bt_qsyqrg.TabIndex = 8;
             this.bt_qsyqrg.Text = "QSY freq = 432250.0";
             this.bt_qsyqrg.UseVisualStyleBackColor = true;
@@ -163,9 +164,9 @@ namespace wtKST
             // 
             // bt_radioqrg
             // 
-            this.bt_radioqrg.Location = new System.Drawing.Point(179, 123);
+            this.bt_radioqrg.Location = new System.Drawing.Point(152, 123);
             this.bt_radioqrg.Name = "bt_radioqrg";
-            this.bt_radioqrg.Size = new System.Drawing.Size(139, 23);
+            this.bt_radioqrg.Size = new System.Drawing.Size(116, 23);
             this.bt_radioqrg.TabIndex = 9;
             this.bt_radioqrg.Text = "Radio 1 = 432261.0";
             this.bt_radioqrg.UseVisualStyleBackColor = true;
@@ -214,11 +215,22 @@ namespace wtKST
             this.mtb_time.ValidatingType = typeof(System.DateTime);
             this.mtb_time.TypeValidationCompleted += new System.Windows.Forms.TypeValidationEventHandler(this.mtb_time_TypeValidationCompleted);
             // 
+            // bt_kstqrg
+            // 
+            this.bt_kstqrg.Location = new System.Drawing.Point(274, 123);
+            this.bt_kstqrg.Name = "bt_kstqrg";
+            this.bt_kstqrg.Size = new System.Drawing.Size(126, 23);
+            this.bt_kstqrg.TabIndex = 10;
+            this.bt_kstqrg.Text = "KST = 432261.0";
+            this.bt_kstqrg.UseVisualStyleBackColor = true;
+            this.bt_kstqrg.Click += new System.EventHandler(this.bt_kst_qrg_Click);
+            // 
             // WTSkedDlg
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(412, 203);
+            this.Controls.Add(this.bt_kstqrg);
             this.Controls.Add(this.mtb_time);
             this.Controls.Add(this.num_frequency);
             this.Controls.Add(this.tb_notes);
@@ -265,5 +277,6 @@ namespace wtKST
         private System.Windows.Forms.NumericUpDown num_frequency;
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.MaskedTextBox mtb_time;
+        private System.Windows.Forms.Button bt_kstqrg;
     }
 }

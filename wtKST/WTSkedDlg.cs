@@ -20,9 +20,10 @@ namespace wtKST
         public string notes { get { return this.tb_notes.Text; } }
 
         private DateTime current_time, validated_sked_time;
+        private uint short_kst_qrg;
 
         public WTSkedDlg(String call, BindingList<WinTest.wtStatus.wtStat> wts,
-            BindingList<MainDlg.bandinfo> band_info, string notes, uint last_freq = 0)
+            BindingList<MainDlg.bandinfo> band_info, string notes, uint last_freq = 0, uint sked_freq = 0, string mode = "SSB")
         {
             InitializeComponent();
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
@@ -39,10 +40,27 @@ namespace wtKST
 
             this.tb_notes.Text = notes;
 
+            short_kst_qrg = sked_freq;
+            if (sked_freq == 0)
+                this.bt_kstqrg.Visible = false; // if we do not have a sked_freq set, then hide the KST button
+            else
+            {
+                this.bt_kstqrg.Text = ("KST = " + get_full_sked_qrg((this.cb_band.SelectedItem as MainDlg.bandinfo), short_kst_qrg).ToString());
+                this.bt_kstqrg.Enabled = true;
+            }
+
             List<string> wtmode = new List<string>();
 
-            wtmode.Add("SSB");
-            wtmode.Add("CW");
+            if (mode == "CW")
+            {
+                wtmode.Add("CW");
+                wtmode.Add("SSB");
+            }
+            else
+            {
+                wtmode.Add("SSB");
+                wtmode.Add("CW");
+            }
 
             this.cb_mode.DataSource = wtmode;
 
@@ -50,7 +68,7 @@ namespace wtKST
             if(last_freq == 0)
                 this.num_frequency.Value = (decimal)((this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000UL);
             else
-                this.num_frequency.Value = last_freq;
+                this.num_frequency.Value = last_freq;             
 
             DateTime dt = DateTime.UtcNow;
             TimeSpan d = TimeSpan.FromMinutes(1);
@@ -59,6 +77,11 @@ namespace wtKST
 
             this.mtb_time.Text = current_time.ToString("HH:mm");
             validated_sked_time = current_time;
+        }
+
+        private long get_full_sked_qrg(MainDlg.bandinfo band, uint short_sked_qrg)
+        {
+            return band.band_center_activity + short_sked_qrg;
         }
 
         private WinTest.WTBANDS convert_band(MainDlg.bandinfo band )
@@ -88,9 +111,11 @@ namespace wtKST
                 (int)(this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000));
         }
 
+
         private void cb_band_SelectedIndexChanged(object sender, EventArgs e)
         {
             check_qsy_radio_qrg_selected();
+            this.bt_kstqrg.Text = ("KST = " + get_full_sked_qrg((this.cb_band.SelectedItem as MainDlg.bandinfo), short_kst_qrg).ToString());
             // check if no frequency selected, then try to find a better station
             if (!this.bt_radioqrg.Enabled && !this.bt_qsyqrg.Enabled)
             {
@@ -141,7 +166,12 @@ namespace wtKST
             this.num_frequency.Value = (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000;
         }
 
-         private void mtb_time_TypeValidationCompleted(object sender, TypeValidationEventArgs e)
+        private void bt_kst_qrg_Click(object sender, EventArgs e)
+        {
+            this.num_frequency.Value = get_full_sked_qrg((this.cb_band.SelectedItem as MainDlg.bandinfo), short_kst_qrg);
+        }
+
+        private void mtb_time_TypeValidationCompleted(object sender, TypeValidationEventArgs e)
         {
             // FIXME: more validation?
             this.bt_save.Enabled = e.IsValidInput;

@@ -15,6 +15,7 @@ using System.Threading;
 using System.Windows.Forms;
 using WinTest;
 using wtKST.Properties;
+using System.Text.RegularExpressions;
 
 namespace wtKST
 {
@@ -226,6 +227,8 @@ namespace wtKST
         private WinTest.wtStatus wts;
         private WTSkedDlg wtskdlg;
         private uint last_sked_qrg;
+        private uint kst_sked_qrg;
+        private string kst_sked_mode;
 
         private class AS_Calls
         {
@@ -1550,16 +1553,18 @@ namespace wtKST
             public string band_name { get; set; }
             public int band_start { get; set; }
             public int band_stop { get; set; }
+            public int band_center_activity { get; set; }
             public bool in_band(int freq)
             {
                 return (freq >= band_start && freq <= band_stop);
             }
 
-            public bandinfo (string n, int start, int stop)
+            public bandinfo (string n, int start, int stop, int center)
             {
                 band_name = n;
                 band_start = start;
                 band_stop = stop;
+                band_center_activity = center;
             }
         }
 
@@ -1567,25 +1572,25 @@ namespace wtKST
         {
             List<bandinfo> b = new List<bandinfo>();
             if (Settings.Default.Band_144)
-                b.Add(new bandinfo( "144MHz", 144000, 146000 )) ;
+                b.Add(new bandinfo( "144MHz", 144000, 146000, 144000)) ;
             if (Settings.Default.Band_432)
-                b.Add(new bandinfo("432MHz", 430000, 440000));
+                b.Add(new bandinfo("432MHz", 430000, 440000, 432000));
             if (Settings.Default.Band_1296)
-                b.Add(new bandinfo("1296MHz", 1240000, 1300000));
+                b.Add(new bandinfo("1296MHz", 1240000, 1300000, 1296000));
             if (Settings.Default.Band_2320)
-                b.Add(new bandinfo("2320MHz", 2320000, 2450000));
+                b.Add(new bandinfo("2320MHz", 2320000, 2450000, 2320000));
             if (Settings.Default.Band_3400)
-                b.Add(new bandinfo("3400MHz", 3400000, 3475000));
+                b.Add(new bandinfo("3400MHz", 3400000, 3475000, 3400000));
             if (Settings.Default.Band_5760)
-                b.Add(new bandinfo("5760MHz", 5650000, 5850000));
+                b.Add(new bandinfo("5760MHz", 5650000, 5850000, 5760000));
             if (Settings.Default.Band_10368)
-                b.Add(new bandinfo("10GHz", 10000000, 10500000));
+                b.Add(new bandinfo("10GHz", 10000000, 10500000, 10368000));
             if (Settings.Default.Band_24GHz)
-                b.Add(new bandinfo("24GHz", 24000000, 24250000));
+                b.Add(new bandinfo("24GHz", 24000000, 24250000, 24048000));
             if (Settings.Default.Band_47GHz)
-                b.Add(new bandinfo("47GHz", 47000000, 47200000));
+                b.Add(new bandinfo("47GHz", 47000000, 47200000, 47088000));
             if (Settings.Default.Band_76GHz)
-                b.Add(new bandinfo("76GHz", 75500000, 81500000));
+                b.Add(new bandinfo("76GHz", 75500000, 81500000, 76032000));
             return b;
         }
 
@@ -2588,10 +2593,12 @@ namespace wtKST
         private string cmn_userlist_get_call_from_contextMenu(ContextMenuStrip contextMenu)
         {
             var Control = contextMenu.SourceControl as Control;
+            kst_sked_mode = "SSB";
 
             if (Control.Name.Equals("lv_Calls"))
             {
                 Console.WriteLine(Control.GetType().ToString());
+                kst_sked_qrg = 0;
                 var yourControl = contextMenu.SourceControl as DoubleBufferedListView;
                 if (yourControl.SelectedItems.Count > 0)
                 {
@@ -2612,6 +2619,19 @@ namespace wtKST
                         // if we clicked on our own call use recipient call instead (in SubItems[3] column)
                         call = yourControl.SelectedItems[0].SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
                     }
+                    string pattern = @"\.?(\d{2,3})";
+                    string note = yourControl.SelectedItems[0].SubItems[3].Text;
+                    Match m = Regex.Match(note, pattern);
+                    if (m.Success)
+                        Console.WriteLine(m.Value);
+                        if (!uint.TryParse(m.Value.Replace(".",""), out kst_sked_qrg))
+                        {
+                            kst_sked_qrg = 0;
+                        }
+                    pattern = @"\bcw\b";
+                    m = Regex.Match(note, pattern, RegexOptions.IgnoreCase);
+                    if (m.Success)
+                        kst_sked_mode = "CW";
                     return call;
                 }
             }
@@ -2631,7 +2651,8 @@ namespace wtKST
                 // [JO02OB - 113\\260] AP in 2min
                 if (findrow != null)
                     notes = String.Format("[{0} - {1}°]", findrow["LOC"].ToString(), findrow["DIR"].ToString());
-                wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()), notes, last_sked_qrg);
+                wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()), 
+                                        notes, last_sked_qrg, kst_sked_qrg, kst_sked_mode);
                 if (wtskdlg.ShowDialog() == DialogResult.OK)
                 {
                     WinTest.wtSked wtsked = new WinTest.wtSked();
