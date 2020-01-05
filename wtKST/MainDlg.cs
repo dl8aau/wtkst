@@ -726,8 +726,42 @@ namespace wtKST
                     }
                     break;
                 case KSTcom.USER_OP.USER_MODIFY:
+                    {
+                        DataRow row = CALL.Rows.Find(USER["CALL"]);
+                        if (row != null)
+                        {
+                            if (!row["NAME"].Equals(USER["NAME"]))
+                                row["NAME"] = USER["NAME"];
+                            if (!row["LOC"].Equals(USER["LOC"]))
+                            {
+                                row["LOC"] = USER["LOC"];
+                                string loc = USER["LOC"].ToString();
+
+                                int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                                int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
+                                row["QRB"] = qrb;
+                                row["DIR"] = qtf;
+                            }
+                            row["TIME"] = USER["TIME"];
+                            row["CONTACTED"] = USER["CONTACTED"]; // FIXME update how?
+                            if (!row["AWAY"].Equals(USER["AWAY"]))
+                                row["AWAY"] = USER["AWAY"];
+                            if (!row["RECENTLOGIN"].Equals(USER["RECENTLOGIN"]))
+                                row["RECENTLOGIN"] = USER["RECENTLOGIN"];
+                        }
+                    }
                     break;
                 case KSTcom.USER_OP.USER_MODIFY_STATE:
+                    {
+                        DataRow row = CALL.Rows.Find(USER["CALL"]);
+                        if (row != null)
+                        {
+                            if (!row["AWAY"].Equals(USER["AWAY"]))
+                                row["AWAY"] = USER["AWAY"];
+                            if (!row["RECENTLOGIN"].Equals(USER["RECENTLOGIN"]))
+                                row["RECENTLOGIN"] = USER["RECENTLOGIN"];
+                        }
+                    }
                     break;
                 case KSTcom.USER_OP.USER_DONE:
                     KST_Update_USR_Window();
