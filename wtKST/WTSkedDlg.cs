@@ -82,9 +82,9 @@ namespace wtKST
         private void check_qsy_radio_qrg_selected()
         {
             // check if qsy and radio frequency are inside the selected band
-            this.bt_qsyqrg.Enabled = ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
+            this.bt_qsyqrg.Enabled = this.cb_band.SelectedItem != null && ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
                 (int)(this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).passfreq / 1000));
-            this.bt_radioqrg.Enabled = ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
+            this.bt_radioqrg.Enabled = this.cb_band.SelectedItem != null && ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
                 (int)(this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000));
         }
 
