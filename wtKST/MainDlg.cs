@@ -241,24 +241,18 @@ namespace wtKST
         };
 
         private List<AS_Calls> AS_list = new List<AS_Calls>();
-        private Button bt1;
-        private Button bt6;
-        private Button bt5;
-        private Button bt4;
-        private Button bt3;
-        private Button bt2;
         private ToolStripMenuItem macroToolStripMenuItem;
-        private ToolStripMenuItem menu_btn_macro_2;
         private ToolStripMenuItem menu_btn_macro_1;
+        private ToolStripMenuItem menu_btn_macro_2;
         private ToolStripMenuItem menu_btn_macro_3;
         private ToolStripMenuItem menu_btn_macro_4;
         private ToolStripMenuItem menu_btn_macro_5;
         private ToolStripMenuItem menu_btn_macro_6;
-        private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem menu_btn_macro_7;
         private ToolStripMenuItem menu_btn_macro_8;
         private ToolStripMenuItem menu_btn_macro_9;
         private ToolStripMenuItem menu_btn_macro_0;
+        private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem macro_default_Station;
         private string AS_watchlist = "";
 
@@ -3109,12 +3103,6 @@ namespace wtKST
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.bt6 = new System.Windows.Forms.Button();
-            this.bt5 = new System.Windows.Forms.Button();
-            this.bt4 = new System.Windows.Forms.Button();
-            this.bt3 = new System.Windows.Forms.Button();
-            this.bt2 = new System.Windows.Forms.Button();
-            this.bt1 = new System.Windows.Forms.Button();
             this.cb_Command = new System.Windows.Forms.ComboBox();
             this.btn_KST_Send = new System.Windows.Forms.Button();
             this.lbl_KST_Status = new System.Windows.Forms.Label();
@@ -3288,12 +3276,6 @@ namespace wtKST
             // 
             // splitContainer3.Panel1
             // 
-            this.splitContainer3.Panel1.Controls.Add(this.bt6);
-            this.splitContainer3.Panel1.Controls.Add(this.bt5);
-            this.splitContainer3.Panel1.Controls.Add(this.bt4);
-            this.splitContainer3.Panel1.Controls.Add(this.bt3);
-            this.splitContainer3.Panel1.Controls.Add(this.bt2);
-            this.splitContainer3.Panel1.Controls.Add(this.bt1);
             this.splitContainer3.Panel1.Controls.Add(this.cb_Command);
             this.splitContainer3.Panel1.Controls.Add(this.btn_KST_Send);
             this.splitContainer3.Panel1.Controls.Add(this.lbl_KST_Status);
@@ -3307,87 +3289,6 @@ namespace wtKST
             this.splitContainer3.Size = new System.Drawing.Size(843, 346);
             this.splitContainer3.SplitterDistance = 80;
             this.splitContainer3.TabIndex = 0;
-            // 
-            // bt6
-            // 
-            this.bt6.DataBindings.Add(new System.Windows.Forms.Binding("Enabled", global::wtKST.Properties.Settings.Default, "KST_M6", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.bt6.Enabled = global::wtKST.Properties.Settings.Default.KST_M6;
-            this.bt6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt6.Location = new System.Drawing.Point(817, 42);
-            this.bt6.Name = "bt6";
-            this.bt6.Size = new System.Drawing.Size(19, 23);
-            this.bt6.TabIndex = 8;
-            this.bt6.Text = "6";
-            this.bt6.UseVisualStyleBackColor = true;
-            this.bt6.Visible = false;
-            this.bt6.Click += new System.EventHandler(this.bt1_Click);
-            // 
-            // bt5
-            // 
-            this.bt5.DataBindings.Add(new System.Windows.Forms.Binding("Enabled", global::wtKST.Properties.Settings.Default, "KST_M5", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.bt5.Enabled = global::wtKST.Properties.Settings.Default.KST_M5;
-            this.bt5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt5.Location = new System.Drawing.Point(792, 42);
-            this.bt5.Name = "bt5";
-            this.bt5.Size = new System.Drawing.Size(19, 23);
-            this.bt5.TabIndex = 7;
-            this.bt5.Text = "5";
-            this.bt5.UseVisualStyleBackColor = true;
-            this.bt5.Visible = false;
-            // 
-            // bt4
-            // 
-            this.bt4.DataBindings.Add(new System.Windows.Forms.Binding("Enabled", global::wtKST.Properties.Settings.Default, "KST_M4", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.bt4.Enabled = global::wtKST.Properties.Settings.Default.KST_M4;
-            this.bt4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt4.Location = new System.Drawing.Point(767, 42);
-            this.bt4.Name = "bt4";
-            this.bt4.Size = new System.Drawing.Size(19, 23);
-            this.bt4.TabIndex = 6;
-            this.bt4.Text = "4";
-            this.bt4.UseVisualStyleBackColor = true;
-            this.bt4.Visible = false;
-            // 
-            // bt3
-            // 
-            this.bt3.DataBindings.Add(new System.Windows.Forms.Binding("Enabled", global::wtKST.Properties.Settings.Default, "KST_M3", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.bt3.Enabled = global::wtKST.Properties.Settings.Default.KST_M3;
-            this.bt3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt3.Location = new System.Drawing.Point(742, 42);
-            this.bt3.Name = "bt3";
-            this.bt3.Size = new System.Drawing.Size(19, 23);
-            this.bt3.TabIndex = 5;
-            this.bt3.Text = "3";
-            this.bt3.UseVisualStyleBackColor = true;
-            this.bt3.Visible = false;
-            // 
-            // bt2
-            // 
-            this.bt2.DataBindings.Add(new System.Windows.Forms.Binding("Enabled", global::wtKST.Properties.Settings.Default, "KST_M2", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.bt2.Enabled = global::wtKST.Properties.Settings.Default.KST_M2;
-            this.bt2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt2.Location = new System.Drawing.Point(717, 41);
-            this.bt2.Name = "bt2";
-            this.bt2.Size = new System.Drawing.Size(19, 23);
-            this.bt2.TabIndex = 4;
-            this.bt2.Text = "2";
-            this.bt2.UseVisualStyleBackColor = true;
-            this.bt2.Visible = false;
-            // 
-            // bt1
-            // 
-            this.bt1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.bt1.DataBindings.Add(new System.Windows.Forms.Binding("Enabled", global::wtKST.Properties.Settings.Default, "KST_M1", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.bt1.Enabled = global::wtKST.Properties.Settings.Default.KST_M1;
-            this.bt1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.bt1.Location = new System.Drawing.Point(692, 41);
-            this.bt1.Name = "bt1";
-            this.bt1.Size = new System.Drawing.Size(19, 23);
-            this.bt1.TabIndex = 3;
-            this.bt1.Text = "1";
-            this.bt1.UseVisualStyleBackColor = true;
-            this.bt1.Visible = false;
-            this.bt1.Click += new System.EventHandler(this.bt1_Click);
             // 
             // cb_Command
             // 
