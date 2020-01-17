@@ -1741,9 +1741,9 @@ namespace wtKST
                 set_KST_Status();
                 if (KST_MaxDist != Convert.ToInt32(Settings.Default.KST_MaxDist))
                     KST_Update_USR_Window();
+                macro_RefreshMacroText();
             }
         }
-
         private void tsi_KST_Connect_Click(object sender, EventArgs e)
         {
             KST_Connect();
@@ -4055,6 +4055,51 @@ namespace wtKST
 
             selItem.Checked = !selItem_State;
             
-            }
         }
+
+        private void macro_RefreshMacroText()
+        {
+            menu_btn_macro_1.Enabled = Settings.Default.KST_M1;
+            menu_btn_macro_1.Visible = Settings.Default.KST_M1;
+            if (!Settings.Default.KST_Macro_1.Equals(menu_btn_macro_1.Text))
+                menu_btn_macro_1.Text = Settings.Default.KST_Macro_1;
+            menu_btn_macro_2.Enabled = Settings.Default.KST_M2;
+            menu_btn_macro_2.Visible = Settings.Default.KST_M2;
+            if (!Settings.Default.KST_Macro_2.Equals(menu_btn_macro_2.Text))
+                menu_btn_macro_2.Text = Settings.Default.KST_Macro_2;
+            menu_btn_macro_3.Enabled = Settings.Default.KST_M3;
+            menu_btn_macro_3.Visible = Settings.Default.KST_M3;
+            if (!Settings.Default.KST_Macro_3.Equals(menu_btn_macro_3.Text))
+                menu_btn_macro_3.Text = Settings.Default.KST_Macro_3;
+            menu_btn_macro_4.Enabled = Settings.Default.KST_M4;
+            menu_btn_macro_4.Visible = Settings.Default.KST_M4;
+            if (!Settings.Default.KST_Macro_4.Equals(menu_btn_macro_4.Text))
+                menu_btn_macro_4.Text = Settings.Default.KST_Macro_4;
+            menu_btn_macro_5.Enabled = Settings.Default.KST_M5;
+            menu_btn_macro_5.Visible = Settings.Default.KST_M5;
+            if (!Settings.Default.KST_Macro_5.Equals(menu_btn_macro_5.Text))
+                menu_btn_macro_5.Text = Settings.Default.KST_Macro_5;
+            menu_btn_macro_6.Enabled = Settings.Default.KST_M6;
+            menu_btn_macro_6.Visible = Settings.Default.KST_M6;
+            if (!Settings.Default.KST_Macro_6.Equals(menu_btn_macro_6.Text))
+                menu_btn_macro_6.Text = Settings.Default.KST_Macro_6;
+            menu_btn_macro_7.Enabled = Settings.Default.KST_M7;
+            menu_btn_macro_7.Visible = Settings.Default.KST_M7;
+            if (!Settings.Default.KST_Macro_7.Equals(menu_btn_macro_7.Text))
+                menu_btn_macro_7.Text = Settings.Default.KST_Macro_7;
+            menu_btn_macro_8.Enabled = Settings.Default.KST_M8;
+            menu_btn_macro_8.Visible = Settings.Default.KST_M8;
+            if (!Settings.Default.KST_Macro_8.Equals(menu_btn_macro_8.Text))
+                menu_btn_macro_8.Text = Settings.Default.KST_Macro_8;
+            menu_btn_macro_9.Enabled = Settings.Default.KST_M9;
+            menu_btn_macro_9.Visible = Settings.Default.KST_M9;
+            if (!Settings.Default.KST_Macro_9.Equals(menu_btn_macro_9.Text))
+                menu_btn_macro_9.Text = Settings.Default.KST_Macro_9;
+            menu_btn_macro_0.Enabled = Settings.Default.KST_M0;
+            menu_btn_macro_0.Visible = Settings.Default.KST_M0;
+            if (!Settings.Default.KST_Macro_9.Equals(menu_btn_macro_0.Text))
+                menu_btn_macro_0.Text = Settings.Default.KST_Macro_0;
+        }
+
+    }
 }

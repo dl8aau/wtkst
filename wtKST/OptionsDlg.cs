@@ -114,7 +114,6 @@ namespace wtKST
         private TextBox textBox5;
         private Label label27;
         private CheckBox checkBox4;
-        private Label label28;
         public CheckBox cb_WinTest_Active;
 
         public OptionsDlg()
@@ -264,7 +263,6 @@ namespace wtKST
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.label27 = new System.Windows.Forms.Label();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.label28 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -644,7 +642,6 @@ namespace wtKST
             // 
             // tabPage5
             // 
-            this.tabPage5.Controls.Add(this.label28);
             this.tabPage5.Controls.Add(this.textBox2);
             this.tabPage5.Controls.Add(this.label24);
             this.tabPage5.Controls.Add(this.checkBox1);
@@ -1150,7 +1147,7 @@ namespace wtKST
             // 
             // tB_macro_2
             // 
-            this.tB_macro_2.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_2", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tB_macro_2.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_2", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tB_macro_2.Location = new System.Drawing.Point(90, 35);
             this.tB_macro_2.Name = "tB_macro_2";
             this.tB_macro_2.Size = new System.Drawing.Size(374, 20);
@@ -1162,7 +1159,7 @@ namespace wtKST
             this.cB_macro_2.AutoSize = true;
             this.cB_macro_2.Checked = global::wtKST.Properties.Settings.Default.KST_M2;
             this.cB_macro_2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_2.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M2", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cB_macro_2.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M2", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.cB_macro_2.Location = new System.Drawing.Point(70, 38);
             this.cB_macro_2.Name = "cB_macro_2";
             this.cB_macro_2.Size = new System.Drawing.Size(15, 14);
@@ -1171,7 +1168,7 @@ namespace wtKST
             // 
             // tB_macro_5
             // 
-            this.tB_macro_5.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_5", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tB_macro_5.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_5", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tB_macro_5.Location = new System.Drawing.Point(90, 110);
             this.tB_macro_5.Name = "tB_macro_5";
             this.tB_macro_5.Size = new System.Drawing.Size(374, 20);
@@ -1183,7 +1180,7 @@ namespace wtKST
             this.cB_macro_5.AutoSize = true;
             this.cB_macro_5.Checked = global::wtKST.Properties.Settings.Default.KST_M5;
             this.cB_macro_5.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_5.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M5", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cB_macro_5.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M5", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.cB_macro_5.Location = new System.Drawing.Point(70, 113);
             this.cB_macro_5.Name = "cB_macro_5";
             this.cB_macro_5.Size = new System.Drawing.Size(15, 14);
@@ -1191,7 +1188,7 @@ namespace wtKST
             this.cB_macro_5.UseVisualStyleBackColor = true;
             // tB_macro_6
             // 
-            this.tB_macro_6.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_6", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tB_macro_6.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_6", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tB_macro_6.Location = new System.Drawing.Point(90, 135);
             this.tB_macro_6.Name = "tB_macro_6";
             this.tB_macro_6.Size = new System.Drawing.Size(374, 20);
@@ -1203,7 +1200,7 @@ namespace wtKST
             this.cB_macro_6.AutoSize = true;
             this.cB_macro_6.Checked = global::wtKST.Properties.Settings.Default.KST_M6;
             this.cB_macro_6.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_6.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M6", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cB_macro_6.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M6", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.cB_macro_6.Location = new System.Drawing.Point(70, 138);
             this.cB_macro_6.Name = "cB_macro_6";
             this.cB_macro_6.Size = new System.Drawing.Size(15, 14);
@@ -1211,7 +1208,7 @@ namespace wtKST
             this.cB_macro_6.UseVisualStyleBackColor = true;
             // tB_macro_3
             // 
-            this.tB_macro_3.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_3", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tB_macro_3.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_3", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tB_macro_3.Location = new System.Drawing.Point(90, 60);
             this.tB_macro_3.Name = "tB_macro_3";
             this.tB_macro_3.Size = new System.Drawing.Size(374, 20);
@@ -1223,7 +1220,7 @@ namespace wtKST
             this.cB_macro_3.AutoSize = true;
             this.cB_macro_3.Checked = global::wtKST.Properties.Settings.Default.KST_M3;
             this.cB_macro_3.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_3.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M3", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cB_macro_3.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M3", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.cB_macro_3.Location = new System.Drawing.Point(70, 63);
             this.cB_macro_3.Name = "cB_macro_3";
             this.cB_macro_3.Size = new System.Drawing.Size(15, 14);
@@ -1231,7 +1228,7 @@ namespace wtKST
             this.cB_macro_3.UseVisualStyleBackColor = true;
             // tB_macro_4
             // 
-            this.tB_macro_4.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_4", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tB_macro_4.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_4", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tB_macro_4.Location = new System.Drawing.Point(90, 85);
             this.tB_macro_4.Name = "tB_macro_4";
             this.tB_macro_4.Size = new System.Drawing.Size(374, 20);
@@ -1243,7 +1240,7 @@ namespace wtKST
             this.cB_macro_4.AutoSize = true;
             this.cB_macro_4.Checked = global::wtKST.Properties.Settings.Default.KST_M4;
             this.cB_macro_4.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_4.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M4", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cB_macro_4.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M4", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.cB_macro_4.Location = new System.Drawing.Point(70, 88);
             this.cB_macro_4.Name = "cB_macro_4";
             this.cB_macro_4.Size = new System.Drawing.Size(15, 14);
@@ -1251,7 +1248,7 @@ namespace wtKST
             this.cB_macro_4.UseVisualStyleBackColor = true;
             // tB_macro_1
             // 
-            this.tB_macro_1.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_1", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tB_macro_1.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_1", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tB_macro_1.Location = new System.Drawing.Point(90, 10);
             this.tB_macro_1.Name = "tB_macro_1";
             this.tB_macro_1.Size = new System.Drawing.Size(374, 20);
@@ -1263,7 +1260,7 @@ namespace wtKST
             this.cB_macro_1.AutoSize = true;
             this.cB_macro_1.Checked = global::wtKST.Properties.Settings.Default.KST_M1;
             this.cB_macro_1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_1.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M1", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cB_macro_1.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M1", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.cB_macro_1.Location = new System.Drawing.Point(70, 13);
             this.cB_macro_1.Name = "cB_macro_1";
             this.cB_macro_1.Size = new System.Drawing.Size(15, 14);
@@ -1272,7 +1269,7 @@ namespace wtKST
             // 
             // textBox2
             // 
-            this.textBox2.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_9", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.textBox2.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_9", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.textBox2.Location = new System.Drawing.Point(90, 210);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(374, 20);
@@ -1305,7 +1302,7 @@ namespace wtKST
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.Checked = global::wtKST.Properties.Settings.Default.KST_M9;
-            this.checkBox1.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M9", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.checkBox1.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M9", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.checkBox1.Location = new System.Drawing.Point(70, 213);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(15, 14);
@@ -1314,7 +1311,7 @@ namespace wtKST
             // 
             // textBox3
             // 
-            this.textBox3.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_0", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.textBox3.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_0", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.textBox3.Location = new System.Drawing.Point(90, 235);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(374, 20);
@@ -1334,7 +1331,7 @@ namespace wtKST
             // 
             this.checkBox2.AutoSize = true;
             this.checkBox2.Checked = global::wtKST.Properties.Settings.Default.KST_M0;
-            this.checkBox2.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M0", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.checkBox2.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M0", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.checkBox2.Location = new System.Drawing.Point(70, 238);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(15, 14);
@@ -1343,7 +1340,7 @@ namespace wtKST
             // 
             // textBox4
             // 
-            this.textBox4.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_7", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.textBox4.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_7", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.textBox4.Location = new System.Drawing.Point(90, 160);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(374, 20);
@@ -1363,7 +1360,7 @@ namespace wtKST
             // 
             this.checkBox3.AutoSize = true;
             this.checkBox3.Checked = global::wtKST.Properties.Settings.Default.KST_M7;
-            this.checkBox3.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M7", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.checkBox3.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M7", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.checkBox3.Location = new System.Drawing.Point(70, 163);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(15, 14);
@@ -1372,7 +1369,7 @@ namespace wtKST
             // 
             // textBox5
             // 
-            this.textBox5.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_8", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.textBox5.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_8", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.textBox5.Location = new System.Drawing.Point(90, 185);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(374, 20);
@@ -1392,22 +1389,12 @@ namespace wtKST
             // 
             this.checkBox4.AutoSize = true;
             this.checkBox4.Checked = global::wtKST.Properties.Settings.Default.KST_M8;
-            this.checkBox4.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M8", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.checkBox4.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M8", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.checkBox4.Location = new System.Drawing.Point(70, 188);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(15, 14);
             this.checkBox4.TabIndex = 25;
             this.checkBox4.UseVisualStyleBackColor = true;
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label28.Location = new System.Drawing.Point(18, 263);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(176, 20);
-            this.label28.TabIndex = 30;
-            this.label28.Text = "Neustart Erforderlich";
             // 
             // OptionsDlg
             // 
