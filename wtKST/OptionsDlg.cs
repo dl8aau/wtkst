@@ -735,7 +735,7 @@ namespace wtKST
             // 
             // tb_KST_Name
             // 
-            this.tb_KST_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Name", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_KST_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Name", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tb_KST_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_KST_Name.Location = new System.Drawing.Point(120, 142);
             this.tb_KST_Name.Name = "tb_KST_Name";
@@ -746,7 +746,7 @@ namespace wtKST
             // tb_KST_Locator
             // 
             this.tb_KST_Locator.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
-            this.tb_KST_Locator.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Loc", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_KST_Locator.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Loc", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tb_KST_Locator.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_KST_Locator.Location = new System.Drawing.Point(120, 116);
             this.tb_KST_Locator.Name = "tb_KST_Locator";
