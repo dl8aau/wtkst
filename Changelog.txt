@@ -1,3 +1,10 @@
+3.1.1.23
+- bug: IV3/HB9CAT chat review does not work
+- Sked dialog updates dynamically
+- Fix typo in band list
+- First implementation of macros (thanks TobbY!)
+- Try to figure out sked frequency from messages and propose for sked window (thanks TobbY!)
+
 3.1.1.22
 
 - rework Airscout watchlist Now only the calls from the KST user list will be in the watchlist, if they are >300km and closer than the limit set in options for Airplane scatter and visible (e.g. not in the Win-Test log or only qrv on a band not shown)
