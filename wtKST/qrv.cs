@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using ScoutBase.Core;
+using ScoutBase.Stations;
 using wtKST.Properties;
 
 namespace wtKST
@@ -19,7 +21,7 @@ namespace wtKST
 
         private string[] BANDS;
 
-        private DataTable QRV = new DataTable("QRV");
+        private DataTable QRV_local = new DataTable("QRV_local");
 
         public void Error(string methodname, string Text)
         {
@@ -28,116 +30,132 @@ namespace wtKST
 
         public void Process_QRV(DataRow row, string qrvcall, bool call_new_in_userlist = false)
         {
-            DataRow findrow = QRV.Rows.Find(qrvcall);
-            if (findrow != null)
+            List<QRVDesignator> QRVlist = StationData.Database.QRVFind(qrvcall, row["LOC"].ToString());
+            if (QRVlist != null)
             {
+                foreach (string band in BANDS)
+                {
+                    row[band] = QRV_STATE.not_qrv;
+                }
+                foreach (var QRV in QRVlist)
+                {
+                    // "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G"
+                    switch (QRV.Band)
+                    {
+                        case BAND.B144M:
+                            row["144M"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B432M:
+                            row["432M"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B1_2G:
+                            row["1_2G"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B2_3G:
+                            row["2_3G"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B3_4G:
+                            row["3_4G"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B5_7G:
+                            row["5_7G"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B10G:
+                            row["10G"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B24G:
+                            row["24G"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B47G:
+                            row["47G"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B76G:
+                            row["76G"] = QRV_STATE.qrv;
+                            break;
+                    }
+                }
                 if (call_new_in_userlist)
                 {
                     // if we have not just started (oldCALL empty) treat connecting
                     // to KST as activity
                     row["TIME"] = row["LOGINTIME"];
-                    findrow["TIME"] = row["LOGINTIME"];
+                    //FIXME                    findrow["TIME"] = row["LOGINTIME"];
                 }
                 else
-                    row["TIME"] = findrow["TIME"];
-                foreach (string band in BANDS)
-                    row[band] = findrow[band];
+                    row["TIME"] = row["LOGINTIME"]; // FIXME wrong!!! Should be last time they wrote anything   StationData.Database.QRVFindLastUpdated(QRV);
             }
             else
             {
-                if (call_new_in_userlist)
-                    row["TIME"] = row["LOGINTIME"];
-                else
-                    row["TIME"] = DateTime.MinValue;
-                foreach (string band in BANDS)
-                    row[band] = QRV_STATE.unknown;
-                DataRow newrow = QRV.NewRow();
-                newrow["CALL"] = qrvcall;
-                if (call_new_in_userlist)
-                    newrow["TIME"] = row["LOGINTIME"];
-                else
-                    newrow["TIME"] = DateTime.MinValue;
-                foreach (string band in BANDS)
-                    newrow[band] = QRV_STATE.unknown;
-                try
+                // we have to look into our local DB, as it is not in the global one
+                DataRow findrow = QRV_local.Rows.Find(new object[] { row["CALL"], row["LOC"] });
+                if (findrow != null)
                 {
-                    QRV.Rows.Add(newrow);
+                    if (call_new_in_userlist)
+                    {
+                        // if we have not just started (oldCALL empty) treat connecting
+                        // to KST as activity
+                        row["TIME"] = row["LOGINTIME"];
+                    } else
+                        row["TIME"] = DateTime.MinValue; // FIXME!
+
+                    foreach (string band in BANDS)
+                        row[band] = findrow[band];
                 }
-                catch (Exception e)
+                else
                 {
-                    Error(MethodBase.GetCurrentMethod().Name, e.Message);
+                    if (call_new_in_userlist)
+                        row["TIME"] = row["LOGINTIME"];
+                    else
+                        row["TIME"] = DateTime.MinValue;
+
+                    foreach (string band in BANDS)
+                        row[band] = QRV_STATE.unknown;
+
+                    DataRow newrow = QRV_local.NewRow();
+                    newrow["CALL"] = qrvcall;
+                    newrow["LOC"] = row["LOC"];
+                    foreach (string band in BANDS)
+                        newrow[band] = QRV_STATE.unknown;
+                    try
+                    {
+                        QRV_local.Rows.Add(newrow);
+                    }
+                    catch (Exception e)
+                    {
+                        Error(MethodBase.GetCurrentMethod().Name, e.Message);
+                    }
                 }
             }
         }
 
-        public void set_qrv_state(string call, string band, QRV_STATE state)
+        public void set_qrv_state(DataRow Row, string band, QRV_STATE state)
         {
-            DataRow Row = QRV.Rows.Find(call);
-            if (Row != null)
+            DataRow qrv_row = QRV_local.Rows.Find(new object[] { Row["CALL"], Row["LOC"] });
+            if (qrv_row != null)
             {
-                Row[band] = state;
+                qrv_row[band] = state;
             }
         }
 
         private void InitializeQRV()
         {
-            QRV.Clear();
+            QRV_local.Clear();
             try
             {
                 string QRV_Table_Filename = Path.Combine(Directory.GetParent(Application.LocalUserAppDataPath).ToString(),
-                    Settings.Default.WinTest_QRV_Table_FileName);
+                    "qrv_local.xml");
                 TimeSpan ts = DateTime.Now - File.GetLastWriteTime(QRV_Table_Filename);
                 if (File.Exists(QRV_Table_Filename) && ts.Hours < 48)
                 {
                     try
                     {
-                        QRV.BeginLoadData();
-                        QRV.ReadXml(QRV_Table_Filename);
-                        QRV.EndLoadData();
+                        QRV_local.BeginLoadData();
+                        QRV_local.ReadXml(QRV_Table_Filename);
+                        QRV_local.EndLoadData();
                     }
                     catch (Exception e)
                     {
                         Error(MethodBase.GetCurrentMethod().Name, "(QRV.xml): " + e.Message);
-                    }
-                }
-                // if we cannot read qrv.xml from appdata path, try current directoy (=previous default)
-                if (QRV.Rows.Count == 0 && File.Exists(Settings.Default.WinTest_QRV_Table_FileName))
-                {
-                    try
-                    {
-                        QRV.BeginLoadData();
-                        QRV.ReadXml(Settings.Default.WinTest_QRV_Table_FileName);
-                        QRV.EndLoadData();
-                    }
-                    catch (Exception e)
-                    {
-                            Error(MethodBase.GetCurrentMethod().Name, "(QRV.xml in program dir): " + e.Message + "\n" + e.StackTrace);
-                    }
-                }
-                if (QRV.Rows.Count == 0)
-                {
-                    using (StreamReader sr = new StreamReader(Settings.Default.WinTest_QRV_FileName))
-                    {
-                        while (!sr.EndOfStream)
-                        {
-                            string line = sr.ReadLine();
-                            DataRow Row = QRV.NewRow();
-                            Row["CALL"] = line.Split(new char[0])[0];
-                            Row["TIME"] = DateTime.Parse(line.Split(new char[0])[1].TrimStart(
-                                new char[] { '[' }).TrimEnd(new char[] { ']' }) + " 00:00:00");
-                            foreach (string band in BANDS)
-                            {
-                                if (line.Replace(".", "_").IndexOf(band) > 0)
-                                {
-                                    Row[band] = QRV_STATE.qrv;
-                                }
-                                else
-                                {
-                                    Row[band] = QRV_STATE.unknown;
-                                }
-                            }
-                            QRV.Rows.Add(Row);
-                        }
                     }
                 }
             }
@@ -149,35 +167,24 @@ namespace wtKST
 
         public void save_db()
         {
-            string FileName = Path.Combine(Directory.GetParent(Application.LocalUserAppDataPath).ToString(), 
-                Settings.Default.WinTest_QRV_Table_FileName);
-            QRV.WriteXml(FileName, XmlWriteMode.IgnoreSchema);
-        }
-
-        public void set_time(string call, DateTime dt)
-        {
-            DataRow findrow = QRV.Rows.Find(call);
-            // TODO: what if user is not in user list yet? time not updated then
-            // -> count appearing on user list as "activity", too
-            if (findrow != null)
-            {
-                if ((DateTime)findrow["TIME"] < dt)
-                    findrow["TIME"] = dt;
-            }
+            string FileName = Path.Combine(Directory.GetParent(Application.LocalUserAppDataPath).ToString(),
+                "qrv_local.xml");
+            QRV_local.WriteXml(FileName, XmlWriteMode.WriteSchema);
         }
 
         public QRVdb(string[] BANDS)
         {
-            QRV.Columns.Add("CALL");
-            QRV.Columns.Add("TIME", typeof(DateTime));
+            QRV_local.Columns.Add("CALL");
+            QRV_local.Columns.Add("LOC");
             this.BANDS = BANDS;
             foreach (string band in BANDS)
-                QRV.Columns.Add(band, typeof(int));
+                QRV_local.Columns.Add(band, typeof(int));
             DataColumn[] QRVkeys = new DataColumn[]
             {
-                QRV.Columns["CALL"]
+                QRV_local.Columns["CALL"],
+                QRV_local.Columns["LOC"]
             };
-            QRV.PrimaryKey = QRVkeys;
+            QRV_local.PrimaryKey = QRVkeys;
             InitializeQRV();
         }
 

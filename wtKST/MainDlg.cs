@@ -882,10 +882,6 @@ namespace wtKST
 
                 DateTime dt = (DateTime)Row["TIME"];
 
-                // TODO: what if user is not in user list yet? time not updated then
-                // -> count appearing on user list as "activity", too
-                qrv.set_time(Row["CALL"].ToString().Trim(), dt);
-
                 ListViewItem LV = new ListViewItem();
                 LV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
                 LV.Tag = dt; // store the timestamp in the tag field
@@ -1797,7 +1793,7 @@ namespace wtKST
                 if ( WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall))
                 {
                     call_row[band] = QRVdb.QRV_STATE.worked;
-                    qrv.set_qrv_state(wcall, band, QRVdb.QRV_STATE.qrv); // if worked, mark as QRV in data base - FIXME locator...
+                    qrv.set_qrv_state(call_row, band, QRVdb.QRV_STATE.qrv); // if worked, mark as QRV in data base
                     found[Array.IndexOf(BANDS, band)] = true;
                     // check locator
                     if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
@@ -2413,19 +2409,19 @@ namespace wtKST
                             {
                                 case QRVdb.QRV_STATE.unknown:
                                     info.SubItem.Text = QRVdb.QRV_STATE.qrv.ToString();
-                                    qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.qrv);
+                                    qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.qrv);
                                     if (CallsRow != null)
                                         CallsRow[band] = QRVdb.QRV_STATE.qrv;
                                     break;
                                 case QRVdb.QRV_STATE.qrv:
                                     info.SubItem.Text = QRVdb.QRV_STATE.not_qrv.ToString();
-                                    qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.not_qrv);
+                                    qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.not_qrv);
                                     if (CallsRow != null)
                                         CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
                                     break;
                                 case QRVdb.QRV_STATE.not_qrv:
                                     info.SubItem.Text = QRVdb.QRV_STATE.unknown.ToString();
-                                    qrv.set_qrv_state(call, band, QRVdb.QRV_STATE.unknown);
+                                    qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.unknown);
                                     if (CallsRow != null)
                                         CallsRow[band] = QRVdb.QRV_STATE.unknown;
                                     break;
