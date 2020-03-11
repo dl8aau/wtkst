@@ -230,6 +230,7 @@ namespace wtKST
         private uint last_sked_qrg;
         private uint kst_sked_qrg;
         private string kst_sked_mode;
+        private uint kst_sked_band_freq;
         private string last_cq_call;
 
         private class AS_Calls
@@ -2602,6 +2603,18 @@ namespace wtKST
             }
             lv_MyMsg.Columns[lv_MyMsg.Columns.Count - 1].Width = lv_MyMsg.Width - colwidth - 3;
         }
+        private uint get_sked_band_qrg(string band)
+        {
+            switch (band)
+            {
+                case "2 m": return 144;
+                case "70 cm": return 432;
+                case "23 cm": return 1296;
+                case "13 cm": return 2320;
+                // Bitte noch vervollständigen
+            }
+            return 0;
+        }
 
         private string cmn_userlist_get_call_from_contextMenu(ContextMenuStrip contextMenu)
         {
@@ -2632,15 +2645,33 @@ namespace wtKST
                         // if we clicked on our own call use recipient call instead (in SubItems[3] column)
                         call = yourControl.SelectedItems[0].SubItems[3].Text.Split(new char[] { ' ' })[0].Replace("(", "").Replace(")", "");
                     }
-                    string pattern = @"\.?(\d{2,3})";
+                    kst_sked_band_freq = 0;
+                    //string pattern = @"\.?(\d{2,3})";
+                    string pattern = @"\.?(\d{2,3})(?!(\s*cm))";
                     string note = yourControl.SelectedItems[0].SubItems[3].Text;
                     Match m = Regex.Match(note, pattern);
                     if (m.Success)
+                    {
                         Console.WriteLine(m.Value);
-                        if (!uint.TryParse(m.Value.Replace(".",""), out kst_sked_qrg))
+                        if (!uint.TryParse(m.Value.Replace(".", ""), out kst_sked_qrg))
                         {
                             kst_sked_qrg = 0;
                         }
+                    }
+                    pattern = @"(\d{1,2})\s?(c?m)";
+                    m = Regex.Match(note, pattern);
+                    if (m.Success)
+                    {
+                        kst_sked_band_freq = get_sked_band_qrg(m.Groups[1].Value + " " + m.Groups[2].Value);
+                    }
+                    pattern = @"(\d{3,4})\.(\d{2,3})";
+                    m = Regex.Match(note, pattern);
+                    if (m.Success)
+                    {
+                        Console.WriteLine(m.Value);
+                        uint.TryParse(m.Groups[2].Value, out kst_sked_qrg);
+                        uint.TryParse(m.Groups[1].Value, out kst_sked_band_freq);
+                    }
                     pattern = @"\bcw\b";
                     m = Regex.Match(note, pattern, RegexOptions.IgnoreCase);
                     if (m.Success)
@@ -2665,7 +2696,7 @@ namespace wtKST
                 if (findrow != null)
                     notes = String.Format("[{0} - {1}°]", findrow["LOC"].ToString(), findrow["DIR"].ToString());
                 wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()), 
-                                        notes, last_sked_qrg, kst_sked_qrg, kst_sked_mode);
+                                        notes, last_sked_qrg, kst_sked_qrg, kst_sked_mode, kst_sked_band_freq);
                 if (wtskdlg.ShowDialog() == DialogResult.OK)
                 {
                     WinTest.wtSked wtsked = new WinTest.wtSked();

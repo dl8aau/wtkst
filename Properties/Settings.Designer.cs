@@ -685,6 +685,54 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL in QSO nw, I meep u")]
+        public string KST_Macro_7 {
+            get {
+                return ((string)(this["KST_Macro_7"]));
+            }
+            set {
+                this["KST_Macro_7"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL in QSO nw, pse meep me later")]
+        public string KST_Macro_8 {
+            get {
+                return ((string)(this["KST_Macro_8"]));
+            }
+            set {
+                this["KST_Macro_8"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string KST_Macro_9 {
+            get {
+                return ((string)(this["KST_Macro_9"]));
+            }
+            set {
+                this["KST_Macro_9"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string KST_Macro_0 {
+            get {
+                return ((string)(this["KST_Macro_0"]));
+            }
+            set {
+                this["KST_Macro_0"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool KST_M1 {
             get {
@@ -752,54 +800,6 @@ namespace wtKST.Properties {
             }
             set {
                 this["KST_M6"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL in QSO nw, I meep u")]
-        public string KST_Macro_7 {
-            get {
-                return ((string)(this["KST_Macro_7"]));
-            }
-            set {
-                this["KST_Macro_7"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL in QSO nw, pse mee later")]
-        public string KST_Macro_8 {
-            get {
-                return ((string)(this["KST_Macro_8"]));
-            }
-            set {
-                this["KST_Macro_8"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string KST_Macro_9 {
-            get {
-                return ((string)(this["KST_Macro_9"]));
-            }
-            set {
-                this["KST_Macro_9"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string KST_Macro_0 {
-            get {
-                return ((string)(this["KST_Macro_0"]));
-            }
-            set {
-                this["KST_Macro_0"] = value;
             }
         }
         

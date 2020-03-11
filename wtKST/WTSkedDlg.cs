@@ -23,7 +23,7 @@ namespace wtKST
         private uint short_kst_qrg;
 
         public WTSkedDlg(String call, BindingList<WinTest.wtStatus.wtStat> wts,
-            BindingList<MainDlg.bandinfo> band_info, string notes, uint last_freq = 0, uint sked_freq = 0, string mode = "SSB")
+            BindingList<MainDlg.bandinfo> band_info, string notes, uint last_freq = 0, uint sked_freq = 0, string mode = "SSB", uint sked_band_freq = 0)
         {
             InitializeComponent();
             this.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Windows.Forms.Application.ExecutablePath);
@@ -37,7 +37,6 @@ namespace wtKST
             this.cb_band.DataSource = band_info;
             this.cb_band.DisplayMember = "band_name";
             this.cb_band.ValueMember = "band_name";
-
             this.tb_notes.Text = notes;
 
             short_kst_qrg = sked_freq;
@@ -68,7 +67,16 @@ namespace wtKST
             if(last_freq == 0)
                 this.num_frequency.Value = (decimal)((this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000UL);
             else
-                this.num_frequency.Value = last_freq;             
+                this.num_frequency.Value = last_freq;
+
+
+            if (sked_band_freq > 0)
+            {
+                this.cb_band.SelectedIndex = this.cb_band.FindString(sked_band_freq.ToString());
+                this.num_frequency.Value = get_full_sked_qrg((this.cb_band.SelectedItem as MainDlg.bandinfo), short_kst_qrg);
+            }
+
+            // Hier noch was einbauen, das aus dem Band 23 cm ... die Frequenz ableiten
 
             DateTime dt = DateTime.UtcNow;
             TimeSpan d = TimeSpan.FromMinutes(1);

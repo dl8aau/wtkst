@@ -171,13 +171,13 @@
       <Value Profile="(Default)">\CQ $CALL in QSO nw, I meep u</Value>
     </Setting>
     <Setting Name="KST_Macro_8" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\CQ $CALL in QSO nw, pse mee later</Value>
+      <Value Profile="(Default)">\CQ $CALL in QSO nw, pse meep me later</Value>
     </Setting>
     <Setting Name="KST_Macro_9" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)"></Value>
     </Setting>
     <Setting Name="KST_Macro_0" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)"></Value>
     </Setting>
     <Setting Name="KST_M1" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

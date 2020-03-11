@@ -186,38 +186,22 @@ namespace wtKST
             this.label5 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.label23 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
             this.tb_KST_Name = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.tb_KST_Locator = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.checkBox_KST_Show_Own_Messages = new System.Windows.Forms.CheckBox();
             this.rb_KST_StartAsAway = new System.Windows.Forms.RadioButton();
             this.rb_KST_StartAsHere = new System.Windows.Forms.RadioButton();
             this.cb_KST_AutoConnect = new System.Windows.Forms.CheckBox();
             this.cbb_KST_Chat = new System.Windows.Forms.ComboBox();
             this.tb_KST_Password = new System.Windows.Forms.TextBox();
             this.tb_KST_UserName = new System.Windows.Forms.TextBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.cb_WinTest_Active = new System.Windows.Forms.CheckBox();
             this.tb_Options_WinTest_INI = new System.Windows.Forms.TextBox();
             this.tb_Options_WinTest_QRV = new System.Windows.Forms.TextBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.Bands = new System.Windows.Forms.GroupBox();
             this.checkBox76GHz = new System.Windows.Forms.CheckBox();
             this.checkBox10GHz = new System.Windows.Forms.CheckBox();
@@ -229,28 +213,26 @@ namespace wtKST
             this.checkBox1296 = new System.Windows.Forms.CheckBox();
             this.checkBox432 = new System.Windows.Forms.CheckBox();
             this.checkBox144 = new System.Windows.Forms.CheckBox();
-            this.tb_Options_AS_Local_Server_Name = new System.Windows.Forms.TextBox();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.cb_AS_local = new System.Windows.Forms.CheckBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
             this.cb_AS_QRG = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tb_Options_AS_Local_Server_Name = new System.Windows.Forms.TextBox();
             this.cb_AS_Active = new System.Windows.Forms.CheckBox();
             this.tb_Options_AS_My_Name = new System.Windows.Forms.TextBox();
             this.tb_AS_MinDist = new System.Windows.Forms.TextBox();
             this.tb_Options_AS_Server_Name = new System.Windows.Forms.TextBox();
             this.tb_AS_MaxDist = new System.Windows.Forms.TextBox();
             this.tb_AS_Timeout = new System.Windows.Forms.TextBox();
-            this.cb_AS_local = new System.Windows.Forms.CheckBox();
-            this.checkBox_KST_Show_Own_Messages = new System.Windows.Forms.CheckBox();
-            this.tB_macro_2 = new System.Windows.Forms.TextBox();
-            this.cB_macro_2 = new System.Windows.Forms.CheckBox();
-            this.tB_macro_5 = new System.Windows.Forms.TextBox();
-            this.cB_macro_5 = new System.Windows.Forms.CheckBox();
-            this.tB_macro_6 = new System.Windows.Forms.TextBox();
-            this.cB_macro_6 = new System.Windows.Forms.CheckBox();
-            this.tB_macro_3 = new System.Windows.Forms.TextBox();
-            this.cB_macro_3 = new System.Windows.Forms.CheckBox();
-            this.tB_macro_4 = new System.Windows.Forms.TextBox();
-            this.cB_macro_4 = new System.Windows.Forms.CheckBox();
-            this.tB_macro_1 = new System.Windows.Forms.TextBox();
-            this.cB_macro_1 = new System.Windows.Forms.CheckBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label24 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -263,6 +245,24 @@ namespace wtKST
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.label27 = new System.Windows.Forms.Label();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.tB_macro_2 = new System.Windows.Forms.TextBox();
+            this.label23 = new System.Windows.Forms.Label();
+            this.cB_macro_2 = new System.Windows.Forms.CheckBox();
+            this.tB_macro_5 = new System.Windows.Forms.TextBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.cB_macro_5 = new System.Windows.Forms.CheckBox();
+            this.tB_macro_6 = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.cB_macro_6 = new System.Windows.Forms.CheckBox();
+            this.tB_macro_3 = new System.Windows.Forms.TextBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.cB_macro_3 = new System.Windows.Forms.CheckBox();
+            this.tB_macro_4 = new System.Windows.Forms.TextBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.cB_macro_4 = new System.Windows.Forms.CheckBox();
+            this.tB_macro_1 = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.cB_macro_1 = new System.Windows.Forms.CheckBox();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -371,17 +371,6 @@ namespace wtKST
             this.label17.TabIndex = 14;
             this.label17.Text = "Max. Distance [km]:";
             // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.cb_KST_ShowBalloon);
-            this.groupBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox5.Location = new System.Drawing.Point(9, 215);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(445, 62);
-            this.groupBox5.TabIndex = 12;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Notifications";
-            // 
             // cb_ShowBeacons
             // 
             this.cb_ShowBeacons.AutoSize = true;
@@ -394,6 +383,17 @@ namespace wtKST
             this.cb_ShowBeacons.TabIndex = 13;
             this.cb_ShowBeacons.Text = "Show Beacons";
             this.cb_ShowBeacons.UseVisualStyleBackColor = true;
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.cb_KST_ShowBalloon);
+            this.groupBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox5.Location = new System.Drawing.Point(9, 215);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(445, 62);
+            this.groupBox5.TabIndex = 12;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Notifications";
             // 
             // cb_KST_ShowBalloon
             // 
@@ -475,264 +475,6 @@ namespace wtKST
             this.tabPage1.Text = "KST";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(15, 142);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 13);
-            this.label2.TabIndex = 16;
-            this.label2.Text = "Name :";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(15, 116);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(49, 13);
-            this.label1.TabIndex = 14;
-            this.label1.Text = "Locator :";
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.cb_WinTest_Active);
-            this.tabPage2.Controls.Add(this.btn_Options_WinTest_QRV_Select);
-            this.tabPage2.Controls.Add(this.btn_Options_WinTest_INI_Select);
-            this.tabPage2.Controls.Add(this.label10);
-            this.tabPage2.Controls.Add(this.label6);
-            this.tabPage2.Controls.Add(this.tb_Options_WinTest_INI);
-            this.tabPage2.Controls.Add(this.tb_Options_WinTest_QRV);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(471, 290);
-            this.tabPage2.TabIndex = 0;
-            this.tabPage2.Text = "Win-Test";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.Bands);
-            this.tabPage3.Controls.Add(this.groupBox3);
-            this.tabPage3.Controls.Add(this.groupBox5);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(471, 290);
-            this.tabPage3.TabIndex = 1;
-            this.tabPage3.Text = "Calls";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // tabPage4
-            // 
-            this.tabPage4.Controls.Add(this.cb_AS_local);
-            this.tabPage4.Controls.Add(this.label7);
-            this.tabPage4.Controls.Add(this.label16);
-            this.tabPage4.Controls.Add(this.cb_AS_QRG);
-            this.tabPage4.Controls.Add(this.label8);
-            this.tabPage4.Controls.Add(this.label15);
-            this.tabPage4.Controls.Add(this.label9);
-            this.tabPage4.Controls.Add(this.label14);
-            this.tabPage4.Controls.Add(this.label13);
-            this.tabPage4.Controls.Add(this.label11);
-            this.tabPage4.Controls.Add(this.label12);
-            this.tabPage4.Controls.Add(this.tb_Options_AS_Local_Server_Name);
-            this.tabPage4.Controls.Add(this.cb_AS_Active);
-            this.tabPage4.Controls.Add(this.tb_Options_AS_My_Name);
-            this.tabPage4.Controls.Add(this.tb_AS_MinDist);
-            this.tabPage4.Controls.Add(this.tb_Options_AS_Server_Name);
-            this.tabPage4.Controls.Add(this.tb_AS_MaxDist);
-            this.tabPage4.Controls.Add(this.tb_AS_Timeout);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(471, 290);
-            this.tabPage4.TabIndex = 2;
-            this.tabPage4.Text = "Airplane Scatter";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(202, 102);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(70, 13);
-            this.label7.TabIndex = 26;
-            this.label7.Text = "Local Server:";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(299, 67);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(60, 13);
-            this.label16.TabIndex = 25;
-            this.label16.Text = "Frequency:";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(13, 180);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(224, 13);
-            this.label8.TabIndex = 12;
-            this.label8.Text = "Get aircraft positions in the range of minumum:";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(158, 67);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(55, 13);
-            this.label15.TabIndex = 22;
-            this.label15.Text = "My Name:";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(273, 180);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(102, 13);
-            this.label9.TabIndex = 14;
-            this.label9.Text = "kms up to maximum:";
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(15, 67);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(70, 13);
-            this.label14.TabIndex = 20;
-            this.label14.Text = "Server name:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(199, 131);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(27, 13);
-            this.label13.TabIndex = 19;
-            this.label13.Text = "sec.";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(417, 180);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(29, 13);
-            this.label11.TabIndex = 16;
-            this.label11.Text = "kms.";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(13, 131);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(141, 13);
-            this.label12.TabIndex = 17;
-            this.label12.Text = "Timeout for server response:";
-            // 
-            // tabPage5
-            // 
-            this.tabPage5.Controls.Add(this.textBox2);
-            this.tabPage5.Controls.Add(this.label24);
-            this.tabPage5.Controls.Add(this.checkBox1);
-            this.tabPage5.Controls.Add(this.textBox3);
-            this.tabPage5.Controls.Add(this.label25);
-            this.tabPage5.Controls.Add(this.checkBox2);
-            this.tabPage5.Controls.Add(this.textBox4);
-            this.tabPage5.Controls.Add(this.label26);
-            this.tabPage5.Controls.Add(this.checkBox3);
-            this.tabPage5.Controls.Add(this.textBox5);
-            this.tabPage5.Controls.Add(this.label27);
-            this.tabPage5.Controls.Add(this.checkBox4);
-            this.tabPage5.Controls.Add(this.tB_macro_2);
-            this.tabPage5.Controls.Add(this.label23);
-            this.tabPage5.Controls.Add(this.cB_macro_2);
-            this.tabPage5.Controls.Add(this.tB_macro_5);
-            this.tabPage5.Controls.Add(this.label22);
-            this.tabPage5.Controls.Add(this.cB_macro_5);
-            this.tabPage5.Controls.Add(this.tB_macro_6);
-            this.tabPage5.Controls.Add(this.label21);
-            this.tabPage5.Controls.Add(this.cB_macro_6);
-            this.tabPage5.Controls.Add(this.tB_macro_3);
-            this.tabPage5.Controls.Add(this.label20);
-            this.tabPage5.Controls.Add(this.cB_macro_3);
-            this.tabPage5.Controls.Add(this.tB_macro_4);
-            this.tabPage5.Controls.Add(this.label19);
-            this.tabPage5.Controls.Add(this.cB_macro_4);
-            this.tabPage5.Controls.Add(this.tB_macro_1);
-            this.tabPage5.Controls.Add(this.label18);
-            this.tabPage5.Controls.Add(this.cB_macro_1);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(471, 290);
-            this.tabPage5.TabIndex = 3;
-            this.tabPage5.Text = "KST - Macros";
-            this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(18, 39);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(46, 13);
-            this.label23.TabIndex = 16;
-            this.label23.Text = "Macro 2";
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(18, 114);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(46, 13);
-            this.label22.TabIndex = 13;
-            this.label22.Text = "Macro 5";            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(18, 139);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(46, 13);
-            this.label21.TabIndex = 10;
-            this.label21.Text = "Macro 6";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(18, 64);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(46, 13);
-            this.label20.TabIndex = 7;
-            this.label20.Text = "Macro 3";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(18, 89);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(46, 13);
-            this.label19.TabIndex = 4;
-            this.label19.Text = "Macro 4";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(18, 14);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(46, 13);
-            this.label18.TabIndex = 1;
-            this.label18.Text = "Macro 1";
-            // 
             // tb_KST_Name
             // 
             this.tb_KST_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Name", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
@@ -742,6 +484,16 @@ namespace wtKST
             this.tb_KST_Name.Size = new System.Drawing.Size(121, 20);
             this.tb_KST_Name.TabIndex = 17;
             this.tb_KST_Name.Text = global::wtKST.Properties.Settings.Default.KST_Name;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(15, 142);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(41, 13);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "Name :";
             // 
             // tb_KST_Locator
             // 
@@ -753,6 +505,29 @@ namespace wtKST
             this.tb_KST_Locator.Size = new System.Drawing.Size(121, 20);
             this.tb_KST_Locator.TabIndex = 15;
             this.tb_KST_Locator.Text = global::wtKST.Properties.Settings.Default.KST_Loc;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(15, 116);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(49, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Locator :";
+            // 
+            // checkBox_KST_Show_Own_Messages
+            // 
+            this.checkBox_KST_Show_Own_Messages.AutoSize = true;
+            this.checkBox_KST_Show_Own_Messages.Checked = global::wtKST.Properties.Settings.Default.KST_Show_Own_Messages;
+            this.checkBox_KST_Show_Own_Messages.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_Show_Own_Messages", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.checkBox_KST_Show_Own_Messages.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox_KST_Show_Own_Messages.Location = new System.Drawing.Point(275, 167);
+            this.checkBox_KST_Show_Own_Messages.Name = "checkBox_KST_Show_Own_Messages";
+            this.checkBox_KST_Show_Own_Messages.Size = new System.Drawing.Size(126, 17);
+            this.checkBox_KST_Show_Own_Messages.TabIndex = 13;
+            this.checkBox_KST_Show_Own_Messages.Text = "Show own messages";
+            this.checkBox_KST_Show_Own_Messages.UseVisualStyleBackColor = true;
             // 
             // rb_KST_StartAsAway
             // 
@@ -834,6 +609,22 @@ namespace wtKST
             this.tb_KST_UserName.TabIndex = 5;
             this.tb_KST_UserName.Text = global::wtKST.Properties.Settings.Default.KST_UserName;
             // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.cb_WinTest_Active);
+            this.tabPage2.Controls.Add(this.btn_Options_WinTest_QRV_Select);
+            this.tabPage2.Controls.Add(this.btn_Options_WinTest_INI_Select);
+            this.tabPage2.Controls.Add(this.label10);
+            this.tabPage2.Controls.Add(this.label6);
+            this.tabPage2.Controls.Add(this.tb_Options_WinTest_INI);
+            this.tabPage2.Controls.Add(this.tb_Options_WinTest_QRV);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Size = new System.Drawing.Size(471, 290);
+            this.tabPage2.TabIndex = 0;
+            this.tabPage2.Text = "Win-Test";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
             // cb_WinTest_Active
             // 
             this.cb_WinTest_Active.AutoSize = true;
@@ -866,6 +657,18 @@ namespace wtKST
             this.tb_Options_WinTest_QRV.Size = new System.Drawing.Size(204, 20);
             this.tb_Options_WinTest_QRV.TabIndex = 1;
             this.tb_Options_WinTest_QRV.Text = global::wtKST.Properties.Settings.Default.WinTest_QRV_FileName;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.Bands);
+            this.tabPage3.Controls.Add(this.groupBox3);
+            this.tabPage3.Controls.Add(this.groupBox5);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(471, 290);
+            this.tabPage3.TabIndex = 1;
+            this.tabPage3.Text = "Calls";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // Bands
             // 
@@ -1037,16 +840,66 @@ namespace wtKST
             this.checkBox144.Text = "144MHz";
             this.checkBox144.UseVisualStyleBackColor = true;
             // 
-            // tb_Options_AS_Local_Server_Name
+            // tabPage4
             // 
-            this.tb_Options_AS_Local_Server_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Local_Name", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tb_Options_AS_Local_Server_Name.Enabled = global::wtKST.Properties.Settings.Default.AS_Local_Active;
-            this.tb_Options_AS_Local_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(276, 99);
-            this.tb_Options_AS_Local_Server_Name.Name = "tb_Options_AS_Local_Server_Name";
-            this.tb_Options_AS_Local_Server_Name.Size = new System.Drawing.Size(51, 20);
-            this.tb_Options_AS_Local_Server_Name.TabIndex = 27;
-            this.tb_Options_AS_Local_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Local_Name;
+            this.tabPage4.Controls.Add(this.cb_AS_local);
+            this.tabPage4.Controls.Add(this.label7);
+            this.tabPage4.Controls.Add(this.label16);
+            this.tabPage4.Controls.Add(this.cb_AS_QRG);
+            this.tabPage4.Controls.Add(this.label8);
+            this.tabPage4.Controls.Add(this.label15);
+            this.tabPage4.Controls.Add(this.label9);
+            this.tabPage4.Controls.Add(this.label14);
+            this.tabPage4.Controls.Add(this.label13);
+            this.tabPage4.Controls.Add(this.label11);
+            this.tabPage4.Controls.Add(this.label12);
+            this.tabPage4.Controls.Add(this.tb_Options_AS_Local_Server_Name);
+            this.tabPage4.Controls.Add(this.cb_AS_Active);
+            this.tabPage4.Controls.Add(this.tb_Options_AS_My_Name);
+            this.tabPage4.Controls.Add(this.tb_AS_MinDist);
+            this.tabPage4.Controls.Add(this.tb_Options_AS_Server_Name);
+            this.tabPage4.Controls.Add(this.tb_AS_MaxDist);
+            this.tabPage4.Controls.Add(this.tb_AS_Timeout);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Size = new System.Drawing.Size(471, 290);
+            this.tabPage4.TabIndex = 2;
+            this.tabPage4.Text = "Airplane Scatter";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // cb_AS_local
+            // 
+            this.cb_AS_local.AutoSize = true;
+            this.cb_AS_local.Checked = global::wtKST.Properties.Settings.Default.AS_Local_Active;
+            this.cb_AS_local.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Local_Active", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.cb_AS_local.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_AS_local.Location = new System.Drawing.Point(18, 101);
+            this.cb_AS_local.Name = "cb_AS_local";
+            this.cb_AS_local.Size = new System.Drawing.Size(177, 17);
+            this.cb_AS_local.TabIndex = 28;
+            this.cb_AS_local.Text = "Use local server for double click";
+            this.cb_AS_local.UseVisualStyleBackColor = true;
+            this.cb_AS_local.CheckedChanged += new System.EventHandler(this.cb_AS_local_CheckedChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(202, 102);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(70, 13);
+            this.label7.TabIndex = 26;
+            this.label7.Text = "Local Server:";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(299, 67);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(60, 13);
+            this.label16.TabIndex = 25;
+            this.label16.Text = "Frequency:";
             // 
             // cb_AS_QRG
             // 
@@ -1066,6 +919,87 @@ namespace wtKST
             this.cb_AS_QRG.Name = "cb_AS_QRG";
             this.cb_AS_QRG.Size = new System.Drawing.Size(78, 21);
             this.cb_AS_QRG.TabIndex = 24;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(13, 180);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(224, 13);
+            this.label8.TabIndex = 12;
+            this.label8.Text = "Get aircraft positions in the range of minumum:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(158, 67);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(55, 13);
+            this.label15.TabIndex = 22;
+            this.label15.Text = "My Name:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(273, 180);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(102, 13);
+            this.label9.TabIndex = 14;
+            this.label9.Text = "kms up to maximum:";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(15, 67);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(70, 13);
+            this.label14.TabIndex = 20;
+            this.label14.Text = "Server name:";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label13.Location = new System.Drawing.Point(199, 131);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(27, 13);
+            this.label13.TabIndex = 19;
+            this.label13.Text = "sec.";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(417, 180);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(29, 13);
+            this.label11.TabIndex = 16;
+            this.label11.Text = "kms.";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label12.Location = new System.Drawing.Point(13, 131);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(141, 13);
+            this.label12.TabIndex = 17;
+            this.label12.Text = "Timeout for server response:";
+            // 
+            // tb_Options_AS_Local_Server_Name
+            // 
+            this.tb_Options_AS_Local_Server_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Local_Name", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tb_Options_AS_Local_Server_Name.Enabled = global::wtKST.Properties.Settings.Default.AS_Local_Active;
+            this.tb_Options_AS_Local_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(276, 99);
+            this.tb_Options_AS_Local_Server_Name.Name = "tb_Options_AS_Local_Server_Name";
+            this.tb_Options_AS_Local_Server_Name.Size = new System.Drawing.Size(51, 20);
+            this.tb_Options_AS_Local_Server_Name.TabIndex = 27;
+            this.tb_Options_AS_Local_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Local_Name;
             // 
             // cb_AS_Active
             // 
@@ -1131,141 +1065,45 @@ namespace wtKST
             this.tb_AS_Timeout.TabIndex = 18;
             this.tb_AS_Timeout.Text = global::wtKST.Properties.Settings.Default.AS_Timeout;
             // 
-            // cb_AS_local
+            // tabPage5
             // 
-            this.cb_AS_local.AutoSize = true;
-            this.cb_AS_local.Checked = global::wtKST.Properties.Settings.Default.AS_Local_Active;
-            this.cb_AS_local.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Local_Active", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.cb_AS_local.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_AS_local.Location = new System.Drawing.Point(18, 101);
-            this.cb_AS_local.Name = "cb_AS_local";
-            this.cb_AS_local.Size = new System.Drawing.Size(177, 17);
-            this.cb_AS_local.TabIndex = 28;
-            this.cb_AS_local.Text = "Use local server for double click";
-            this.cb_AS_local.UseVisualStyleBackColor = true;
-            this.cb_AS_local.CheckedChanged += new System.EventHandler(this.cb_AS_local_CheckedChanged);
-            // 
-            // tB_macro_2
-            // 
-            this.tB_macro_2.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_2", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tB_macro_2.Location = new System.Drawing.Point(90, 35);
-            this.tB_macro_2.Name = "tB_macro_2";
-            this.tB_macro_2.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_2.TabIndex = 1;
-            this.tB_macro_2.Text = global::wtKST.Properties.Settings.Default.KST_Macro_2;
-            // 
-            // cB_macro_2
-            // 
-            this.cB_macro_2.AutoSize = true;
-            this.cB_macro_2.Checked = global::wtKST.Properties.Settings.Default.KST_M2;
-            this.cB_macro_2.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_2.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M2", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.cB_macro_2.Location = new System.Drawing.Point(70, 38);
-            this.cB_macro_2.Name = "cB_macro_2";
-            this.cB_macro_2.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_2.TabIndex = 7;
-            this.cB_macro_2.UseVisualStyleBackColor = true;
-            // 
-            // tB_macro_5
-            // 
-            this.tB_macro_5.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_5", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tB_macro_5.Location = new System.Drawing.Point(90, 110);
-            this.tB_macro_5.Name = "tB_macro_5";
-            this.tB_macro_5.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_5.TabIndex = 4;
-            this.tB_macro_5.Text = global::wtKST.Properties.Settings.Default.KST_Macro_5;
-            // 
-            // cB_macro_5
-            // 
-            this.cB_macro_5.AutoSize = true;
-            this.cB_macro_5.Checked = global::wtKST.Properties.Settings.Default.KST_M5;
-            this.cB_macro_5.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_5.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M5", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.cB_macro_5.Location = new System.Drawing.Point(70, 113);
-            this.cB_macro_5.Name = "cB_macro_5";
-            this.cB_macro_5.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_5.TabIndex = 10;
-            this.cB_macro_5.UseVisualStyleBackColor = true;
-            // tB_macro_6
-            // 
-            this.tB_macro_6.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_6", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tB_macro_6.Location = new System.Drawing.Point(90, 135);
-            this.tB_macro_6.Name = "tB_macro_6";
-            this.tB_macro_6.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_6.TabIndex = 5;
-            this.tB_macro_6.Text = global::wtKST.Properties.Settings.Default.KST_Macro_6;
-            // 
-            // cB_macro_6
-            // 
-            this.cB_macro_6.AutoSize = true;
-            this.cB_macro_6.Checked = global::wtKST.Properties.Settings.Default.KST_M6;
-            this.cB_macro_6.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_6.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M6", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.cB_macro_6.Location = new System.Drawing.Point(70, 138);
-            this.cB_macro_6.Name = "cB_macro_6";
-            this.cB_macro_6.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_6.TabIndex = 11;
-            this.cB_macro_6.UseVisualStyleBackColor = true;
-            // tB_macro_3
-            // 
-            this.tB_macro_3.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_3", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tB_macro_3.Location = new System.Drawing.Point(90, 60);
-            this.tB_macro_3.Name = "tB_macro_3";
-            this.tB_macro_3.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_3.TabIndex = 2;
-            this.tB_macro_3.Text = global::wtKST.Properties.Settings.Default.KST_Macro_3;
-            // 
-            // cB_macro_3
-            // 
-            this.cB_macro_3.AutoSize = true;
-            this.cB_macro_3.Checked = global::wtKST.Properties.Settings.Default.KST_M3;
-            this.cB_macro_3.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_3.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M3", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.cB_macro_3.Location = new System.Drawing.Point(70, 63);
-            this.cB_macro_3.Name = "cB_macro_3";
-            this.cB_macro_3.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_3.TabIndex = 8;
-            this.cB_macro_3.UseVisualStyleBackColor = true;
-            // tB_macro_4
-            // 
-            this.tB_macro_4.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_4", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tB_macro_4.Location = new System.Drawing.Point(90, 85);
-            this.tB_macro_4.Name = "tB_macro_4";
-            this.tB_macro_4.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_4.TabIndex = 3;
-            this.tB_macro_4.Text = global::wtKST.Properties.Settings.Default.KST_Macro_4;
-            // 
-            // cB_macro_4
-            // 
-            this.cB_macro_4.AutoSize = true;
-            this.cB_macro_4.Checked = global::wtKST.Properties.Settings.Default.KST_M4;
-            this.cB_macro_4.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_4.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M4", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.cB_macro_4.Location = new System.Drawing.Point(70, 88);
-            this.cB_macro_4.Name = "cB_macro_4";
-            this.cB_macro_4.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_4.TabIndex = 9;
-            this.cB_macro_4.UseVisualStyleBackColor = true;
-            // tB_macro_1
-            // 
-            this.tB_macro_1.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_1", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tB_macro_1.Location = new System.Drawing.Point(90, 10);
-            this.tB_macro_1.Name = "tB_macro_1";
-            this.tB_macro_1.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_1.TabIndex = 0;
-            this.tB_macro_1.Text = global::wtKST.Properties.Settings.Default.KST_Macro_1;
-            // 
-            // cB_macro_1
-            // 
-            this.cB_macro_1.AutoSize = true;
-            this.cB_macro_1.Checked = global::wtKST.Properties.Settings.Default.KST_M1;
-            this.cB_macro_1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cB_macro_1.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M1", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.cB_macro_1.Location = new System.Drawing.Point(70, 13);
-            this.cB_macro_1.Name = "cB_macro_1";
-            this.cB_macro_1.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_1.TabIndex = 6;
-            this.cB_macro_1.UseVisualStyleBackColor = true;
+            this.tabPage5.Controls.Add(this.textBox2);
+            this.tabPage5.Controls.Add(this.label24);
+            this.tabPage5.Controls.Add(this.checkBox1);
+            this.tabPage5.Controls.Add(this.textBox3);
+            this.tabPage5.Controls.Add(this.label25);
+            this.tabPage5.Controls.Add(this.checkBox2);
+            this.tabPage5.Controls.Add(this.textBox4);
+            this.tabPage5.Controls.Add(this.label26);
+            this.tabPage5.Controls.Add(this.checkBox3);
+            this.tabPage5.Controls.Add(this.textBox5);
+            this.tabPage5.Controls.Add(this.label27);
+            this.tabPage5.Controls.Add(this.checkBox4);
+            this.tabPage5.Controls.Add(this.tB_macro_2);
+            this.tabPage5.Controls.Add(this.label23);
+            this.tabPage5.Controls.Add(this.cB_macro_2);
+            this.tabPage5.Controls.Add(this.tB_macro_5);
+            this.tabPage5.Controls.Add(this.label22);
+            this.tabPage5.Controls.Add(this.cB_macro_5);
+            this.tabPage5.Controls.Add(this.tB_macro_6);
+            this.tabPage5.Controls.Add(this.label21);
+            this.tabPage5.Controls.Add(this.cB_macro_6);
+            this.tabPage5.Controls.Add(this.tB_macro_3);
+            this.tabPage5.Controls.Add(this.label20);
+            this.tabPage5.Controls.Add(this.cB_macro_3);
+            this.tabPage5.Controls.Add(this.tB_macro_4);
+            this.tabPage5.Controls.Add(this.label19);
+            this.tabPage5.Controls.Add(this.cB_macro_4);
+            this.tabPage5.Controls.Add(this.tB_macro_1);
+            this.tabPage5.Controls.Add(this.label18);
+            this.tabPage5.Controls.Add(this.cB_macro_1);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(471, 290);
+            this.tabPage5.TabIndex = 3;
+            this.tabPage5.Text = "KST - Macros";
+            this.tabPage5.UseVisualStyleBackColor = true;
             // 
             // textBox2
             // 
@@ -1273,8 +1111,7 @@ namespace wtKST
             this.textBox2.Location = new System.Drawing.Point(90, 210);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(374, 20);
-            this.textBox2.TabIndex = 20;
-            this.textBox2.Text = global::wtKST.Properties.Settings.Default.KST_Macro_9;
+            this.textBox2.TabIndex = 18;
             // 
             // label24
             // 
@@ -1285,28 +1122,14 @@ namespace wtKST
             this.label24.TabIndex = 29;
             this.label24.Text = "Macro 9";
             // 
-            // checkBox_KST_Show_Own_Messages
-            // 
-            this.checkBox_KST_Show_Own_Messages.AutoSize = true;
-            this.checkBox_KST_Show_Own_Messages.Checked = global::wtKST.Properties.Settings.Default.KST_Show_Own_Messages;
-            this.checkBox_KST_Show_Own_Messages.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_Show_Own_Messages", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.checkBox_KST_Show_Own_Messages.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox_KST_Show_Own_Messages.Location = new System.Drawing.Point(275, 167);
-            this.checkBox_KST_Show_Own_Messages.Name = "checkBox_KST_Show_Own_Messages";
-            this.checkBox_KST_Show_Own_Messages.Size = new System.Drawing.Size(126, 17);
-            this.checkBox_KST_Show_Own_Messages.TabIndex = 13;
-            this.checkBox_KST_Show_Own_Messages.Text = "Show own messages";
-            this.checkBox_KST_Show_Own_Messages.UseVisualStyleBackColor = true;
-            // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = global::wtKST.Properties.Settings.Default.KST_M9;
             this.checkBox1.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M9", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.checkBox1.Location = new System.Drawing.Point(70, 213);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(15, 14);
-            this.checkBox1.TabIndex = 26;
+            this.checkBox1.TabIndex = 17;
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // textBox3
@@ -1315,8 +1138,7 @@ namespace wtKST
             this.textBox3.Location = new System.Drawing.Point(90, 235);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(374, 20);
-            this.textBox3.TabIndex = 22;
-            this.textBox3.Text = global::wtKST.Properties.Settings.Default.KST_Macro_0;
+            this.textBox3.TabIndex = 20;
             // 
             // label25
             // 
@@ -1330,12 +1152,11 @@ namespace wtKST
             // checkBox2
             // 
             this.checkBox2.AutoSize = true;
-            this.checkBox2.Checked = global::wtKST.Properties.Settings.Default.KST_M0;
             this.checkBox2.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M0", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.checkBox2.Location = new System.Drawing.Point(70, 238);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(15, 14);
-            this.checkBox2.TabIndex = 28;
+            this.checkBox2.TabIndex = 19;
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // textBox4
@@ -1344,8 +1165,7 @@ namespace wtKST
             this.textBox4.Location = new System.Drawing.Point(90, 160);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(374, 20);
-            this.textBox4.TabIndex = 18;
-            this.textBox4.Text = global::wtKST.Properties.Settings.Default.KST_Macro_7;
+            this.textBox4.TabIndex = 14;
             // 
             // label26
             // 
@@ -1359,12 +1179,11 @@ namespace wtKST
             // checkBox3
             // 
             this.checkBox3.AutoSize = true;
-            this.checkBox3.Checked = global::wtKST.Properties.Settings.Default.KST_M7;
             this.checkBox3.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M7", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.checkBox3.Location = new System.Drawing.Point(70, 163);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(15, 14);
-            this.checkBox3.TabIndex = 24;
+            this.checkBox3.TabIndex = 13;
             this.checkBox3.UseVisualStyleBackColor = true;
             // 
             // textBox5
@@ -1373,8 +1192,7 @@ namespace wtKST
             this.textBox5.Location = new System.Drawing.Point(90, 185);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(374, 20);
-            this.textBox5.TabIndex = 19;
-            this.textBox5.Text = global::wtKST.Properties.Settings.Default.KST_Macro_8;
+            this.textBox5.TabIndex = 16;
             // 
             // label27
             // 
@@ -1388,13 +1206,186 @@ namespace wtKST
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
-            this.checkBox4.Checked = global::wtKST.Properties.Settings.Default.KST_M8;
             this.checkBox4.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M8", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.checkBox4.Location = new System.Drawing.Point(70, 188);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(15, 14);
-            this.checkBox4.TabIndex = 25;
+            this.checkBox4.TabIndex = 15;
             this.checkBox4.UseVisualStyleBackColor = true;
+            // 
+            // tB_macro_2
+            // 
+            this.tB_macro_2.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_2", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tB_macro_2.Location = new System.Drawing.Point(90, 35);
+            this.tB_macro_2.Name = "tB_macro_2";
+            this.tB_macro_2.Size = new System.Drawing.Size(374, 20);
+            this.tB_macro_2.TabIndex = 3;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(18, 39);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(46, 13);
+            this.label23.TabIndex = 16;
+            this.label23.Text = "Macro 2";
+            // 
+            // cB_macro_2
+            // 
+            this.cB_macro_2.AutoSize = true;
+            this.cB_macro_2.Checked = true;
+            this.cB_macro_2.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cB_macro_2.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M2", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.cB_macro_2.Location = new System.Drawing.Point(70, 38);
+            this.cB_macro_2.Name = "cB_macro_2";
+            this.cB_macro_2.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_2.TabIndex = 2;
+            this.cB_macro_2.UseVisualStyleBackColor = true;
+            // 
+            // tB_macro_5
+            // 
+            this.tB_macro_5.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_5", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tB_macro_5.Location = new System.Drawing.Point(90, 110);
+            this.tB_macro_5.Name = "tB_macro_5";
+            this.tB_macro_5.Size = new System.Drawing.Size(374, 20);
+            this.tB_macro_5.TabIndex = 9;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(18, 114);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(46, 13);
+            this.label22.TabIndex = 13;
+            this.label22.Text = "Macro 5";
+            // 
+            // cB_macro_5
+            // 
+            this.cB_macro_5.AutoSize = true;
+            this.cB_macro_5.Checked = true;
+            this.cB_macro_5.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cB_macro_5.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M5", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.cB_macro_5.Location = new System.Drawing.Point(70, 113);
+            this.cB_macro_5.Name = "cB_macro_5";
+            this.cB_macro_5.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_5.TabIndex = 8;
+            this.cB_macro_5.UseVisualStyleBackColor = true;
+            // 
+            // tB_macro_6
+            // 
+            this.tB_macro_6.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_6", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tB_macro_6.Location = new System.Drawing.Point(90, 135);
+            this.tB_macro_6.Name = "tB_macro_6";
+            this.tB_macro_6.Size = new System.Drawing.Size(374, 20);
+            this.tB_macro_6.TabIndex = 12;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(18, 139);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(46, 13);
+            this.label21.TabIndex = 10;
+            this.label21.Text = "Macro 6";
+            // 
+            // cB_macro_6
+            // 
+            this.cB_macro_6.AutoSize = true;
+            this.cB_macro_6.Checked = true;
+            this.cB_macro_6.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cB_macro_6.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M6", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.cB_macro_6.Location = new System.Drawing.Point(70, 138);
+            this.cB_macro_6.Name = "cB_macro_6";
+            this.cB_macro_6.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_6.TabIndex = 10;
+            this.cB_macro_6.UseVisualStyleBackColor = true;
+            // 
+            // tB_macro_3
+            // 
+            this.tB_macro_3.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_3", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tB_macro_3.Location = new System.Drawing.Point(90, 60);
+            this.tB_macro_3.Name = "tB_macro_3";
+            this.tB_macro_3.Size = new System.Drawing.Size(374, 20);
+            this.tB_macro_3.TabIndex = 5;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Location = new System.Drawing.Point(18, 64);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(46, 13);
+            this.label20.TabIndex = 7;
+            this.label20.Text = "Macro 3";
+            // 
+            // cB_macro_3
+            // 
+            this.cB_macro_3.AutoSize = true;
+            this.cB_macro_3.Checked = true;
+            this.cB_macro_3.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cB_macro_3.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M3", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.cB_macro_3.Location = new System.Drawing.Point(70, 63);
+            this.cB_macro_3.Name = "cB_macro_3";
+            this.cB_macro_3.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_3.TabIndex = 4;
+            this.cB_macro_3.UseVisualStyleBackColor = true;
+            // 
+            // tB_macro_4
+            // 
+            this.tB_macro_4.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_4", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tB_macro_4.Location = new System.Drawing.Point(90, 85);
+            this.tB_macro_4.Name = "tB_macro_4";
+            this.tB_macro_4.Size = new System.Drawing.Size(374, 20);
+            this.tB_macro_4.TabIndex = 7;
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(18, 89);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(46, 13);
+            this.label19.TabIndex = 4;
+            this.label19.Text = "Macro 4";
+            // 
+            // cB_macro_4
+            // 
+            this.cB_macro_4.AutoSize = true;
+            this.cB_macro_4.Checked = true;
+            this.cB_macro_4.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cB_macro_4.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M4", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.cB_macro_4.Location = new System.Drawing.Point(70, 88);
+            this.cB_macro_4.Name = "cB_macro_4";
+            this.cB_macro_4.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_4.TabIndex = 6;
+            this.cB_macro_4.UseVisualStyleBackColor = true;
+            // 
+            // tB_macro_1
+            // 
+            this.tB_macro_1.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "KST_Macro_1", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tB_macro_1.Location = new System.Drawing.Point(90, 10);
+            this.tB_macro_1.Name = "tB_macro_1";
+            this.tB_macro_1.Size = new System.Drawing.Size(374, 20);
+            this.tB_macro_1.TabIndex = 1;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(18, 14);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(46, 13);
+            this.label18.TabIndex = 1;
+            this.label18.Text = "Macro 1";
+            // 
+            // cB_macro_1
+            // 
+            this.cB_macro_1.AutoSize = true;
+            this.cB_macro_1.Checked = true;
+            this.cB_macro_1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cB_macro_1.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "KST_M1", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.cB_macro_1.Location = new System.Drawing.Point(70, 13);
+            this.cB_macro_1.Name = "cB_macro_1";
+            this.cB_macro_1.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_1.TabIndex = 0;
+            this.cB_macro_1.UseVisualStyleBackColor = true;
             // 
             // OptionsDlg
             // 
