@@ -2605,15 +2605,19 @@ namespace wtKST
             }
             lv_MyMsg.Columns[lv_MyMsg.Columns.Count - 1].Width = lv_MyMsg.Width - colwidth - 3;
         }
+
+
+        /// <summary>
+        /// return frequency of the band named by wavelength "band"
+        /// </summary>
+        /// <param name="band">wavelength in the form nn m/cm/mm like "23 cm"</param>
+        /// <returns>frequency in MHz</returns>
         private uint get_sked_band_qrg(string band)
         {
-            switch (band)
+            foreach( var b in new List<bandinfo>(selected_bands()))
             {
-                case "2 m": return 144;
-                case "70 cm": return 432;
-                case "23 cm": return 1296;
-                case "13 cm": return 2320;
-                // Bitte noch vervollständigen
+                if (b.band_wavelength_name.Equals(band))
+                    return b.band_center_activity / 1000;
             }
             return 0;
         }
