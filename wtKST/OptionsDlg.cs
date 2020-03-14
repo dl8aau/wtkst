@@ -302,7 +302,7 @@ namespace wtKST
             this.btn_Options_WinTest_INI_Select.Location = new System.Drawing.Point(345, 55);
             this.btn_Options_WinTest_INI_Select.Name = "btn_Options_WinTest_INI_Select";
             this.btn_Options_WinTest_INI_Select.Size = new System.Drawing.Size(75, 23);
-            this.btn_Options_WinTest_INI_Select.TabIndex = 13;
+            this.btn_Options_WinTest_INI_Select.TabIndex = 14;
             this.btn_Options_WinTest_INI_Select.Text = "Select";
             this.btn_Options_WinTest_INI_Select.UseVisualStyleBackColor = true;
             this.btn_Options_WinTest_INI_Select.Click += new System.EventHandler(this.btn_Options_WinTest_INI_Select_Click);
@@ -323,7 +323,7 @@ namespace wtKST
             this.btn_Options_WinTest_QRV_Select.Location = new System.Drawing.Point(345, 81);
             this.btn_Options_WinTest_QRV_Select.Name = "btn_Options_WinTest_QRV_Select";
             this.btn_Options_WinTest_QRV_Select.Size = new System.Drawing.Size(75, 23);
-            this.btn_Options_WinTest_QRV_Select.TabIndex = 10;
+            this.btn_Options_WinTest_QRV_Select.TabIndex = 16;
             this.btn_Options_WinTest_QRV_Select.Text = "Select";
             this.btn_Options_WinTest_QRV_Select.UseVisualStyleBackColor = true;
             this.btn_Options_WinTest_QRV_Select.Click += new System.EventHandler(this.btn_Options_WinTest_QRV_Select_Click);
@@ -335,7 +335,7 @@ namespace wtKST
             this.label10.Location = new System.Drawing.Point(21, 86);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(45, 13);
-            this.label10.TabIndex = 0;
+            this.label10.TabIndex = 12;
             this.label10.Text = "qrv.xdt :";
             // 
             // groupBox3
@@ -358,7 +358,7 @@ namespace wtKST
             this.tb_KST_MaxDist.Location = new System.Drawing.Point(241, 29);
             this.tb_KST_MaxDist.Name = "tb_KST_MaxDist";
             this.tb_KST_MaxDist.Size = new System.Drawing.Size(45, 20);
-            this.tb_KST_MaxDist.TabIndex = 15;
+            this.tb_KST_MaxDist.TabIndex = 7;
             this.tb_KST_MaxDist.Text = global::wtKST.Properties.Settings.Default.KST_MaxDist;
             // 
             // label17
@@ -368,7 +368,7 @@ namespace wtKST
             this.label17.Location = new System.Drawing.Point(124, 32);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(101, 13);
-            this.label17.TabIndex = 14;
+            this.label17.TabIndex = 6;
             this.label17.Text = "Max. Distance [km]:";
             // 
             // cb_ShowBeacons
@@ -380,7 +380,7 @@ namespace wtKST
             this.cb_ShowBeacons.Location = new System.Drawing.Point(9, 32);
             this.cb_ShowBeacons.Name = "cb_ShowBeacons";
             this.cb_ShowBeacons.Size = new System.Drawing.Size(98, 17);
-            this.cb_ShowBeacons.TabIndex = 13;
+            this.cb_ShowBeacons.TabIndex = 5;
             this.cb_ShowBeacons.Text = "Show Beacons";
             this.cb_ShowBeacons.UseVisualStyleBackColor = true;
             // 
@@ -391,7 +391,7 @@ namespace wtKST
             this.groupBox5.Location = new System.Drawing.Point(9, 215);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(445, 62);
-            this.groupBox5.TabIndex = 12;
+            this.groupBox5.TabIndex = 25;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Notifications";
             // 
@@ -405,7 +405,7 @@ namespace wtKST
             this.cb_KST_ShowBalloon.Location = new System.Drawing.Point(9, 29);
             this.cb_KST_ShowBalloon.Name = "cb_KST_ShowBalloon";
             this.cb_KST_ShowBalloon.Size = new System.Drawing.Size(241, 17);
-            this.cb_KST_ShowBalloon.TabIndex = 11;
+            this.cb_KST_ShowBalloon.TabIndex = 30;
             this.cb_KST_ShowBalloon.Text = "On new MyMessages show ballon notification";
             this.cb_KST_ShowBalloon.UseVisualStyleBackColor = true;
             // 
@@ -416,7 +416,7 @@ namespace wtKST
             this.label3.Location = new System.Drawing.Point(15, 26);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(35, 13);
-            this.label3.TabIndex = 4;
+            this.label3.TabIndex = 3;
             this.label3.Text = "User :";
             // 
             // label4
@@ -426,7 +426,7 @@ namespace wtKST
             this.label4.Location = new System.Drawing.Point(15, 53);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(59, 13);
-            this.label4.TabIndex = 6;
+            this.label4.TabIndex = 4;
             this.label4.Text = "Password :";
             // 
             // label5
@@ -436,7 +436,7 @@ namespace wtKST
             this.label5.Location = new System.Drawing.Point(15, 79);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(35, 13);
-            this.label5.TabIndex = 9;
+            this.label5.TabIndex = 5;
             this.label5.Text = "Chat :";
             // 
             // tabControl1
@@ -482,7 +482,7 @@ namespace wtKST
             this.tb_KST_Name.Location = new System.Drawing.Point(120, 142);
             this.tb_KST_Name.Name = "tb_KST_Name";
             this.tb_KST_Name.Size = new System.Drawing.Size(121, 20);
-            this.tb_KST_Name.TabIndex = 17;
+            this.tb_KST_Name.TabIndex = 12;
             this.tb_KST_Name.Text = global::wtKST.Properties.Settings.Default.KST_Name;
             // 
             // label2
@@ -492,7 +492,7 @@ namespace wtKST
             this.label2.Location = new System.Drawing.Point(15, 142);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 13);
-            this.label2.TabIndex = 16;
+            this.label2.TabIndex = 7;
             this.label2.Text = "Name :";
             // 
             // tb_KST_Locator
@@ -503,7 +503,7 @@ namespace wtKST
             this.tb_KST_Locator.Location = new System.Drawing.Point(120, 116);
             this.tb_KST_Locator.Name = "tb_KST_Locator";
             this.tb_KST_Locator.Size = new System.Drawing.Size(121, 20);
-            this.tb_KST_Locator.TabIndex = 15;
+            this.tb_KST_Locator.TabIndex = 11;
             this.tb_KST_Locator.Text = global::wtKST.Properties.Settings.Default.KST_Loc;
             // 
             // label1
@@ -513,7 +513,7 @@ namespace wtKST
             this.label1.Location = new System.Drawing.Point(15, 116);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(49, 13);
-            this.label1.TabIndex = 14;
+            this.label1.TabIndex = 6;
             this.label1.Text = "Locator :";
             // 
             // checkBox_KST_Show_Own_Messages
@@ -525,7 +525,7 @@ namespace wtKST
             this.checkBox_KST_Show_Own_Messages.Location = new System.Drawing.Point(275, 167);
             this.checkBox_KST_Show_Own_Messages.Name = "checkBox_KST_Show_Own_Messages";
             this.checkBox_KST_Show_Own_Messages.Size = new System.Drawing.Size(126, 17);
-            this.checkBox_KST_Show_Own_Messages.TabIndex = 13;
+            this.checkBox_KST_Show_Own_Messages.TabIndex = 16;
             this.checkBox_KST_Show_Own_Messages.Text = "Show own messages";
             this.checkBox_KST_Show_Own_Messages.UseVisualStyleBackColor = true;
             // 
@@ -538,7 +538,7 @@ namespace wtKST
             this.rb_KST_StartAsAway.Location = new System.Drawing.Point(275, 101);
             this.rb_KST_StartAsAway.Name = "rb_KST_StartAsAway";
             this.rb_KST_StartAsAway.Size = new System.Drawing.Size(96, 17);
-            this.rb_KST_StartAsAway.TabIndex = 12;
+            this.rb_KST_StartAsAway.TabIndex = 15;
             this.rb_KST_StartAsAway.TabStop = true;
             this.rb_KST_StartAsAway.Text = "Start as AWAY";
             this.rb_KST_StartAsAway.UseVisualStyleBackColor = true;
@@ -553,7 +553,7 @@ namespace wtKST
             this.rb_KST_StartAsHere.Location = new System.Drawing.Point(275, 70);
             this.rb_KST_StartAsHere.Name = "rb_KST_StartAsHere";
             this.rb_KST_StartAsHere.Size = new System.Drawing.Size(94, 17);
-            this.rb_KST_StartAsHere.TabIndex = 11;
+            this.rb_KST_StartAsHere.TabIndex = 14;
             this.rb_KST_StartAsHere.Text = "Start as HERE";
             this.rb_KST_StartAsHere.UseVisualStyleBackColor = true;
             this.rb_KST_StartAsHere.Click += new System.EventHandler(this.rb_KST_StartAsAwayHere_Click);
@@ -567,7 +567,7 @@ namespace wtKST
             this.cb_KST_AutoConnect.Location = new System.Drawing.Point(277, 21);
             this.cb_KST_AutoConnect.Name = "cb_KST_AutoConnect";
             this.cb_KST_AutoConnect.Size = new System.Drawing.Size(90, 17);
-            this.cb_KST_AutoConnect.TabIndex = 10;
+            this.cb_KST_AutoConnect.TabIndex = 13;
             this.cb_KST_AutoConnect.Text = "Auto connect";
             this.cb_KST_AutoConnect.UseVisualStyleBackColor = true;
             // 
@@ -585,7 +585,7 @@ namespace wtKST
             this.cbb_KST_Chat.Location = new System.Drawing.Point(120, 79);
             this.cbb_KST_Chat.Name = "cbb_KST_Chat";
             this.cbb_KST_Chat.Size = new System.Drawing.Size(121, 21);
-            this.cbb_KST_Chat.TabIndex = 8;
+            this.cbb_KST_Chat.TabIndex = 10;
             this.cbb_KST_Chat.Text = global::wtKST.Properties.Settings.Default.KST_Chat;
             // 
             // tb_KST_Password
@@ -596,7 +596,7 @@ namespace wtKST
             this.tb_KST_Password.Name = "tb_KST_Password";
             this.tb_KST_Password.PasswordChar = '*';
             this.tb_KST_Password.Size = new System.Drawing.Size(121, 20);
-            this.tb_KST_Password.TabIndex = 7;
+            this.tb_KST_Password.TabIndex = 9;
             this.tb_KST_Password.Text = global::wtKST.Properties.Settings.Default.KST_Password;
             // 
             // tb_KST_UserName
@@ -606,7 +606,7 @@ namespace wtKST
             this.tb_KST_UserName.Location = new System.Drawing.Point(120, 26);
             this.tb_KST_UserName.Name = "tb_KST_UserName";
             this.tb_KST_UserName.Size = new System.Drawing.Size(121, 20);
-            this.tb_KST_UserName.TabIndex = 5;
+            this.tb_KST_UserName.TabIndex = 8;
             this.tb_KST_UserName.Text = global::wtKST.Properties.Settings.Default.KST_UserName;
             // 
             // tabPage2
@@ -634,7 +634,7 @@ namespace wtKST
             this.cb_WinTest_Active.Location = new System.Drawing.Point(24, 29);
             this.cb_WinTest_Active.Name = "cb_WinTest_Active";
             this.cb_WinTest_Active.Size = new System.Drawing.Size(65, 17);
-            this.cb_WinTest_Active.TabIndex = 14;
+            this.cb_WinTest_Active.TabIndex = 10;
             this.cb_WinTest_Active.Text = "Activate";
             this.cb_WinTest_Active.UseVisualStyleBackColor = true;
             // 
@@ -645,7 +645,7 @@ namespace wtKST
             this.tb_Options_WinTest_INI.Location = new System.Drawing.Point(126, 57);
             this.tb_Options_WinTest_INI.Name = "tb_Options_WinTest_INI";
             this.tb_Options_WinTest_INI.Size = new System.Drawing.Size(204, 20);
-            this.tb_Options_WinTest_INI.TabIndex = 12;
+            this.tb_Options_WinTest_INI.TabIndex = 13;
             this.tb_Options_WinTest_INI.Text = global::wtKST.Properties.Settings.Default.WinTest_INI_FileName;
             // 
             // tb_Options_WinTest_QRV
@@ -655,7 +655,7 @@ namespace wtKST
             this.tb_Options_WinTest_QRV.Location = new System.Drawing.Point(126, 83);
             this.tb_Options_WinTest_QRV.Name = "tb_Options_WinTest_QRV";
             this.tb_Options_WinTest_QRV.Size = new System.Drawing.Size(204, 20);
-            this.tb_Options_WinTest_QRV.TabIndex = 1;
+            this.tb_Options_WinTest_QRV.TabIndex = 15;
             this.tb_Options_WinTest_QRV.Text = global::wtKST.Properties.Settings.Default.WinTest_QRV_FileName;
             // 
             // tabPage3
@@ -686,7 +686,7 @@ namespace wtKST
             this.Bands.Location = new System.Drawing.Point(9, 87);
             this.Bands.Name = "Bands";
             this.Bands.Size = new System.Drawing.Size(445, 122);
-            this.Bands.TabIndex = 13;
+            this.Bands.TabIndex = 8;
             this.Bands.TabStop = false;
             this.Bands.Text = "Bands";
             // 
@@ -701,7 +701,7 @@ namespace wtKST
             this.checkBox76GHz.Location = new System.Drawing.Point(46, 96);
             this.checkBox76GHz.Name = "checkBox76GHz";
             this.checkBox76GHz.Size = new System.Drawing.Size(59, 17);
-            this.checkBox76GHz.TabIndex = 10;
+            this.checkBox76GHz.TabIndex = 24;
             this.checkBox76GHz.Text = "76GHz";
             this.checkBox76GHz.UseVisualStyleBackColor = true;
             // 
@@ -716,7 +716,7 @@ namespace wtKST
             this.checkBox10GHz.Location = new System.Drawing.Point(46, 73);
             this.checkBox10GHz.Name = "checkBox10GHz";
             this.checkBox10GHz.Size = new System.Drawing.Size(59, 17);
-            this.checkBox10GHz.TabIndex = 7;
+            this.checkBox10GHz.TabIndex = 21;
             this.checkBox10GHz.Text = "10GHz";
             this.checkBox10GHz.UseVisualStyleBackColor = true;
             // 
@@ -731,7 +731,7 @@ namespace wtKST
             this.checkBox24GHz.Location = new System.Drawing.Point(150, 73);
             this.checkBox24GHz.Name = "checkBox24GHz";
             this.checkBox24GHz.Size = new System.Drawing.Size(59, 17);
-            this.checkBox24GHz.TabIndex = 8;
+            this.checkBox24GHz.TabIndex = 22;
             this.checkBox24GHz.Text = "24GHz";
             this.checkBox24GHz.UseVisualStyleBackColor = true;
             // 
@@ -746,7 +746,7 @@ namespace wtKST
             this.checkBox47GHz.Location = new System.Drawing.Point(263, 73);
             this.checkBox47GHz.Name = "checkBox47GHz";
             this.checkBox47GHz.Size = new System.Drawing.Size(59, 17);
-            this.checkBox47GHz.TabIndex = 9;
+            this.checkBox47GHz.TabIndex = 23;
             this.checkBox47GHz.Text = "47GHz";
             this.checkBox47GHz.UseVisualStyleBackColor = true;
             // 
@@ -761,7 +761,7 @@ namespace wtKST
             this.checkBox2320.Location = new System.Drawing.Point(33, 50);
             this.checkBox2320.Name = "checkBox2320";
             this.checkBox2320.Size = new System.Drawing.Size(72, 17);
-            this.checkBox2320.TabIndex = 4;
+            this.checkBox2320.TabIndex = 18;
             this.checkBox2320.Text = "2320MHz";
             this.checkBox2320.UseVisualStyleBackColor = true;
             // 
@@ -776,7 +776,7 @@ namespace wtKST
             this.checkBox3400.Location = new System.Drawing.Point(137, 50);
             this.checkBox3400.Name = "checkBox3400";
             this.checkBox3400.Size = new System.Drawing.Size(72, 17);
-            this.checkBox3400.TabIndex = 5;
+            this.checkBox3400.TabIndex = 19;
             this.checkBox3400.Text = "3400MHz";
             this.checkBox3400.UseVisualStyleBackColor = true;
             // 
@@ -791,7 +791,7 @@ namespace wtKST
             this.checkBox5760.Location = new System.Drawing.Point(250, 50);
             this.checkBox5760.Name = "checkBox5760";
             this.checkBox5760.Size = new System.Drawing.Size(72, 17);
-            this.checkBox5760.TabIndex = 6;
+            this.checkBox5760.TabIndex = 20;
             this.checkBox5760.Text = "5760MHz";
             this.checkBox5760.UseVisualStyleBackColor = true;
             // 
@@ -806,7 +806,7 @@ namespace wtKST
             this.checkBox1296.Location = new System.Drawing.Point(250, 27);
             this.checkBox1296.Name = "checkBox1296";
             this.checkBox1296.Size = new System.Drawing.Size(72, 17);
-            this.checkBox1296.TabIndex = 3;
+            this.checkBox1296.TabIndex = 17;
             this.checkBox1296.Text = "1296MHz";
             this.checkBox1296.UseVisualStyleBackColor = true;
             // 
@@ -821,7 +821,7 @@ namespace wtKST
             this.checkBox432.Location = new System.Drawing.Point(143, 27);
             this.checkBox432.Name = "checkBox432";
             this.checkBox432.Size = new System.Drawing.Size(66, 17);
-            this.checkBox432.TabIndex = 2;
+            this.checkBox432.TabIndex = 16;
             this.checkBox432.Text = "432MHz";
             this.checkBox432.UseVisualStyleBackColor = true;
             // 
@@ -836,7 +836,7 @@ namespace wtKST
             this.checkBox144.Location = new System.Drawing.Point(39, 27);
             this.checkBox144.Name = "checkBox144";
             this.checkBox144.Size = new System.Drawing.Size(66, 17);
-            this.checkBox144.TabIndex = 1;
+            this.checkBox144.TabIndex = 15;
             this.checkBox144.Text = "144MHz";
             this.checkBox144.UseVisualStyleBackColor = true;
             // 
@@ -876,7 +876,7 @@ namespace wtKST
             this.cb_AS_local.Location = new System.Drawing.Point(18, 101);
             this.cb_AS_local.Name = "cb_AS_local";
             this.cb_AS_local.Size = new System.Drawing.Size(177, 17);
-            this.cb_AS_local.TabIndex = 28;
+            this.cb_AS_local.TabIndex = 10;
             this.cb_AS_local.Text = "Use local server for double click";
             this.cb_AS_local.UseVisualStyleBackColor = true;
             this.cb_AS_local.CheckedChanged += new System.EventHandler(this.cb_AS_local_CheckedChanged);
@@ -888,7 +888,7 @@ namespace wtKST
             this.label7.Location = new System.Drawing.Point(202, 102);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(70, 13);
-            this.label7.TabIndex = 26;
+            this.label7.TabIndex = 11;
             this.label7.Text = "Local Server:";
             // 
             // label16
@@ -918,7 +918,7 @@ namespace wtKST
             this.cb_AS_QRG.Location = new System.Drawing.Point(368, 63);
             this.cb_AS_QRG.Name = "cb_AS_QRG";
             this.cb_AS_QRG.Size = new System.Drawing.Size(78, 21);
-            this.cb_AS_QRG.TabIndex = 24;
+            this.cb_AS_QRG.TabIndex = 9;
             // 
             // label8
             // 
@@ -927,7 +927,7 @@ namespace wtKST
             this.label8.Location = new System.Drawing.Point(13, 180);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(224, 13);
-            this.label8.TabIndex = 12;
+            this.label8.TabIndex = 15;
             this.label8.Text = "Get aircraft positions in the range of minumum:";
             // 
             // label15
@@ -937,7 +937,7 @@ namespace wtKST
             this.label15.Location = new System.Drawing.Point(158, 67);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(55, 13);
-            this.label15.TabIndex = 22;
+            this.label15.TabIndex = 7;
             this.label15.Text = "My Name:";
             // 
             // label9
@@ -947,7 +947,7 @@ namespace wtKST
             this.label9.Location = new System.Drawing.Point(273, 180);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(102, 13);
-            this.label9.TabIndex = 14;
+            this.label9.TabIndex = 17;
             this.label9.Text = "kms up to maximum:";
             // 
             // label14
@@ -957,7 +957,7 @@ namespace wtKST
             this.label14.Location = new System.Drawing.Point(15, 67);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(70, 13);
-            this.label14.TabIndex = 20;
+            this.label14.TabIndex = 5;
             this.label14.Text = "Server name:";
             // 
             // label13
@@ -987,7 +987,7 @@ namespace wtKST
             this.label12.Location = new System.Drawing.Point(13, 131);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(141, 13);
-            this.label12.TabIndex = 17;
+            this.label12.TabIndex = 13;
             this.label12.Text = "Timeout for server response:";
             // 
             // tb_Options_AS_Local_Server_Name
@@ -998,7 +998,7 @@ namespace wtKST
             this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(276, 99);
             this.tb_Options_AS_Local_Server_Name.Name = "tb_Options_AS_Local_Server_Name";
             this.tb_Options_AS_Local_Server_Name.Size = new System.Drawing.Size(51, 20);
-            this.tb_Options_AS_Local_Server_Name.TabIndex = 27;
+            this.tb_Options_AS_Local_Server_Name.TabIndex = 12;
             this.tb_Options_AS_Local_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Local_Name;
             // 
             // cb_AS_Active
@@ -1011,7 +1011,7 @@ namespace wtKST
             this.cb_AS_Active.Location = new System.Drawing.Point(16, 29);
             this.cb_AS_Active.Name = "cb_AS_Active";
             this.cb_AS_Active.Size = new System.Drawing.Size(366, 17);
-            this.cb_AS_Active.TabIndex = 11;
+            this.cb_AS_Active.TabIndex = 4;
             this.cb_AS_Active.Text = "Activate (Requires AirScout server functionionaltiy newer than V.0.9.9.5)";
             this.cb_AS_Active.UseVisualStyleBackColor = true;
             // 
@@ -1022,7 +1022,7 @@ namespace wtKST
             this.tb_Options_AS_My_Name.Location = new System.Drawing.Point(217, 64);
             this.tb_Options_AS_My_Name.Name = "tb_Options_AS_My_Name";
             this.tb_Options_AS_My_Name.Size = new System.Drawing.Size(66, 20);
-            this.tb_Options_AS_My_Name.TabIndex = 23;
+            this.tb_Options_AS_My_Name.TabIndex = 8;
             this.tb_Options_AS_My_Name.Text = global::wtKST.Properties.Settings.Default.AS_My_Name;
             // 
             // tb_AS_MinDist
@@ -1032,7 +1032,7 @@ namespace wtKST
             this.tb_AS_MinDist.Location = new System.Drawing.Point(234, 177);
             this.tb_AS_MinDist.Name = "tb_AS_MinDist";
             this.tb_AS_MinDist.Size = new System.Drawing.Size(33, 20);
-            this.tb_AS_MinDist.TabIndex = 13;
+            this.tb_AS_MinDist.TabIndex = 16;
             this.tb_AS_MinDist.Text = global::wtKST.Properties.Settings.Default.AS_MinDist;
             // 
             // tb_Options_AS_Server_Name
@@ -1042,7 +1042,7 @@ namespace wtKST
             this.tb_Options_AS_Server_Name.Location = new System.Drawing.Point(89, 64);
             this.tb_Options_AS_Server_Name.Name = "tb_Options_AS_Server_Name";
             this.tb_Options_AS_Server_Name.Size = new System.Drawing.Size(51, 20);
-            this.tb_Options_AS_Server_Name.TabIndex = 21;
+            this.tb_Options_AS_Server_Name.TabIndex = 6;
             this.tb_Options_AS_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Server_Name;
             // 
             // tb_AS_MaxDist
@@ -1052,7 +1052,7 @@ namespace wtKST
             this.tb_AS_MaxDist.Location = new System.Drawing.Point(378, 177);
             this.tb_AS_MaxDist.Name = "tb_AS_MaxDist";
             this.tb_AS_MaxDist.Size = new System.Drawing.Size(33, 20);
-            this.tb_AS_MaxDist.TabIndex = 15;
+            this.tb_AS_MaxDist.TabIndex = 18;
             this.tb_AS_MaxDist.Text = global::wtKST.Properties.Settings.Default.AS_MaxDist;
             // 
             // tb_AS_Timeout
@@ -1062,7 +1062,7 @@ namespace wtKST
             this.tb_AS_Timeout.Location = new System.Drawing.Point(160, 128);
             this.tb_AS_Timeout.Name = "tb_AS_Timeout";
             this.tb_AS_Timeout.Size = new System.Drawing.Size(33, 20);
-            this.tb_AS_Timeout.TabIndex = 18;
+            this.tb_AS_Timeout.TabIndex = 14;
             this.tb_AS_Timeout.Text = global::wtKST.Properties.Settings.Default.AS_Timeout;
             // 
             // tabPage5
@@ -1111,7 +1111,7 @@ namespace wtKST
             this.textBox2.Location = new System.Drawing.Point(90, 210);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(374, 20);
-            this.textBox2.TabIndex = 18;
+            this.textBox2.TabIndex = 36;
             // 
             // label24
             // 
@@ -1119,7 +1119,7 @@ namespace wtKST
             this.label24.Location = new System.Drawing.Point(18, 214);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(46, 13);
-            this.label24.TabIndex = 29;
+            this.label24.TabIndex = 34;
             this.label24.Text = "Macro 9";
             // 
             // checkBox1
@@ -1129,7 +1129,7 @@ namespace wtKST
             this.checkBox1.Location = new System.Drawing.Point(70, 213);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(15, 14);
-            this.checkBox1.TabIndex = 17;
+            this.checkBox1.TabIndex = 35;
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // textBox3
@@ -1138,7 +1138,7 @@ namespace wtKST
             this.textBox3.Location = new System.Drawing.Point(90, 235);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(374, 20);
-            this.textBox3.TabIndex = 20;
+            this.textBox3.TabIndex = 39;
             // 
             // label25
             // 
@@ -1146,7 +1146,7 @@ namespace wtKST
             this.label25.Location = new System.Drawing.Point(18, 239);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(52, 13);
-            this.label25.TabIndex = 27;
+            this.label25.TabIndex = 37;
             this.label25.Text = "Macro 10";
             // 
             // checkBox2
@@ -1156,7 +1156,7 @@ namespace wtKST
             this.checkBox2.Location = new System.Drawing.Point(70, 238);
             this.checkBox2.Name = "checkBox2";
             this.checkBox2.Size = new System.Drawing.Size(15, 14);
-            this.checkBox2.TabIndex = 19;
+            this.checkBox2.TabIndex = 38;
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
             // textBox4
@@ -1165,7 +1165,7 @@ namespace wtKST
             this.textBox4.Location = new System.Drawing.Point(90, 160);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(374, 20);
-            this.textBox4.TabIndex = 14;
+            this.textBox4.TabIndex = 30;
             // 
             // label26
             // 
@@ -1173,7 +1173,7 @@ namespace wtKST
             this.label26.Location = new System.Drawing.Point(18, 164);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(46, 13);
-            this.label26.TabIndex = 23;
+            this.label26.TabIndex = 28;
             this.label26.Text = "Macro 7";
             // 
             // checkBox3
@@ -1183,7 +1183,7 @@ namespace wtKST
             this.checkBox3.Location = new System.Drawing.Point(70, 163);
             this.checkBox3.Name = "checkBox3";
             this.checkBox3.Size = new System.Drawing.Size(15, 14);
-            this.checkBox3.TabIndex = 13;
+            this.checkBox3.TabIndex = 29;
             this.checkBox3.UseVisualStyleBackColor = true;
             // 
             // textBox5
@@ -1192,7 +1192,7 @@ namespace wtKST
             this.textBox5.Location = new System.Drawing.Point(90, 185);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(374, 20);
-            this.textBox5.TabIndex = 16;
+            this.textBox5.TabIndex = 33;
             // 
             // label27
             // 
@@ -1200,7 +1200,7 @@ namespace wtKST
             this.label27.Location = new System.Drawing.Point(18, 189);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(46, 13);
-            this.label27.TabIndex = 21;
+            this.label27.TabIndex = 31;
             this.label27.Text = "Macro 8";
             // 
             // checkBox4
@@ -1210,7 +1210,7 @@ namespace wtKST
             this.checkBox4.Location = new System.Drawing.Point(70, 188);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.Size = new System.Drawing.Size(15, 14);
-            this.checkBox4.TabIndex = 15;
+            this.checkBox4.TabIndex = 32;
             this.checkBox4.UseVisualStyleBackColor = true;
             // 
             // tB_macro_2
@@ -1219,7 +1219,7 @@ namespace wtKST
             this.tB_macro_2.Location = new System.Drawing.Point(90, 35);
             this.tB_macro_2.Name = "tB_macro_2";
             this.tB_macro_2.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_2.TabIndex = 3;
+            this.tB_macro_2.TabIndex = 15;
             // 
             // label23
             // 
@@ -1227,7 +1227,7 @@ namespace wtKST
             this.label23.Location = new System.Drawing.Point(18, 39);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(46, 13);
-            this.label23.TabIndex = 16;
+            this.label23.TabIndex = 13;
             this.label23.Text = "Macro 2";
             // 
             // cB_macro_2
@@ -1239,7 +1239,7 @@ namespace wtKST
             this.cB_macro_2.Location = new System.Drawing.Point(70, 38);
             this.cB_macro_2.Name = "cB_macro_2";
             this.cB_macro_2.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_2.TabIndex = 2;
+            this.cB_macro_2.TabIndex = 14;
             this.cB_macro_2.UseVisualStyleBackColor = true;
             // 
             // tB_macro_5
@@ -1248,7 +1248,7 @@ namespace wtKST
             this.tB_macro_5.Location = new System.Drawing.Point(90, 110);
             this.tB_macro_5.Name = "tB_macro_5";
             this.tB_macro_5.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_5.TabIndex = 9;
+            this.tB_macro_5.TabIndex = 24;
             // 
             // label22
             // 
@@ -1256,7 +1256,7 @@ namespace wtKST
             this.label22.Location = new System.Drawing.Point(18, 114);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(46, 13);
-            this.label22.TabIndex = 13;
+            this.label22.TabIndex = 22;
             this.label22.Text = "Macro 5";
             // 
             // cB_macro_5
@@ -1268,7 +1268,7 @@ namespace wtKST
             this.cB_macro_5.Location = new System.Drawing.Point(70, 113);
             this.cB_macro_5.Name = "cB_macro_5";
             this.cB_macro_5.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_5.TabIndex = 8;
+            this.cB_macro_5.TabIndex = 23;
             this.cB_macro_5.UseVisualStyleBackColor = true;
             // 
             // tB_macro_6
@@ -1277,7 +1277,7 @@ namespace wtKST
             this.tB_macro_6.Location = new System.Drawing.Point(90, 135);
             this.tB_macro_6.Name = "tB_macro_6";
             this.tB_macro_6.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_6.TabIndex = 12;
+            this.tB_macro_6.TabIndex = 27;
             // 
             // label21
             // 
@@ -1285,7 +1285,7 @@ namespace wtKST
             this.label21.Location = new System.Drawing.Point(18, 139);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(46, 13);
-            this.label21.TabIndex = 10;
+            this.label21.TabIndex = 25;
             this.label21.Text = "Macro 6";
             // 
             // cB_macro_6
@@ -1297,7 +1297,7 @@ namespace wtKST
             this.cB_macro_6.Location = new System.Drawing.Point(70, 138);
             this.cB_macro_6.Name = "cB_macro_6";
             this.cB_macro_6.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_6.TabIndex = 10;
+            this.cB_macro_6.TabIndex = 26;
             this.cB_macro_6.UseVisualStyleBackColor = true;
             // 
             // tB_macro_3
@@ -1306,7 +1306,7 @@ namespace wtKST
             this.tB_macro_3.Location = new System.Drawing.Point(90, 60);
             this.tB_macro_3.Name = "tB_macro_3";
             this.tB_macro_3.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_3.TabIndex = 5;
+            this.tB_macro_3.TabIndex = 18;
             // 
             // label20
             // 
@@ -1314,7 +1314,7 @@ namespace wtKST
             this.label20.Location = new System.Drawing.Point(18, 64);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(46, 13);
-            this.label20.TabIndex = 7;
+            this.label20.TabIndex = 16;
             this.label20.Text = "Macro 3";
             // 
             // cB_macro_3
@@ -1326,7 +1326,7 @@ namespace wtKST
             this.cB_macro_3.Location = new System.Drawing.Point(70, 63);
             this.cB_macro_3.Name = "cB_macro_3";
             this.cB_macro_3.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_3.TabIndex = 4;
+            this.cB_macro_3.TabIndex = 17;
             this.cB_macro_3.UseVisualStyleBackColor = true;
             // 
             // tB_macro_4
@@ -1335,7 +1335,7 @@ namespace wtKST
             this.tB_macro_4.Location = new System.Drawing.Point(90, 85);
             this.tB_macro_4.Name = "tB_macro_4";
             this.tB_macro_4.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_4.TabIndex = 7;
+            this.tB_macro_4.TabIndex = 21;
             // 
             // label19
             // 
@@ -1343,7 +1343,7 @@ namespace wtKST
             this.label19.Location = new System.Drawing.Point(18, 89);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(46, 13);
-            this.label19.TabIndex = 4;
+            this.label19.TabIndex = 19;
             this.label19.Text = "Macro 4";
             // 
             // cB_macro_4
@@ -1355,7 +1355,7 @@ namespace wtKST
             this.cB_macro_4.Location = new System.Drawing.Point(70, 88);
             this.cB_macro_4.Name = "cB_macro_4";
             this.cB_macro_4.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_4.TabIndex = 6;
+            this.cB_macro_4.TabIndex = 20;
             this.cB_macro_4.UseVisualStyleBackColor = true;
             // 
             // tB_macro_1
@@ -1364,7 +1364,7 @@ namespace wtKST
             this.tB_macro_1.Location = new System.Drawing.Point(90, 10);
             this.tB_macro_1.Name = "tB_macro_1";
             this.tB_macro_1.Size = new System.Drawing.Size(374, 20);
-            this.tB_macro_1.TabIndex = 1;
+            this.tB_macro_1.TabIndex = 12;
             // 
             // label18
             // 
@@ -1372,7 +1372,7 @@ namespace wtKST
             this.label18.Location = new System.Drawing.Point(18, 14);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(46, 13);
-            this.label18.TabIndex = 1;
+            this.label18.TabIndex = 10;
             this.label18.Text = "Macro 1";
             // 
             // cB_macro_1
@@ -1384,7 +1384,7 @@ namespace wtKST
             this.cB_macro_1.Location = new System.Drawing.Point(70, 13);
             this.cB_macro_1.Name = "cB_macro_1";
             this.cB_macro_1.Size = new System.Drawing.Size(15, 14);
-            this.cB_macro_1.TabIndex = 0;
+            this.cB_macro_1.TabIndex = 11;
             this.cB_macro_1.UseVisualStyleBackColor = true;
             // 
             // OptionsDlg
