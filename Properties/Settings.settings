@@ -26,14 +26,8 @@
     <Setting Name="KST_AutoConnect" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="WinTest_QRV_FileName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">C:\\ProgramData\\Win-Test\\extras\\qrv.xdt</Value>
-    </Setting>
     <Setting Name="WinTest_INI_FileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\\ProgramData\\Win-Test\\cfg\\wt.ini</Value>
-    </Setting>
-    <Setting Name="WinTest_QRV_Table_FileName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">qrv.xml</Value>
     </Setting>
     <Setting Name="UpdateInterval" Type="System.String" Scope="User">
       <Value Profile="(Default)">60</Value>
@@ -208,6 +202,9 @@
     </Setting>
     <Setting Name="KST_M0" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="WinTest_QRV_Local_Table_FileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">qrv_local.xml</Value>
     </Setting>
   </Settings>
 </SettingsFile>

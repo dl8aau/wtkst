@@ -155,13 +155,13 @@ namespace wtKST
                     }
                     catch (Exception e)
                     {
-                        Error(MethodBase.GetCurrentMethod().Name, "(QRV.xml): " + e.Message);
+                        Error(MethodBase.GetCurrentMethod().Name, "(qrv_local.xml): " + e.Message);
                     }
                 }
             }
             catch (Exception e)
             {
-                Error(MethodBase.GetCurrentMethod().Name, "(" + Settings.Default.WinTest_QRV_FileName + "): " + e.Message + "\n" + e.StackTrace);
+                Error(MethodBase.GetCurrentMethod().Name, ": " + e.Message + "\n" + e.StackTrace);
             }
         }
 

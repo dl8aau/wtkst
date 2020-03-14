@@ -121,18 +121,6 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\ProgramData\\\\Win-Test\\\\extras\\\\qrv.xdt")]
-        public string WinTest_QRV_FileName {
-            get {
-                return ((string)(this["WinTest_QRV_FileName"]));
-            }
-            set {
-                this["WinTest_QRV_FileName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\\\ProgramData\\\\Win-Test\\\\cfg\\\\wt.ini")]
         public string WinTest_INI_FileName {
             get {
@@ -140,18 +128,6 @@ namespace wtKST.Properties {
             }
             set {
                 this["WinTest_INI_FileName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("qrv.xml")]
-        public string WinTest_QRV_Table_FileName {
-            get {
-                return ((string)(this["WinTest_QRV_Table_FileName"]));
-            }
-            set {
-                this["WinTest_QRV_Table_FileName"] = value;
             }
         }
         
@@ -848,6 +824,18 @@ namespace wtKST.Properties {
             }
             set {
                 this["KST_M0"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("qrv_local.xml")]
+        public string WinTest_QRV_Local_Table_FileName {
+            get {
+                return ((string)(this["WinTest_QRV_Local_Table_FileName"]));
+            }
+            set {
+                this["WinTest_QRV_Local_Table_FileName"] = value;
             }
         }
     }

@@ -14,12 +14,6 @@ namespace wtKST
 
         private Button btn_Cancel;
 
-        private Button btn_Options_WinTest_QRV_Select;
-
-        public TextBox tb_Options_WinTest_QRV;
-
-        private Label label10;
-
         private Button btn_Options_WinTest_INI_Select;
 
         public TextBox tb_Options_WinTest_INI;
@@ -121,19 +115,6 @@ namespace wtKST
             InitializeComponent();
         }
 
-        private void btn_Options_WinTest_QRV_Select_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Win-Test\\extras";
-            ofd.CheckFileExists = true;
-            ofd.Multiselect = false;
-            ofd.Filter = "Win-Test Extradatenbanken | *.xdt";
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                this.tb_Options_WinTest_QRV.Text = ofd.FileName;
-            }
-        }
-
         private void btn_Options_WinTest_INI_Select_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -173,8 +154,6 @@ namespace wtKST
             this.btn_Cancel = new System.Windows.Forms.Button();
             this.btn_Options_WinTest_INI_Select = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
-            this.btn_Options_WinTest_QRV_Select = new System.Windows.Forms.Button();
-            this.label10 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tb_KST_MaxDist = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
@@ -200,7 +179,6 @@ namespace wtKST
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.cb_WinTest_Active = new System.Windows.Forms.CheckBox();
             this.tb_Options_WinTest_INI = new System.Windows.Forms.TextBox();
-            this.tb_Options_WinTest_QRV = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.Bands = new System.Windows.Forms.GroupBox();
             this.checkBox76GHz = new System.Windows.Forms.CheckBox();
@@ -316,27 +294,6 @@ namespace wtKST
             this.label6.Size = new System.Drawing.Size(37, 13);
             this.label6.TabIndex = 11;
             this.label6.Text = "wt.ini :";
-            // 
-            // btn_Options_WinTest_QRV_Select
-            // 
-            this.btn_Options_WinTest_QRV_Select.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_Options_WinTest_QRV_Select.Location = new System.Drawing.Point(345, 81);
-            this.btn_Options_WinTest_QRV_Select.Name = "btn_Options_WinTest_QRV_Select";
-            this.btn_Options_WinTest_QRV_Select.Size = new System.Drawing.Size(75, 23);
-            this.btn_Options_WinTest_QRV_Select.TabIndex = 16;
-            this.btn_Options_WinTest_QRV_Select.Text = "Select";
-            this.btn_Options_WinTest_QRV_Select.UseVisualStyleBackColor = true;
-            this.btn_Options_WinTest_QRV_Select.Click += new System.EventHandler(this.btn_Options_WinTest_QRV_Select_Click);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label10.Location = new System.Drawing.Point(21, 86);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(45, 13);
-            this.label10.TabIndex = 12;
-            this.label10.Text = "qrv.xdt :";
             // 
             // groupBox3
             // 
@@ -612,12 +569,9 @@ namespace wtKST
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.cb_WinTest_Active);
-            this.tabPage2.Controls.Add(this.btn_Options_WinTest_QRV_Select);
             this.tabPage2.Controls.Add(this.btn_Options_WinTest_INI_Select);
-            this.tabPage2.Controls.Add(this.label10);
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.tb_Options_WinTest_INI);
-            this.tabPage2.Controls.Add(this.tb_Options_WinTest_QRV);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Size = new System.Drawing.Size(471, 290);
@@ -647,16 +601,6 @@ namespace wtKST
             this.tb_Options_WinTest_INI.Size = new System.Drawing.Size(204, 20);
             this.tb_Options_WinTest_INI.TabIndex = 13;
             this.tb_Options_WinTest_INI.Text = global::wtKST.Properties.Settings.Default.WinTest_INI_FileName;
-            // 
-            // tb_Options_WinTest_QRV
-            // 
-            this.tb_Options_WinTest_QRV.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WinTest_QRV_Filename", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tb_Options_WinTest_QRV.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_WinTest_QRV.Location = new System.Drawing.Point(126, 83);
-            this.tb_Options_WinTest_QRV.Name = "tb_Options_WinTest_QRV";
-            this.tb_Options_WinTest_QRV.Size = new System.Drawing.Size(204, 20);
-            this.tb_Options_WinTest_QRV.TabIndex = 15;
-            this.tb_Options_WinTest_QRV.Text = global::wtKST.Properties.Settings.Default.WinTest_QRV_FileName;
             // 
             // tabPage3
             // 
