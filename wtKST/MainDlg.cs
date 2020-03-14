@@ -1565,17 +1565,19 @@ namespace wtKST
         public class bandinfo
         {
             public string band_name { get; set; }
-            public int band_start { get; set; }
-            public int band_stop { get; set; }
-            public int band_center_activity { get; set; }
+            public string band_wavelength_name { get; set;  }
+            public uint band_start { get; set; }
+            public uint band_stop { get; set; }
+            public uint band_center_activity { get; set; }
             public bool in_band(int freq)
             {
                 return (freq >= band_start && freq <= band_stop);
             }
 
-            public bandinfo (string n, int start, int stop, int center)
+            public bandinfo (string n, string wavelength, uint start, uint stop, uint center)
             {
                 band_name = n;
+                band_wavelength_name = wavelength;
                 band_start = start;
                 band_stop = stop;
                 band_center_activity = center;
@@ -1586,25 +1588,25 @@ namespace wtKST
         {
             List<bandinfo> b = new List<bandinfo>();
             if (Settings.Default.Band_144)
-                b.Add(new bandinfo( "144MHz", 144000, 146000, 144000)) ;
+                b.Add(new bandinfo( "144MHz", "2 m", 144000, 146000, 144000)) ;
             if (Settings.Default.Band_432)
-                b.Add(new bandinfo("432MHz", 430000, 440000, 432000));
+                b.Add(new bandinfo("432MHz", "70 cm", 430000, 440000, 432000));
             if (Settings.Default.Band_1296)
-                b.Add(new bandinfo("1296MHz", 1240000, 1300000, 1296000));
+                b.Add(new bandinfo("1296MHz", "23 cm", 1240000, 1300000, 1296000));
             if (Settings.Default.Band_2320)
-                b.Add(new bandinfo("2320MHz", 2320000, 2450000, 2320000));
+                b.Add(new bandinfo("2320MHz", "13 cm", 2320000, 2450000, 2320000));
             if (Settings.Default.Band_3400)
-                b.Add(new bandinfo("3400MHz", 3400000, 3475000, 3400000));
+                b.Add(new bandinfo("3400MHz", "9 cm", 3400000, 3475000, 3400000));
             if (Settings.Default.Band_5760)
-                b.Add(new bandinfo("5760MHz", 5650000, 5850000, 5760000));
+                b.Add(new bandinfo("5760MHz", "6 cm", 5650000, 5850000, 5760000));
             if (Settings.Default.Band_10368)
-                b.Add(new bandinfo("10GHz", 10000000, 10500000, 10368000));
+                b.Add(new bandinfo("10GHz", "3 cm", 10000000, 10500000, 10368000));
             if (Settings.Default.Band_24GHz)
-                b.Add(new bandinfo("24GHz", 24000000, 24250000, 24048000));
+                b.Add(new bandinfo("24GHz", "1.2 cm", 24000000, 24250000, 24048000));
             if (Settings.Default.Band_47GHz)
-                b.Add(new bandinfo("47GHz", 47000000, 47200000, 47088000));
+                b.Add(new bandinfo("47GHz", "6 mm", 47000000, 47200000, 47088000));
             if (Settings.Default.Band_76GHz)
-                b.Add(new bandinfo("76GHz", 75500000, 81500000, 76032000));
+                b.Add(new bandinfo("76GHz", "4 mm", 75500000, 81500000, 76032000));
             return b;
         }
 
