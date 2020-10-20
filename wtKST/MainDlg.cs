@@ -1821,9 +1821,9 @@ namespace wtKST
             WinTestLocatorWarning = false;
             try
             {
-                lock (CALL)
+                using (DataTable CALLtmp = CALL.Copy())
                 {
-                    foreach (DataRow call_row in CALL.Rows) // FIXME: CALL muss gelockt werden, während foreach drüber läuft
+                    foreach (DataRow call_row in CALLtmp.Rows)
                     {
                         Check_QSO(call_row);
                     }
