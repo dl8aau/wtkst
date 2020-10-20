@@ -1,3 +1,9 @@
+
+#if DEBUG
+// to debug with KST logs
+#define DEBUG_INJECT_KST
+#endif
+
 using De.Mud.Telnet;
 using Net.Graphite.Telnet;
 using System;
@@ -256,8 +262,9 @@ namespace wtKST
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem macro_default_Station;
         private string AS_watchlist = "";
-
-
+#if DEBUG_INJECT_KST
+        private System.Windows.Forms.Timer ti_debug;
+#endif
         public MainDlg()
         {
             InitializeComponent();
@@ -328,8 +335,56 @@ namespace wtKST
             }
             wts = new WinTest.wtStatus();
 
+
+#if DEBUG_INJECT_KST
+                ti_debug = new System.Windows.Forms.Timer(this.components);
+                this.ti_debug.Interval = 5000;
+                this.ti_debug.Tick += new System.EventHandler(this.ti_debug_Tick);
+                this.ti_debug.Start();
+
+                KSTState = MainDlg.KST_STATE.Connected;
+#endif
         }
 
+#if DEBUG_INJECT_KST
+        //private StreamReader sr = new StreamReader("C:\\Users\\kurpiers\\Documents\\afu_büro\\doc\\dr9a\\Contest\\Oktober 2017\\wtKST\\1296\\kst_user_0710.txt");
+        //private StreamReader sr = new StreamReader("m:\\prog\\wtKST_release\\kst_userlist_2904.txt");
+        //private StreamReader sr_debug = new StreamReader("C:\\Users\\kurpiers\\Documents\\afu\\doc\\dr9a\\Contest\\Oktober 2020\\KST\\wtKST_20201003_test1.txt");
+        private StreamReader sr_debug = new StreamReader("C:\\Users\\kurpiers\\Documents\\afu\\doc\\dr9a\\Contest\\Oktober 2020\\KST\\wtKST_03.10.2020.log");
+        private int sr_debug_first_line = 2727;
+        private int sr_debug_last_line = 4437;
+        private int sr_debug_linecnt = 0;
+        private void ti_debug_Tick(object sender, EventArgs e)
+        {
+            int i = 0;
+            while (++sr_debug_linecnt < sr_debug_first_line && !sr_debug.EndOfStream)
+                sr_debug.ReadLine();
+
+            while ( ++i < 20 && ++sr_debug_linecnt <= (sr_debug_last_line + 1) && !sr_debug.EndOfStream )
+            {
+                string line = sr_debug.ReadLine();
+                if (line.Substring(0, 1).Equals("C"))
+                {
+                    KST_Receive_MSG(line);
+                }
+                else if (line.Substring(0, 1).Equals("U"))
+                {
+                    KST_Receive_USR(line);
+                }
+                else if (line.Contains("KST message: "))
+                {
+                    KST_Receive_MSG(line.Substring(line.IndexOf("KST message: ") + String.Copy("KST message: ").Length));
+                }
+                else if (line.Contains("KST user: "))
+                {
+                    KST_Receive_USR(line.Substring(line.IndexOf("KST user: ") + String.Copy("KST user: ").Length));
+                }
+            }
+            if (sr_debug.EndOfStream || sr_debug_linecnt == sr_debug_last_line + 2)
+                ti_debug.Stop();
+            ti_debug.Interval = 100;
+        }
+#endif
 
         private void tw_Disconnected(object sender, TelnetWrapperDisconnctedEventArgs e)
         {
