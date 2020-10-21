@@ -360,7 +360,7 @@ namespace WCCheck
 					{
 						S = S.Remove(0, S.IndexOf('/') + 1);
 					}
-					if (S.IndexOf('/') >= S.Length - 4)
+					if (S.IndexOf('/') >= 0 && S.IndexOf('/') >= S.Length - 4)
 					{
 						S = S.Remove(S.IndexOf('/'), S.Length - S.IndexOf('/'));
 					}
