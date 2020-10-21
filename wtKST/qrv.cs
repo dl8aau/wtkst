@@ -87,7 +87,7 @@ namespace wtKST
             else
             {
                 // we have to look into our local DB, as it is not in the global one
-                DataRow findrow = QRV_local.Rows.Find(new object[] { row["CALL"], row["LOC"] });
+                DataRow findrow = QRV_local.Rows.Find(new object[] {qrvcall, row["LOC"] });
                 if (findrow != null)
                 {
                     if (call_new_in_userlist)
