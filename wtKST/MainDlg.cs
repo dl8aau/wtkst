@@ -1830,6 +1830,8 @@ namespace wtKST
             KST_Send();
         }
 
+        private bool wtQSO_local_lock = false;
+
         private void Check_QSO(DataRow call_row)
         {
             string call = call_row["CALL"].ToString();
@@ -1840,27 +1842,37 @@ namespace wtKST
             }
             string wcall = WCCheck.WCCheck.Cut(call);
             string findCall = string.Format("[CALL] LIKE '*{0}*'", wcall);
-            DataRow[] selectRow = wtQSO.QSO.Select(findCall);
-
             bool[] found = new bool[BANDS.Length]; // defaults to false
 
-            foreach (var qso_row in selectRow)
+            lock (wtQSO)
             {
-                var band = qso_row["BAND"].ToString();
-
-                if ( WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall))
+                if (wtQSO_local_lock)
                 {
-                    call_row[band] = QRVdb.QRV_STATE.worked;
-                    qrv.set_qrv_state(call_row, band, QRVdb.QRV_STATE.qrv); // if worked, mark as QRV in data base
-                    found[Array.IndexOf(BANDS, band)] = true;
-                    // check locator
-                    if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
+                    Console.WriteLine("wtQSO locked");
+                    return;
+                }
+                wtQSO_local_lock = true;
+                DataRow[] selectRow = wtQSO.QSO.Select(findCall);
+
+                foreach (var qso_row in selectRow)
+                {
+                    var band = qso_row["BAND"].ToString();
+
+                    if (WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall))
                     {
-                        Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
-                        WinTestLocatorWarning = true;
-                        Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                        call_row[band] = QRVdb.QRV_STATE.worked;
+                        qrv.set_qrv_state(call_row, band, QRVdb.QRV_STATE.qrv); // if worked, mark as QRV in data base
+                        found[Array.IndexOf(BANDS, band)] = true;
+                        // check locator
+                        if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
+                        {
+                            Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                            WinTestLocatorWarning = true;
+                            Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                        }
                     }
                 }
+                wtQSO_local_lock = false;
             }
             foreach (string band in BANDS)
             {
@@ -1868,8 +1880,9 @@ namespace wtKST
                 if (!found[Array.IndexOf(BANDS, band)] && (QRVdb.QRV_STATE)call_row[band] == QRVdb.QRV_STATE.worked)
                     call_row[band] = QRVdb.QRV_STATE.qrv;
             }
-
         }
+
+        private bool check_QSO_CALL_lock = false;
 
         private void Check_QSOs()
         {
@@ -1878,6 +1891,13 @@ namespace wtKST
             {
                 lock (CALL)
                 {
+                    if (check_QSO_CALL_lock)
+                    {
+                        Console.WriteLine("Check_QSOs can't check...");
+                        return;
+                    }
+                    check_QSO_CALL_lock = true;
+                    // lock helps against other threads changing CALL, but not same (UI)
                     foreach (DataRow call_row in CALL.Rows) // FIXME: CALL muss gelockt werden, während foreach drüber läuft
                     {
                         Check_QSO(call_row);
@@ -1889,10 +1909,11 @@ namespace wtKST
                 Error(MethodBase.GetCurrentMethod().Name, "(" + wtQSO.getFileName() + "): " + e.Message);
                 MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + "(" + wtQSO.getFileName() + "): " + e.Message + "\n" + e.StackTrace);
             }
+            finally
+            {
+                check_QSO_CALL_lock = false;
+            }
         }
-
-
-
 
         private void ti_Main_Tick(object sender, EventArgs e)
         {
@@ -1903,22 +1924,34 @@ namespace wtKST
                 {
                     if (Settings.Default.WinTest_Activate)
                     {
-                        try
+                        lock (wtQSO)
                         {
-                            MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
-
-                            wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
-                            if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
+                            if (wtQSO_local_lock)
                             {
-                                MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
-                                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                set_KST_Status();
+                                Console.WriteLine("ti_Main_Tick - skip Check_QSOs()");
                             }
-                            Check_QSOs();
-                        }
-                        catch
-                        {
+                            else
+                            {
+                                wtQSO_local_lock = true;
+                                try
+                                {
+                                    MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
 
+                                    wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
+                                    if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
+                                    {
+                                        MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
+                                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                        set_KST_Status();
+                                    }
+                                    Check_QSOs();
+                                }
+                                catch
+                                {
+
+                                }
+                                wtQSO_local_lock = false;
+                            }
                         }
                     }
                     if (!Settings.Default.WinTest_Activate && wtQSO.QSO.Rows.Count > 0)
