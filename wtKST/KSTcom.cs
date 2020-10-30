@@ -1,4 +1,10 @@
-﻿using De.Mud.Telnet;
+﻿
+#if DEBUG
+// to debug with KST logs
+#define DEBUG_INJECT_KST
+#endif
+
+using De.Mud.Telnet;
 using Net.Graphite.Telnet;
 using System;
 using System.Collections.Generic;
@@ -58,7 +64,9 @@ namespace wtKST
         private bool SendMyLocator = false;
         public bool msg_latest_first = false;
         private bool CheckStartUpAway = true;
-
+#if DEBUG_INJECT_KST
+        private System.Timers.Timer ti_debug;
+#endif
         public KSTcom()
         {
             MSG = new DataTable("MSG");
@@ -103,7 +111,61 @@ namespace wtKST
             //
             ti_Linkcheck.Interval = 120000D;
             ti_Linkcheck.Elapsed += new System.Timers.ElapsedEventHandler(this.ti_Linkcheck_Tick);
+#if DEBUG_INJECT_KST
+            ti_debug = new System.Timers.Timer();
+            this.ti_debug.Interval = 5000;
+            this.ti_debug.Elapsed += new System.Timers.ElapsedEventHandler(this.ti_debug_Tick);
+            this.ti_debug.Start();
+            KSTState = KST_STATE.Connected;
+#endif
         }
+
+#if DEBUG_INJECT_KST
+        //private StreamReader sr = new StreamReader("C:\\Users\\kurpiers\\Documents\\afu_büro\\doc\\dr9a\\Contest\\Oktober 2017\\wtKST\\1296\\kst_user_0710.txt");
+        //private StreamReader sr = new StreamReader("m:\\prog\\wtKST_release\\kst_userlist_2904.txt");
+        //private StreamReader sr_debug = new StreamReader("C:\\Users\\kurpiers\\Documents\\afu\\doc\\dr9a\\Contest\\Oktober 2020\\KST\\wtKST_20201003_test1.txt");
+        private StreamReader sr_debug = new StreamReader("C:\\Users\\Alexander\\Documents\\afu\\doc\\dr9a\\Contest\\Oktober 2020\\KST\\wtKST_03.10.2020.log");
+        private int sr_debug_first_line = 2727;
+        private int sr_debug_last_line = 4437;
+        private int sr_debug_linecnt = 0;
+        private bool in_debug = false;
+        private void ti_debug_Tick(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (in_debug)
+            {
+                ti_debug.Interval = 100;
+                return;
+            }
+            in_debug = true;
+            int i = 0;
+            while (++sr_debug_linecnt < sr_debug_first_line && !sr_debug.EndOfStream)
+                sr_debug.ReadLine();
+            while (++i < 20 && ++sr_debug_linecnt <= (sr_debug_last_line + 1) && !sr_debug.EndOfStream)
+            {
+                string line = sr_debug.ReadLine();
+                if (line.Substring(0, 1).Equals("C"))
+                {
+                    Receive_MSG(line);
+                }
+                else if (line.Substring(0, 1).Equals("U"))
+                {
+                    Receive_USR(line);
+                }
+                else if (line.Contains("KST message: "))
+                {
+                    Receive_MSG(line.Substring(line.IndexOf("KST message: ") + String.Copy("KST message: ").Length));
+                }
+                else if (line.Contains("KST user: "))
+                {
+                    Receive_USR(line.Substring(line.IndexOf("KST user: ") + String.Copy("KST user: ").Length));
+                }
+            }
+            if (sr_debug.EndOfStream || sr_debug_linecnt == sr_debug_last_line + 2)
+                ti_debug.Stop();
+            ti_debug.Interval = 100;
+            in_debug = false;
+        }
+#endif
 
         public void MSG_clear()
         {
@@ -728,7 +790,9 @@ namespace wtKST
             UserState = USER_STATE.Away;
             if (KSTState >= KST_STATE.Connected)
             {
+#if !DEBUG_INJECT_KST
                 tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/AWAY|0|\r");
+#endif
                 if (update_user_state != null)
                     update_user_state(this, new userStateEventArgs(USER_STATE.Away));
             }
@@ -738,7 +802,9 @@ namespace wtKST
         {
             if (KSTState >= KST_STATE.Connected)
             {
+#if !DEBUG_INJECT_KST
                 tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/SETLOC " + locator + "|0|\r");
+#endif
             }
         }
 
