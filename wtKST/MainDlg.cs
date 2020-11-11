@@ -3195,7 +3195,7 @@ namespace wtKST
                 base.WndProc(ref m);
                 if (m.Msg == MOUSEWHEEL || m.Msg == WM_VSCROLL || (m.Msg == KEYDOWN && (m.WParam == (IntPtr)40 || m.WParam == (IntPtr)35)))
                 {
-                    OnScroll(new ScrollEventArgs((ScrollEventType)(m.WParam.ToInt32() & 0xffff), 0));
+                    OnScroll(new ScrollEventArgs((ScrollEventType)(m.WParam.ToInt64() & 0xffff), 0));
                 }
             }
         }
