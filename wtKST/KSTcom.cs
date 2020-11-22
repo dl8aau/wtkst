@@ -125,7 +125,7 @@ namespace wtKST
         //private StreamReader sr = new StreamReader("m:\\prog\\wtKST_release\\kst_userlist_2904.txt");
         //private StreamReader sr_debug = new StreamReader("C:\\Users\\kurpiers\\Documents\\afu\\doc\\dr9a\\Contest\\Oktober 2020\\KST\\wtKST_20201003_test1.txt");
         private StreamReader sr_debug = new StreamReader("C:\\Users\\Alexander\\Documents\\afu\\doc\\dr9a\\Contest\\Oktober 2020\\KST\\wtKST_03.10.2020.log");
-        private int sr_debug_first_line = 2727;
+        private readonly int sr_debug_first_line = 2727;
         private int sr_debug_last_line = 4437;
         private int sr_debug_linecnt = 0;
         private bool in_debug = false;
