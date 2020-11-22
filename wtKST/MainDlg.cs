@@ -35,8 +35,6 @@ namespace wtKST
 
         private wtKST.AirScoutInterface AS_if;
 
-        private Point OldMousePos = new Point(0, 0);
-
         public static LogWriter Log = new LogWriter(Directory.GetParent(Application.LocalUserAppDataPath).ToString());
 
         private IContainer components = null;
@@ -106,34 +104,7 @@ namespace wtKST
         private AboutBox aboutBox1 = new AboutBox();
 
         private System.Windows.Forms.Timer ti_Main;
-        private wtKST.MainDlg.DoubleBufferedListView lv_Calls;
-        private ColumnHeader ch_Call;
-
-        private ColumnHeader ch_Name;
-
-        private ColumnHeader ch_Act;
-
-        private ColumnHeader ch_Loc;
-
-        private ColumnHeader columnHeader144;
-
-        private ColumnHeader columnHeader432;
-
-        private ColumnHeader columnHeader1296;
-
-        private ColumnHeader columnHeader2320;
-
-        private ColumnHeader columnHeader3400;
-
-        private ColumnHeader columnHeader5760;
-
-        private ColumnHeader columnHeader10368;
-
-        private ColumnHeader columnHeader24GHz;
-
-        private ColumnHeader columnHeader47GHz;
-
-        private ColumnHeader columnHeader76GHz;
+        private DataGridView lv_Calls;
 
         private const int COLUMN_WIDTH = 20;
 
@@ -162,8 +133,6 @@ namespace wtKST
         private System.Windows.Forms.Timer ti_Top;
 
         private System.Windows.Forms.Timer ti_Reconnect;
-
-        private ColumnHeader ch_AS;
 
         private ToolTip tt_Info;
 
@@ -253,6 +222,46 @@ namespace wtKST
                 CALL.Columns["CALL"]
             };
             CALL.PrimaryKey = CALLkeys;
+            lv_Calls.DataSource = CALL;
+            lv_Calls.Columns["CALL"].HeaderCell.Value = "Call";
+            lv_Calls.Columns["CALL"].Width = 80;
+            lv_Calls.Columns["NAME"].HeaderCell.Value = "Name";
+            lv_Calls.Columns["NAME"].Width = 100;
+            lv_Calls.Columns["LOC"].HeaderCell.Value = "Locator";
+            lv_Calls.Columns["LOC"].Width = 50;
+            lv_Calls.Columns["AS"].Width = 30;
+
+            lv_Calls.Columns["TIME"].Visible = false;
+
+            lv_Calls.Columns["CONTACTED"].HeaderCell.Value = "ACT";
+            lv_Calls.Columns["CONTACTED"].Width = 30;
+
+            lv_Calls.Columns["RECENTLOGIN"].Visible = false;
+            lv_Calls.Columns["ASLAT"].Visible = false;
+            lv_Calls.Columns["ASLON"].Visible = false;
+            lv_Calls.Columns["QRB"].Visible = false;
+            lv_Calls.Columns["DIR"].Visible = false;
+            lv_Calls.Columns["AWAY"].Visible = false;
+            lv_Calls.Columns["COLOR"].Visible = false;
+            lv_Calls.Columns["144M"].Width = 20;
+            lv_Calls.Columns["432M"].Width = 20;
+            lv_Calls.Columns["1_2G"].Width = 20;
+            lv_Calls.Columns["2_3G"].Width = 20;
+            lv_Calls.Columns["3_4G"].Width = 20;
+            lv_Calls.Columns["5_7G"].Width = 20;
+            lv_Calls.Columns["10G"].Width = 20;
+            lv_Calls.Columns["24G"].Width = 20;
+            lv_Calls.Columns["47G"].Width = 20;
+            lv_Calls.Columns["76G"].Width = 20;
+
+            for (int i=0; i < lv_Calls.ColumnCount; i++)
+            {
+                    lv_Calls.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+
+            // https://stackoverflow.com/a/28617333
+            VScrollBar scrollBar = lv_Calls.Controls.OfType<VScrollBar>().First();
+            scrollBar.Scroll += lv_Calls_scroll;
 
             string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName.ToUpper());
             // check if we are running on Windows, otherwise Win-Test will not run
@@ -328,7 +337,7 @@ namespace wtKST
                 {
                     CALL.Clear();
                 }
-                lv_Calls.Items.Clear();
+                // FIXME DV needed? lv_Calls.Items.Clear();
                 tsi_KST_Connect.Enabled = true;
                 tsi_KST_Disconnect.Enabled = false;
                 tsi_KST_Here.Enabled = false;
@@ -361,11 +370,13 @@ namespace wtKST
                 }
             }
 
+            KST_Update_Usr_Filter();
+
             string KST_Calls_Text = lbl_KST_Calls.Text;
-            if (lv_Calls.Items.Count > 0)
+            if (lv_Calls.RowCount > 0)
             {
                 /* show number of calls in list and total number of users (-1 for own call) */
-                KST_Calls_Text = "Calls [" + lv_Calls.Items.Count.ToString() + " / " + (CALL.Rows.Count - 1) + "]";
+                KST_Calls_Text = "Calls [" + lv_Calls.RowCount.ToString() + " / " + (CALL.Rows.Count - 1) + "]";
                 if (wtQSO != null && Settings.Default.WinTest_Activate)
                     KST_Calls_Text += " - " + Path.GetFileName(wtQSO.getFileName());
             }
@@ -714,8 +725,47 @@ namespace wtKST
             }
         }
 
+        private string KST_USR_RowFilter = "";
+
+        private void KST_Update_Usr_Filter()
+        {
+            var dt = lv_Calls.DataSource as DataTable;
+
+            string RowFilter = string.Format("(CALL <> '{0}')", Settings.Default.KST_UserName.ToUpper());
+            if (hide_away)
+                RowFilter += string.Format(" AND (AWAY = 0)");
+
+            int MaxDist = Convert.ToInt32(Settings.Default.KST_MaxDist);
+            if (MaxDist != 0)
+                RowFilter += string.Format(" AND (QRB < {0}", MaxDist);
+
+            // drop calls that are already in log
+            if (hide_worked)
+            {
+                RowFilter += " AND (CALL NOT IN (";
+                foreach (DataRow row in CALL.Rows)
+                {
+                    if (check_in_log(row))
+                    {
+                        RowFilter += string.Format("'{0}',", row["CALL"]);
+                    }
+                }
+                RowFilter += "))";
+            }
+
+            RowFilter += ")";
+
+            if (!RowFilter.Equals(KST_USR_RowFilter))
+            {
+                (lv_Calls.DataSource as DataTable).DefaultView.RowFilter = RowFilter;
+                KST_USR_RowFilter = RowFilter;
+            }
+        }
+
         private void KST_Update_USR_Window()
         {
+#if FIXME_DV
+            //FIXME DV
             if (KST.State <= KSTcom.KST_STATE.WaitLogin) //FIXME needed still?
                 return;
             try
@@ -837,6 +887,7 @@ namespace wtKST
                 Error(MethodBase.GetCurrentMethod().Name, e.Message);
                 MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + e.Message + "\n" + e.StackTrace);
             }
+#endif
         }
 
         private void KST_Add_Beacons_USR()
@@ -948,46 +999,16 @@ namespace wtKST
         // hide bands that should not be displayed by making their width = 0
         private void UpdateUserBandsWidth()
         {
-            if (Settings.Default.Band_144)
-                columnHeader144.Width = COLUMN_WIDTH;
-            else
-                columnHeader144.Width = 0;
-            if (Settings.Default.Band_432)
-                columnHeader432.Width = COLUMN_WIDTH;
-            else
-                columnHeader432.Width = 0;
-            if (Settings.Default.Band_1296)
-                columnHeader1296.Width = COLUMN_WIDTH;
-            else
-                columnHeader1296.Width = 0;
-            if (Settings.Default.Band_2320)
-                columnHeader2320.Width = COLUMN_WIDTH;
-            else
-                columnHeader2320.Width = 0;
-            if (Settings.Default.Band_3400)
-                columnHeader3400.Width = COLUMN_WIDTH;
-            else
-                columnHeader3400.Width = 0;
-            if (Settings.Default.Band_5760)
-                columnHeader5760.Width = COLUMN_WIDTH;
-            else
-                columnHeader5760.Width = 0;
-            if (Settings.Default.Band_10368)
-                columnHeader10368.Width = COLUMN_WIDTH;
-            else
-                columnHeader10368.Width = 0;
-            if (Settings.Default.Band_24GHz)
-                columnHeader24GHz.Width = COLUMN_WIDTH;
-            else
-                columnHeader24GHz.Width = 0;
-            if (Settings.Default.Band_47GHz)
-                columnHeader47GHz.Width = COLUMN_WIDTH;
-            else
-                columnHeader47GHz.Width = 0;
-            if (Settings.Default.Band_76GHz)
-                columnHeader76GHz.Width = COLUMN_WIDTH;
-            else
-                columnHeader76GHz.Width = 0;
+            lv_Calls.Columns["144M"].Visible = Settings.Default.Band_144;
+            lv_Calls.Columns["432M"].Visible = Settings.Default.Band_432;
+            lv_Calls.Columns["1_2G"].Visible = Settings.Default.Band_1296;
+            lv_Calls.Columns["2_3G"].Visible = Settings.Default.Band_2320;
+            lv_Calls.Columns["3_4G"].Visible = Settings.Default.Band_3400;
+            lv_Calls.Columns["5_7G"].Visible = Settings.Default.Band_5760;
+            lv_Calls.Columns["10G"].Visible = Settings.Default.Band_10368;
+            lv_Calls.Columns["24G"].Visible = Settings.Default.Band_24GHz;
+            lv_Calls.Columns["47G"].Visible = Settings.Default.Band_47GHz;
+            lv_Calls.Columns["76G"].Visible = Settings.Default.Band_76GHz;
         }
 
         bool check_in_log(DataRow row)
@@ -1066,7 +1087,7 @@ namespace wtKST
                         CALL.Clear();
                     }
                     KST.MSG_clear();
-                    lv_Calls.Items.Clear();
+                    // FIXME DV needed ? lv_Calls.Items.Clear();
                     lv_Msg.Items.Clear();
                     lv_MyMsg.Items.Clear();
                 }
@@ -1363,84 +1384,154 @@ namespace wtKST
             tt_Info.Show(text, this, p, 5000);
         }
 
-        private void lv_Calls_DrawItem(object sender, DrawListViewItemEventArgs e)
+        private void lv_Calls_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            e.DrawDefault = true;
-        }
+            if (e.ColumnIndex < 0)
+                return;
+            DataGridView dgv = sender as DataGridView;
 
-        private void lv_Calls_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
-        {
-            if ((e.Header.Text[0] > '0' && e.Header.Text[0] < '9') || e.Header.Text == "AS")
+            // check that we are in a header cell!
+            if (e.RowIndex == -1)
             {
-                Rectangle rect = e.Bounds;
-                if (e.ColumnIndex > 4 && hide_worked) // Band
-                    e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
+                if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex  /* 3  */  /* Header.Text[0] > '0' && e.Header.Text[0] < '9') || e.Header.Text == "AS" */)
+                {
+                    Rectangle rect = e.CellBounds;
+                    if (e.ColumnIndex > 4 && hide_worked) // Band
+                        e.Graphics.FillRectangle(Brushes.LightGray, rect);
+                    else
+                        e.PaintBackground(e.ClipBounds, false);
+                    using (Font headerfont = new Font(e.CellStyle.Font.OriginalFontName, 6f))
+                    {
+                        Size titlesize = TextRenderer.MeasureText(e.FormattedValue.ToString(), headerfont);
+                        e.Graphics.TranslateTransform(0f, (float)titlesize.Width);
+                        e.Graphics.RotateTransform(-90f);
+                        e.Graphics.DrawString(e.FormattedValue.ToString(), headerfont, Brushes.Black, new PointF((float)rect.Y, (float)(rect.X + 3)));
+                        e.Graphics.RotateTransform(90f);
+                        e.Graphics.TranslateTransform(0f, (float)(-(float)titlesize.Width));
+                    }
+                    e.Handled = true;
+                }
                 else
-                    e.DrawBackground();
-                Font headerfont = new Font(e.Font.OriginalFontName, 6f);
-                Size titlesize = TextRenderer.MeasureText(e.Header.Text, headerfont);
-                e.Graphics.TranslateTransform(0f, (float)titlesize.Width);
-                e.Graphics.RotateTransform(-90f);
-                e.Graphics.DrawString(e.Header.Text.ToString(), headerfont, Brushes.Black, new PointF((float)rect.Y, (float)(rect.X + 3)));
-                e.Graphics.RotateTransform(90f);
-                e.Graphics.TranslateTransform(0f, (float)(-(float)titlesize.Width));
+                {
+                    if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex || e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex || e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
+                    {
+                        // CALL column
+                        if ((e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && hide_away) ||
+                            (e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex && sort_by_dir) ||
+                            (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex && ignore_inactive))
+                        {
+                            e.PaintBackground(e.ClipBounds, false);
+                            e.Graphics.FillRectangle(Brushes.LightGray, e.CellBounds);
+                            e.PaintContent(e.CellBounds);
+                            e.Handled = true;
+                            return;
+                        }
+                    }
+                }
             }
             else
             {
-                if (e.ColumnIndex == 0 || e.ColumnIndex == 2 || e.ColumnIndex == 3)
+                if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && e.Value != null)
                 {
-                    // CALL column
-                    if ((e.ColumnIndex == 0 && hide_away) ||   // CALL
-                        (e.ColumnIndex == 2 && sort_by_dir) || // LOCATOR
-                        (e.ColumnIndex == 3 && ignore_inactive)) // ACT
-                        e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
-                    else
-                        e.DrawBackground();
-                    e.DrawDefault = false;
-                    e.DrawText(TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
-                    return;
-                }
-                e.DrawDefault = true;
-            }
-        }
+                    string call = e.Value.ToString();
+                    if (bool.TryParse(dgv.Rows[e.RowIndex].Cells["AWAY"].Value.ToString(), out bool away) && away == true)
+                    {
+                        call = "(" + call + ")";
+                        // Italic is too difficult to read and the font gets bigger
+                        //LV.Font = new Font(LV.Font, FontStyle.Italic);
+                    }
+                    e.PaintBackground(e.ClipBounds, false);
 
-        private void lv_Calls_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
-        {
-            ListView listView = sender as ListView;
-            if (e.Header.Text[0] > '0' && e.Header.Text[0] < '9')
-            {
-                QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
-                try
-                {
-                    Enum.TryParse<QRVdb.QRV_STATE>(e.SubItem.Text, out state);
+                    if (bool.TryParse(dgv.Rows[e.RowIndex].Cells["RECENTLOGIN"].Value.ToString(), out bool recentlogin) && recentlogin == true)
+                    {
+                        using (var font = new Font(e.CellStyle.Font, FontStyle.Bold))
+                        {
+                            TextRenderer.DrawText(e.Graphics, call,
+                                             font, e.CellBounds, e.CellStyle.ForeColor,
+                                             TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter);
+                        }
+                    }
+                    else
+                        TextRenderer.DrawText(e.Graphics, call,
+                                         e.CellStyle.Font, e.CellBounds, e.CellStyle.ForeColor,
+                                         TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter);
+
+                    e.Handled = true;
                 }
-                catch
+                else if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex)
                 {
+                    QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
+                    try
+                    {
+                        Enum.TryParse<QRVdb.QRV_STATE>(e.Value.ToString(), out state);
+                    }
+                    catch
+                    {
+                    }
+
+                    Rectangle newRect = new Rectangle(e.CellBounds.X + 2,
+                        e.CellBounds.Y + 2, e.CellBounds.Width - 4,
+                        e.CellBounds.Height - 4);
+                    e.PaintBackground(e.CellBounds, false);
+                    switch (state)
+                    {
+                        case QRVdb.QRV_STATE.unknown:
+                            e.Graphics.FillRectangle(Brushes.LightGray, newRect);
+                            e.Handled = true;
+                            break;
+                        case QRVdb.QRV_STATE.qrv:
+                            e.Graphics.FillRectangle(Brushes.Red, newRect);
+                            e.Handled = true;
+                            break;
+                        case QRVdb.QRV_STATE.worked:
+                            e.Graphics.FillRectangle(Brushes.Green, newRect);
+                            e.Handled = true;
+                            break;
+                        case QRVdb.QRV_STATE.not_qrv:
+                            e.Graphics.FillRectangle(Brushes.Black, newRect);
+                            e.Handled = true;
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                switch (state)
+                else if (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
                 {
-                case QRVdb.QRV_STATE.unknown:
-                    e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
-                    break;
-                case QRVdb.QRV_STATE.qrv:
-                    e.Graphics.FillRectangle(Brushes.Red, e.Bounds);
-                    break;
-                case QRVdb.QRV_STATE.worked:
-                    e.Graphics.FillRectangle(Brushes.Green, e.Bounds);
-                    break;
-                case QRVdb.QRV_STATE.not_qrv:
-                    e.Graphics.FillRectangle(Brushes.Black, e.Bounds);
-                    break;
-                default:
-                    e.DrawDefault = true;
-                    break;
+
+                    // last activity
+                    var row = dgv.Rows[e.RowIndex];
+                    var timeval = row.Cells["TIME"].Value;
+                    e.PaintBackground(e.CellBounds, false);
+
+                    if (timeval != null && timeval != DBNull.Value)
+                    {
+                        double lastActivityMinutes = (DateTime.UtcNow.Subtract((DateTime)timeval)).TotalMinutes;
+                        string act_string;
+                        if (lastActivityMinutes < 120.0)
+                            act_string = lastActivityMinutes.ToString("0");
+                        else
+                        {
+                            if ((int)row.Cells["CONTACTED"].Value < 3)
+                                act_string = "---";
+                            else
+                                act_string = "xxx"; // if contacted 3 times without answer then probably really not available
+                        }
+                        StringFormat sf = new StringFormat
+                        {
+                            LineAlignment = StringAlignment.Center,
+                            Alignment = StringAlignment.Center
+                        };
+                        e.Graphics.DrawString(act_string, e.CellStyle.Font, Brushes.Black, e.CellBounds.X + e.CellBounds.Width/2,
+                            e.CellBounds.Y + e.CellBounds.Height/2, sf);
+                    }
+                    e.Handled = true;
                 }
-            }
-            else if (e.Header.Text.StartsWith("AS"))
-            {
-                try
+                else if (e.ColumnIndex == dgv.Columns["AS"].DisplayIndex)
                 {
-                    if (e.SubItem.Text.Length > 0)
+                    try
+                    {
+#if FIXME_DV
+                        if (e.SubItem.Text.Length > 0)
                     {
                         if (e.SubItem.Text.Equals("<") || e.SubItem.Text.Equals(">"))
                         {
@@ -1511,52 +1602,75 @@ namespace wtKST
                             }
                         }
                     }
+#endif
+                    }
+                    catch
+                    {
+                    }
                 }
-                catch
-                {
-                }
-            }
-            else
-            {
-                e.DrawDefault = true;
             }
         }
 
-        private void lv_Calls_MouseMove(object sender, MouseEventArgs e)
+        private void lv_Calls_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            Point p = new Point(e.X, e.Y);
-            ListViewHitTestInfo info = lv_Calls.HitTest(p);
-            string ToolTipText = "";
-            if (OldMousePos != p && info != null && info.SubItem != null)
+            if (e.ColumnIndex >= 0)
             {
-                OldMousePos = p;
-                if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act" )
+                DataGridView dgv = sender as DataGridView;
+                if (sort_by_dir && dgv.Columns[e.ColumnIndex].Name == "DIR")
+                {
+                    dgv.Sort(dgv.Columns["DIR"], ListSortDirection.Ascending);
+                }
+                else if (!sort_by_dir && dgv.Columns[e.ColumnIndex].Name == "CALL")
+                {
+                    dgv.Sort(dgv.Columns["CALL"], ListSortDirection.Ascending);
+                }
+            }
+        }
+
+        private Point OldMousePos = new Point(0, 0);
+
+        private void lv_Calls_MouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string ToolTipText = "";
+            DataGridView dgv = sender as DataGridView;
+            if (OldMousePos != Cursor.Position && e.ColumnIndex >= 0 && e.RowIndex >= 0)
+            {
+                OldMousePos = Cursor.Position;
+                var column = dgv.Columns[e.ColumnIndex];
+                var row = dgv.Rows[e.RowIndex];
+
+                if (row.Cells["CALL"].Value == null)
+                    return;
+                string call = row.Cells["CALL"].Value.ToString();
+                string name = row.Cells["NAME"].Value.ToString();
+                string loc = row.Cells["LOC"].Value.ToString();
+                if (column.Name == "CALL" || column.Name == "NAME" || column.Name == "LOC" || column.Name == "CONTACTED" )
                 {
                     ToolTipText = string.Concat(new object[]
                     {
                         "Call:\t",
-                        info.Item.Text,
+                        call,
                         "\nName:\t",
-                        info.Item.SubItems[1].Text,
+                        name,
                         "\nLoc:\t",
-                        info.Item.SubItems[2].Text,
+                        loc,
                         "\nQTF:\t",
-                        WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, info.Item.SubItems[2].Text).ToString("000"),
+                        WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc).ToString("000"),
                         "°\nQRB:\t",
-                        WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, info.Item.SubItems[2].Text),
+                        WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc),
                         " km\n\nLeft click to\nSend Message."
                     });
                 }
-                if (info.SubItem.Name == "AS")
+                if (column.Name == "AS")
                 {
-                    string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
-                    string s = AS_if.GetNearestPlanes(call);
+                    string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                    string s = AS_if.GetNearestPlanes(ascall);
                     if (string.IsNullOrEmpty(s))
                     {
                         ToolTipText = "No planes\n\nLeft click for map";
                         lock (CALL)
                         {
-                            DataRow Row = CALL.Rows.Find(call);
+                            DataRow Row = CALL.Rows.Find(ascall);
                             if (Row != null && Settings.Default.AS_Active)
                             {
                                 int qrb = (int)Row["QRB"];
@@ -1574,26 +1688,25 @@ namespace wtKST
                         ToolTipText = t + "\n\nLeft click for map\nRight click for more";
                     }
                 }
-                if (!String.IsNullOrEmpty(info.SubItem.Name) && info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
+                if (!String.IsNullOrEmpty(column.Name) && column.Name[0] > '0' && column.Name[0] < '9')
                 {
                     QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
                     try
                     {
-                        Enum.TryParse<QRVdb.QRV_STATE>(info.SubItem.Text, out state);
+                        Enum.TryParse<QRVdb.QRV_STATE>(column.Name, out state);
                     }
                     catch
                     {
                     }
                     if (state != QRVdb.QRV_STATE.worked)
                     {
-                        ToolTipText = info.SubItem.Name.Replace("_", ".") + ": Left click to \ntoggle QRV info";
+                        ToolTipText = column.Name.Replace("_", ".") + ": Left click to \ntoggle QRV info";
                     }
                     else
                     {
                         if (wtQSO != null)
                         {
-                            string call = info.Item.Text;
-                            string band = info.SubItem.Name;
+                            string band = column.Name;
                             DataRow findrow = wtQSO.QSO.Rows.Find(new object[] { call, band.Replace(".", "_") });
                             if (findrow != null)
                             {
@@ -1615,7 +1728,7 @@ namespace wtKST
                         }
                     }
                 }
-                ShowToolTip(ToolTipText, lv_Calls, p);
+                ShowToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
             }
         }
 
@@ -1632,9 +1745,14 @@ namespace wtKST
             fill_AS_list();
         }
 
+        private void lv_Calls_mousewheel_event(object sender, EventArgs e)
+        {
+            fill_AS_list();
+        }
+
         private void fill_AS_list()
         {
-            if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.TopItem == null || lv_Calls.Items.Count == 0)
+            if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.RowCount == 0)
                 return;
 
             string watchlist = "";
@@ -1647,12 +1765,12 @@ namespace wtKST
                 string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
 
                 // find visible users
-                for (int i = 0; i < lv_Calls.Items.Count; i++)
+                for (int i = 0; i < lv_Calls.RowCount; i++)
                 {
                     try
                     {
-                        string dxloc = lv_Calls.Items[i].SubItems[2].Text;
-                        string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Items[i].Text.TrimStart(
+                        string dxloc = lv_Calls.Rows[i].Cells["LOC"].Value.ToString();
+                        string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Rows[i].Cells["CALL"].Value.ToString().TrimStart(
                             new char[] { '(' }).TrimEnd(new char[] { ')' }));
                         int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, dxloc);
                         if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
@@ -1660,8 +1778,7 @@ namespace wtKST
                                     && !mycall.Equals(dxcall))
                         {
                             watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
-                            if (i == lv_Calls.TopItem.Index ||
-                                lv_Calls.ClientRectangle.IntersectsWith(lv_Calls.Items[i].Bounds))
+                            if ( i >= lv_Calls.FirstDisplayedCell.RowIndex && i < lv_Calls.FirstDisplayedCell.RowIndex + lv_Calls.DisplayedRowCount(true))
                             {
                                 AS_list.Add(new AS_Calls(dxcall, dxloc));
                             }
@@ -1684,9 +1801,9 @@ namespace wtKST
 
         private void cmi_Calls_SendMessage_Click(object sender, EventArgs e)
         {
-            if (lv_Calls.SelectedItems != null && lv_Calls.SelectedItems[0].Text.Length > 0)
+            if (lv_Calls.SelectedRows != null && lv_Calls.SelectedRows[0].HeaderCell.Value.ToString().Length > 0)
             {
-                cb_Command.Text = "/cq " + lv_Calls.SelectedItems[0].Text.Replace("(", "").Replace(")", "") + " ";
+                cb_Command.Text = "/cq " + lv_Calls.SelectedRows[0].HeaderCell.Value.ToString().Replace("(", "").Replace(")", "") + " ";
                 cb_Command.Focus();
                 cb_Command.SelectionStart = cb_Command.Text.Length;
                 cb_Command.SelectionLength = 0;
@@ -1694,62 +1811,76 @@ namespace wtKST
         }
 
 
-        private void lv_Calls_ColumnClick(object sender, ColumnClickEventArgs e)
+        private void lv_Calls_ColumnClick(object sender, DataGridViewCellMouseEventArgs e)
         {
+            DataGridView dgv = sender as DataGridView;
+            var column = dgv.Columns[e.ColumnIndex];
+
             // CALL column
-            if (e.Column == 0)
+            if (column.Name == "CALL")
             {
                 if (hide_away)
                     hide_away = false;
                 else
                     hide_away = true;
-                KST_Update_USR_Window();
+                return;
             }
 
             // LOCATOR column
-            if (e.Column == 2)
+            if (column.Name == "LOC")
             {
                 if (sort_by_dir)
+                {
                     sort_by_dir = false;
+                    dgv.Sort(dgv.Columns["CALL"], ListSortDirection.Ascending);
+                }
                 else
+                {
                     sort_by_dir = true;
-                KST_Update_USR_Window();
+                    dgv.Sort(dgv.Columns["DIR"], ListSortDirection.Ascending);
+                }
+                return;
             }
 
             // ACT column
-            if (e.Column == 3)
+            if (column.Name == "CONTACTED")
             {
                 if (ignore_inactive)
                     ignore_inactive = false;
                 else
                     ignore_inactive = true;
-                KST_Update_USR_Window();
+                return;
             }
             // band columns
-            if (e.Column > 4)
+            if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex)
             {
                 if (hide_worked)
                     hide_worked = false;
                 else
                     hide_worked = true;
-                lv_Calls.Invalidate(true);
-                KST_Update_USR_Window();
+                return;
             }
         }
 
-        private void lv_Calls_MouseDown(object sender, MouseEventArgs e)
+        private string lv_Calls_control_shown_from_Call = "";
+
+        private void lv_Calls_MouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                Point p = new Point(e.X, e.Y);
+
                 QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
-                ListViewHitTestInfo info = lv_Calls.HitTest(p);
-                if (info != null && info.SubItem != null)
+                DataGridView dgv = sender as DataGridView;
+
+                if (e.ColumnIndex >= 0 && e.RowIndex >= 0)
                 {
-                    string username = info.Item.Text.Replace("(", "").Replace(")", "");
+                    var column = dgv.Columns[e.ColumnIndex];
+                    var row = dgv.Rows[e.RowIndex];
+
+                    string username = row.Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", "");
                     string call = WCCheck.WCCheck.SanitizeCall(username);
 
-                    if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act")
+                    if (column.Name == "CALL" || column.Name == "NAME" || column.Name == "LOC" || column.Name == "CONTACTED")
                     {
                         if (username.Length > 0 && KST.State == KSTcom.KST_STATE.Connected)
                         {
@@ -1758,23 +1889,23 @@ namespace wtKST
                             cb_Command.SelectionLength = 0;
                         }
                     }
-                    if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
+                    if (column.Name == "AS" && Settings.Default.AS_Active)
                     {
-                        string loc = info.Item.SubItems[2].Text;
+                        string loc = row.Cells["LOC"].Value.ToString();
 
                         AS_if.show_path(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
                     }
-                    if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
+                    if (column.Name[0] > '0' && column.Name[0] < '9')
                     {
                         lock (CALL)
                         {
                             // band columns
                             DataRow CallsRow = CALL.Rows.Find(call);
-                            string band = info.SubItem.Name;
+                            string band = column.Name;
                             state = QRVdb.QRV_STATE.unknown;
                             try
                             {
-                                Enum.TryParse<QRVdb.QRV_STATE>(info.SubItem.Text, out state);
+                                Enum.TryParse<QRVdb.QRV_STATE>(row.Cells[e.ColumnIndex].Value.ToString(), out state);
                             }
                             catch
                             {
@@ -1782,49 +1913,55 @@ namespace wtKST
                             switch (state)
                             {
                                 case QRVdb.QRV_STATE.unknown:
-                                    info.SubItem.Text = QRVdb.QRV_STATE.qrv.ToString();
+                                    row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.qrv;
                                     qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.qrv);
                                     if (CallsRow != null)
                                         CallsRow[band] = QRVdb.QRV_STATE.qrv;
                                     break;
                                 case QRVdb.QRV_STATE.qrv:
-                                    info.SubItem.Text = QRVdb.QRV_STATE.not_qrv.ToString();
+                                    row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.not_qrv;
                                     qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.not_qrv);
                                     if (CallsRow != null)
                                         CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
                                     break;
                                 case QRVdb.QRV_STATE.not_qrv:
-                                    info.SubItem.Text = QRVdb.QRV_STATE.unknown.ToString();
+                                    row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.unknown;
                                     qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.unknown);
                                     if (CallsRow != null)
                                         CallsRow[band] = QRVdb.QRV_STATE.unknown;
                                     break;
                             }
+                            dgv.Refresh();
                         }
-                        lv_Calls.Refresh();
                     }
                 }
             }
             else if (e.Button == MouseButtons.Right)
             {
-                Point p = new Point(e.X, e.Y);
+
                 string ToolTipText = "";
-                ListViewHitTestInfo info = lv_Calls.HitTest(p);
-                if (info != null && info.SubItem != null)
+                DataGridView dgv = sender as DataGridView;
+
+                if (e.ColumnIndex >= 0 && e.RowIndex >= 0)
                 {
-                    if (info.SubItem.Name == "Call" /*|| info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act"*/)
+                    var column = dgv.Columns[e.ColumnIndex];
+                    var row = dgv.Rows[e.RowIndex];
+
+                    if (column.Name == "CALL")
                     {
-                        string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
+                        string call = WCCheck.WCCheck.SanitizeCall(row.Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", ""));
                         DataRow[] selectRow = KST.MSG_findcall(call);
 
                         this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
                         this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count>0);
 
-                        this.cmn_userlist.Show(lv_Calls, p);
+                        lv_Calls_control_shown_from_Call = call;
+
+                        this.cmn_userlist.Show(lv_Calls, dgv.PointToClient(Cursor.Position));
                     }
-                    else if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
+                    else if (column.Name == "AS" && Settings.Default.AS_Active)
                     {
-                        string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
+                        string call = WCCheck.WCCheck.SanitizeCall(row.Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", ""));
                         string s = AS_if.GetNearestPlanes(call);
                         if (string.IsNullOrEmpty(s))
                         {
@@ -1847,7 +1984,7 @@ namespace wtKST
                             ToolTipText = s + "\n\nLeft click for map\nRight click for more";
                         }
                     }
-                    ShowToolTip(ToolTipText, lv_Calls, p);
+                    ShowToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
                 }
             }
         }
@@ -1999,13 +2136,17 @@ namespace wtKST
             {
                 Console.WriteLine(Control.GetType().ToString());
                 kst_sked_qrg = 0;
-                var yourControl = contextMenu.SourceControl as DoubleBufferedListView;
-                if (yourControl.SelectedItems.Count > 0)
-                {
-                    string call = yourControl.SelectedItems[0].Text.Replace("(", "").Replace(")", "");
-                    Console.WriteLine("clicked " + call);
-                    return call;
-                }
+                // FIXME DV das geht so nicht, keine Ahnung...
+                //var yourControl = contextMenu.SourceControl as DataGridView;
+                //if (yourControl.SelectedRows.Count > 0)
+                //{
+                //    string call = yourControl.SelectedRows[0].Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", "");
+                //    Console.WriteLine("clicked " + call);
+                //    return call;
+                //}
+
+                if (!String.IsNullOrEmpty(lv_Calls_control_shown_from_Call))
+                    return lv_Calls_control_shown_from_Call;
             }
             else if (Control.Name.Equals("lv_Msg") || Control.Name.Equals("lv_MyMsg"))
             {
@@ -2190,6 +2331,7 @@ namespace wtKST
                 Point p = new Point(e.X, e.Y);
                 p = cb_Command.PointToScreen(p);
                 Point cp = lv_Calls.PointToClient(p);
+#if FIXME_DV
                 ListViewHitTestInfo info = lv_Calls.HitTest(cp);
                 if (info != null && info.Item != null)
                 {
@@ -2206,9 +2348,10 @@ namespace wtKST
                     ((HandledMouseEventArgs)e).Handled = true;
                 }
                 else
+#endif
                 {
                     cp = lv_Msg.PointToClient(p);
-                    info = lv_Msg.HitTest(cp);
+                    ListViewHitTestInfo info = lv_Msg.HitTest(cp);
                     if (info != null && info.Item != null)
                     {
                         int newindex = lv_Msg.TopItem.Index - Math.Sign(e.Delta);
@@ -2355,11 +2498,11 @@ namespace wtKST
                     try
                     {
                         AS_if.planes.Clear();
-                        foreach (ListViewItem lvi in lv_Calls.Items)
+                        for (int i = 0; i < lv_Calls.RowCount; i++)
                         {
-                            lvi.SubItems[4].Text = "";
+                            lv_Calls.Rows[i].Cells["AS"].Value = "";
+                            lv_Calls.Refresh(); // propagate to CALL table
                         }
-                        lv_Calls.Refresh();
                     }
                     catch
                     {
@@ -2367,42 +2510,41 @@ namespace wtKST
                 }
                 return;
             }
-            // search the listview for matching call - note that dxcall is the bare callsign, whereas
+            // search the view for matching call - note that dxcall is the bare callsign, whereas
             // the list contains () for users that are away and may contain things like /p
             // so this is safer...
-            ListViewItem call_lvi = null;
-            foreach (ListViewItem lvi in lv_Calls.Items)
+            DataGridViewRow call_row = null;
+            for (int i=0; i<lv_Calls.RowCount; i++)
             {
-                if (lvi.Text.IndexOf(dxcall) >= 0)
+                if (lv_Calls.Rows[i].Cells["CALL"].Value.ToString().IndexOf(dxcall) >= 0)
                 {
-                    call_lvi = lvi;
+                    call_row = lv_Calls.Rows[i];
                     break;
                 }
             }
-
             if (e.ProgressPercentage > 0)
             {
-                if (call_lvi != null)
+                if (call_row != null)
                 {
                     string newtext = AS_if.GetNearestPlanePotential(dxcall);
-                    if (call_lvi.SubItems[4].Text != newtext)
+                    if (call_row.Cells["AS"].Value.ToString() != newtext)
                     {
-                        call_lvi.SubItems[4].Text = newtext;
-                        lv_Calls.Refresh();
+                        call_row.Cells["AS"].Value = newtext;
+                        lv_Calls.Refresh(); // propagate to CALL table
                     }
                 }
             }
             else /* e.ProgressPercentage == 0 or e.ProgressPercentage == -1 */
             {
-                Console.WriteLine("remove " + dxcall);
+                //Console.WriteLine("remove " + dxcall);
                 AS_if.planes.Remove(dxcall);
-                if (call_lvi != null)
+                if (call_row != null)
                 {
                     string newtext = "";
-                    if (call_lvi.SubItems[4].Text != newtext)
+                    if (call_row.Cells["AS"].Value.ToString() != newtext)
                     {
-                        call_lvi.SubItems[4].Text = newtext;
-                        lv_Calls.Refresh();
+                        call_row.Cells["AS"].Value = newtext;
+                        lv_Calls.Refresh(); // propagate to CALL table
                     }
                 }
             }
@@ -2410,36 +2552,6 @@ namespace wtKST
 
         private void bw_GetPlanes_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-        }
-
-        class DoubleBufferedListView : ListView
-        {
-            public DoubleBufferedListView()
-            {
-                this.DoubleBuffered = true;
-            }
-
-            // https://stackoverflow.com/a/1852053
-            // https://stackoverflow.com/a/9964086
-            public event ScrollEventHandler Scroll;
-            protected virtual void OnScroll(ScrollEventArgs e)
-            {
-                ScrollEventHandler handler = this.Scroll;
-                if (handler != null) handler(this, e);
-            }
-
-            private const int WM_VSCROLL = 0x115;
-            private const int MOUSEWHEEL = 0x020A;
-            private const int KEYDOWN = 0x0100;
-
-            protected override void WndProc(ref Message m)
-            {
-                base.WndProc(ref m);
-                if (m.Msg == MOUSEWHEEL || m.Msg == WM_VSCROLL || (m.Msg == KEYDOWN && (m.WParam == (IntPtr)40 || m.WParam == (IntPtr)35)))
-                {
-                    OnScroll(new ScrollEventArgs((ScrollEventType)(m.WParam.ToInt32() & 0xffff), 0));
-                }
-            }
         }
 
         [DllImport("user32.dll")]
@@ -2454,7 +2566,7 @@ namespace wtKST
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+#region Windows Form Designer generated code
 
         private void InitializeComponent()
         {
@@ -2482,22 +2594,7 @@ namespace wtKST
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lbl_KST_MyMsg = new System.Windows.Forms.Label();
-            this.lv_Calls = new wtKST.MainDlg.DoubleBufferedListView();
-            this.ch_Call = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_Loc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_Act = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_AS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader144 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader432 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader1296 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2320 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3400 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader5760 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader10368 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader24GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader47GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader76GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lv_Calls = new System.Windows.Forms.DataGridView();
             this.lbl_KST_Calls = new System.Windows.Forms.Label();
             this.mn_Main = new System.Windows.Forms.MenuStrip();
             this.tsm_File = new System.Windows.Forms.ToolStripMenuItem();
@@ -2552,6 +2649,7 @@ namespace wtKST
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lv_Calls)).BeginInit();
             this.mn_Main.SuspendLayout();
             this.cmn_Notify.SuspendLayout();
             this.cmn_userlist.SuspendLayout();
@@ -2709,6 +2807,7 @@ namespace wtKST
             this.lv_Msg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lv_Msg.FullRowSelect = true;
             this.lv_Msg.GridLines = true;
+            this.lv_Msg.HideSelection = false;
             this.lv_Msg.Location = new System.Drawing.Point(0, 26);
             this.lv_Msg.MultiSelect = false;
             this.lv_Msg.Name = "lv_Msg";
@@ -2765,6 +2864,7 @@ namespace wtKST
             this.lv_MyMsg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lv_MyMsg.FullRowSelect = true;
             this.lv_MyMsg.GridLines = true;
+            this.lv_MyMsg.HideSelection = false;
             this.lv_MyMsg.Location = new System.Drawing.Point(0, 26);
             this.lv_MyMsg.MultiSelect = false;
             this.lv_MyMsg.Name = "lv_MyMsg";
@@ -2812,115 +2912,22 @@ namespace wtKST
             // 
             // lv_Calls
             // 
-            this.lv_Calls.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ch_Call,
-            this.ch_Name,
-            this.ch_Loc,
-            this.ch_Act,
-            this.ch_AS,
-            this.columnHeader144,
-            this.columnHeader432,
-            this.columnHeader1296,
-            this.columnHeader2320,
-            this.columnHeader3400,
-            this.columnHeader5760,
-            this.columnHeader10368,
-            this.columnHeader24GHz,
-            this.columnHeader47GHz,
-            this.columnHeader76GHz});
             this.lv_Calls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lv_Calls.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lv_Calls.GridLines = true;
             this.lv_Calls.Location = new System.Drawing.Point(0, 24);
             this.lv_Calls.MultiSelect = false;
             this.lv_Calls.Name = "lv_Calls";
-            this.lv_Calls.OwnerDraw = true;
+            this.lv_Calls.ReadOnly = true;
+            this.lv_Calls.RowHeadersVisible = false;
             this.lv_Calls.Size = new System.Drawing.Size(353, 658);
             this.lv_Calls.TabIndex = 14;
-            this.lv_Calls.UseCompatibleStateImageBehavior = false;
-            this.lv_Calls.View = System.Windows.Forms.View.Details;
-            this.lv_Calls.Scroll += new System.Windows.Forms.ScrollEventHandler(this.lv_Calls_scroll);
-            this.lv_Calls.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lv_Calls_ColumnClick);
-            this.lv_Calls.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.lv_Calls_DrawColumnHeader);
-            this.lv_Calls.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.lv_Calls_DrawItem);
-            this.lv_Calls.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.lv_Calls_DrawSubItem);
+            this.lv_Calls.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_MouseDown);
+            this.lv_Calls.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_MouseMove);
+            this.lv_Calls.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.lv_Calls_CellPainting);
+            this.lv_Calls.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lv_Calls_CellValueChanged);
+            this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
-            this.lv_Calls.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_MouseDown);
-            this.lv_Calls.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_MouseMove);
-            // 
-            // ch_Call
-            // 
-            this.ch_Call.Text = "Call";
-            this.ch_Call.Width = 80;
-            // 
-            // ch_Name
-            // 
-            this.ch_Name.Text = "Name";
-            this.ch_Name.Width = 100;
-            // 
-            // ch_Loc
-            // 
-            this.ch_Loc.Text = "Locator";
-            // 
-            // ch_Act
-            // 
-            this.ch_Act.Text = "Act";
-            this.ch_Act.Width = 30;
-            // 
-            // ch_AS
-            // 
-            this.ch_AS.Text = "AS";
-            this.ch_AS.Width = 30;
-            // 
-            // columnHeader144
-            // 
-            this.columnHeader144.Text = "144M";
-            this.columnHeader144.Width = 20;
-            // 
-            // columnHeader432
-            // 
-            this.columnHeader432.Text = "432M";
-            this.columnHeader432.Width = 20;
-            // 
-            // columnHeader1296
-            // 
-            this.columnHeader1296.Text = "1.2G";
-            this.columnHeader1296.Width = 20;
-            // 
-            // columnHeader2320
-            // 
-            this.columnHeader2320.Text = "2.3G";
-            this.columnHeader2320.Width = 20;
-            // 
-            // columnHeader3400
-            // 
-            this.columnHeader3400.Text = "3.4G";
-            this.columnHeader3400.Width = 20;
-            // 
-            // columnHeader5760
-            // 
-            this.columnHeader5760.Text = "5.7G";
-            this.columnHeader5760.Width = 20;
-            // 
-            // columnHeader10368
-            // 
-            this.columnHeader10368.Text = "10G";
-            this.columnHeader10368.Width = 20;
-            // 
-            // columnHeader24GHz
-            // 
-            this.columnHeader24GHz.Text = "24G";
-            this.columnHeader24GHz.Width = 20;
-            // 
-            // columnHeader47GHz
-            // 
-            this.columnHeader47GHz.Text = "47G";
-            this.columnHeader47GHz.Width = 20;
-            // 
-            // columnHeader76GHz
-            // 
-            this.columnHeader76GHz.Text = "76G";
-            this.columnHeader76GHz.Width = 20;
+            this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
             // 
             // lbl_KST_Calls
             // 
@@ -3284,6 +3291,7 @@ namespace wtKST
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.lv_Calls)).EndInit();
             this.mn_Main.ResumeLayout(false);
             this.mn_Main.PerformLayout();
             this.cmn_Notify.ResumeLayout(false);
@@ -3292,7 +3300,7 @@ namespace wtKST
             this.PerformLayout();
 
         }
-        #endregion
+#endregion
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -3447,6 +3455,5 @@ namespace wtKST
             if (!Settings.Default.KST_Macro_9.Equals(menu_btn_macro_0.Text))
                 menu_btn_macro_0.Text = Settings.Default.KST_Macro_0;
         }
-
     }
 }
