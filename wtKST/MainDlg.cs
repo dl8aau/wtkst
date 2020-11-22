@@ -636,6 +636,9 @@ namespace wtKST
             {
                 case KSTcom.USER_OP.USER_NEW:
                     {
+                        if (USER.RowState == DataRowState.Detached)
+                            return; // seems this happens from time to time... FIXME
+
                         DataRow row = CALL.NewRow();
 
                         row["CALL"] = USER["CALL"];
