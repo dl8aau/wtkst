@@ -213,7 +213,7 @@ namespace wtKST
             CALL.Columns.Add("QRB", typeof(int));
             CALL.Columns.Add("DIR", typeof(int));
             CALL.Columns.Add("AWAY", typeof(bool));
-            CALL.Columns.Add("AS", typeof(int));
+            CALL.Columns.Add("AS");
             foreach (string band in BANDS)
                 CALL.Columns.Add(band, typeof(int));
             CALL.Columns.Add("COLOR", typeof(int));
@@ -371,6 +371,7 @@ namespace wtKST
             }
 
             KST_Update_Usr_Filter();
+            fill_AS_list();
 
             string KST_Calls_Text = lbl_KST_Calls.Text;
             if (lv_Calls.RowCount > 0)
@@ -1533,79 +1534,83 @@ namespace wtKST
                 {
                     try
                     {
-#if FIXME_DV
-                        if (e.SubItem.Text.Length > 0)
-                    {
-                        if (e.SubItem.Text.Equals("<") || e.SubItem.Text.Equals(">"))
-                        {
-                            e.DrawDefault = true;
-                            return;
-                        }
-                        e.DrawBackground();
-                        string[] a = e.SubItem.Text.Split(new char[] { ',' });
-                        if (a.Length<3)
-                        {
-                            e.DrawDefault = false; // draw nothing, just the background
-                            return;
-                        }
-                        int pot = Convert.ToInt32(a[0]);
-                        int Mins = Convert.ToInt32(a[2]);
-                        if (Mins > 99)
-                            Mins = 99;
-                        if (pot > 0)
-                        {
-                            if (a.Length < 2)
-                                Console.WriteLine("ups " + a.Length + " " + e.SubItem.Text);
-                            var cat = a[1];
-                            Rectangle b = e.Bounds;
-                            b.Inflate(-5,0); // width -10 for the text
-                            if (cat.Equals("S"))
-                                b.Inflate(-1, -1);
-                            else if (cat.Equals("H"))
-                                b.Inflate(-2, -2);
-                            else if (cat.Equals("M") || cat.Equals("[unknown]"))
-                                b.Inflate(-4, -4);
-                            else if (cat.Equals("L"))
-                                b.Inflate(-6, -6);
-                            else // unknown
-                                b.Inflate(-5, -5);
-                            b.X = e.Bounds.X + 1;
-                            if (pot == 100)
-                            {
-                                // 100
-                                e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
-                            }
-                            else if (pot > 50)
-                            {
-                                // 51..99
-                                if (Mins > 15)
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b);
-                                else if (Mins > 5)
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b);
-                                else
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
+                        var row = dgv.Rows[e.RowIndex];
+                        string as_string = row.Cells["AS"].Value.ToString();
 
-                                using (StringFormat sf = new StringFormat())
+                        if (as_string.Length > 0)
+                        {
+                            if (as_string.Equals("<") || as_string.Equals(">"))
+                            {
+                                return;
+                            }
+                            e.PaintBackground(e.CellBounds, false);
+                            string[] a = as_string.Split(new char[] { ',' });
+                            if (a.Length<3)
+                            {
+                                // draw nothing, just the background
+                                return;
+                            }
+                            int pot = Convert.ToInt32(a[0]);
+                            int Mins = Convert.ToInt32(a[2]);
+                            if (Mins > 99)
+                                Mins = 99;
+                            if (pot > 0)
+                            {
+                                if (a.Length < 2)
+                                    Console.WriteLine("ups " + a.Length + " " + as_string);
+                                var cat = a[1];
+                                Rectangle newRect = new Rectangle(e.CellBounds.X + 2,
+                                    e.CellBounds.Y + 2, e.CellBounds.Width - 4,
+                                    e.CellBounds.Height - 4);
+                                Rectangle b = newRect;
+                                b.Inflate(-5,0); // width -10 for the text
+                                if (cat.Equals("S"))
+                                    b.Inflate(-1, -1);
+                                else if (cat.Equals("H"))
+                                    b.Inflate(-2, -2);
+                                else if (cat.Equals("M") || cat.Equals("[unknown]"))
+                                    b.Inflate(-4, -4);
+                                else if (cat.Equals("L"))
+                                    b.Inflate(-6, -6);
+                                else // unknown
+                                    b.Inflate(-5, -5);
+                                b.X = newRect.X + 1;  // FIXME needed?
+                                if (pot == 100)
                                 {
-                                    using (Font headerFont = new Font(listView.Font.Name, listView.Font.Size*0.8F, FontStyle.Regular))
+                                    // 100
+                                    e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
+                                }
+                                else if (pot > 50)
+                                {
+                                    // 51..99
+                                    if (Mins > 15)
+                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b);
+                                    else if (Mins > 5)
+                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b);
+                                    else
+                                        e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
+
+                                    using (StringFormat sf = new StringFormat())
                                     {
-                                        sf.Alignment = StringAlignment.Center;
-                                        sf.LineAlignment = StringAlignment.Center;
-                                        Rectangle tb = e.Bounds;
-                                        tb.X = tb.X + e.Bounds.Width - 15;
-                                        tb.Width = 15;
-                                        e.Graphics.DrawString(Mins.ToString(), headerFont, Brushes.Black, tb, sf);
+                                        using (Font headerFont = new Font(e.CellStyle.Font.Name, e.CellStyle.Font.Size*0.8F, FontStyle.Regular))
+                                        {
+                                            sf.Alignment = StringAlignment.Center;
+                                            sf.LineAlignment = StringAlignment.Center;
+                                            Rectangle tb = newRect;
+                                            tb.X = tb.X + newRect.Width - 15;
+                                            tb.Width = 15;
+                                            e.Graphics.DrawString(Mins.ToString(), headerFont, Brushes.Black, tb, sf);
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                // 0..50
-                                e.Graphics.FillEllipse(new SolidBrush(Color.Orange), b);
+                                else
+                                {
+                                    // 0..50
+                                    e.Graphics.FillEllipse(new SolidBrush(Color.Orange), b);
+                                }
+                                e.Handled = true;
                             }
                         }
-                    }
-#endif
                     }
                     catch
                     {
@@ -2519,7 +2524,7 @@ namespace wtKST
             DataGridViewRow call_row = null;
             for (int i=0; i<lv_Calls.RowCount; i++)
             {
-                if (lv_Calls.Rows[i].Cells["CALL"].Value.ToString().IndexOf(dxcall) >= 0)
+                if (lv_Calls.Rows[i].Cells["CALL"].Value != null && lv_Calls.Rows[i].Cells["CALL"].Value.ToString().IndexOf(dxcall) >= 0)
                 {
                     call_row = lv_Calls.Rows[i];
                     break;
