@@ -685,6 +685,9 @@ namespace wtKST
                     break;
                 case KSTcom.USER_OP.USER_MODIFY:
                     {
+                        if (USER.RowState == DataRowState.Detached)
+                            return; // seems this happens from time to time... FIXME
+
                         DataRow row = CALL.Rows.Find(USER["CALL"]);
                         if (row != null)
                         {
@@ -711,6 +714,9 @@ namespace wtKST
                     break;
                 case KSTcom.USER_OP.USER_MODIFY_STATE:
                     {
+                        if (USER.RowState == DataRowState.Detached)
+                            return; // seems this happens from time to time... FIXME
+
                         DataRow row = CALL.Rows.Find(USER["CALL"]);
                         if (row != null)
                         {
