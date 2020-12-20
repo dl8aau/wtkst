@@ -1470,6 +1470,8 @@ namespace wtKST
                 }
                 else if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex)
                 {
+                    if (e.Value == null)
+                        return;
                     QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
                     try
                     {
@@ -1541,6 +1543,8 @@ namespace wtKST
                     try
                     {
                         var row = dgv.Rows[e.RowIndex];
+                        if (row.Cells["AS"].Value == null)
+                            return;
                         string as_string = row.Cells["AS"].Value.ToString();
 
                         if (as_string.Length > 0)
@@ -1783,6 +1787,8 @@ namespace wtKST
                 {
                     try
                     {
+                        if (lv_Calls.Rows[i].Cells["LOC"].Value == null)
+                            continue;
                         string dxloc = lv_Calls.Rows[i].Cells["LOC"].Value.ToString();
                         string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Rows[i].Cells["CALL"].Value.ToString().TrimStart(
                             new char[] { '(' }).TrimEnd(new char[] { ')' }));
