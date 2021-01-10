@@ -12,29 +12,9 @@ namespace WinTest
     {
         private IPAddress localbroadcastIP;
 
-        private static IPAddress GetIpIFBroadcastAddress()
-        {
-            var unicast = NetworkInterface
-                .GetAllNetworkInterfaces()
-                .Where(n => n.OperationalStatus == OperationalStatus.Up)
-                .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                .Where(n => n.GetIPProperties().GatewayAddresses.Count > 0) // only interfaces with a gateway
-                .SelectMany(n => n.GetIPProperties()?.UnicastAddresses)
-                .Where(g => g.Address.AddressFamily == AddressFamily.InterNetwork) // filter IPv4
-                .FirstOrDefault(g => g != null);
-
-            var address = unicast.Address;
-            var mask = unicast.IPv4Mask;
-            var addressInt = BitConverter.ToInt32(address.GetAddressBytes(), 0);
-            var maskInt = BitConverter.ToInt32(mask.GetAddressBytes(), 0);
-            var broadcastInt = addressInt | ~maskInt;
-            var broadcastAddress = new IPAddress(BitConverter.GetBytes(broadcastInt));
-            return broadcastAddress;
-        }
-
         public wtSked()
         {
-            localbroadcastIP = GetIpIFBroadcastAddress();
+            localbroadcastIP = WinTest.GetIpIFBroadcastAddress();
         }
 
         private const string my_wtname = "KST"; // FIXME!!!
@@ -96,7 +76,7 @@ WT Msg UNLOCKSKED src STN1 dest  data STN1 checksum True
         {
             wtMessage Msg = new wtMessage(WTMESSAGES.ADDSKED, my_wtname, "", string.Concat(new string[]
             {
-                // the time stamp for Win-Test seems to be 1 minute off, os use 1.1.1970 00:01:00 as reference
+                // the time stamp for Win-Test seems to be 1 minute off, so use 1.1.1970 00:01:00 as reference
                 ((Int64)((t.ToUniversalTime() - new DateTime (1970, 1, 1, 0, 1, 0, DateTimeKind.Utc)).TotalSeconds)+60).ToString(),
                 " ", (10*qrg).ToString(), " ", ((int)band).ToString(),
                 " ", ((int)mode).ToString(), " \"", call, "\" \"", notes, "\""

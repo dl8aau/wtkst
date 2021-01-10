@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 
 namespace WinTest
@@ -188,5 +191,26 @@ namespace WinTest
     public class WinTest
     {
         public const int WinTestDefaultPort = 9871;
+
+        public static IPAddress GetIpIFBroadcastAddress()
+        {
+            var unicast = NetworkInterface
+                .GetAllNetworkInterfaces()
+                .Where(n => n.OperationalStatus == OperationalStatus.Up)
+                .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                .Where(n => n.GetIPProperties().GatewayAddresses.Count > 0) // only interfaces with a gateway
+                .SelectMany(n => n.GetIPProperties()?.UnicastAddresses)
+                .Where(g => g.Address.AddressFamily == AddressFamily.InterNetwork) // filter IPv4
+                .FirstOrDefault(g => g != null);
+
+            var address = unicast.Address;
+            var mask = unicast.IPv4Mask;
+            var addressInt = BitConverter.ToInt32(address.GetAddressBytes(), 0);
+            var maskInt = BitConverter.ToInt32(mask.GetAddressBytes(), 0);
+            var broadcastInt = addressInt | ~maskInt;
+            var broadcastAddress = new IPAddress(BitConverter.GetBytes(broadcastInt));
+            return broadcastAddress;
+        }
+
     }
 }
