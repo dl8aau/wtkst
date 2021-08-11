@@ -1138,6 +1138,14 @@ namespace wtKST
             if (!KST.Send(cb_Command.Text))
             {
                 MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
+            } else
+            {
+                try
+                {
+                    last_cq_call = cb_Command.Text.Split(' ')[1];
+                }
+                catch
+                {}
             }
             cb_Command.ResetText();
         }
@@ -2275,6 +2283,15 @@ namespace wtKST
             if (!KST.Send(cb_Command.Text))
             {
                 MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
+            }
+            else
+            {
+                try
+                {
+                    last_cq_call = cb_Command.Text.Split(' ')[1];
+                }
+                catch
+                { }
             }
             cb_Command.ResetText();
         }
