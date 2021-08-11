@@ -370,7 +370,6 @@ namespace wtKST
                 }
             }
 
-            KST_Update_Usr_Filter();
             fill_AS_list();
 
             string KST_Calls_Text = lbl_KST_Calls.Text;
@@ -728,7 +727,6 @@ namespace wtKST
                     }
                     break;
                 case KSTcom.USER_OP.USER_DONE:
-                    KST_Update_USR_Window();
                     if (Settings.Default.AS_Active)
                         AS_send_ASWATCHLIST();
                     break;
@@ -1104,7 +1102,7 @@ namespace wtKST
                 UpdateUserBandsWidth();
                 set_KST_Status();
                 if (KST_MaxDist != Convert.ToInt32(Settings.Default.KST_MaxDist))
-                    KST_Update_USR_Window();
+                    KST_Update_Usr_Filter();
                 macro_RefreshMacroText();
             }
         }
@@ -1273,7 +1271,6 @@ namespace wtKST
                         wtQSO.Clear_QSOs();
                     }
                 }
-                KST_Update_USR_Window();
                 if (Settings.Default.AS_Active)
                     AS_send_ASWATCHLIST();
             }
