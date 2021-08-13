@@ -320,7 +320,7 @@ namespace wtKST
             };
             CALL.PrimaryKey = CALLkeys;
 
-            string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName.ToUpper());
+            string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName);
             // check if we are running on Windows, otherwise Win-Test will not run
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
