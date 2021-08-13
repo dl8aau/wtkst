@@ -345,12 +345,16 @@ namespace WCCheck
 			string result;
 			try
 			{
-				S.Trim().ToUpper();
+				S = S.Trim().ToUpper();
 				if (S.IndexOf('-') >= 0)
 				{
 					S = S.Remove(S.IndexOf('-'));
 				}
-				if (S.IndexOf('/') >= 0)
+				while (S.Length > 0 && S.IndexOf(' ') >= 0)
+				{
+					S = S.Remove(S.IndexOf(' '), 1);
+				}
+				if (S.Length > 0 && S.IndexOf('/') >= 0)
 				{
 					if (S.IndexOf('/') >= S.Length - 4)
 					{
@@ -376,7 +380,7 @@ namespace WCCheck
 
 		public static string Prefix(string S)
 		{
-			S = WCCheck.Cut(S).ToUpper();
+			S = WCCheck.Cut(S);
 			string result;
 			for (int i = 0; i < WCCheck.Prefixes.Count; i++)
 			{
