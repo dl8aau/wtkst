@@ -324,7 +324,7 @@ namespace WCCheck
             string result;
             try
             {
-                S.Trim().ToUpper();
+                S = S.Trim().ToUpper();
                 if (S.IndexOf('-') >= 0)
                 {
                     S = S.Remove(S.IndexOf('-'));

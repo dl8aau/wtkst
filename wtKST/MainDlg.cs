@@ -1316,7 +1316,7 @@ namespace wtKST
 
         private void KST_Process_MyCallAway()
         {
-            string MyCall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
+            string MyCall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
             DataRow row = CALL.Rows.Find(MyCall);
             if (row != null)
             {
@@ -2361,7 +2361,7 @@ namespace wtKST
             {
                 AS_list.Clear();
 
-                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
+                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
 
                 // find visible users
                 for (int i = 0; i < lv_Calls.Items.Count; i++)
@@ -3043,7 +3043,7 @@ namespace wtKST
 
             lock (AS_watchlist)
             {
-                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
+                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
                 AS_if.send_watchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
             }
         }
@@ -3058,7 +3058,7 @@ namespace wtKST
                     continue;
                 }
                 int errors = 0;
-                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
+                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
 
                 // here we make a local copy of the current AS_list
                 AS_Calls[] myAs_List;
