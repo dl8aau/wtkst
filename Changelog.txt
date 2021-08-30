@@ -1,4 +1,30 @@
-3.1.1.23
+3.1.2.1 (from master)
+
+- fix "enumerate" problem in Check_QSOs()
+
+3.1.1.26 (from legacy_qrv_db)
+
+- bug: IV3/HB9CAT chat review does not work
+- Sked dialog updates dynamically
+- Fix typo in band list
+- First implementation of macros (thanks TobbY!)
+- Try to figure out sked frequency from messages and propose for sked window (thanks TobbY!)
+- KST Name and Locator where changed immediately, not only after validation
+- fix "enumerate" problem in Check_QSOs()
+- fix "writing CQ/ instead of /CQ causes an exception"
+
+3.1.1.24 (now master)
+
+- bug: IV3/HB9CAT chat review does not work
+- Sked dialog updates dynamically
+- Fix typo in band list
+- First implementation of macros (thanks TobbY!)
+- Try to figure out sked frequency from messages and propose for sked window (thanks TobbY!)
+- KST Name and Locator where changed immediately, not only after validation
+- Use ScoutBase database from Airscout for qrv db, remove qrv.xml
+
+3.1.1.23 (abandoned)
+
 - bug: IV3/HB9CAT chat review does not work
 - Sked dialog updates dynamically
 - Fix typo in band list
