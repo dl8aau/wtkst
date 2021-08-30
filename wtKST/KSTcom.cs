@@ -670,7 +670,7 @@ namespace wtKST
 
         private void Process_MyCallAway()
         {
-            string MyCall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName.ToUpper());
+            string MyCall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
             DataRow row = USER.Rows.Find(MyCall);
             if (row != null)
             {
