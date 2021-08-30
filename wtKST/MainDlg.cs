@@ -1264,13 +1264,18 @@ namespace wtKST
                                                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                         set_KST_Status();
                                     }
+                                    wtQSO_local_lock = false;
+
                                     Check_QSOs();
                                 }
                                 catch
                                 {
 
                                 }
-                                wtQSO_local_lock = false;
+                                finally
+                                {
+                                    wtQSO_local_lock = false;
+                                }
                             }
                         }
                     }
