@@ -159,9 +159,17 @@ namespace wtKST
 
         private void cb_station_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.bt_qsyqrg.Text = "QSY freq " + (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).passfreq / 1000;
-            this.bt_radioqrg.Text = "Radio freq " + (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000;
-            check_qsy_radio_qrg_selected();
+            if (cb_station.SelectedItem == null)
+            {
+                // this happens when the wtStatus list gets empty while the dialog is open
+                DialogResult = DialogResult.Cancel;
+                Close();
+            } else
+            {
+                this.bt_qsyqrg.Text = "QSY freq " + (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).passfreq / 1000;
+                this.bt_radioqrg.Text = "Radio freq " + (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000;
+                check_qsy_radio_qrg_selected();
+            }
         }
 
         private void bt_qsyqrg_Click(object sender, EventArgs e)
