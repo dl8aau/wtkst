@@ -78,7 +78,7 @@ namespace WinTest
 
                 //Console.WriteLine("STATUS: from " + e.Msg.Src + " band " + band + " mode " + mode +
                 //    " freq " + data[4] + " pass " + data[8]);
-                var el = wtStatusList.SingleOrDefault(x => x.from == e.Msg.Src );
+                
                 ulong freq, passfreq;
                 if (!UInt64.TryParse(data[4], out freq))
                     freq = 0;
@@ -89,34 +89,46 @@ namespace WinTest
                 // does not reach the UI elements
                 var th = new Thread(() =>
                 {
-                    if (el != null)
-                    {
-                        _context.Send(o => el = w, null);
-                    }
-                    else
-                    {
-                        _context.Send(o => wtStatusList.Add(w), null);
-                    }
-                }) { IsBackground = true };
+                    _context.Send(o => wtStatusListAdd_UIthread(e.Msg.Src, w), null);
+                 }) { IsBackground = true };
                 th.Start();
             }
         }
 
+        private void wtStatusListAdd_UIthread(string src, wtStat w )
+        {
+            var el = wtStatusList.SingleOrDefault(x => x.from == src);
+
+            if (el != null)
+            {
+                el = w;
+            }
+            else
+            {
+                wtStatusList.Add(w);
+            }
+        }
         private void ti_check_timestamps_Tick(object sender, ElapsedEventArgs e)
         {
-            foreach(var el in wtStatusList)
+            var th = new Thread(() =>
             {
-                if (DateTime.Now.Subtract(el.timestamp).TotalMinutes > 3) // 3 min timeout
+                    _context.Send(o => wtStatusListRemoveExpired_UIthread(), null);
+            })
+            { IsBackground = true };
+            th.Start();
+         }
+
+        private void wtStatusListRemoveExpired_UIthread()
+        {
+            for (int i=0; i<wtStatusList.Count; i++)
+            {
+                var el = wtStatusList[i];
+                if (el != null)
                 {
-                    var th = new Thread(() =>
+                    if (DateTime.Now.Subtract(el.timestamp).TotalMinutes > 3) // 3 min timeout
                     {
-                        if (el != null)
-                        {
-                            _context.Send(o => wtStatusList.Remove(el), null);
-                        }
-                    })
-                    { IsBackground = true };
-                    th.Start();
+                        wtStatusList.Remove(el);
+                    }
                 }
             }
         }
