@@ -1,3 +1,17 @@
+3.1.3.1 (from KSTcom_class)
+
+- fix "enumerate" problem in Check_QSOs()
+- close Sked dialog if no Win-Test is active anymore (don't crash)
+- switch the user list from ListView to DataGridView
+- (internal) move all ON4KST communication related code
+    to a separate class
+- fix "writing CQ/ instead of /CQ causes an exception"
+- Use ScoutBase database from Airscout for qrv db, remove qrv.xml
+    We use the DB read-only. On top of it a local db is used (a bit like
+    before). Main difference: primary key is now call + locator and KST
+    locator is saved in this db.
+	
+
 3.1.2.1 (from master)
 
 - fix "enumerate" problem in Check_QSOs()
