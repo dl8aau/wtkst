@@ -35,7 +35,7 @@ namespace wtKST
             {
                 foreach (string band in BANDS)
                 {
-                    row[band] = QRV_STATE.not_qrv;
+                    row[band] = QRV_STATE.unknown;
                 }
                 foreach (var QRV in QRVlist)
                 {
