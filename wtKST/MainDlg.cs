@@ -370,6 +370,7 @@ namespace wtKST
                 }
             }
 
+            KST_Update_Usr_Filter();
             fill_AS_list();
 
             string KST_Calls_Text = lbl_KST_Calls.Text;
