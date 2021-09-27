@@ -751,15 +751,18 @@ namespace wtKST
             // drop calls that are already in log
             if (hide_worked)
             {
-                RowFilter += " AND (CALL NOT IN (";
+                string add_rowfilter = " AND (CALL NOT IN (";
+                bool calls_to_hide = false;
                 foreach (DataRow row in CALL.Rows)
                 {
                     if (check_in_log(row))
                     {
-                        RowFilter += string.Format("'{0}',", row["CALL"]);
+                        calls_to_hide = true;
+                        add_rowfilter += string.Format("'{0}',", row["CALL"]);
                     }
                 }
-                RowFilter += "))";
+                if (calls_to_hide)
+                    RowFilter += add_rowfilter +  "))";
             }
 
             RowFilter += ")";
