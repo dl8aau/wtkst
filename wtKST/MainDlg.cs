@@ -1725,7 +1725,7 @@ namespace wtKST
                     QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
                     try
                     {
-                        Enum.TryParse<QRVdb.QRV_STATE>(column.Name, out state);
+                        Enum.TryParse<QRVdb.QRV_STATE>(row.Cells[e.ColumnIndex].Value.ToString(), out state);
                     }
                     catch
                     {
@@ -2972,6 +2972,7 @@ namespace wtKST
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
             this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
+            this.lv_Calls.ShowCellToolTips = false;
             // 
             // lbl_KST_Calls
             // 
