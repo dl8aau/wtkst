@@ -144,8 +144,12 @@ namespace wtKST
         private bool ignore_inactive = false;
         private bool hide_worked = false;
         private ContextMenuStrip cmn_userlist;
+        private ContextMenuStrip cmn_msglist;
         private ToolStripMenuItem cmn_userlist_wtsked;
-        private ToolStripMenuItem cmn_userlist_chatReviewT;
+        private ToolStripMenuItem cmn_userlist_chatReview;
+        private ToolStripMenuItem cmn_msglist_wtsked;
+        private ToolStripMenuItem cmn_msglist_chatReview;
+        private ToolStripMenuItem cmn_msglist_openURL;
         private WinTest.wtStatus wts;
         private WTSkedDlg wtskdlg;
         private uint last_sked_qrg;
@@ -439,7 +443,12 @@ namespace wtKST
                 LV.Tag = dt; // store the timestamp in the tag field
                 LV.SubItems.Add(Row["CALL"].ToString());
                 LV.SubItems.Add(Row["NAME"].ToString());
-                LV.SubItems.Add(Row["MSG"].ToString());
+
+                // filter <a href="http://dr9a.de" target="_blank"><b>http_link</b></a> -> http://dr9a.de
+                Regex regex_filter_msg_http_link = new Regex(@"(.*)<a href=""(https?://.*)"" target=""_blank""><b>https?_link</b></a>(.*)", RegexOptions.Compiled);
+        
+                string msg = regex_filter_msg_http_link.Replace(Row["MSG"].ToString(), "$1$2 $3");
+                LV.SubItems.Add(msg);
                 for (int i = 0; i < LV.SubItems.Count; i++)
                 {
                     LV.SubItems[i].Name = lv_Msg.Columns[i].Text;
@@ -592,7 +601,7 @@ namespace wtKST
                     MyLV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
                     MyLV.SubItems.Add(Row["CALL"].ToString());
                     MyLV.SubItems.Add(Row["NAME"].ToString());
-                    MyLV.SubItems.Add(Row["MSG"].ToString());
+                    MyLV.SubItems.Add(msg); // filtered: <a href="http://dr9a.de" target="_blank"><b>http_link</b>
                     for (int i = 0; i < MyLV.SubItems.Count; i++)
                     {
                         MyLV.SubItems[i].Name = lv_MyMsg.Columns[i].Text;
@@ -611,7 +620,7 @@ namespace wtKST
                     {
                         if (Settings.Default.KST_ShowBalloon && !fromMe)
                         {
-                            ni_Main.ShowBalloonTip(30000, "New MyMessage received", Row["MSG"].ToString(), ToolTipIcon.Info);
+                            ni_Main.ShowBalloonTip(30000, "New MyMessage received", msg, ToolTipIcon.Info);
                         }
                     }
                 }
@@ -1986,7 +1995,7 @@ namespace wtKST
                         string call = WCCheck.WCCheck.SanitizeCall(row.Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", ""));
                         DataRow[] selectRow = KST.MSG_findcall(call);
 
-                        this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
+                        this.cmn_userlist_chatReview.Visible = (selectRow.Length > 0);
                         this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count>0);
 
                         lv_Calls_control_shown_from_Call = call;
@@ -2023,6 +2032,8 @@ namespace wtKST
             }
         }
 
+        private string lv_msg_control_url_shown_from_Call = "";
+
         private void lv_Msg_MouseDown(object sender, MouseEventArgs e)
         {
             Point p = new Point(e.X, e.Y);
@@ -2048,10 +2059,22 @@ namespace wtKST
                 {
                     DataRow[] selectRow = KST.MSG_findcall(call);
 
-                    this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
-                    this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
+                    this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
+                    this.cmn_msglist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
 
-                    this.cmn_userlist.Show(lv_Msg, p);
+                    string msg = info.Item.SubItems[3].Text;
+                    var rx = new Regex(@".*(https?://.*) .*", RegexOptions.Compiled);
+                    if (rx.IsMatch(msg))
+                    {
+                        lv_msg_control_url_shown_from_Call = rx.Replace(msg, "$1"); // we only take the first match...
+
+                        this.cmn_msglist_openURL.Visible = true;
+                    }
+                    else
+                    {
+                        this.cmn_msglist_openURL.Visible = false;
+                    }
+                    this.cmn_msglist.Show(lv_Msg, p);
                 }
             }
         }
@@ -2081,10 +2104,22 @@ namespace wtKST
                 {
                     DataRow[] selectRow = KST.MSG_findcall(call);
 
-                    this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
-                    this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
+                    this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
+                    this.cmn_msglist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
 
-                    this.cmn_userlist.Show(lv_MyMsg, p);
+                    string msg = info.Item.SubItems[3].Text;
+                    var rx = new Regex(@".*(https?://.*) .*", RegexOptions.Compiled);
+                    if (rx.IsMatch(msg))
+                    {
+                        lv_msg_control_url_shown_from_Call = rx.Replace(msg, "$1"); // we only take the first match...
+
+                        this.cmn_msglist_openURL.Visible = true;
+                    }
+                    else
+                    {
+                        this.cmn_msglist_openURL.Visible = false;
+                    }
+                    this.cmn_msglist.Show(lv_MyMsg, p);
                 }
             }
         }
@@ -2232,7 +2267,7 @@ namespace wtKST
         }
 
 
-        private void cmn_userlist_wtsked_Click(object sender, EventArgs e)
+        private void cmn_item_wtsked_Click(object sender, EventArgs e)
         {
             ToolStripItem clickedItem = sender as ToolStripItem;
             string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
@@ -2259,9 +2294,9 @@ namespace wtKST
             }
         }
 
-        private void cmn_userlist_chatReviewT_Click(object sender, EventArgs e)
+        private void cmn_item_chatReview_Click(object sender, EventArgs e)
         {
-            ToolStripItem clickedItem =  sender as ToolStripItem;
+            ToolStripItem clickedItem = sender as ToolStripItem;
             string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
 
             if (!String.IsNullOrEmpty(call))
@@ -2284,6 +2319,15 @@ namespace wtKST
 
                 ChatReview cr = new ChatReview(view, call);
                 cr.ShowDialog();
+            }
+        }
+
+        private void cmn_item_openURL_Click(object sender, EventArgs e)
+        {
+            if (!String.IsNullOrEmpty(lv_msg_control_url_shown_from_Call) &&
+                Uri.IsWellFormedUriString(lv_msg_control_url_shown_from_Call, UriKind.Absolute))
+            {
+                System.Diagnostics.Process.Start(lv_msg_control_url_shown_from_Call);
             }
         }
 
@@ -2677,8 +2721,12 @@ namespace wtKST
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmn_msglist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
-            this.cmn_userlist_chatReviewT = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_openURL = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
             this.ss_Main.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -2696,6 +2744,7 @@ namespace wtKST
             this.mn_Main.SuspendLayout();
             this.cmn_Notify.SuspendLayout();
             this.cmn_userlist.SuspendLayout();
+            this.cmn_msglist.SuspendLayout();
             this.SuspendLayout();
             // 
             // ss_Main
@@ -3289,24 +3338,53 @@ namespace wtKST
             // 
             this.cmn_userlist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmn_userlist_wtsked,
-            this.cmn_userlist_chatReviewT});
+            this.cmn_userlist_chatReview});
             this.cmn_userlist.Name = "cmn_userlist";
             this.cmn_userlist.Size = new System.Drawing.Size(150, 48);
+            // 
+            // cmn_msglist
+            // 
+            this.cmn_msglist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmn_msglist_wtsked,
+            this.cmn_msglist_chatReview,
+            this.cmn_msglist_openURL});
+            this.cmn_msglist.Name = "cmn_msglist";
+            this.cmn_msglist.Size = new System.Drawing.Size(149, 48);
             // 
             // cmn_userlist_wtsked
             // 
             this.cmn_userlist_wtsked.Name = "cmn_userlist_wtsked";
             this.cmn_userlist_wtsked.Size = new System.Drawing.Size(149, 22);
             this.cmn_userlist_wtsked.Text = "Win-Test &Sked";
-            this.cmn_userlist_wtsked.Click += new System.EventHandler(this.cmn_userlist_wtsked_Click);
+            this.cmn_userlist_wtsked.Click += new System.EventHandler(this.cmn_item_wtsked_Click);
             // 
-            // cmn_userlist_chatReviewT
+            // cmn_userlist_chatReview
             // 
-            this.cmn_userlist_chatReviewT.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.cmn_userlist_chatReviewT.Name = "cmn_userlist_chatReviewT";
-            this.cmn_userlist_chatReviewT.Size = new System.Drawing.Size(149, 22);
-            this.cmn_userlist_chatReviewT.Text = "Chat &Review";
-            this.cmn_userlist_chatReviewT.Click += new System.EventHandler(this.cmn_userlist_chatReviewT_Click);
+            this.cmn_userlist_chatReview.Name = "cmn_userlist_chatReviewT";
+            this.cmn_userlist_chatReview.Size = new System.Drawing.Size(148, 22);
+            this.cmn_userlist_chatReview.Text = "Chat &Review";
+            this.cmn_userlist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
+            // 
+            // cmn_msglist_wtsked
+            // 
+            this.cmn_msglist_wtsked.Name = "cmn_msglist_wtsked";
+            this.cmn_msglist_wtsked.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_wtsked.Text = "Win-Test &Sked";
+            this.cmn_msglist_wtsked.Click += new System.EventHandler(this.cmn_item_wtsked_Click);
+            // 
+            // cmn_msglist_chatReview
+            // 
+            this.cmn_msglist_chatReview.Name = "cmn_msglist_chatReviewT";
+            this.cmn_msglist_chatReview.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_chatReview.Text = "Chat &Review";
+            this.cmn_msglist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
+            // 
+            // cmn_msglist_openURL
+            // 
+            this.cmn_msglist_openURL.Name = "cmn_msglist_chatReviewT";
+            this.cmn_msglist_openURL.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_openURL.Text = "&Open URL";
+            this.cmn_msglist_openURL.Click += new System.EventHandler(this.cmn_item_openURL_Click);
             // 
             // MainDlg
             // 
@@ -3341,6 +3419,7 @@ namespace wtKST
             this.mn_Main.PerformLayout();
             this.cmn_Notify.ResumeLayout(false);
             this.cmn_userlist.ResumeLayout(false);
+            this.cmn_msglist.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
