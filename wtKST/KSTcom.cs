@@ -30,13 +30,6 @@ namespace wtKST
             WaitLogstat,
             WaitSPR,
 
-            WaitTelnetConnect,
-            WaitTelnetUserName,
-            WaitTelnetPassword,
-            WaitTelnetChat,
-            WaitTelnetSetName,
-            WaitReconnect,
-
             // must be last
             Connected = 128,
         }
@@ -252,15 +245,9 @@ namespace wtKST
                                 }
                                 else
                                 {
-                                    if (!Settings.Default.KST_Name.Trim().Equals(subs[6]))
+                                    if (!Settings.Default.KST_Name.Trim().Equals(subs[6])) // TODO check encoding!
                                     {
                                         SendMyName = true;
-                                        MainDlg.Log.WriteMessage("KST Name " + Settings.Default.KST_Name + " not equal to name stored on server " + subs[6]);
-                                        // we cannot set the name on KST side using port 23001 - no /setname there
-                                        // but we can do this through the regular telnet port 23000, so disconnect and do it there
-                                        tw.Disconnect();
-                                        MainDlg.Log.WriteMessage("disconnect and connect by telnet to set name");
-                                        break;
                                     }
                                 }
 
@@ -319,6 +306,12 @@ namespace wtKST
                         msg_latest_first = true;
                         CheckStartUpAway = true;
 
+                        if (SendMyName)
+                        {
+                            Setname(Settings.Default.KST_Name);
+                            SendMyName = false;
+                        }
+
                         if (SendMyLocator)
                         {
                             Setloc(Settings.Default.KST_Loc);
@@ -328,46 +321,6 @@ namespace wtKST
                         ti_Linkcheck.Stop();   // restart the linkcheck timer
                         ti_Linkcheck.Start();
                     }
-                    break;
-
-                // special states called while doing Telnet to set Name
-                case KST_STATE.WaitTelnetUserName:
-                    if (s.IndexOf("Login:") >= 0)
-                    {
-                        Thread.Sleep(100);
-                        this.tw.Send(Settings.Default.KST_UserName + "\r");
-                        this.KSTState = KST_STATE.WaitTelnetPassword;
-                        this.Say("Login " + Settings.Default.KST_UserName + " send.");
-                    }
-                    break;
-                case KST_STATE.WaitTelnetPassword:
-                    if (s.IndexOf("Password:") >= 0)
-                    {
-                        Thread.Sleep(100);
-                        this.tw.Send(Settings.Default.KST_Password + "\r");
-                        this.KSTState = KST_STATE.WaitTelnetChat;
-                        this.Say("Password send.");
-                    }
-                    break;
-                case KST_STATE.WaitTelnetChat:
-                    if (s.IndexOf("Your choice           :") >= 0)
-                    {
-                        Thread.Sleep(100);
-                        this.tw.Send(Settings.Default.KST_Chat.Substring(0, 1) + "\r");
-                    }
-                    if (s.IndexOf(">") > 0)
-                    {
-                        if (SendMyName)
-                        {
-                            this.tw.Send("/set name " + Settings.Default.KST_Name.Trim() + "\r");
-                            MainDlg.Log.WriteMessage("send name " + Settings.Default.KST_Name.Trim() + " to server");
-                        }
-                        this.KSTState = KST_STATE.WaitTelnetSetName;
-                    }
-                    break;
-                case KST_STATE.WaitTelnetSetName:
-                    tw.Disconnect();
-
                     break;
 
                 // normal KST reception
@@ -798,6 +751,16 @@ namespace wtKST
             }
         }
 
+        public void Setname(string name)
+        {
+            if (KSTState >= KST_STATE.Connected)
+            {
+#if !DEBUG_INJECT_KST
+                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/SETNAME " + name + "|0|\r");
+#endif
+            }
+        }
+
         public void Setloc(string locator)
         {
             if (KSTState >= KST_STATE.Connected)
@@ -873,69 +836,11 @@ namespace wtKST
             catch
             {
             }
-            if (SendMyName)
-            {
-                if (KSTState == KST_STATE.WaitLogstat)
-                {
-                    System.Timers.Timer tmrOnce = new System.Timers.Timer();
-                    tmrOnce.Elapsed += Connect_tmrOnce_Tick;
-                    tmrOnce.Interval = 500;
-                    tmrOnce.Start();
 
-                    KSTState = KST_STATE.WaitTelnetConnect;
-                    return;
-                }
-                if (KSTState == KST_STATE.WaitTelnetSetName)
-                {
-                    System.Timers.Timer tmrOnce = new System.Timers.Timer();
-                    tmrOnce.Elapsed += Connect_tmrOnce_Tick;
-                    tmrOnce.Interval = 500;
-                    tmrOnce.Start();
-
-                    KSTState = KST_STATE.WaitReconnect;
-                    return;
-                }
-            }
             KSTState = KST_STATE.Disconnected;
         }
 
         /* one shot timer to handle the connect/reconnect during /set name */
-
-        private void Connect_tmrOnce_Tick(object sender, EventArgs ev)
-        {
-            if (KSTState == KST_STATE.WaitTelnetConnect ||
-                KSTState == KST_STATE.WaitReconnect)
-            {
-                try
-                {
-                    tw = new TelnetWrapper();
-                    tw.DataAvailable += new DataAvailableEventHandler(tw_DataAvailable);
-                    tw.Disconnected += new DisconnectedEventHandler(tw_Disconnected);
-
-                    if (KSTState == KST_STATE.WaitTelnetConnect)
-                    {
-                        tw.Connect(Settings.Default.KST_ServerName, 23000);
-                        Console.WriteLine("connect 23000 " + tw.Connected);
-                        MainDlg.Log.WriteMessage("connect to on4kst 23000 ");
-                        tw.Receive();
-                        KSTState = KST_STATE.WaitTelnetUserName;
-                    }
-                    else
-                    {
-                        tw.Connect(Settings.Default.KST_ServerName, 23001);
-                        Console.WriteLine("reconnect");
-                        tw.Receive();
-                        KSTState = KST_STATE.WaitLogin;
-                        Say("Connecting to KST chat..." + Settings.Default.KST_ServerName + " Port " + 23001);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(MethodBase.GetCurrentMethod().Name, e.Message);
-                }
-            }
-            ((System.Timers.Timer)sender).Dispose();
-        }
 
         private void tw_DataAvailable(object sender, DataAvailableEventArgs e)
         {
@@ -1031,10 +936,7 @@ namespace wtKST
         {
             try { 
                 if (tw != null && !tw.Connected
-                    && KSTState != KST_STATE.Standby
-                    && KSTState != KST_STATE.WaitTelnetConnect
-                    && KSTState != KST_STATE.WaitTelnetUserName
-                    && KSTState != KST_STATE.WaitReconnect)
+                    && KSTState != KST_STATE.Standby)
                 {
                     KSTState = KST_STATE.Disconnected;
                 }

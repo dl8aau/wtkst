@@ -285,13 +285,6 @@ namespace wtKST
 
         private void set_KST_Status()
         {
-            if (KST.State >= KSTcom.KST_STATE.WaitTelnetConnect &&
-                KST.State <= KSTcom.KST_STATE.WaitReconnect)
-            {
-                lbl_KST_Status.BackColor = Color.LightYellow;
-                lbl_KST_Status.Text = "Status: Setting Name ";
-                return;
-            }
             if (KST.State < KSTcom.KST_STATE.Connected)
             {
                 lbl_KST_Status.BackColor = Color.LightGray;
