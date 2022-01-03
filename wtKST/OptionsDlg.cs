@@ -538,7 +538,12 @@ namespace wtKST
             "2 - 144/432 MHz",
             "3 - Microwave",
             "4 - EME/JT65",
-            "5 - Low Band"});
+            "5 - Low Band",
+            "6 - 50 MHz IARU R 3",
+            "7 - 50 MHz IARU R 2",
+            "8 - 144/432 MHz R 2",
+            "9 - 144/432 MHz R 3",
+            });
             this.cbb_KST_Chat.Location = new System.Drawing.Point(120, 79);
             this.cbb_KST_Chat.Name = "cbb_KST_Chat";
             this.cbb_KST_Chat.Size = new System.Drawing.Size(121, 21);
