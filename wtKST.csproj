@@ -134,6 +134,7 @@
     <Compile Include="wtKST\ChatReview.Designer.cs">
       <DependentUpon>ChatReview.cs</DependentUpon>
     </Compile>
+    <Compile Include="wtKST\KSTcom.cs" />
     <Compile Include="wtKST\LogWriter.cs">
       <SubType>Component</SubType>
     </Compile>

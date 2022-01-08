@@ -589,7 +589,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL sked 23 cm ?")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/CQ $CALL sked 23 cm ?")]
         public string KST_Macro_1 {
             get {
                 return ((string)(this["KST_Macro_1"]));
@@ -601,7 +601,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL pse QRG 23 cm?")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/CQ $CALL pse QRG 23 cm?")]
         public string KST_Macro_2 {
             get {
                 return ((string)(this["KST_Macro_2"]));
@@ -613,7 +613,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL sked 13 cm ?")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/CQ $CALL sked 13 cm ?")]
         public string KST_Macro_3 {
             get {
                 return ((string)(this["KST_Macro_3"]));
@@ -625,7 +625,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL pse QRG 13 cm?")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/CQ $CALL pse QRG 13 cm?")]
         public string KST_Macro_4 {
             get {
                 return ((string)(this["KST_Macro_4"]));
@@ -637,7 +637,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL pse call $FREQ")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/CQ $CALL pse call $FREQ")]
         public string KST_Macro_5 {
             get {
                 return ((string)(this["KST_Macro_5"]));
@@ -649,7 +649,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL pse lsn $FREQ")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/CQ $CALL pse lsn $FREQ")]
         public string KST_Macro_6 {
             get {
                 return ((string)(this["KST_Macro_6"]));
@@ -661,7 +661,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL in QSO nw, I meep u")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/CQ $CALL in QSO nw, I meep u")]
         public string KST_Macro_7 {
             get {
                 return ((string)(this["KST_Macro_7"]));
@@ -673,7 +673,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("\\CQ $CALL in QSO nw, pse meep me later")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/CQ $CALL in QSO nw, pse meep me later")]
         public string KST_Macro_8 {
             get {
                 return ((string)(this["KST_Macro_8"]));

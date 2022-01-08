@@ -1,11 +1,3 @@
-
-#if DEBUG
-// to debug with KST logs
-#define DEBUG_INJECT_KST
-#endif
-
-using De.Mud.Telnet;
-using Net.Graphite.Telnet;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,34 +20,10 @@ namespace wtKST
 {
     public class MainDlg : Form
     {
-        public enum KST_STATE
-        {
-            Disconnected,
-            Disconnecting,
-            Standby,
-            WaitLogin,
-            WaitLogstat,
-            WaitSPR,
-
-            WaitTelnetConnect,
-            WaitTelnetUserName,
-            WaitTelnetPassword,
-            WaitTelnetChat,
-            WaitTelnetSetName,
-            WaitReconnect,
-
-            // must be last
-            Connected = 128,
-        }
-
-        public enum USER_STATE
-        {
-            Here,
-            Away
-        }
 
         private static readonly string[] BANDS = new string[] { "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G" };
-        public DataTable MSG = new DataTable("MSG");
+
+        private KSTcom KST;
 
         public DataTable MYMSG = new DataTable("MYMSG");
 
@@ -67,21 +35,7 @@ namespace wtKST
 
         private wtKST.AirScoutInterface AS_if;
 
-        private bool DLLNotLoaded = false;
-
-        private Point OldMousePos = new Point(0, 0);
-
         public static LogWriter Log = new LogWriter(Directory.GetParent(Application.LocalUserAppDataPath).ToString());
-
-        private TelnetWrapper tw;
-
-        private string KSTBuffer = "";
-
-        private Queue<string> MsgQueue = new Queue<string>();
-
-        private MainDlg.KST_STATE KSTState = KST_STATE.Standby;
-
-        private MainDlg.USER_STATE UserState;
 
         private IContainer components = null;
 
@@ -150,34 +104,7 @@ namespace wtKST
         private AboutBox aboutBox1 = new AboutBox();
 
         private System.Windows.Forms.Timer ti_Main;
-        private wtKST.MainDlg.DoubleBufferedListView lv_Calls;
-        private ColumnHeader ch_Call;
-
-        private ColumnHeader ch_Name;
-
-        private ColumnHeader ch_Act;
-
-        private ColumnHeader ch_Loc;
-
-        private ColumnHeader columnHeader144;
-
-        private ColumnHeader columnHeader432;
-
-        private ColumnHeader columnHeader1296;
-
-        private ColumnHeader columnHeader2320;
-
-        private ColumnHeader columnHeader3400;
-
-        private ColumnHeader columnHeader5760;
-
-        private ColumnHeader columnHeader10368;
-
-        private ColumnHeader columnHeader24GHz;
-
-        private ColumnHeader columnHeader47GHz;
-
-        private ColumnHeader columnHeader76GHz;
+        private DataGridView lv_Calls;
 
         private const int COLUMN_WIDTH = 20;
 
@@ -199,8 +126,6 @@ namespace wtKST
 
         private ToolStripMenuItem cmi_Notify_Quit;
 
-        private System.Windows.Forms.Timer ti_Receive;
-
         private System.Windows.Forms.Timer ti_Error;
 
         private ComboBox cb_Command;
@@ -209,28 +134,22 @@ namespace wtKST
 
         private System.Windows.Forms.Timer ti_Reconnect;
 
-        private System.Timers.Timer ti_Linkcheck;
-
-        private ColumnHeader ch_AS;
-
         private ToolTip tt_Info;
 
         private BackgroundWorker bw_GetPlanes;
 
         private bool WinTestLocatorWarning = false;
-        private bool msg_latest_first = false;
         private bool hide_away = false;
         private bool sort_by_dir = false;
         private bool ignore_inactive = false;
         private bool hide_worked = false;
-        private DateTime latestMessageTimestamp = DateTime.MinValue;
-        private bool latestMessageTimestampSet = false;
-        private bool CheckStartUpAway = true;
-        private bool SendMyLocator = false;
-        private bool SendMyName = false;
         private ContextMenuStrip cmn_userlist;
+        private ContextMenuStrip cmn_msglist;
         private ToolStripMenuItem cmn_userlist_wtsked;
-        private ToolStripMenuItem cmn_userlist_chatReviewT;
+        private ToolStripMenuItem cmn_userlist_chatReview;
+        private ToolStripMenuItem cmn_msglist_wtsked;
+        private ToolStripMenuItem cmn_msglist_chatReview;
+        private ToolStripMenuItem cmn_msglist_openURL;
         private WinTest.wtStatus wts;
         private WTSkedDlg wtskdlg;
         private uint last_sked_qrg;
@@ -262,9 +181,7 @@ namespace wtKST
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem macro_default_Station;
         private string AS_watchlist = "";
-#if DEBUG_INJECT_KST
-        private System.Windows.Forms.Timer ti_debug;
-#endif
+
         public MainDlg()
         {
             InitializeComponent();
@@ -278,39 +195,29 @@ namespace wtKST
             MainDlg.Log.FileFormat = "wtKST_{0:d}.log";
             MainDlg.Log.MessageFormat = "{0:u}: {1}";
             MainDlg.Log.WriteMessage("Startup Version " + aboutBox1.AssemblyVersion.ToString());
-            if (!File.Exists("Telnet.dll"))
-            {
-                DLLNotLoaded = true;
-            }
             Application.Idle += new EventHandler(OnIdle);
             Application.ApplicationExit += new EventHandler(OnApplicationExit);
 
             cb_Command.MouseWheel += new MouseEventHandler(cb_Command_MouseWheel);
-            MSG.Columns.Add("TIME", typeof(DateTime));
-            MSG.Columns.Add("CALL");
-            MSG.Columns.Add("NAME");
-            MSG.Columns.Add("MSG");
-            MSG.Columns.Add("RECIPIENT");
-            DataColumn[] MSGkeys = new DataColumn[]
-            {
-                MSG.Columns["TIME"],
-                MSG.Columns["CALL"],
-                MSG.Columns["MSG"]
-            };
-            MSG.PrimaryKey = MSGkeys;
+
+            KST = new KSTcom();
+
+            KST.process_new_message += KST_Process_new_message;
+            KST.process_user_update += KST_Process_user_update;
+            KST.update_user_state += onUserStateChanged;
 
             CALL.Columns.Add("CALL");
             CALL.Columns.Add("NAME");
             CALL.Columns.Add("LOC");
             CALL.Columns.Add("TIME", typeof(DateTime));
             CALL.Columns.Add("CONTACTED", typeof(int));
-            CALL.Columns.Add("LOGINTIME", typeof(DateTime));
+            CALL.Columns.Add("RECENTLOGIN", typeof(bool));
             CALL.Columns.Add("ASLAT", typeof(double));
             CALL.Columns.Add("ASLON", typeof(double));
             CALL.Columns.Add("QRB", typeof(int));
             CALL.Columns.Add("DIR", typeof(int));
             CALL.Columns.Add("AWAY", typeof(bool));
-            CALL.Columns.Add("AS", typeof(int));
+            CALL.Columns.Add("AS");
             foreach (string band in BANDS)
                 CALL.Columns.Add(band, typeof(int));
             CALL.Columns.Add("COLOR", typeof(int));
@@ -319,6 +226,46 @@ namespace wtKST
                 CALL.Columns["CALL"]
             };
             CALL.PrimaryKey = CALLkeys;
+            lv_Calls.DataSource = CALL;
+            lv_Calls.Columns["CALL"].HeaderCell.Value = "Call";
+            lv_Calls.Columns["CALL"].Width = 80;
+            lv_Calls.Columns["NAME"].HeaderCell.Value = "Name";
+            lv_Calls.Columns["NAME"].Width = 100;
+            lv_Calls.Columns["LOC"].HeaderCell.Value = "Locator";
+            lv_Calls.Columns["LOC"].Width = 50;
+            lv_Calls.Columns["AS"].Width = 30;
+
+            lv_Calls.Columns["TIME"].Visible = false;
+
+            lv_Calls.Columns["CONTACTED"].HeaderCell.Value = "ACT";
+            lv_Calls.Columns["CONTACTED"].Width = 30;
+
+            lv_Calls.Columns["RECENTLOGIN"].Visible = false;
+            lv_Calls.Columns["ASLAT"].Visible = false;
+            lv_Calls.Columns["ASLON"].Visible = false;
+            lv_Calls.Columns["QRB"].Visible = false;
+            lv_Calls.Columns["DIR"].Visible = false;
+            lv_Calls.Columns["AWAY"].Visible = false;
+            lv_Calls.Columns["COLOR"].Visible = false;
+            lv_Calls.Columns["144M"].Width = 20;
+            lv_Calls.Columns["432M"].Width = 20;
+            lv_Calls.Columns["1_2G"].Width = 20;
+            lv_Calls.Columns["2_3G"].Width = 20;
+            lv_Calls.Columns["3_4G"].Width = 20;
+            lv_Calls.Columns["5_7G"].Width = 20;
+            lv_Calls.Columns["10G"].Width = 20;
+            lv_Calls.Columns["24G"].Width = 20;
+            lv_Calls.Columns["47G"].Width = 20;
+            lv_Calls.Columns["76G"].Width = 20;
+
+            for (int i=0; i < lv_Calls.ColumnCount; i++)
+            {
+                    lv_Calls.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+            }
+
+            // https://stackoverflow.com/a/28617333
+            VScrollBar scrollBar = lv_Calls.Controls.OfType<VScrollBar>().First();
+            scrollBar.Scroll += lv_Calls_scroll;
 
             string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName);
             // check if we are running on Windows, otherwise Win-Test will not run
@@ -331,154 +278,14 @@ namespace wtKST
             AS_if = new wtKST.AirScoutInterface(ref bw_GetPlanes);
             if (Settings.Default.KST_AutoConnect)
             {
-                KST_Connect();
+                KST.Connect();
             }
             wts = new WinTest.wtStatus();
-
-
-#if DEBUG_INJECT_KST
-                ti_debug = new System.Windows.Forms.Timer(this.components);
-                this.ti_debug.Interval = 5000;
-                this.ti_debug.Tick += new System.EventHandler(this.ti_debug_Tick);
-                this.ti_debug.Start();
-
-                KSTState = MainDlg.KST_STATE.Connected;
-#endif
         }
-
-#if DEBUG_INJECT_KST
-        //private StreamReader sr = new StreamReader("C:\\Users\\kurpiers\\Documents\\afu_büro\\doc\\dr9a\\Contest\\Oktober 2017\\wtKST\\1296\\kst_user_0710.txt");
-        //private StreamReader sr = new StreamReader("m:\\prog\\wtKST_release\\kst_userlist_2904.txt");
-        //private StreamReader sr_debug = new StreamReader("C:\\Users\\kurpiers\\Documents\\afu\\doc\\dr9a\\Contest\\Oktober 2020\\KST\\wtKST_20201003_test1.txt");
-        private StreamReader sr_debug = new StreamReader("C:\\Users\\kurpiers\\Documents\\afu\\doc\\dr9a\\Contest\\Oktober 2020\\KST\\wtKST_03.10.2020.log");
-        private int sr_debug_first_line = 2727;
-        private int sr_debug_last_line = 4437;
-        private int sr_debug_linecnt = 0;
-        private void ti_debug_Tick(object sender, EventArgs e)
-        {
-            int i = 0;
-            while (++sr_debug_linecnt < sr_debug_first_line && !sr_debug.EndOfStream)
-                sr_debug.ReadLine();
-
-            while ( ++i < 20 && ++sr_debug_linecnt <= (sr_debug_last_line + 1) && !sr_debug.EndOfStream )
-            {
-                string line = sr_debug.ReadLine();
-                if (line.Substring(0, 1).Equals("C"))
-                {
-                    KST_Receive_MSG(line);
-                }
-                else if (line.Substring(0, 1).Equals("U"))
-                {
-                    KST_Receive_USR(line);
-                }
-                else if (line.Contains("KST message: "))
-                {
-                    KST_Receive_MSG(line.Substring(line.IndexOf("KST message: ") + String.Copy("KST message: ").Length));
-                }
-                else if (line.Contains("KST user: "))
-                {
-                    KST_Receive_USR(line.Substring(line.IndexOf("KST user: ") + String.Copy("KST user: ").Length));
-                }
-            }
-            if (sr_debug.EndOfStream || sr_debug_linecnt == sr_debug_last_line + 2)
-                ti_debug.Stop();
-            ti_debug.Interval = 100;
-        }
-#endif
-
-        private void tw_Disconnected(object sender, TelnetWrapperDisconnctedEventArgs e)
-        {
-            if (e.Message.Length > 0)
-            {
-                MainDlg.Log.WriteMessage("Socket Error - " + e.Message);
-            }
-            MainDlg.Log.WriteMessage("Disconnected from: " + Settings.Default.KST_Chat);
-            try
-            {
-                tw.Dispose();
-                tw.Close();
-                MsgQueue.Clear();
-                KSTBuffer = "";
-                Say("Disconnected from KST chat...");
-            }
-            catch
-            {
-            }
-            if (SendMyName)
-            {
-                if (KSTState == MainDlg.KST_STATE.WaitLogstat)
-                {
-                    System.Windows.Forms.Timer tmrOnce = new System.Windows.Forms.Timer();
-                    tmrOnce.Tick += Connect_tmrOnce_Tick;
-                    tmrOnce.Interval = 500;
-                    tmrOnce.Start();
-
-                    KSTState = MainDlg.KST_STATE.WaitTelnetConnect;
-                    return;
-                }
-                if (KSTState == MainDlg.KST_STATE.WaitTelnetSetName)
-                {
-                    System.Windows.Forms.Timer tmrOnce = new System.Windows.Forms.Timer();
-                    tmrOnce.Tick += Connect_tmrOnce_Tick;
-                    tmrOnce.Interval = 500;
-                    tmrOnce.Start();
-
-                    KSTState = MainDlg.KST_STATE.WaitReconnect;
-                    return;
-                }
-            }
-            KSTState = MainDlg.KST_STATE.Disconnected;
-        }
-
-        /* one shot timer to handle the connect/reconnect during /set name */
-
-        private void Connect_tmrOnce_Tick(object sender, EventArgs ev)
-        {
-            if (KSTState == MainDlg.KST_STATE.WaitTelnetConnect ||
-                KSTState == MainDlg.KST_STATE.WaitReconnect)
-            {
-                try
-                {
-                    tw = new TelnetWrapper();
-                    tw.DataAvailable += new DataAvailableEventHandler(tw_DataAvailable);
-                    tw.Disconnected += new DisconnectedEventHandler(tw_Disconnected);
-
-                    if (KSTState == MainDlg.KST_STATE.WaitTelnetConnect)
-                    {
-                        tw.Connect(Settings.Default.KST_ServerName, 23000);
-                        Console.WriteLine("connect 23000 " + tw.Connected);
-                        MainDlg.Log.WriteMessage("connect to on4kst 23000 ");
-                        tw.Receive();
-                        KSTState = MainDlg.KST_STATE.WaitTelnetUserName;
-                    }
-                    else
-                    {
-                        tw.Connect(Settings.Default.KST_ServerName, Convert.ToInt32(Settings.Default.KST_ServerPort));
-                        Console.WriteLine("reconnect");
-                        tw.Receive();
-                        KSTState = MainDlg.KST_STATE.WaitLogin;
-                        Say("Connecting to KST chat..." + Settings.Default.KST_ServerName + " Port " + Settings.Default.KST_ServerPort);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(MethodBase.GetCurrentMethod().Name, e.Message);
-                }
-            }
-            ((System.Windows.Forms.Timer)sender).Dispose();
-        }
-
 
         private void set_KST_Status()
         {
-            if (KSTState >= MainDlg.KST_STATE.WaitTelnetConnect &&
-                KSTState <= MainDlg.KST_STATE.WaitReconnect)
-            {
-                lbl_KST_Status.BackColor = Color.LightYellow;
-                lbl_KST_Status.Text = "Status: Setting Name ";
-                return;
-            }
-            if (KSTState < MainDlg.KST_STATE.Connected)
+            if (KST.State < KSTcom.KST_STATE.Connected)
             {
                 lbl_KST_Status.BackColor = Color.LightGray;
                 lbl_KST_Status.Text = "Status: Disconnected ";
@@ -499,88 +306,35 @@ namespace wtKST
             });
         }
 
-        private void tw_DataAvailable(object sender, DataAvailableEventArgs e)
+        private void onUserStateChanged(object sender, KSTcom.userStateEventArgs args)
         {
-            string t = e.Data;
-            byte[] bytes = new byte[1];
-            try
+            if (this.InvokeRequired)
             {
-                for (byte b = 0; b <= 31; b += 1)
-                {
-                    bytes[0] = b;
-                    string esc = Encoding.GetEncoding("iso-8859-1").GetString(bytes, 0, 1);
-                    t = t.Replace(esc, "{" + b.ToString("X2") + "}");
-                }
+                this.BeginInvoke(new EventHandler<KSTcom.userStateEventArgs>(onUserStateChanged), new object[] { sender, args });
+                return;
             }
-            catch
+            if (args.state == KSTcom.USER_STATE.Here)
             {
+                lbl_Call.Text = Settings.Default.KST_UserName.ToUpper();
             }
-            Console.WriteLine(t);
-            string s = e.Data.Replace("\0", "");
-            lock (MsgQueue)
+            else
             {
-                KSTBuffer += s;
-                if (KSTBuffer.IndexOf("\r\n")>=0)
-                {
-                    string[] buffer = KSTBuffer.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries); //this.KSTBuffer.Split(new char[] {'\r', '\n' });
-                    string[] array = buffer;
-                    int number_strings = array.Length-1;
-                    if (KSTBuffer.EndsWith("\r\n"))
-                        number_strings++;
-                    for (int i = 0; i < number_strings; i++)
-                    {
-                        string buf = array[i];
-                        StringWriter bufWriter = new StringWriter();
-                        WebUtility.HtmlDecode(buf, bufWriter);
-                        MsgQueue.Enqueue(bufWriter.ToString());
-                    }
-                    if (KSTBuffer.EndsWith("\r\n"))
-                        KSTBuffer = "";
-                    else
-                        KSTBuffer = buffer[buffer.Length - 1]; // keep the tail
-                }
+                lbl_Call.Text = "(" + Settings.Default.KST_UserName.ToUpper() + ")";
             }
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                ti_Linkcheck.Stop();   // restart the linkcheck timer
-                ti_Linkcheck.Start();
-            }
-        }
 
+        }
+ 
         private void OnIdle(object sender, EventArgs args)
         {
-            if (DLLNotLoaded)
+            KST.KSTStateMachine();
+
+            if (KST.State == KSTcom.KST_STATE.Disconnected)
             {
-                MessageBox.Show("The file telnet.dll could not be found in program directory.", "Error");
-                base.Close();
-            }
-            try
-            {
-                if (tw != null && !tw.Connected
-                    && KSTState != MainDlg.KST_STATE.Standby
-                    && KSTState != MainDlg.KST_STATE.WaitTelnetConnect
-                    && KSTState != MainDlg.KST_STATE.WaitTelnetUserName
-                    && KSTState != MainDlg.KST_STATE.WaitReconnect)
-                {
-                    KSTState = MainDlg.KST_STATE.Disconnected;
-                }
-            }
-            catch
-            {
-                KSTState = MainDlg.KST_STATE.Disconnected;
-            }
-            if (KSTState == MainDlg.KST_STATE.Disconnecting)
-            {
-                if (tw != null && tw.Connected)
-                    tw.Disconnect();
-            }
-            if (KSTState == MainDlg.KST_STATE.Disconnected)
-            {
-                lock(CALL)
+                lock (CALL)
                 {
                     CALL.Clear();
                 }
-                lv_Calls.Items.Clear();
+                // FIXME DV needed? lv_Calls.Items.Clear();
                 tsi_KST_Connect.Enabled = true;
                 tsi_KST_Disconnect.Enabled = false;
                 tsi_KST_Here.Enabled = false;
@@ -595,12 +349,10 @@ namespace wtKST
                 {
                     ti_Reconnect.Start();
                 }
-                if (ti_Linkcheck.Enabled)
-                    ti_Linkcheck.Stop();
 
-                KSTState = MainDlg.KST_STATE.Standby;
+                KST.State = KSTcom.KST_STATE.Standby;
             }
-            if (KSTState >= MainDlg.KST_STATE.Connected)
+            if (KST.State >= KSTcom.KST_STATE.Connected)
             {
                 tsi_KST_Connect.Enabled = false;
                 tsi_KST_Disconnect.Enabled = true;
@@ -614,20 +366,15 @@ namespace wtKST
                     ti_Reconnect.Stop();
                 }
             }
-            // FIXME: don't touch UI elements here without checking wether they need to be updated. Otherwise CPU load may be high
-            if (UserState == MainDlg.USER_STATE.Here)
-            {
-                lbl_Call.Text = Settings.Default.KST_UserName.ToUpper();
-            }
-            else
-            {
-                lbl_Call.Text = "(" + Settings.Default.KST_UserName.ToUpper() + ")";
-            }
+
+            KST_Update_Usr_Filter();
+            fill_AS_list();
+
             string KST_Calls_Text = lbl_KST_Calls.Text;
-            if (lv_Calls.Items.Count > 0)
+            if (lv_Calls.RowCount > 0)
             {
                 /* show number of calls in list and total number of users (-1 for own call) */
-                KST_Calls_Text = "Calls [" + lv_Calls.Items.Count.ToString() + " / " + (CALL.Rows.Count - 1) + "]";
+                KST_Calls_Text = "Calls [" + lv_Calls.RowCount.ToString() + " / " + (CALL.Rows.Count - 1) + "]";
                 if (wtQSO != null && Settings.Default.WinTest_Activate)
                     KST_Calls_Text += " - " + Path.GetFileName(wtQSO.getFileName());
             }
@@ -658,8 +405,8 @@ namespace wtKST
 
             ni_Main.Text = "wtKST\nLeft click to activate";
 
-            if (!aboutBox1.Visible &&!cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture
-                 && (wtskdlg == null || !wtskdlg.Visible) )
+            if (!aboutBox1.Visible && !cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture
+                    && (wtskdlg == null || !wtskdlg.Visible))
             {
                 cb_Command.Focus();
                 cb_Command.SelectionLength = 0;
@@ -667,274 +414,20 @@ namespace wtKST
             }
         }
 
-        private void KST_Receive(string s)
-        {
-            MainDlg.KST_STATE kSTState = KSTState;
-            switch (kSTState)
-            {
-            case MainDlg.KST_STATE.WaitLogin:
-                if (s.IndexOf("login") >= 0)
-                {
-                        // LOGINC|callsign|password|chat id|client software version|past messages number|past dx/map number|
-                        // users list/update flags|last Unix timestamp for messages|last Unix timestamp for dx/map|
-
-                        tw.Send("LOGINC|" + Settings.Default.KST_UserName + "|" + Settings.Default.KST_Password + "|"
-                        + Settings.Default.KST_Chat.Substring(0, 1) + "|wtKST " + typeof(MainDlg).Assembly.GetName().Version +
-                        "|25|0|1|" +
-                        // we try to get the messages up to our latest one
-                        (!latestMessageTimestampSet ? "0" :
-                        ((latestMessageTimestamp - new DateTime(1970, 1, 1)).TotalSeconds - 1).ToString() )
-                        +  "|0|\r");
-                        KSTState = MainDlg.KST_STATE.WaitLogstat;
-                        Say("Login " + Settings.Default.KST_UserName + " send.");
-                }
-                break;
-            case MainDlg.KST_STATE.WaitLogstat:
-                if (s.IndexOf("LOGSTAT") >= 0)
-                {
-                        try
-                        {
-                            MainDlg.Log.WriteMessage("LOGSTAT: " + s);
-                            string call = Settings.Default.KST_UserName.ToUpper();
-                            if (WCCheck.WCCheck.IsCall(call) >= 0)
-                            {
-                                string[] subs = s.Split('|');
-                                if (subs[2].Equals("Wrong password!")) // maybe test subs[1] for 114? OK seems 100
-                                {
-                                    MessageBox.Show("Password wrong", "Login failed",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    tw.Close();
-                                    MainDlg.Log.WriteMessage("Password wrong ");
-                                    break;
-                                }
-                                // If name not set... take it from ON4KST
-                                if (Settings.Default.KST_Name.Length == 0)
-                                {
-                                    Settings.Default.KST_Name = subs[6];
-                                }
-                                else
-                                {
-                                    if (!Settings.Default.KST_Name.Trim().Equals(subs[6]))
-                                    {
-                                        SendMyName = true;
-                                        MainDlg.Log.WriteMessage("KST Name " + Settings.Default.KST_Name + " not equal to name stored on server " + subs[6]);
-                                        // we cannot set the name on KST side using port 23001 - no /setname there
-                                        // but we can do this through the regular telnet port 23000, so disconnect and do it there
-                                        tw.Disconnect();
-                                        MainDlg.Log.WriteMessage("disconnect and connect by telnet to set name");
-                                        break;
-                                    }
-                                }
-
-                                if (WCCheck.WCCheck.IsLoc(Settings.Default.KST_Loc) > 0)
-                                {
-                                    if (!Settings.Default.KST_Loc.Equals(subs[8]))
-                                    {
-                                        // if KST_Loc option is set, set it on KST side if it does not match
-                                    SendMyLocator = true;
-                                }
-                            }
-                                else
-                                {
-                                    // store the locator in settings
-                                    Settings.Default.KST_Loc = subs[8];
-                        }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            MainDlg.Log.WriteMessage("Error reading user configuration: " + e.Message);
-                        }
-                        // To set/reset/PRAU only propagation reception frames
-                        // SPR | value |
-
-                        tw.Send("SPR|2|\r");
-                        KSTState = MainDlg.KST_STATE.WaitSPR;
-                        Say("LOGSTAT " + s);
-                }
-                break;
-            case MainDlg.KST_STATE.WaitSPR:
-                    /* PRAU|time|Aurora level|
-                        Aurora level:
-                        2: High lat. AU warning
-                        3: High lat. AU alert
-                        5 :Mid lat. AU warning
-                        6:Mid lat. AU alert
-                        8:Low lat. AU warning
-                        9:Low lat. AU alert
-                        Other values: no alert
-                    */
-                    if (s.IndexOf("PRAU") >= 0)
-                    {
-                        try
-                        {
-                            MainDlg.Log.WriteMessage("Login at " + s.Split('|')[2] + " - " + s);
-                        }
-                        catch { }
-                        // End of the settings frames (session only)
-                        // SDONE | chat id |
-
-                        tw.Send("SDONE|" + Settings.Default.KST_Chat.Substring(0, 1) + "|\r");
-                        KSTState = MainDlg.KST_STATE.Connected;
-                        Say("Connected to KST chat.");
-                        MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
-                        msg_latest_first = true;
-                        CheckStartUpAway = true;
-
-                        if (SendMyLocator)
-                        {
-                            KST_Setloc(Settings.Default.KST_Loc);
-                            SendMyLocator = false;
-                        }
-
-                        ti_Linkcheck.Stop();   // restart the linkcheck timer
-                        ti_Linkcheck.Start();
-                    }
-                    break;
-
-            // special parts called while doing Telnet to set Name
-            case MainDlg.KST_STATE.WaitTelnetUserName:
-                if (s.IndexOf("Login:") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.tw.Send(Settings.Default.KST_UserName + "\r");
-                    this.KSTState = MainDlg.KST_STATE.WaitTelnetPassword;
-                    this.Say("Login " + Settings.Default.KST_UserName + " send.");
-                }
-                break;
-            case MainDlg.KST_STATE.WaitTelnetPassword:
-                if (s.IndexOf("Password:") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.tw.Send(Settings.Default.KST_Password + "\r");
-                    this.KSTState = MainDlg.KST_STATE.WaitTelnetChat;
-                    this.Say("Password send.");
-                }
-                break;
-            case MainDlg.KST_STATE.WaitTelnetChat:
-                if (s.IndexOf("Your choice           :") >= 0)
-                {
-                    Thread.Sleep(100);
-                    this.tw.Send(Settings.Default.KST_Chat.Substring(0, 1) + "\r");
-                }
-                if (s.IndexOf(">") > 0)
-                {
-                    if (SendMyName)
-                    {
-                        this.tw.Send("/set name " + Settings.Default.KST_Name.Trim() + "\r");
-                        MainDlg.Log.WriteMessage("send name " + Settings.Default.KST_Name.Trim() + " to server");
-                    }
-                    this.KSTState = MainDlg.KST_STATE.WaitTelnetSetName;
-                }
-                break;
-            case MainDlg.KST_STATE.WaitTelnetSetName:
-                tw.Disconnect();
-
-                break;
-
-            default:
-                switch (kSTState)
-                {
-                case MainDlg.KST_STATE.Connected:
-                    if(s.Substring(0,1).Equals("C"))
-                    {
-                        KST_Receive_MSG(s);
-                    }
-                    else if (s.Substring(0, 1).Equals("U"))
-                    {
-                        KST_Receive_USR(s);
-                    }
-                    break;
-                }
-                break;
-            }
-        }
-
-
-        private void KST_Receive_MSG(string s)
-        {
-            string[] msg = s.Split('|'); ;
-            try
-            {
-                MainDlg.Log.WriteMessage("KST message: " + s);
-                // CR|3|1480257613|F6DKW|Maurice|0|U were here all time on poor tropo anyway|F5BUU| -> chat review
-                // CE|3|   -> end
-                // CK|     ??? maybe... end of chat review - start of "normal" list?
-                // CH|3|1480259640|F6APE|JEAN-NOEL|0|es tu tjrs present pr test 6/3cm b4 qsy garden il fait beau|F2CT|
-                switch (s.Substring(0, 2))
-                {
-                        // Chat message frame at login
-                        // CR | chat id | Unix time | callsign | firstname | destination | msg | highlight |
-                    case "CR":
-                        // Chat message frame after login
-                        // CH | chat id | Unix time | callsign | firstname | destination | msg | highlight |
-                    case "CH":
-                        DataRow Row = MSG.NewRow();
-                        DateTime dt = new System.DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddSeconds(long.Parse(msg[2]));
-                        Row["TIME"] = dt;
-                        latestMessageTimestamp = dt;
-                        Row["CALL"] = msg[3].Trim();
-                        Row["NAME"] = msg[4].Trim();
-                        var recipient = msg[7].Trim();
-                        if (recipient.Equals("0"))
-                        {
-                            // check if forgotten "/cq" -> recipient just part of the message
-                            int index = msg[6].IndexOf(' ');
-                            if (index > 0)
-                            {
-                                string check_recipient = msg[6].Substring(0, index);
-                                if (WCCheck.WCCheck.IsCall(check_recipient) >= 0)
-                                    recipient = check_recipient;
-                            }
-                            Row["MSG"] = msg[6].Trim();
-                        }
-                        else
-                            Row["MSG"] = "(" + recipient + ") " + msg[6].Trim();
-                        Row["RECIPIENT"] = recipient;
-                        msg_latest_first = (s.Substring(0, 2)).Equals("CR");
-                        KST_Process_new_message(Row);
-                        break;
-
-                        // CK: link check
-                        // CK |
-
-                    case "CK": // Link Check
-                        if (tw!= null)
-                            tw.Send("\r\n"); // need to reply
-                        break;
-
-                        // End of CR frames
-                    case "CE":
-                        latestMessageTimestampSet = true;
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                Error(MethodBase.GetCurrentMethod().Name, "(" + s + "): " + e.Message);
-                MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + "(" + s + "): " + e.Message + "\n" + e.StackTrace);
-
-            }
-        }
-
         private int next_color = 1;
 
-        private void KST_Process_new_message(DataRow Row)
+        private void KST_Process_new_message(object sender, KSTcom.newMSGEventArgs arg)
         {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new EventHandler<KSTcom.newMSGEventArgs>(KST_Process_new_message), new object[] { sender, arg });
+                return;
+            }
+
+            DataRow Row = arg.msg;
+
             try
             {
-                // check if the message is already in the list
-                DataRow check_row = MSG.Rows.Find(new object[] { Row["TIME"], Row["CALL"], Row["MSG"] });
-
-                if (check_row != null)
-                {
-                    if (check_row["MSG"].Equals(Row["MSG"]))
-                    {
-                        return;
-                    }
-                }
-                // add message to list
-                MSG.Rows.Add(Row);
 
                 DateTime dt = (DateTime)Row["TIME"];
 
@@ -943,7 +436,12 @@ namespace wtKST
                 LV.Tag = dt; // store the timestamp in the tag field
                 LV.SubItems.Add(Row["CALL"].ToString());
                 LV.SubItems.Add(Row["NAME"].ToString());
-                LV.SubItems.Add(Row["MSG"].ToString());
+
+                // filter <a href="http://dr9a.de" target="_blank"><b>http_link</b></a> -> http://dr9a.de
+                Regex regex_filter_msg_http_link = new Regex(@"(.*)<a href=""(https?://.*)"" target=""_blank""><b>https?_link</b></a>(.*)", RegexOptions.Compiled);
+        
+                string msg = regex_filter_msg_http_link.Replace(Row["MSG"].ToString(), "$1$2 $3");
+                LV.SubItems.Add(msg);
                 for (int i = 0; i < LV.SubItems.Count; i++)
                 {
                     LV.SubItems[i].Name = lv_Msg.Columns[i].Text;
@@ -963,9 +461,9 @@ namespace wtKST
 
                     DateTime dt_top = (DateTime)lv_Msg.Items[0].Tag;
 
-                    if (msg_latest_first)
+                    if (KST.msg_latest_first)
                     {
-                        if (latestMessageTimestampSet)
+                        if (KST.is_reconnect())
                         {
                             // reconnect, sort CR at begining
                             // probably better to re-generate the whole list... alternate line highlighting will not work
@@ -1015,21 +513,7 @@ namespace wtKST
                 {
                     lv_Msg.Items[current_index].BackColor = Color.Coral;
                 }
-                lock (CALL)
-                {
-                    // check the recipient of the message
-                    DataRow findrow = CALL.Rows.Find(Row["RECIPIENT"].ToString());
-                    if (findrow != null)
-                    {
-                        findrow["CONTACTED"] = (int)findrow["CONTACTED"] + 1;
-                    }
-                    findrow = CALL.Rows.Find(Row["CALL"].ToString().Trim());
-                    if (findrow != null)
-                    {
-                        findrow["CONTACTED"] = 0; // clear counter on activity
-                        findrow["TIME"] = dt; // store time of activity
-                    }
-                }
+
                 bool fromMe = Row["CALL"].ToString().ToUpper().StartsWith(MyCall);
 
                 if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(MyCall)
@@ -1110,12 +594,12 @@ namespace wtKST
                     MyLV.Text = ((DateTime)Row["TIME"]).ToString("HH:mm");
                     MyLV.SubItems.Add(Row["CALL"].ToString());
                     MyLV.SubItems.Add(Row["NAME"].ToString());
-                    MyLV.SubItems.Add(Row["MSG"].ToString());
+                    MyLV.SubItems.Add(msg); // filtered: <a href="http://dr9a.de" target="_blank"><b>http_link</b>
                     for (int i = 0; i < MyLV.SubItems.Count; i++)
                     {
                         MyLV.SubItems[i].Name = lv_MyMsg.Columns[i].Text;
                     }
-                    if (msg_latest_first)
+                    if (KST.msg_latest_first)
                     {
                         lv_MyMsg.Items.Insert(lv_MyMsg.Items.Count, MyLV);
                     }
@@ -1129,7 +613,7 @@ namespace wtKST
                     {
                         if (Settings.Default.KST_ShowBalloon && !fromMe)
                         {
-                            ni_Main.ShowBalloonTip(30000, "New MyMessage received", Row["MSG"].ToString(), ToolTipIcon.Info);
+                            ni_Main.ShowBalloonTip(30000, "New MyMessage received", msg, ToolTipIcon.Info);
                         }
                     }
                 }
@@ -1141,9 +625,162 @@ namespace wtKST
             }
         }
 
+        private void KST_Process_user_update(object sender, KSTcom.UserUpdateEventArgs arg)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new EventHandler<KSTcom.UserUpdateEventArgs>(KST_Process_user_update), new object[] { sender, arg });
+                return;
+            }
+
+            DataRow USER = arg.user;
+
+            switch (arg.user_op)
+            {
+                case KSTcom.USER_OP.USER_NEW:
+                    {
+                        if (USER.RowState == DataRowState.Detached)
+                            return; // seems this happens from time to time... FIXME
+
+                        DataRow row = CALL.NewRow();
+
+                        row["CALL"] = USER["CALL"];
+                        row["NAME"] = USER["NAME"];
+                        row["LOC"] = USER["LOC"];
+                        string loc = USER["LOC"].ToString();
+
+                        int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                        int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
+                        row["QRB"] = qrb;
+                        row["DIR"] = qtf;
+
+                        row["COLOR"] = 0;
+                        row["TIME"] = USER["TIME"];
+                        row["CONTACTED"] = USER["CONTACTED"]; // FIXME update how?
+                        row["AWAY"] = USER["AWAY"];
+                        row["RECENTLOGIN"] = USER["RECENTLOGIN"];
+
+                        string qrvcall = row["CALL"].ToString();
+                        if (qrvcall.IndexOf("-") > 0)
+                        {
+                            qrvcall = qrvcall.Remove(qrvcall.IndexOf("-"));
+                        }
+                        bool call_new_in_userlist = (bool)USER["RECENTLOGIN"];
+                        qrv.Process_QRV(row, qrvcall, call_new_in_userlist);
+
+                        if (call_new_in_userlist && wtQSO != null && wtQSO.QSO.Rows.Count > 0)
+                            Check_QSO(row);
+
+                        lock (CALL)
+                        {
+                            CALL.Rows.Add(row);
+                        }
+                    }
+                    break;
+
+                case KSTcom.USER_OP.USER_DELETE:
+                    {
+                        DataRow row = CALL.Rows.Find(USER["CALL"]);
+                        if (row != null)
+                            row.Delete();
+                    }
+                    break;
+                case KSTcom.USER_OP.USER_MODIFY:
+                    {
+                        if (USER.RowState == DataRowState.Detached)
+                            return; // seems this happens from time to time... FIXME
+
+                        DataRow row = CALL.Rows.Find(USER["CALL"]);
+                        if (row != null)
+                        {
+                            if (!row["NAME"].Equals(USER["NAME"]))
+                                row["NAME"] = USER["NAME"];
+                            if (!row["LOC"].Equals(USER["LOC"]))
+                            {
+                                row["LOC"] = USER["LOC"];
+                                string loc = USER["LOC"].ToString();
+
+                                int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                                int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
+                                row["QRB"] = qrb;
+                                row["DIR"] = qtf;
+                            }
+                            row["TIME"] = USER["TIME"];
+                            row["CONTACTED"] = USER["CONTACTED"]; // FIXME update how?
+                            if (!row["AWAY"].Equals(USER["AWAY"]))
+                                row["AWAY"] = USER["AWAY"];
+                            if (!row["RECENTLOGIN"].Equals(USER["RECENTLOGIN"]))
+                                row["RECENTLOGIN"] = USER["RECENTLOGIN"];
+                        }
+                    }
+                    break;
+                case KSTcom.USER_OP.USER_MODIFY_STATE:
+                    {
+                        if (USER.RowState == DataRowState.Detached)
+                            return; // seems this happens from time to time... FIXME
+
+                        DataRow row = CALL.Rows.Find(USER["CALL"]);
+                        if (row != null)
+                        {
+                            if (!row["AWAY"].Equals(USER["AWAY"]))
+                                row["AWAY"] = USER["AWAY"];
+                            if (!row["RECENTLOGIN"].Equals(USER["RECENTLOGIN"]))
+                                row["RECENTLOGIN"] = USER["RECENTLOGIN"];
+                        }
+                    }
+                    break;
+                case KSTcom.USER_OP.USER_DONE:
+                    if (Settings.Default.AS_Active)
+                        AS_send_ASWATCHLIST();
+                    break;
+            }
+        }
+
+        private string KST_USR_RowFilter = "";
+
+        private void KST_Update_Usr_Filter()
+        {
+            var dt = lv_Calls.DataSource as DataTable;
+
+            string RowFilter = string.Format("(CALL <> '{0}')", Settings.Default.KST_UserName.ToUpper());
+            if (hide_away)
+                RowFilter += string.Format(" AND (AWAY = 0)");
+
+            int MaxDist = Convert.ToInt32(Settings.Default.KST_MaxDist);
+            if (MaxDist != 0)
+                RowFilter += string.Format(" AND (QRB < {0}", MaxDist);
+
+            // drop calls that are already in log
+            if (hide_worked)
+            {
+                string add_rowfilter = " AND (CALL NOT IN (";
+                bool calls_to_hide = false;
+                foreach (DataRow row in CALL.Rows)
+                {
+                    if (check_in_log(row))
+                    {
+                        calls_to_hide = true;
+                        add_rowfilter += string.Format("'{0}',", row["CALL"]);
+                    }
+                }
+                if (calls_to_hide)
+                    RowFilter += add_rowfilter +  "))";
+            }
+
+            RowFilter += ")";
+
+            if (!RowFilter.Equals(KST_USR_RowFilter))
+            {
+                (lv_Calls.DataSource as DataTable).DefaultView.RowFilter = RowFilter;
+                KST_USR_RowFilter = RowFilter;
+            }
+        }
+
         private void KST_Update_USR_Window()
         {
-            if (KSTState <= KST_STATE.WaitLogin) //FIXME needed still?
+#if FIXME_DV
+            //FIXME DV
+            if (KST.State <= KSTcom.KST_STATE.WaitLogin) //FIXME needed still?
                 return;
             try
             {
@@ -1193,9 +830,7 @@ namespace wtKST
                         continue;
 
                     // login time - new calls should be bold
-                    DateTime logintime = (DateTime)row["LOGINTIME"];
-                    double loggedOnMinutes = (DateTime.UtcNow.Subtract(logintime)).TotalMinutes;
-                    if (loggedOnMinutes < 5)
+                    if ((bool)row["RECENTLOGIN"])
                         LV.Font = new Font(LV.Font, FontStyle.Bold);
 
                     LV.UseItemStyleForSubItems = false;
@@ -1266,6 +901,7 @@ namespace wtKST
                 Error(MethodBase.GetCurrentMethod().Name, e.Message);
                 MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + e.Message + "\n" + e.StackTrace);
             }
+#endif
         }
 
         private void KST_Add_Beacons_USR()
@@ -1293,10 +929,10 @@ namespace wtKST
                             row["QRB"] = qrb;
                             row["DIR"] = qtf;
 
-                            row["LOGINTIME"] = DateTime.MinValue;
+                            row["RECENTLOGIN"] = false;
 
                             foreach (string band in BANDS)
-                                row[band] = QRVdb.QRV_STATE.unknown;
+                                row[band] = QRVdb.QRV_STATE.not_qrv;
                             lock (CALL)
                             {
                                 CALL.Rows.Add(row);
@@ -1314,302 +950,11 @@ namespace wtKST
             }
         }
 
-        private void KST_Process_MyCallAway()
-        {
-            string MyCall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
-            DataRow row = CALL.Rows.Find(MyCall);
-            if (row != null)
-            {
-                if ( ((bool)row["AWAY"] == true && UserState == MainDlg.USER_STATE.Here) ||
-                     ((bool)row["AWAY"] == false && UserState == MainDlg.USER_STATE.Away) )
-                {
-                    UserState = (bool)row["AWAY"] ? MainDlg.USER_STATE.Away : MainDlg.USER_STATE.Here;
-                }
-            }
-        }
-
-
-        private void KST_Receive_USR(string s)
-        {
-            string[] usr = s.Split('|');
-            try
-            {
-                MainDlg.Log.WriteMessage("KST user: " + s);
-                DataRow Row = MSG.NewRow();
-                //UA0|3|DF9QX|Matthias 23-1,2|JO42HD|1| -> away
-                //UA0|3|DL7QY|Claus 1-122GHz|JN59BD|0|
-                //UA0|3|DL8AAU|Alexander|JO41VL|2| -> new
-                //UM3|3|DL8AAU|Alexander|JN49HU|2| -> modified
-                //US4|3|EA3KZ|0| -> status (2->0)
-                //UR6|3|F8DLS| -> left
-                //UE|3|7042| -> end of list/update
-                switch (s.Substring(0, 2))
-                {
-                    // User frame at login
-                    // UA0 | chat id | callsign | firstname | locator | state |
-                    // UA5 user connected (to add)
-                    // UA5 | chat id | callsign | firstname | locator | state |
-
-                    case "UA":
-                        {
-                            DataRow row = CALL.NewRow();
-
-                            string call = usr[2].Trim();
-                            string loc = usr[4].Trim();
-                            if (WCCheck.WCCheck.IsCall(WCCheck.WCCheck.Cut(call)) >= 0 && WCCheck.WCCheck.IsLoc(loc) >= 0)
-                            {
-                                row["CALL"] = call;
-                                row["NAME"] = usr[3].Trim();
-                                row["LOC"] = loc;
-
-                                int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
-                                int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
-                                row["QRB"] = qrb;
-                                row["DIR"] = qtf;
-
-                                row["COLOR"] = 0;
-
-                                Int32 usr_state = Int32.Parse(usr[5]);
-                                row["AWAY"] = (usr_state & 1) == 1;
-                                string qrvcall = usr[2].Trim();
-                                if (qrvcall.IndexOf("-") > 0)
-                                {
-                                    qrvcall = qrvcall.Remove(qrvcall.IndexOf("-"));
-                                }
-                                bool call_new_in_userlist = false;
-
-                                if ((usr_state & 2) == 2)
-                                {
-                                    call_new_in_userlist = true;
-                                    row["LOGINTIME"] = DateTime.UtcNow; // remember time of login
-                                }
-                                else
-                                {
-                                    row["LOGINTIME"] = DateTime.MinValue;
-                                }
-                                row["CONTACTED"] = 0;
-
-                                qrv.Process_QRV(row, qrvcall, call_new_in_userlist);
-
-                                lock (CALL)
-                                {
-                                    CALL.Rows.Add(row);
-                                    if (call_new_in_userlist && wtQSO != null && wtQSO.QSO.Rows.Count > 0)
-                                        Check_QSO(row);
-                                }
-                            }
-                            else
-                            {
-                                MainDlg.Log.WriteMessage("KST user UA: " + s + "not valid");
-                            }
-                        }
-                        break;
-
-                        //User already logged
-                        //UM3 | chat id | callsign | firstname | locator | state |
-
-                    case "UM":
-                        {
-                            lock (CALL)
-                            {
-                                string call = usr[2].Trim();
-                                DataRow row = CALL.Rows.Find(call);
-                                string loc = usr[4].Trim();
-
-                                if (WCCheck.WCCheck.IsLoc(loc) >= 0)
-                                {
-                                    row["CALL"] = call;
-                                    row["NAME"] = usr[3].Trim();
-                                    row["LOC"] = loc;
-
-                                    int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
-                                    int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
-                                    row["QRB"] = qrb;
-                                    row["DIR"] = qtf;
-
-                                    Int32 usr_state = Int32.Parse(usr[5]);
-                                    row["AWAY"] = (usr_state & 1) == 1;
-                                }
-                            }
-                        }
-                        break;
-
-                        // User state (here/not here/more than 5 min logged)
-                        // US4 | chat id | callsign | state |
-                    case "US":
-                        {
-                            lock (CALL)
-                            {
-                                string call = usr[2].Trim();
-                                DataRow row = CALL.Rows.Find(call);
-                                Int32 usr_state = Int32.Parse(usr[3]);
-                                if (row != null)
-                                    row["AWAY"] = (usr_state & 1) == 1;
-                            }
-                        }
-                        break;
-
-                        // User disconnected (to remove)
-                        // UR6 | chat id | callsign |
-
-                    case "UR":
-                        {
-                            lock (CALL)
-                            {
-                                string call = usr[2].Trim();
-                                DataRow row = CALL.Rows.Find(call);
-                                if (row != null)
-                                    row.Delete();
-                            }
-                        }
-                        break;
-
-                        // Users statistics/end of users frames
-                        // UE | chat id | nb registered users|
-                    case "UE":
-                        KST_Process_MyCallAway();
-                        if (CheckStartUpAway)
-                        {
-                            if (Settings.Default.KST_StartAsHere && (UserState != MainDlg.USER_STATE.Here))
-                                KST_Here();
-                            else if (!Settings.Default.KST_StartAsHere && (UserState == MainDlg.USER_STATE.Here))
-                                KST_Away();
-                            CheckStartUpAway = false;
-                        }
-                        KST_Update_USR_Window();
-                        if (Settings.Default.AS_Active)
-                            AS_send_ASWATCHLIST();
-                        // TODO wt?
-                        break;
-                }
-            }
-            catch (Exception e)
-            {
-                Error(MethodBase.GetCurrentMethod().Name, "(" + s + "): " + e.Message + e.StackTrace);
-            }
-        }
-
-        private void KST_Connect()
-        {
-            if (KSTState == MainDlg.KST_STATE.Standby &&
-                !string.IsNullOrEmpty(Settings.Default.KST_ServerName) &&
-                !string.IsNullOrEmpty(Settings.Default.KST_UserName))
-            {
-                tw = new TelnetWrapper();
-                tw.DataAvailable += new DataAvailableEventHandler(tw_DataAvailable);
-                tw.Disconnected += new DisconnectedEventHandler(tw_Disconnected);
-                try
-                {
-                    tw.Connect(Settings.Default.KST_ServerName, Convert.ToInt32(Settings.Default.KST_ServerPort));
-                    if (!tw.Connected)
-                    {
-                        Say("Connection failed...");
-                        return;
-                    }
-                    tw.Receive();
-                    KSTState = MainDlg.KST_STATE.WaitLogin;
-                    lock (CALL)
-                    {
-                        CALL.Clear();
-                    }
-                    if (Settings.Default.ShowBeacons)
-                        KST_Add_Beacons_USR();
-                    ti_Main.Interval = 5000;
-                    if (!ti_Main.Enabled)
-                    {
-                        ti_Main.Start();
-                    }
-                    Say("Connecting to KST chat..." + Settings.Default.KST_ServerName + " Port "+ Settings.Default.KST_ServerPort);
-                }
-                catch (Exception e)
-                {
-                    Error(MethodBase.GetCurrentMethod().Name, e.Message);
-                }
-            }
-        }
-
-        private void KST_Disconnect()
-        {
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("/q\r");
-                Say("Disconnected from KST chat...");
-                KSTState = MainDlg.KST_STATE.Disconnecting;
-            }
-        }
-
-        private void KST_Here()
-        {
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/BACK|0|\r");
-                UserState = MainDlg.USER_STATE.Here;
-            }
-        }
-
-        private void KST_Away()
-        {
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/AWAY|0|\r");
-                UserState = MainDlg.USER_STATE.Away;
-            }
-        }
-
-        private void KST_Setloc(string locator)
-        {
-            if (KSTState >= MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/SETLOC " + locator + "|0|\r");
-            }
-        }
-
-        private void KST_Send()
-        {
-            if (tw != null && tw.Connected && cb_Command.Text.Length > 0)
-            {
-                if ( !cb_Command.Text.StartsWith("/")
-                    || cb_Command.Text.ToUpper().StartsWith("/CQ")
-                    || cb_Command.Text.ToUpper().StartsWith("/SHLOC")
-                    || cb_Command.Text.ToUpper().StartsWith("/SHUSER")
-                    )
-                {
-                    last_cq_call = cb_Command.Text.Split(' ')[1];
-                    try
-                    {
-                        // Telnet server does not handle non-ASCII
-                        String t = cb_Command.Text;
-                        t = t.Replace("ä", "ae").Replace("ö", "oe").Replace("ü", "ue");
-                        t = t.Replace("Ä", "Ae").Replace("Ö", "Oe").Replace("Ü", "Ue");
-                        t = t.Replace("ß", "ss");
-                        System.Text.Encoding iso_8859_1 = System.Text.Encoding.GetEncoding("iso-8859-1");
-                        String to_sent = iso_8859_1.GetString(iso_8859_1.GetBytes(t));
-                        to_sent = "MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|" + to_sent + "|0|\r";
-                        tw.Send(to_sent);
-                        MainDlg.Log.WriteMessage("KST message send: " + cb_Command.Text);
-                        if (cb_Command.FindStringExact(cb_Command.Text) != 0)
-                        {
-                            cb_Command.Items.Insert(0, cb_Command.Text);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Error(MethodBase.GetCurrentMethod().Name, e.Message);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
-                }
-                cb_Command.ResetText();
-            }
-        }
-
         private void tsi_File_Exit_Click(object sender, EventArgs e)
         {
             try
             {
-                KST_Disconnect();
+                KST.Disconnect();
             }
             catch
             {
@@ -1668,46 +1013,16 @@ namespace wtKST
         // hide bands that should not be displayed by making their width = 0
         private void UpdateUserBandsWidth()
         {
-            if (Settings.Default.Band_144)
-                columnHeader144.Width = COLUMN_WIDTH;
-            else
-                columnHeader144.Width = 0;
-            if (Settings.Default.Band_432)
-                columnHeader432.Width = COLUMN_WIDTH;
-            else
-                columnHeader432.Width = 0;
-            if (Settings.Default.Band_1296)
-                columnHeader1296.Width = COLUMN_WIDTH;
-            else
-                columnHeader1296.Width = 0;
-            if (Settings.Default.Band_2320)
-                columnHeader2320.Width = COLUMN_WIDTH;
-            else
-                columnHeader2320.Width = 0;
-            if (Settings.Default.Band_3400)
-                columnHeader3400.Width = COLUMN_WIDTH;
-            else
-                columnHeader3400.Width = 0;
-            if (Settings.Default.Band_5760)
-                columnHeader5760.Width = COLUMN_WIDTH;
-            else
-                columnHeader5760.Width = 0;
-            if (Settings.Default.Band_10368)
-                columnHeader10368.Width = COLUMN_WIDTH;
-            else
-                columnHeader10368.Width = 0;
-            if (Settings.Default.Band_24GHz)
-                columnHeader24GHz.Width = COLUMN_WIDTH;
-            else
-                columnHeader24GHz.Width = 0;
-            if (Settings.Default.Band_47GHz)
-                columnHeader47GHz.Width = COLUMN_WIDTH;
-            else
-                columnHeader47GHz.Width = 0;
-            if (Settings.Default.Band_76GHz)
-                columnHeader76GHz.Width = COLUMN_WIDTH;
-            else
-                columnHeader76GHz.Width = 0;
+            lv_Calls.Columns["144M"].Visible = Settings.Default.Band_144;
+            lv_Calls.Columns["432M"].Visible = Settings.Default.Band_432;
+            lv_Calls.Columns["1_2G"].Visible = Settings.Default.Band_1296;
+            lv_Calls.Columns["2_3G"].Visible = Settings.Default.Band_2320;
+            lv_Calls.Columns["3_4G"].Visible = Settings.Default.Band_3400;
+            lv_Calls.Columns["5_7G"].Visible = Settings.Default.Band_5760;
+            lv_Calls.Columns["10G"].Visible = Settings.Default.Band_10368;
+            lv_Calls.Columns["24G"].Visible = Settings.Default.Band_24GHz;
+            lv_Calls.Columns["47G"].Visible = Settings.Default.Band_47GHz;
+            lv_Calls.Columns["76G"].Visible = Settings.Default.Band_76GHz;
         }
 
         bool check_in_log(DataRow row)
@@ -1759,7 +1074,7 @@ namespace wtKST
         {
             OptionsDlg Dlg = new OptionsDlg();
             Dlg.cbb_KST_Chat.SelectedIndex = 2;
-            if (KSTState != MainDlg.KST_STATE.Standby)
+            if (KST.State != KSTcom.KST_STATE.Standby)
             {
                 Dlg.tb_KST_Password.Enabled = false;
                 Dlg.tb_KST_UserName.Enabled = false;
@@ -1785,22 +1100,21 @@ namespace wtKST
                     {
                         CALL.Clear();
                     }
-                    MSG.Clear();
-                    latestMessageTimestampSet = false;
-                    lv_Calls.Items.Clear();
+                    KST.MSG_clear();
+                    // FIXME DV needed ? lv_Calls.Items.Clear();
                     lv_Msg.Items.Clear();
                     lv_MyMsg.Items.Clear();
                 }
                 UpdateUserBandsWidth();
                 set_KST_Status();
                 if (KST_MaxDist != Convert.ToInt32(Settings.Default.KST_MaxDist))
-                    KST_Update_USR_Window();
+                    KST_Update_Usr_Filter();
                 macro_RefreshMacroText();
             }
         }
         private void tsi_KST_Connect_Click(object sender, EventArgs e)
         {
-            KST_Connect();
+            KST.Connect();
         }
 
         private void tsi_KST_Disconnect_Click(object sender, EventArgs e)
@@ -1812,22 +1126,34 @@ namespace wtKST
                 Settings.Default.Save();
                 Settings.Default.Reload();
             }
-            KST_Disconnect();
+            KST.Disconnect();
         }
 
         private void tsi_KST_Here_Click(object sender, EventArgs e)
         {
-            KST_Here();
+            KST.Here();
         }
 
         private void tsi_KST_Away_Click(object sender, EventArgs e)
         {
-            KST_Away();
+            KST.Away();
         }
 
         private void btn_KST_Send_Click(object sender, EventArgs e)
         {
-            KST_Send();
+            if (!KST.Send(cb_Command.Text))
+            {
+                MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
+            } else
+            {
+                try
+                {
+                    last_cq_call = cb_Command.Text.Split(' ')[1];
+                }
+                catch
+                {}
+            }
+            cb_Command.ResetText();
         }
 
         private bool wtQSO_local_lock = false;
@@ -1918,7 +1244,7 @@ namespace wtKST
         private void ti_Main_Tick(object sender, EventArgs e)
         {
             ti_Main.Stop();
-            if (KSTState == MainDlg.KST_STATE.Connected)
+            if (KST.State == KSTcom.KST_STATE.Connected)
             {
                 if (wtQSO != null)
                 {
@@ -1964,7 +1290,6 @@ namespace wtKST
                         wtQSO.Clear_QSOs();
                     }
                 }
-                KST_Update_USR_Window();
                 if (Settings.Default.AS_Active)
                     AS_send_ASWATCHLIST();
             }
@@ -2085,200 +1410,301 @@ namespace wtKST
             tt_Info.Show(text, this, p, 5000);
         }
 
-        private void lv_Calls_DrawItem(object sender, DrawListViewItemEventArgs e)
+        private void lv_Calls_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
-            e.DrawDefault = true;
-        }
+            if (e.ColumnIndex < 0)
+                return;
+            DataGridView dgv = sender as DataGridView;
 
-        private void lv_Calls_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
-        {
-            if ((e.Header.Text[0] > '0' && e.Header.Text[0] < '9') || e.Header.Text == "AS")
+            // check that we are in a header cell!
+            if (e.RowIndex == -1)
             {
-                Rectangle rect = e.Bounds;
-                if (e.ColumnIndex > 4 && hide_worked) // Band
-                    e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
-                else
-                    e.DrawBackground();
-                Font headerfont = new Font(e.Font.OriginalFontName, 6f);
-                Size titlesize = TextRenderer.MeasureText(e.Header.Text, headerfont);
-                e.Graphics.TranslateTransform(0f, (float)titlesize.Width);
-                e.Graphics.RotateTransform(-90f);
-                e.Graphics.DrawString(e.Header.Text.ToString(), headerfont, Brushes.Black, new PointF((float)rect.Y, (float)(rect.X + 3)));
-                e.Graphics.RotateTransform(90f);
-                e.Graphics.TranslateTransform(0f, (float)(-(float)titlesize.Width));
-            }
-            else
-            {
-                if (e.ColumnIndex == 0 || e.ColumnIndex == 2 || e.ColumnIndex == 3)
+                if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex  /* 3  */  /* Header.Text[0] > '0' && e.Header.Text[0] < '9') || e.Header.Text == "AS" */)
                 {
-                    // CALL column
-                    if ((e.ColumnIndex == 0 && hide_away) ||   // CALL
-                        (e.ColumnIndex == 2 && sort_by_dir) || // LOCATOR
-                        (e.ColumnIndex == 3 && ignore_inactive)) // ACT
-                        e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
+                    Rectangle rect = e.CellBounds;
+                    if (e.ColumnIndex > 4 && hide_worked) // Band
+                        e.Graphics.FillRectangle(Brushes.LightGray, rect);
                     else
-                        e.DrawBackground();
-                    e.DrawDefault = false;
-                    e.DrawText(TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
-                    return;
-                }
-                e.DrawDefault = true;
-            }
-        }
-
-        private void lv_Calls_DrawSubItem(object sender, DrawListViewSubItemEventArgs e)
-        {
-            ListView listView = sender as ListView;
-            if (e.Header.Text[0] > '0' && e.Header.Text[0] < '9')
-            {
-                QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
-                try
-                {
-                    Enum.TryParse<QRVdb.QRV_STATE>(e.SubItem.Text, out state);
-                }
-                catch
-                {
-                }
-                switch (state)
-                {
-                case QRVdb.QRV_STATE.unknown:
-                    e.Graphics.FillRectangle(Brushes.LightGray, e.Bounds);
-                    break;
-                case QRVdb.QRV_STATE.qrv:
-                    e.Graphics.FillRectangle(Brushes.Red, e.Bounds);
-                    break;
-                case QRVdb.QRV_STATE.worked:
-                    e.Graphics.FillRectangle(Brushes.Green, e.Bounds);
-                    break;
-                case QRVdb.QRV_STATE.not_qrv:
-                    e.Graphics.FillRectangle(Brushes.Black, e.Bounds);
-                    break;
-                default:
-                    e.DrawDefault = true;
-                    break;
-                }
-            }
-            else if (e.Header.Text.StartsWith("AS"))
-            {
-                try
-                {
-                    if (e.SubItem.Text.Length > 0)
+                        e.PaintBackground(e.ClipBounds, false);
+                    using (Font headerfont = new Font(e.CellStyle.Font.OriginalFontName, 6f))
                     {
-                        if (e.SubItem.Text.Equals("<") || e.SubItem.Text.Equals(">"))
+                        Size titlesize = TextRenderer.MeasureText(e.FormattedValue.ToString(), headerfont);
+                        e.Graphics.TranslateTransform(0f, (float)titlesize.Width);
+                        e.Graphics.RotateTransform(-90f);
+                        e.Graphics.DrawString(e.FormattedValue.ToString(), headerfont, Brushes.Black, new PointF((float)rect.Y, (float)(rect.X + 3)));
+                        e.Graphics.RotateTransform(90f);
+                        e.Graphics.TranslateTransform(0f, (float)(-(float)titlesize.Width));
+                    }
+                    e.Handled = true;
+                }
+                else
+                {
+                    if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex || e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex || e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
+                    {
+                        // CALL column
+                        if ((e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && hide_away) ||
+                            (e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex && sort_by_dir) ||
+                            (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex && ignore_inactive))
                         {
-                            e.DrawDefault = true;
+                            e.PaintBackground(e.ClipBounds, false);
+                            e.Graphics.FillRectangle(Brushes.LightGray, e.CellBounds);
+                            e.PaintContent(e.CellBounds);
+                            e.Handled = true;
                             return;
-                        }
-                        e.DrawBackground();
-                        string[] a = e.SubItem.Text.Split(new char[] { ',' });
-                        if (a.Length<3)
-                        {
-                            e.DrawDefault = false; // draw nothing, just the background
-                            return;
-                        }
-                        int pot = Convert.ToInt32(a[0]);
-                        int Mins = Convert.ToInt32(a[2]);
-                        if (Mins > 99)
-                            Mins = 99;
-                        if (pot > 0)
-                        {
-                            if (a.Length < 2)
-                                Console.WriteLine("ups " + a.Length + " " + e.SubItem.Text);
-                            var cat = a[1];
-                            Rectangle b = e.Bounds;
-                            b.Inflate(-5,0); // width -10 for the text
-                            if (cat.Equals("S"))
-                                b.Inflate(-1, -1);
-                            else if (cat.Equals("H"))
-                                b.Inflate(-2, -2);
-                            else if (cat.Equals("M") || cat.Equals("[unknown]"))
-                                b.Inflate(-4, -4);
-                            else if (cat.Equals("L"))
-                                b.Inflate(-6, -6);
-                            else // unknown
-                                b.Inflate(-5, -5);
-                            b.X = e.Bounds.X + 1;
-                            if (pot == 100)
-                            {
-                                // 100
-                                e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
-                            }
-                            else if (pot > 50)
-                            {
-                                // 51..99
-                                if (Mins > 15)
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b);
-                                else if (Mins > 5)
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b);
-                                else
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
-
-                                using (StringFormat sf = new StringFormat())
-                                {
-                                    using (Font headerFont = new Font(listView.Font.Name, listView.Font.Size*0.8F, FontStyle.Regular))
-                                    {
-                                        sf.Alignment = StringAlignment.Center;
-                                        sf.LineAlignment = StringAlignment.Center;
-                                        Rectangle tb = e.Bounds;
-                                        tb.X = tb.X + e.Bounds.Width - 15;
-                                        tb.Width = 15;
-                                        e.Graphics.DrawString(Mins.ToString(), headerFont, Brushes.Black, tb, sf);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                // 0..50
-                                e.Graphics.FillEllipse(new SolidBrush(Color.Orange), b);
-                            }
                         }
                     }
                 }
-                catch
-                {
-                }
             }
             else
             {
-                e.DrawDefault = true;
+                if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && e.Value != null)
+                {
+                    string call = e.Value.ToString();
+                    if (bool.TryParse(dgv.Rows[e.RowIndex].Cells["AWAY"].Value.ToString(), out bool away) && away == true)
+                    {
+                        call = "(" + call + ")";
+                        // Italic is too difficult to read and the font gets bigger
+                        //LV.Font = new Font(LV.Font, FontStyle.Italic);
+                    }
+                    e.PaintBackground(e.ClipBounds, false);
+
+                    if (bool.TryParse(dgv.Rows[e.RowIndex].Cells["RECENTLOGIN"].Value.ToString(), out bool recentlogin) && recentlogin == true)
+                    {
+                        using (var font = new Font(e.CellStyle.Font, FontStyle.Bold))
+                        {
+                            TextRenderer.DrawText(e.Graphics, call,
+                                             font, e.CellBounds, e.CellStyle.ForeColor,
+                                             TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter);
+                        }
+                    }
+                    else
+                        TextRenderer.DrawText(e.Graphics, call,
+                                         e.CellStyle.Font, e.CellBounds, e.CellStyle.ForeColor,
+                                         TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter);
+
+                    e.Handled = true;
+                }
+                else if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex)
+                {
+                    if (e.Value == null)
+                        return;
+                    QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
+                    try
+                    {
+                        Enum.TryParse<QRVdb.QRV_STATE>(e.Value.ToString(), out state);
+                    }
+                    catch
+                    {
+                    }
+
+                    Rectangle newRect = new Rectangle(e.CellBounds.X + 2,
+                        e.CellBounds.Y + 2, e.CellBounds.Width - 4,
+                        e.CellBounds.Height - 4);
+                    e.PaintBackground(e.CellBounds, false);
+                    switch (state)
+                    {
+                        case QRVdb.QRV_STATE.unknown:
+                            e.Graphics.FillRectangle(Brushes.LightGray, newRect);
+                            e.Handled = true;
+                            break;
+                        case QRVdb.QRV_STATE.qrv:
+                            e.Graphics.FillRectangle(Brushes.Red, newRect);
+                            e.Handled = true;
+                            break;
+                        case QRVdb.QRV_STATE.worked:
+                            e.Graphics.FillRectangle(Brushes.Green, newRect);
+                            e.Handled = true;
+                            break;
+                        case QRVdb.QRV_STATE.not_qrv:
+                            e.Graphics.FillRectangle(Brushes.Black, newRect);
+                            e.Handled = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else if (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
+                {
+
+                    // last activity
+                    var row = dgv.Rows[e.RowIndex];
+                    var timeval = row.Cells["TIME"].Value;
+                    e.PaintBackground(e.CellBounds, false);
+
+                    if (timeval != null && timeval != DBNull.Value)
+                    {
+                        double lastActivityMinutes = (DateTime.UtcNow.Subtract((DateTime)timeval)).TotalMinutes;
+                        string act_string;
+                        if (lastActivityMinutes < 120.0)
+                            act_string = lastActivityMinutes.ToString("0");
+                        else
+                        {
+                            if ((int)row.Cells["CONTACTED"].Value < 3)
+                                act_string = "---";
+                            else
+                                act_string = "xxx"; // if contacted 3 times without answer then probably really not available
+                        }
+                        StringFormat sf = new StringFormat
+                        {
+                            LineAlignment = StringAlignment.Center,
+                            Alignment = StringAlignment.Center
+                        };
+                        e.Graphics.DrawString(act_string, e.CellStyle.Font, Brushes.Black, e.CellBounds.X + e.CellBounds.Width/2,
+                            e.CellBounds.Y + e.CellBounds.Height/2, sf);
+                    }
+                    e.Handled = true;
+                }
+                else if (e.ColumnIndex == dgv.Columns["AS"].DisplayIndex)
+                {
+                    try
+                    {
+                        var row = dgv.Rows[e.RowIndex];
+                        if (row.Cells["AS"].Value == null)
+                            return;
+                        string as_string = row.Cells["AS"].Value.ToString();
+
+                        if (as_string.Length > 0)
+                        {
+                            if (as_string.Equals("<") || as_string.Equals(">"))
+                            {
+                                return;
+                            }
+                            e.PaintBackground(e.CellBounds, false);
+                            string[] a = as_string.Split(new char[] { ',' });
+                            if (a.Length<3)
+                            {
+                                // draw nothing, just the background
+                                return;
+                            }
+                            int pot = Convert.ToInt32(a[0]);
+                            int Mins = Convert.ToInt32(a[2]);
+                            if (Mins > 99)
+                                Mins = 99;
+                            if (pot > 0)
+                            {
+                                if (a.Length < 2)
+                                    Console.WriteLine("ups " + a.Length + " " + as_string);
+                                var cat = a[1];
+                                Rectangle newRect = new Rectangle(e.CellBounds.X + 2,
+                                    e.CellBounds.Y + 2, e.CellBounds.Width - 4,
+                                    e.CellBounds.Height - 4);
+                                Rectangle b = newRect;
+                                b.Inflate(-5,0); // width -10 for the text
+                                if (cat.Equals("S"))
+                                    b.Inflate(-1, -1);
+                                else if (cat.Equals("H"))
+                                    b.Inflate(-2, -2);
+                                else if (cat.Equals("M") || cat.Equals("[unknown]"))
+                                    b.Inflate(-4, -4);
+                                else if (cat.Equals("L"))
+                                    b.Inflate(-6, -6);
+                                else // unknown
+                                    b.Inflate(-5, -5);
+                                b.X = newRect.X + 1;  // FIXME needed?
+                                if (pot == 100)
+                                {
+                                    // 100
+                                    e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
+                                }
+                                else if (pot > 50)
+                                {
+                                    // 51..99
+                                    if (Mins > 15)
+                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b);
+                                    else if (Mins > 5)
+                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b);
+                                    else
+                                        e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
+
+                                    using (StringFormat sf = new StringFormat())
+                                    {
+                                        using (Font headerFont = new Font(e.CellStyle.Font.Name, e.CellStyle.Font.Size*0.8F, FontStyle.Regular))
+                                        {
+                                            sf.Alignment = StringAlignment.Center;
+                                            sf.LineAlignment = StringAlignment.Center;
+                                            Rectangle tb = newRect;
+                                            tb.X = tb.X + newRect.Width - 15;
+                                            tb.Width = 15;
+                                            e.Graphics.DrawString(Mins.ToString(), headerFont, Brushes.Black, tb, sf);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // 0..50
+                                    e.Graphics.FillEllipse(new SolidBrush(Color.Orange), b);
+                                }
+                                e.Handled = true;
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
             }
         }
 
-        private void lv_Calls_MouseMove(object sender, MouseEventArgs e)
+        private void lv_Calls_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            Point p = new Point(e.X, e.Y);
-            ListViewHitTestInfo info = lv_Calls.HitTest(p);
-            string ToolTipText = "";
-            if (OldMousePos != p && info != null && info.SubItem != null)
+            if (e.ColumnIndex >= 0)
             {
-                OldMousePos = p;
-                if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act" )
+                DataGridView dgv = sender as DataGridView;
+                if (sort_by_dir && dgv.Columns[e.ColumnIndex].Name == "DIR")
+                {
+                    dgv.Sort(dgv.Columns["DIR"], ListSortDirection.Ascending);
+                }
+                else if (!sort_by_dir && dgv.Columns[e.ColumnIndex].Name == "CALL")
+                {
+                    dgv.Sort(dgv.Columns["CALL"], ListSortDirection.Ascending);
+                }
+            }
+        }
+
+        private Point OldMousePos = new Point(0, 0);
+
+        private void lv_Calls_MouseMove(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string ToolTipText = "";
+            DataGridView dgv = sender as DataGridView;
+            if (OldMousePos != Cursor.Position && e.ColumnIndex >= 0 && e.RowIndex >= 0)
+            {
+                OldMousePos = Cursor.Position;
+                var column = dgv.Columns[e.ColumnIndex];
+                var row = dgv.Rows[e.RowIndex];
+
+                if (row.Cells["CALL"].Value == null)
+                    return;
+                string call = row.Cells["CALL"].Value.ToString();
+                string name = row.Cells["NAME"].Value.ToString();
+                string loc = row.Cells["LOC"].Value.ToString();
+                if (column.Name == "CALL" || column.Name == "NAME" || column.Name == "LOC" || column.Name == "CONTACTED" )
                 {
                     ToolTipText = string.Concat(new object[]
                     {
                         "Call:\t",
-                        info.Item.Text,
+                        call,
                         "\nName:\t",
-                        info.Item.SubItems[1].Text,
+                        name,
                         "\nLoc:\t",
-                        info.Item.SubItems[2].Text,
+                        loc,
                         "\nQTF:\t",
-                        WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, info.Item.SubItems[2].Text).ToString("000"),
+                        WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc).ToString("000"),
                         "°\nQRB:\t",
-                        WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, info.Item.SubItems[2].Text),
+                        WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc),
                         " km\n\nLeft click to\nSend Message."
                     });
                 }
-                if (info.SubItem.Name == "AS")
+                if (column.Name == "AS")
                 {
-                    string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
-                    string s = AS_if.GetNearestPlanes(call);
+                    string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                    string s = AS_if.GetNearestPlanes(ascall);
                     if (string.IsNullOrEmpty(s))
                     {
                         ToolTipText = "No planes\n\nLeft click for map";
                         lock (CALL)
                         {
-                            DataRow Row = CALL.Rows.Find(call);
+                            DataRow Row = CALL.Rows.Find(ascall);
                             if (Row != null && Settings.Default.AS_Active)
                             {
                                 int qrb = (int)Row["QRB"];
@@ -2296,26 +1722,25 @@ namespace wtKST
                         ToolTipText = t + "\n\nLeft click for map\nRight click for more";
                     }
                 }
-                if (!String.IsNullOrEmpty(info.SubItem.Name) && info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
+                if (!String.IsNullOrEmpty(column.Name) && column.Name[0] > '0' && column.Name[0] < '9')
                 {
                     QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
                     try
                     {
-                        Enum.TryParse<QRVdb.QRV_STATE>(info.SubItem.Text, out state);
+                        Enum.TryParse<QRVdb.QRV_STATE>(row.Cells[e.ColumnIndex].Value.ToString(), out state);
                     }
                     catch
                     {
                     }
                     if (state != QRVdb.QRV_STATE.worked)
                     {
-                        ToolTipText = info.SubItem.Name.Replace("_", ".") + ": Left click to \ntoggle QRV info";
+                        ToolTipText = column.Name.Replace("_", ".") + ": Left click to \ntoggle QRV info";
                     }
                     else
                     {
                         if (wtQSO != null)
                         {
-                            string call = info.Item.Text;
-                            string band = info.SubItem.Name;
+                            string band = column.Name;
                             DataRow findrow = wtQSO.QSO.Rows.Find(new object[] { call, band.Replace(".", "_") });
                             if (findrow != null)
                             {
@@ -2337,7 +1762,7 @@ namespace wtKST
                         }
                     }
                 }
-                ShowToolTip(ToolTipText, lv_Calls, p);
+                ShowToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
             }
         }
 
@@ -2354,9 +1779,14 @@ namespace wtKST
             fill_AS_list();
         }
 
+        private void lv_Calls_mousewheel_event(object sender, EventArgs e)
+        {
+            fill_AS_list();
+        }
+
         private void fill_AS_list()
         {
-            if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.TopItem == null || lv_Calls.Items.Count == 0)
+            if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.RowCount == 0)
                 return;
 
             string watchlist = "";
@@ -2369,12 +1799,14 @@ namespace wtKST
                 string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
 
                 // find visible users
-                for (int i = 0; i < lv_Calls.Items.Count; i++)
+                for (int i = 0; i < lv_Calls.RowCount; i++)
                 {
                     try
                     {
-                        string dxloc = lv_Calls.Items[i].SubItems[2].Text;
-                        string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Items[i].Text.TrimStart(
+                        if (lv_Calls.Rows[i].Cells["LOC"].Value == null)
+                            continue;
+                        string dxloc = lv_Calls.Rows[i].Cells["LOC"].Value.ToString();
+                        string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Rows[i].Cells["CALL"].Value.ToString().TrimStart(
                             new char[] { '(' }).TrimEnd(new char[] { ')' }));
                         int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, dxloc);
                         if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
@@ -2382,8 +1814,7 @@ namespace wtKST
                                     && !mycall.Equals(dxcall))
                         {
                             watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
-                            if (i == lv_Calls.TopItem.Index ||
-                                lv_Calls.ClientRectangle.IntersectsWith(lv_Calls.Items[i].Bounds))
+                            if ( i >= lv_Calls.FirstDisplayedCell.RowIndex && i < lv_Calls.FirstDisplayedCell.RowIndex + lv_Calls.DisplayedRowCount(true))
                             {
                                 AS_list.Add(new AS_Calls(dxcall, dxloc));
                             }
@@ -2406,9 +1837,9 @@ namespace wtKST
 
         private void cmi_Calls_SendMessage_Click(object sender, EventArgs e)
         {
-            if (lv_Calls.SelectedItems != null && lv_Calls.SelectedItems[0].Text.Length > 0)
+            if (lv_Calls.SelectedRows != null && lv_Calls.SelectedRows[0].HeaderCell.Value.ToString().Length > 0)
             {
-                cb_Command.Text = "/cq " + lv_Calls.SelectedItems[0].Text.Replace("(", "").Replace(")", "") + " ";
+                cb_Command.Text = "/cq " + lv_Calls.SelectedRows[0].HeaderCell.Value.ToString().Replace("(", "").Replace(")", "") + " ";
                 cb_Command.Focus();
                 cb_Command.SelectionStart = cb_Command.Text.Length;
                 cb_Command.SelectionLength = 0;
@@ -2416,87 +1847,101 @@ namespace wtKST
         }
 
 
-        private void lv_Calls_ColumnClick(object sender, ColumnClickEventArgs e)
+        private void lv_Calls_ColumnClick(object sender, DataGridViewCellMouseEventArgs e)
         {
+            DataGridView dgv = sender as DataGridView;
+            var column = dgv.Columns[e.ColumnIndex];
+
             // CALL column
-            if (e.Column == 0)
+            if (column.Name == "CALL")
             {
                 if (hide_away)
                     hide_away = false;
                 else
                     hide_away = true;
-                KST_Update_USR_Window();
+                return;
             }
 
             // LOCATOR column
-            if (e.Column == 2)
+            if (column.Name == "LOC")
             {
                 if (sort_by_dir)
+                {
                     sort_by_dir = false;
+                    dgv.Sort(dgv.Columns["CALL"], ListSortDirection.Ascending);
+                }
                 else
+                {
                     sort_by_dir = true;
-                KST_Update_USR_Window();
+                    dgv.Sort(dgv.Columns["DIR"], ListSortDirection.Ascending);
+                }
+                return;
             }
 
             // ACT column
-            if (e.Column == 3)
+            if (column.Name == "CONTACTED")
             {
                 if (ignore_inactive)
                     ignore_inactive = false;
                 else
                     ignore_inactive = true;
-                KST_Update_USR_Window();
+                return;
             }
             // band columns
-            if (e.Column > 4)
+            if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex)
             {
                 if (hide_worked)
                     hide_worked = false;
                 else
                     hide_worked = true;
-                lv_Calls.Invalidate(true);
-                KST_Update_USR_Window();
+                return;
             }
         }
 
-        private void lv_Calls_MouseDown(object sender, MouseEventArgs e)
+        private string lv_Calls_control_shown_from_Call = "";
+
+        private void lv_Calls_MouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
-                Point p = new Point(e.X, e.Y);
+
                 QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
-                ListViewHitTestInfo info = lv_Calls.HitTest(p);
-                if (info != null && info.SubItem != null)
+                DataGridView dgv = sender as DataGridView;
+
+                if (e.ColumnIndex >= 0 && e.RowIndex >= 0)
                 {
-                    string username = info.Item.Text.Replace("(", "").Replace(")", "");
+                    var column = dgv.Columns[e.ColumnIndex];
+                    var row = dgv.Rows[e.RowIndex];
+
+                    string username = row.Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", "");
                     string call = WCCheck.WCCheck.SanitizeCall(username);
 
-                    if (info.SubItem.Name == "Call" || info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act")
+                    if (column.Name == "CALL" || column.Name == "NAME" || column.Name == "LOC" || column.Name == "CONTACTED")
                     {
-                        if (username.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                        if (username.Length > 0 && KST.State == KSTcom.KST_STATE.Connected)
                         {
                             cb_Command.Text = "/cq " + username + " ";
                             cb_Command.SelectionStart = cb_Command.Text.Length;
                             cb_Command.SelectionLength = 0;
                         }
                     }
-                    if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
+                    if (column.Name == "AS" && Settings.Default.AS_Active)
                     {
-                        string loc = info.Item.SubItems[2].Text;
+                        string loc = row.Cells["LOC"].Value.ToString();
 
                         AS_if.show_path(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
                     }
-                    if (info.SubItem.Name[0] > '0' && info.SubItem.Name[0] < '9')
+                    if (column.Name[0] > '0' && column.Name[0] < '9')
                     {
                         lock (CALL)
                         {
                             // band columns
                             DataRow CallsRow = CALL.Rows.Find(call);
-                            string band = info.SubItem.Name;
+                            string band = column.Name;
                             state = QRVdb.QRV_STATE.unknown;
                             try
                             {
-                                Enum.TryParse<QRVdb.QRV_STATE>(info.SubItem.Text, out state);
+                                Enum.TryParse<QRVdb.QRV_STATE>(row.Cells[e.ColumnIndex].Value.ToString(), out state);
                             }
                             catch
                             {
@@ -2504,50 +1949,55 @@ namespace wtKST
                             switch (state)
                             {
                                 case QRVdb.QRV_STATE.unknown:
-                                    info.SubItem.Text = QRVdb.QRV_STATE.qrv.ToString();
+                                    row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.qrv;
                                     qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.qrv);
                                     if (CallsRow != null)
                                         CallsRow[band] = QRVdb.QRV_STATE.qrv;
                                     break;
                                 case QRVdb.QRV_STATE.qrv:
-                                    info.SubItem.Text = QRVdb.QRV_STATE.not_qrv.ToString();
+                                    row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.not_qrv;
                                     qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.not_qrv);
                                     if (CallsRow != null)
                                         CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
                                     break;
                                 case QRVdb.QRV_STATE.not_qrv:
-                                    info.SubItem.Text = QRVdb.QRV_STATE.unknown.ToString();
+                                    row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.unknown;
                                     qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.unknown);
                                     if (CallsRow != null)
                                         CallsRow[band] = QRVdb.QRV_STATE.unknown;
                                     break;
                             }
+                            dgv.Refresh();
                         }
-                        lv_Calls.Refresh();
                     }
                 }
             }
             else if (e.Button == MouseButtons.Right)
             {
-                Point p = new Point(e.X, e.Y);
-                string ToolTipText = "";
-                ListViewHitTestInfo info = lv_Calls.HitTest(p);
-                if (info != null && info.SubItem != null)
-                {
-                    if (info.SubItem.Name == "Call" /*|| info.SubItem.Name == "Name" || info.SubItem.Name == "Locator" || info.SubItem.Name == "Act"*/)
-                    {
-                        string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
-                        string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
-                        DataRow[] selectRow = MSG.Select(findCall);
 
-                        this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
+                string ToolTipText = "";
+                DataGridView dgv = sender as DataGridView;
+
+                if (e.ColumnIndex >= 0 && e.RowIndex >= 0)
+                {
+                    var column = dgv.Columns[e.ColumnIndex];
+                    var row = dgv.Rows[e.RowIndex];
+
+                    if (column.Name == "CALL")
+                    {
+                        string call = WCCheck.WCCheck.SanitizeCall(row.Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", ""));
+                        DataRow[] selectRow = KST.MSG_findcall(call);
+
+                        this.cmn_userlist_chatReview.Visible = (selectRow.Length > 0);
                         this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count>0);
 
-                        this.cmn_userlist.Show(lv_Calls, p);
+                        lv_Calls_control_shown_from_Call = call;
+
+                        this.cmn_userlist.Show(lv_Calls, dgv.PointToClient(Cursor.Position));
                     }
-                    else if (info.SubItem.Name == "AS" && Settings.Default.AS_Active)
+                    else if (column.Name == "AS" && Settings.Default.AS_Active)
                     {
-                        string call = WCCheck.WCCheck.SanitizeCall(info.Item.Text.Replace("(", "").Replace(")", ""));
+                        string call = WCCheck.WCCheck.SanitizeCall(row.Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", ""));
                         string s = AS_if.GetNearestPlanes(call);
                         if (string.IsNullOrEmpty(s))
                         {
@@ -2570,10 +2020,12 @@ namespace wtKST
                             ToolTipText = s + "\n\nLeft click for map\nRight click for more";
                         }
                     }
-                    ShowToolTip(ToolTipText, lv_Calls, p);
+                    ShowToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
                 }
             }
         }
+
+        private string lv_msg_control_url_shown_from_Call = "";
 
         private void lv_Msg_MouseDown(object sender, MouseEventArgs e)
         {
@@ -2589,7 +2041,7 @@ namespace wtKST
                 }
                 if (e.Button == MouseButtons.Left)
                 {
-                    if (call.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                    if (call.Length > 0 && KST.State == KSTcom.KST_STATE.Connected)
                     {
                         cb_Command.Text = "/cq " + call + " ";
                         cb_Command.SelectionStart = cb_Command.Text.Length;
@@ -2598,13 +2050,24 @@ namespace wtKST
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
-                    string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
-                    DataRow[] selectRow = MSG.Select(findCall);
+                    DataRow[] selectRow = KST.MSG_findcall(call);
 
-                    this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
-                    this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
+                    this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
+                    this.cmn_msglist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
 
-                    this.cmn_userlist.Show(lv_Msg, p);
+                    string msg = info.Item.SubItems[3].Text;
+                    var rx = new Regex(@".*(https?://.*) .*", RegexOptions.Compiled);
+                    if (rx.IsMatch(msg))
+                    {
+                        lv_msg_control_url_shown_from_Call = rx.Replace(msg, "$1"); // we only take the first match...
+
+                        this.cmn_msglist_openURL.Visible = true;
+                    }
+                    else
+                    {
+                        this.cmn_msglist_openURL.Visible = false;
+                    }
+                    this.cmn_msglist.Show(lv_Msg, p);
                 }
             }
         }
@@ -2623,7 +2086,7 @@ namespace wtKST
                 }
                 if (e.Button == MouseButtons.Left)
                 {
-                    if (call.Length > 0 && KSTState == MainDlg.KST_STATE.Connected)
+                    if (call.Length > 0 && KST.State == KSTcom.KST_STATE.Connected)
                     {
                         cb_Command.Text = "/cq " + call + " ";
                         cb_Command.SelectionStart = cb_Command.Text.Length;
@@ -2632,13 +2095,24 @@ namespace wtKST
                 }
                 else if (e.Button == MouseButtons.Right)
                 {
-                    string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
-                    DataRow[] selectRow = MSG.Select(findCall);
+                    DataRow[] selectRow = KST.MSG_findcall(call);
 
-                    this.cmn_userlist_chatReviewT.Visible = (selectRow.Length > 0);
-                    this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
+                    this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
+                    this.cmn_msglist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
 
-                    this.cmn_userlist.Show(lv_MyMsg, p);
+                    string msg = info.Item.SubItems[3].Text;
+                    var rx = new Regex(@".*(https?://.*) .*", RegexOptions.Compiled);
+                    if (rx.IsMatch(msg))
+                    {
+                        lv_msg_control_url_shown_from_Call = rx.Replace(msg, "$1"); // we only take the first match...
+
+                        this.cmn_msglist_openURL.Visible = true;
+                    }
+                    else
+                    {
+                        this.cmn_msglist_openURL.Visible = false;
+                    }
+                    this.cmn_msglist.Show(lv_MyMsg, p);
                 }
             }
         }
@@ -2724,13 +2198,17 @@ namespace wtKST
             {
                 Console.WriteLine(Control.GetType().ToString());
                 kst_sked_qrg = 0;
-                var yourControl = contextMenu.SourceControl as DoubleBufferedListView;
-                if (yourControl.SelectedItems.Count > 0)
-                {
-                    string call = yourControl.SelectedItems[0].Text.Replace("(", "").Replace(")", "");
-                    Console.WriteLine("clicked " + call);
-                    return call;
-                }
+                // FIXME DV das geht so nicht, keine Ahnung...
+                //var yourControl = contextMenu.SourceControl as DataGridView;
+                //if (yourControl.SelectedRows.Count > 0)
+                //{
+                //    string call = yourControl.SelectedRows[0].Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", "");
+                //    Console.WriteLine("clicked " + call);
+                //    return call;
+                //}
+
+                if (!String.IsNullOrEmpty(lv_Calls_control_shown_from_Call))
+                    return lv_Calls_control_shown_from_Call;
             }
             else if (Control.Name.Equals("lv_Msg") || Control.Name.Equals("lv_MyMsg"))
             {
@@ -2782,7 +2260,7 @@ namespace wtKST
         }
 
 
-        private void cmn_userlist_wtsked_Click(object sender, EventArgs e)
+        private void cmn_item_wtsked_Click(object sender, EventArgs e)
         {
             ToolStripItem clickedItem = sender as ToolStripItem;
             string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
@@ -2809,9 +2287,9 @@ namespace wtKST
             }
         }
 
-        private void cmn_userlist_chatReviewT_Click(object sender, EventArgs e)
+        private void cmn_item_chatReview_Click(object sender, EventArgs e)
         {
-            ToolStripItem clickedItem =  sender as ToolStripItem;
+            ToolStripItem clickedItem = sender as ToolStripItem;
             string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
 
             if (!String.IsNullOrEmpty(call))
@@ -2822,8 +2300,7 @@ namespace wtKST
                 chat_review_table.Columns.Add("Message");
 
                 string call_cut = WCCheck.WCCheck.SanitizeCall(call);
-                string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call_cut);
-                DataRow[] selectRow = MSG.Select(findCall);
+                DataRow[] selectRow = KST.MSG_findcall(call_cut);
                 foreach (var msg_row in selectRow)
                 {
                     Console.WriteLine(msg_row["TIME"].ToString() + " " + msg_row["CALL"].ToString() + " -> " + msg_row["RECIPIENT"].ToString() + " " + msg_row["MSG"].ToString());
@@ -2838,9 +2315,31 @@ namespace wtKST
             }
         }
 
+        private void cmn_item_openURL_Click(object sender, EventArgs e)
+        {
+            if (!String.IsNullOrEmpty(lv_msg_control_url_shown_from_Call) &&
+                Uri.IsWellFormedUriString(lv_msg_control_url_shown_from_Call, UriKind.Absolute))
+            {
+                System.Diagnostics.Process.Start(lv_msg_control_url_shown_from_Call);
+            }
+        }
+
         private void btn_KST_Send_Click_1(object sender, EventArgs e)
         {
-            KST_Send();
+            if (!KST.Send(cb_Command.Text))
+            {
+                MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
+            }
+            else
+            {
+                try
+                {
+                    last_cq_call = cb_Command.Text.Split(' ')[1];
+                }
+                catch
+                { }
+            }
+            cb_Command.ResetText();
         }
 
         private void cmi_Notify_Restore_Click(object sender, EventArgs e)
@@ -2869,39 +2368,6 @@ namespace wtKST
         private void ni_Main_BalloonTipClicked(object sender, EventArgs e)
         {
             base.Activate();
-        }
-
-        private void ti_Receive_Tick(object sender, EventArgs e)
-        {
-            ti_Receive.Stop();
-            DateTime t = DateTime.Now;
-            while (true)
-            {
-                string s;
-                lock(MsgQueue)
-                {
-                    if (MsgQueue.Count > 0)
-                    {
-                        s = MsgQueue.Dequeue();
-                    }
-                    else
-                    {
-                        s = "";
-                    }
-                }
-                if (s.Length > 0)
-                {
-                    KST_Receive(s);
-                }
-                else
-                    break;
-            }
-            TimeSpan ts = DateTime.Now - t;
-            if (ts.Seconds > 1)
-            {
-                MainDlg.Log.WriteMessage("ReceiveTimer Overflow: " + ts.ToString());
-            }
-            ti_Receive.Start();
         }
 
         private void ti_Error_Tick(object sender, EventArgs e)
@@ -2945,6 +2411,7 @@ namespace wtKST
                 Point p = new Point(e.X, e.Y);
                 p = cb_Command.PointToScreen(p);
                 Point cp = lv_Calls.PointToClient(p);
+#if FIXME_DV
                 ListViewHitTestInfo info = lv_Calls.HitTest(cp);
                 if (info != null && info.Item != null)
                 {
@@ -2961,9 +2428,10 @@ namespace wtKST
                     ((HandledMouseEventArgs)e).Handled = true;
                 }
                 else
+#endif
                 {
                     cp = lv_Msg.PointToClient(p);
-                    info = lv_Msg.HitTest(cp);
+                    ListViewHitTestInfo info = lv_Msg.HitTest(cp);
                     if (info != null && info.Item != null)
                     {
                         int newindex = lv_Msg.TopItem.Index - Math.Sign(e.Delta);
@@ -3024,17 +2492,9 @@ namespace wtKST
 
         private void ti_Reconnect_Tick(object sender, EventArgs e)
         {
-            if (Settings.Default.KST_AutoConnect && KSTState == MainDlg.KST_STATE.Standby)
+            if (Settings.Default.KST_AutoConnect && KST.State == KSTcom.KST_STATE.Standby)
             {
-                KST_Connect();
-            }
-        }
-
-        private void ti_Linkcheck_Tick(Object source, System.Timers.ElapsedEventArgs e)
-        {
-            if (KSTState == MainDlg.KST_STATE.Connected)
-            {
-                tw.Send("\r\n"); // send to check if link is still up
+                KST.Connect();
             }
         }
 
@@ -3057,7 +2517,7 @@ namespace wtKST
         {
             while (!bw_GetPlanes.CancellationPending)
             {
-                if (KSTState < MainDlg.KST_STATE.Connected || !Settings.Default.AS_Active)
+                if (KST.State < KSTcom.KST_STATE.Connected || !Settings.Default.AS_Active)
                 {
                     Thread.Sleep(200); // TODO: better to use WaitHandles
                     continue;
@@ -3118,11 +2578,11 @@ namespace wtKST
                     try
                     {
                         AS_if.planes.Clear();
-                        foreach (ListViewItem lvi in lv_Calls.Items)
+                        for (int i = 0; i < lv_Calls.RowCount; i++)
                         {
-                            lvi.SubItems[4].Text = "";
+                            lv_Calls.Rows[i].Cells["AS"].Value = "";
+                            lv_Calls.Refresh(); // propagate to CALL table
                         }
-                        lv_Calls.Refresh();
                     }
                     catch
                     {
@@ -3130,42 +2590,41 @@ namespace wtKST
                 }
                 return;
             }
-            // search the listview for matching call - note that dxcall is the bare callsign, whereas
+            // search the view for matching call - note that dxcall is the bare callsign, whereas
             // the list contains () for users that are away and may contain things like /p
             // so this is safer...
-            ListViewItem call_lvi = null;
-            foreach (ListViewItem lvi in lv_Calls.Items)
+            DataGridViewRow call_row = null;
+            for (int i=0; i<lv_Calls.RowCount; i++)
             {
-                if (lvi.Text.IndexOf(dxcall) >= 0)
+                if (lv_Calls.Rows[i].Cells["CALL"].Value != null && lv_Calls.Rows[i].Cells["CALL"].Value.ToString().IndexOf(dxcall) >= 0)
                 {
-                    call_lvi = lvi;
+                    call_row = lv_Calls.Rows[i];
                     break;
                 }
             }
-
             if (e.ProgressPercentage > 0)
             {
-                if (call_lvi != null)
+                if (call_row != null)
                 {
                     string newtext = AS_if.GetNearestPlanePotential(dxcall);
-                    if (call_lvi.SubItems[4].Text != newtext)
+                    if (call_row.Cells["AS"].Value.ToString() != newtext)
                     {
-                        call_lvi.SubItems[4].Text = newtext;
-                        lv_Calls.Refresh();
+                        call_row.Cells["AS"].Value = newtext;
+                        lv_Calls.Refresh(); // propagate to CALL table
                     }
                 }
             }
             else /* e.ProgressPercentage == 0 or e.ProgressPercentage == -1 */
             {
-                Console.WriteLine("remove " + dxcall);
+                //Console.WriteLine("remove " + dxcall);
                 AS_if.planes.Remove(dxcall);
-                if (call_lvi != null)
+                if (call_row != null)
                 {
                     string newtext = "";
-                    if (call_lvi.SubItems[4].Text != newtext)
+                    if (call_row.Cells["AS"].Value.ToString() != newtext)
                     {
-                        call_lvi.SubItems[4].Text = newtext;
-                        lv_Calls.Refresh();
+                        call_row.Cells["AS"].Value = newtext;
+                        lv_Calls.Refresh(); // propagate to CALL table
                     }
                 }
             }
@@ -3173,36 +2632,6 @@ namespace wtKST
 
         private void bw_GetPlanes_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-        }
-
-        class DoubleBufferedListView : ListView
-        {
-            public DoubleBufferedListView()
-            {
-                this.DoubleBuffered = true;
-            }
-
-            // https://stackoverflow.com/a/1852053
-            // https://stackoverflow.com/a/9964086
-            public event ScrollEventHandler Scroll;
-            protected virtual void OnScroll(ScrollEventArgs e)
-            {
-                ScrollEventHandler handler = this.Scroll;
-                if (handler != null) handler(this, e);
-            }
-
-            private const int WM_VSCROLL = 0x115;
-            private const int MOUSEWHEEL = 0x020A;
-            private const int KEYDOWN = 0x0100;
-
-            protected override void WndProc(ref Message m)
-            {
-                base.WndProc(ref m);
-                if (m.Msg == MOUSEWHEEL || m.Msg == WM_VSCROLL || (m.Msg == KEYDOWN && (m.WParam == (IntPtr)40 || m.WParam == (IntPtr)35)))
-                {
-                    OnScroll(new ScrollEventArgs((ScrollEventType)(m.WParam.ToInt64() & 0xffff), 0));
-                }
-            }
         }
 
         [DllImport("user32.dll")]
@@ -3217,7 +2646,7 @@ namespace wtKST
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
+#region Windows Form Designer generated code
 
         private void InitializeComponent()
         {
@@ -3245,22 +2674,7 @@ namespace wtKST
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lbl_KST_MyMsg = new System.Windows.Forms.Label();
-            this.lv_Calls = new wtKST.MainDlg.DoubleBufferedListView();
-            this.ch_Call = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_Name = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_Loc = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_Act = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ch_AS = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader144 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader432 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader1296 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2320 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3400 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader5760 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader10368 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader24GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader47GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader76GHz = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.lv_Calls = new System.Windows.Forms.DataGridView();
             this.lbl_KST_Calls = new System.Windows.Forms.Label();
             this.mn_Main = new System.Windows.Forms.MenuStrip();
             this.tsm_File = new System.Windows.Forms.ToolStripMenuItem();
@@ -3294,16 +2708,18 @@ namespace wtKST
             this.cmi_Notify_Restore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.cmi_Notify_Quit = new System.Windows.Forms.ToolStripMenuItem();
-            this.ti_Receive = new System.Windows.Forms.Timer(this.components);
             this.ti_Error = new System.Windows.Forms.Timer(this.components);
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
-            this.ti_Linkcheck = new System.Timers.Timer();
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmn_msglist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
-            this.cmn_userlist_chatReviewT = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_openURL = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
             this.ss_Main.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -3317,10 +2733,11 @@ namespace wtKST
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.lv_Calls)).BeginInit();
             this.mn_Main.SuspendLayout();
             this.cmn_Notify.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ti_Linkcheck)).BeginInit();
             this.cmn_userlist.SuspendLayout();
+            this.cmn_msglist.SuspendLayout();
             this.SuspendLayout();
             // 
             // ss_Main
@@ -3475,6 +2892,7 @@ namespace wtKST
             this.lv_Msg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lv_Msg.FullRowSelect = true;
             this.lv_Msg.GridLines = true;
+            this.lv_Msg.HideSelection = false;
             this.lv_Msg.Location = new System.Drawing.Point(0, 26);
             this.lv_Msg.MultiSelect = false;
             this.lv_Msg.Name = "lv_Msg";
@@ -3531,6 +2949,7 @@ namespace wtKST
             this.lv_MyMsg.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lv_MyMsg.FullRowSelect = true;
             this.lv_MyMsg.GridLines = true;
+            this.lv_MyMsg.HideSelection = false;
             this.lv_MyMsg.Location = new System.Drawing.Point(0, 26);
             this.lv_MyMsg.MultiSelect = false;
             this.lv_MyMsg.Name = "lv_MyMsg";
@@ -3578,115 +2997,24 @@ namespace wtKST
             // 
             // lv_Calls
             // 
-            this.lv_Calls.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.ch_Call,
-            this.ch_Name,
-            this.ch_Loc,
-            this.ch_Act,
-            this.ch_AS,
-            this.columnHeader144,
-            this.columnHeader432,
-            this.columnHeader1296,
-            this.columnHeader2320,
-            this.columnHeader3400,
-            this.columnHeader5760,
-            this.columnHeader10368,
-            this.columnHeader24GHz,
-            this.columnHeader47GHz,
-            this.columnHeader76GHz});
             this.lv_Calls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lv_Calls.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lv_Calls.GridLines = true;
             this.lv_Calls.Location = new System.Drawing.Point(0, 24);
             this.lv_Calls.MultiSelect = false;
             this.lv_Calls.Name = "lv_Calls";
-            this.lv_Calls.OwnerDraw = true;
+            this.lv_Calls.ReadOnly = true;
+            this.lv_Calls.RowTemplate.Height = 17;
+            this.lv_Calls.RowHeadersVisible = false;
             this.lv_Calls.Size = new System.Drawing.Size(353, 658);
             this.lv_Calls.TabIndex = 14;
-            this.lv_Calls.UseCompatibleStateImageBehavior = false;
-            this.lv_Calls.View = System.Windows.Forms.View.Details;
-            this.lv_Calls.Scroll += new System.Windows.Forms.ScrollEventHandler(this.lv_Calls_scroll);
-            this.lv_Calls.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lv_Calls_ColumnClick);
-            this.lv_Calls.DrawColumnHeader += new System.Windows.Forms.DrawListViewColumnHeaderEventHandler(this.lv_Calls_DrawColumnHeader);
-            this.lv_Calls.DrawItem += new System.Windows.Forms.DrawListViewItemEventHandler(this.lv_Calls_DrawItem);
-            this.lv_Calls.DrawSubItem += new System.Windows.Forms.DrawListViewSubItemEventHandler(this.lv_Calls_DrawSubItem);
+            this.lv_Calls.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_MouseDown);
+            this.lv_Calls.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_MouseMove);
+            this.lv_Calls.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.lv_Calls_CellPainting);
+            this.lv_Calls.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lv_Calls_CellValueChanged);
+            this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
-            this.lv_Calls.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_MouseDown);
-            this.lv_Calls.MouseMove += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_MouseMove);
-            // 
-            // ch_Call
-            // 
-            this.ch_Call.Text = "Call";
-            this.ch_Call.Width = 80;
-            // 
-            // ch_Name
-            // 
-            this.ch_Name.Text = "Name";
-            this.ch_Name.Width = 100;
-            // 
-            // ch_Loc
-            // 
-            this.ch_Loc.Text = "Locator";
-            // 
-            // ch_Act
-            // 
-            this.ch_Act.Text = "Act";
-            this.ch_Act.Width = 30;
-            // 
-            // ch_AS
-            // 
-            this.ch_AS.Text = "AS";
-            this.ch_AS.Width = 30;
-            // 
-            // columnHeader144
-            // 
-            this.columnHeader144.Text = "144M";
-            this.columnHeader144.Width = 20;
-            // 
-            // columnHeader432
-            // 
-            this.columnHeader432.Text = "432M";
-            this.columnHeader432.Width = 20;
-            // 
-            // columnHeader1296
-            // 
-            this.columnHeader1296.Text = "1.2G";
-            this.columnHeader1296.Width = 20;
-            // 
-            // columnHeader2320
-            // 
-            this.columnHeader2320.Text = "2.3G";
-            this.columnHeader2320.Width = 20;
-            // 
-            // columnHeader3400
-            // 
-            this.columnHeader3400.Text = "3.4G";
-            this.columnHeader3400.Width = 20;
-            // 
-            // columnHeader5760
-            // 
-            this.columnHeader5760.Text = "5.7G";
-            this.columnHeader5760.Width = 20;
-            // 
-            // columnHeader10368
-            // 
-            this.columnHeader10368.Text = "10G";
-            this.columnHeader10368.Width = 20;
-            // 
-            // columnHeader24GHz
-            // 
-            this.columnHeader24GHz.Text = "24G";
-            this.columnHeader24GHz.Width = 20;
-            // 
-            // columnHeader47GHz
-            // 
-            this.columnHeader47GHz.Text = "47G";
-            this.columnHeader47GHz.Width = 20;
-            // 
-            // columnHeader76GHz
-            // 
-            this.columnHeader76GHz.Text = "76G";
-            this.columnHeader76GHz.Width = 20;
+            this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
+            this.lv_Calls.ShowCellToolTips = false;
             // 
             // lbl_KST_Calls
             // 
@@ -3972,12 +3300,6 @@ namespace wtKST
             this.cmi_Notify_Quit.Text = "&Quit";
             this.cmi_Notify_Quit.Click += new System.EventHandler(this.cmi_Notify_Quit_Click);
             // 
-            // ti_Receive
-            // 
-            this.ti_Receive.Enabled = true;
-            this.ti_Receive.Interval = 1000;
-            this.ti_Receive.Tick += new System.EventHandler(this.ti_Receive_Tick);
-            // 
             // ti_Error
             // 
             this.ti_Error.Interval = 10000;
@@ -3992,12 +3314,6 @@ namespace wtKST
             // 
             this.ti_Reconnect.Interval = 30000;
             this.ti_Reconnect.Tick += new System.EventHandler(this.ti_Reconnect_Tick);
-            // 
-            // ti_Linkcheck
-            // 
-            this.ti_Linkcheck.Interval = 120000D;
-            this.ti_Linkcheck.SynchronizingObject = this;
-            this.ti_Linkcheck.Elapsed += new System.Timers.ElapsedEventHandler(this.ti_Linkcheck_Tick);
             // 
             // tt_Info
             // 
@@ -4015,24 +3331,53 @@ namespace wtKST
             // 
             this.cmn_userlist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmn_userlist_wtsked,
-            this.cmn_userlist_chatReviewT});
+            this.cmn_userlist_chatReview});
             this.cmn_userlist.Name = "cmn_userlist";
             this.cmn_userlist.Size = new System.Drawing.Size(150, 48);
+            // 
+            // cmn_msglist
+            // 
+            this.cmn_msglist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmn_msglist_wtsked,
+            this.cmn_msglist_chatReview,
+            this.cmn_msglist_openURL});
+            this.cmn_msglist.Name = "cmn_msglist";
+            this.cmn_msglist.Size = new System.Drawing.Size(149, 48);
             // 
             // cmn_userlist_wtsked
             // 
             this.cmn_userlist_wtsked.Name = "cmn_userlist_wtsked";
             this.cmn_userlist_wtsked.Size = new System.Drawing.Size(149, 22);
             this.cmn_userlist_wtsked.Text = "Win-Test &Sked";
-            this.cmn_userlist_wtsked.Click += new System.EventHandler(this.cmn_userlist_wtsked_Click);
+            this.cmn_userlist_wtsked.Click += new System.EventHandler(this.cmn_item_wtsked_Click);
             // 
-            // cmn_userlist_chatReviewT
+            // cmn_userlist_chatReview
             // 
-            this.cmn_userlist_chatReviewT.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.cmn_userlist_chatReviewT.Name = "cmn_userlist_chatReviewT";
-            this.cmn_userlist_chatReviewT.Size = new System.Drawing.Size(149, 22);
-            this.cmn_userlist_chatReviewT.Text = "Chat &Review";
-            this.cmn_userlist_chatReviewT.Click += new System.EventHandler(this.cmn_userlist_chatReviewT_Click);
+            this.cmn_userlist_chatReview.Name = "cmn_userlist_chatReviewT";
+            this.cmn_userlist_chatReview.Size = new System.Drawing.Size(148, 22);
+            this.cmn_userlist_chatReview.Text = "Chat &Review";
+            this.cmn_userlist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
+            // 
+            // cmn_msglist_wtsked
+            // 
+            this.cmn_msglist_wtsked.Name = "cmn_msglist_wtsked";
+            this.cmn_msglist_wtsked.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_wtsked.Text = "Win-Test &Sked";
+            this.cmn_msglist_wtsked.Click += new System.EventHandler(this.cmn_item_wtsked_Click);
+            // 
+            // cmn_msglist_chatReview
+            // 
+            this.cmn_msglist_chatReview.Name = "cmn_msglist_chatReviewT";
+            this.cmn_msglist_chatReview.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_chatReview.Text = "Chat &Review";
+            this.cmn_msglist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
+            // 
+            // cmn_msglist_openURL
+            // 
+            this.cmn_msglist_openURL.Name = "cmn_msglist_chatReviewT";
+            this.cmn_msglist_openURL.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_openURL.Text = "&Open URL";
+            this.cmn_msglist_openURL.Click += new System.EventHandler(this.cmn_item_openURL_Click);
             // 
             // MainDlg
             // 
@@ -4062,16 +3407,17 @@ namespace wtKST
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.lv_Calls)).EndInit();
             this.mn_Main.ResumeLayout(false);
             this.mn_Main.PerformLayout();
             this.cmn_Notify.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.ti_Linkcheck)).EndInit();
             this.cmn_userlist.ResumeLayout(false);
+            this.cmn_msglist.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
-        #endregion
+#endregion
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -4226,6 +3572,5 @@ namespace wtKST
             if (!Settings.Default.KST_Macro_9.Equals(menu_btn_macro_0.Text))
                 menu_btn_macro_0.Text = Settings.Default.KST_Macro_0;
         }
-
     }
 }
