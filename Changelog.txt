@@ -1,3 +1,28 @@
+3.1.3.4 (from KSTcom_class)
+
+- Add IARU R2/R3 chats
+  4 and 5 seems swapped compared to web version.
+  7-9 missing in documentation, but same as web version
+
+3.1.3.3 (from KSTcom_class)
+
+- make calls list smaller (same height as before)
+- fix tooltip in User list: QRV info was not correctly parsed, so log entries not displayed
+- disable default tooltip display
+- Filter URLs in messages and support opening them through context menu
+  Also filter the HTML tags we get from the server to make it more readable
+- Implement "setname" (now available!) and remove hack
+
+3.1.3.2 (from KSTcom_class)
+
+- station status taken from the Airscout database is either "unknown" or "qrv" - never "not qrv", which can only be manually set
+- bug: fix manual "overlay" qrv database: Copy/merge from station DB and modify the local DB if needed. Store only entries, that are not "unknown". "Worked" is treated as "qrv".
+
+- bug: fix exception if trying to hide calls and nothing to hide yet
+- bug: filtering the user list did not work (regression)
+- bug: Macro defaults used "\cq" instead of "/cq"
+
+
 3.1.3.1 (from KSTcom_class)
 
 - fix "enumerate" problem in Check_QSOs()
@@ -132,6 +157,7 @@ Windows form element, but a native element from the Windows Explorer that behave
 - Win-Test Support for everyone
 
 3.1.1.8
+
 - implement simple "About" dialog
 
 3.1.1.7
@@ -143,7 +169,7 @@ Windows form element, but a native element from the Windows Explorer that behave
 3.1.1.6
 
 - first test of Windows installer
-- buf fix:: OK2K or YU7A would match OK2OE or YU7ACO (regression)
+- bug fix: OK2K or YU7A would match OK2OE or YU7ACO (regression)
 - bug fix: changes in the Options dialog must not change properties (settings) directly, but only after OK is clicked
 - Less flicker on Userlist update (use double buffering)
 - bug fix: OZ1DLD/P would not turn green
