@@ -1017,7 +1017,6 @@ namespace wtKST
             }
             string wcall = WCCheck.WCCheck.Cut(call);
             string findCall = string.Format("[CALL] LIKE '*{0}*'", wcall);
-            bool[] found = new bool[BANDS.Length]; // defaults to false
 
             lock (wtQSO)
             {
@@ -1035,9 +1034,8 @@ namespace wtKST
 
                     if (WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall))
                     {
-                        call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], true);
-                        qrv.set_qrv_state(call_row, band, QRVdb.QRV_STATE.qrv); // if worked, mark as QRV in data base
-                        found[Array.IndexOf(BANDS, band)] = true;
+                        if (!QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
+                            call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], true);
                         // check locator
                         if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
                         {
@@ -1045,15 +1043,14 @@ namespace wtKST
                             WinTestLocatorWarning = true;
                             Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
                         }
+                    } else
+                    {
+                        // check if worked - only then remove the flag. If we touch everything, we may trigger unneeded redraws
+                        if (QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
+                            call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], false);
                     }
                 }
                 wtQSO_local_lock = false;
-            }
-            foreach (string band in BANDS)
-            {
-                // if marked as worked - but not in the log anymore, just leave it as "qrv"
-                if (!found[Array.IndexOf(BANDS, band)] && (QRVdb.QRV_STATE)call_row[band] == QRVdb.QRV_STATE.worked)
-                    call_row[band] = QRVdb.QRV_STATE.qrv;
             }
         }
 
