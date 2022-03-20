@@ -778,134 +778,7 @@ namespace wtKST
             }
         }
 
-        private void KST_Update_USR_Window()
-        {
-#if FIXME_DV
-            //FIXME DV
-            if (KST.State <= KSTcom.KST_STATE.WaitLogin) //FIXME needed still?
-                return;
-            try
-            {
-                string topcall = "";
-                if (lv_Calls.TopItem != null)
-                {
-                    topcall = lv_Calls.TopItem.Text;
-                }
-                lv_Calls.Items.Clear();
-                lv_Calls.BeginUpdate();
-                DataView view;
-                lock (CALL)
-                {
-                    view = CALL.DefaultView;
-                }
-                if (sort_by_dir)
-                    view.Sort = "DIR ASC";
-                else
-                    view.Sort = "CALL ASC";
-                DataTable tbl = view.ToTable();
-
-                foreach (DataRow row in tbl.Rows)
-                {
-                    // ignore own call
-                    if (row["CALL"].ToString().IndexOf(Settings.Default.KST_UserName.ToUpper()) >= 0)
-                        continue;
-
-                    ListViewItem LV = new ListViewItem();
-
-                    if ((bool)row["AWAY"])
-                    {
-                        if (hide_away)
-                            continue;
-                        LV.Text = "(" + row["CALL"].ToString() + ")";
-                        // Italic is too difficult to read and the font gets bigger
-                        //LV.Font = new Font(LV.Font, FontStyle.Italic);
-                    }
-                    else
-                        LV.Text = row["CALL"].ToString();
-                    // Ignore stations too far away
-                    int MaxDist = Convert.ToInt32(Settings.Default.KST_MaxDist);
-                    if (MaxDist !=0 && (int)row["QRB"] > MaxDist)
-                        continue;
-
-                    // drop calls that are already in log
-                    if (hide_worked && check_in_log(row))
-                        continue;
-
-                    // login time - new calls should be bold
-                    if ((bool)row["RECENTLOGIN"])
-                        LV.Font = new Font(LV.Font, FontStyle.Bold);
-
-                    LV.UseItemStyleForSubItems = false;
-                    LV.SubItems.Add(row["NAME"].ToString());
-                    LV.SubItems.Add(row["LOC"].ToString());
-
-                    // last activity
-                    double lastActivityMinutes = (DateTime.UtcNow.Subtract((DateTime)row["TIME"])).TotalMinutes;
-                    //MainDlg.Log.WriteMessage("KST Time " + LV.Text + " " + DateTime.UtcNow + " " + (DateTime)row["TIME"] + " " + lastActivityMinutes.ToString("0"));
-                    if (lastActivityMinutes < 120.0)
-                        LV.SubItems.Add(lastActivityMinutes.ToString("0"));
-                    else
-                    {
-                        if (ignore_inactive)
-                            continue;
-                        if ((int)row["CONTACTED"] < 3)
-                            LV.SubItems.Add("---");
-                        else
-                            LV.SubItems.Add("xxx"); // if contacted 3 times without answer then probably really not available
-                    }
-                    int qrb = (int)row["QRB"];
-                    if (Settings.Default.AS_Active)
-                    {
-                        if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist) && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
-                        {
-                            LV.SubItems.Add(AS_if.GetNearestPlanePotential(row["CALL"].ToString()));
-                        }
-                        else if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist))
-                        {
-                            // too far
-                            LV.SubItems.Add(">");
-                        }
-                        else
-                        {
-                            // too close
-                            LV.SubItems.Add("<");
-                        }
-                    }
-                    else
-                    {
-                        LV.SubItems.Add("0");
-                    }
-                    foreach (string band in BANDS)
-                        LV.SubItems.Add(row[band].ToString());
-
-                    for (int j = 0; j < lv_Calls.Columns.Count; j++)
-                    {
-                        LV.SubItems[j].Name = lv_Calls.Columns[j].Text.Replace(".", "_");
-                    }
-                    lv_Calls.Items.Add(LV);
-                }
-                lv_Calls.EndUpdate();
-                ListViewItem toplv = lv_Calls.FindItemWithText(topcall);
-                if (toplv != null)
-                {
-                    // strange behavior of ListView... you need to set the TopItem to the end, otherwise the list
-                    // starts to scroll even the TopItem is set correctly... thanks Frank
-                    lv_Calls.TopItem = lv_Calls.Items[lv_Calls.Items.Count - 1];
-                    lv_Calls.TopItem = toplv;
-                }
-                fill_AS_list();
-                if (wtQSO != null & WinTestLocatorWarning)
-                    Say("");
-                MainDlg.Log.WriteMessage("KST GetUsers finished: " + lv_Calls.Items.Count.ToString() + " Calls.");
-            }
-            catch (Exception e)
-            {
-                Error(MethodBase.GetCurrentMethod().Name, e.Message);
-                MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + e.Message + "\n" + e.StackTrace);
-            }
-#endif
-        }
-
+//FIXME re-add
         private void KST_Add_Beacons_USR()
         {
             try
@@ -1403,30 +1276,30 @@ namespace wtKST
 
             // check that we are in a header cell!
             if (e.RowIndex == -1)
-        {
-                if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex  /* 3  */  /* Header.Text[0] > '0' && e.Header.Text[0] < '9') || e.Header.Text == "AS" */)
             {
+                if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex  /* 3  */  /* Header.Text[0] > '0' && e.Header.Text[0] < '9') || e.Header.Text == "AS" */)
+                {
                     Rectangle rect = e.CellBounds;
-                if (e.ColumnIndex > 4 && hide_worked) // Band
+                    if (e.ColumnIndex > 4 && hide_worked) // Band
                         e.Graphics.FillRectangle(Brushes.LightGray, rect);
-                else
+                    else
                         e.PaintBackground(e.ClipBounds, false);
                     using (Font headerfont = new Font(e.CellStyle.Font.OriginalFontName, 6f))
                     {
                         Size titlesize = TextRenderer.MeasureText(e.FormattedValue.ToString(), headerfont);
-                e.Graphics.TranslateTransform(0f, (float)titlesize.Width);
-                e.Graphics.RotateTransform(-90f);
+                        e.Graphics.TranslateTransform(0f, (float)titlesize.Width);
+                        e.Graphics.RotateTransform(-90f);
                         e.Graphics.DrawString(e.FormattedValue.ToString(), headerfont, Brushes.Black, new PointF((float)rect.Y, (float)(rect.X + 3)));
-                e.Graphics.RotateTransform(90f);
-                e.Graphics.TranslateTransform(0f, (float)(-(float)titlesize.Width));
-            }
+                        e.Graphics.RotateTransform(90f);
+                        e.Graphics.TranslateTransform(0f, (float)(-(float)titlesize.Width));
+                    }
                     e.Handled = true;
                 }
-            else
-            {
-                    if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex || e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex || e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
+                else
                 {
-                    // CALL column
+                    if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex || e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex || e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
+                    {
+                        // CALL column
                         if ((e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && hide_away) ||
                             (e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex && sort_by_dir) ||
                             (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex && ignore_inactive))
@@ -1435,10 +1308,10 @@ namespace wtKST
                             e.Graphics.FillRectangle(Brushes.LightGray, e.CellBounds);
                             e.PaintContent(e.CellBounds);
                             e.Handled = true;
-                    return;
+                            return;
+                        }
+                    }
                 }
-            }
-        }
             }
             else
             {
@@ -1454,9 +1327,9 @@ namespace wtKST
                     e.PaintBackground(e.ClipBounds, false);
 
                     if (bool.TryParse(dgv.Rows[e.RowIndex].Cells["RECENTLOGIN"].Value.ToString(), out bool recentlogin) && recentlogin == true)
-        {
+                    {
                         using (var font = new Font(e.CellStyle.Font, FontStyle.Bold))
-            {
+                        {
                             TextRenderer.DrawText(e.Graphics, call,
                                              font, e.CellBounds, e.CellStyle.ForeColor,
                                              TextFormatFlags.NoPrefix | TextFormatFlags.VerticalCenter);
@@ -1473,43 +1346,43 @@ namespace wtKST
                 {
                     if (e.Value == null)
                         return;
-                QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
-                try
-                {
+                    QRVdb.QRV_STATE state = QRVdb.QRV_STATE.unknown;
+                    try
+                    {
                         Enum.TryParse<QRVdb.QRV_STATE>(e.Value.ToString(), out state);
-                }
-                catch
-                {
-                }
+                    }
+                    catch
+                    {
+                    }
 
                     Rectangle newRect = new Rectangle(e.CellBounds.X + 2,
                         e.CellBounds.Y + 2, e.CellBounds.Width - 4,
                         e.CellBounds.Height - 4);
                     e.PaintBackground(e.CellBounds, false);
-                switch (state)
-                {
-                case QRVdb.QRV_STATE.unknown:
+                    switch (state)
+                    {
+                        case QRVdb.QRV_STATE.unknown:
                             e.Graphics.FillRectangle(Brushes.LightGray, newRect);
                             e.Handled = true;
-                    break;
-                case QRVdb.QRV_STATE.qrv:
+                            break;
+                        case QRVdb.QRV_STATE.qrv:
                             e.Graphics.FillRectangle(Brushes.Red, newRect);
                             e.Handled = true;
-                    break;
-                case QRVdb.QRV_STATE.worked:
+                            break;
+                        case QRVdb.QRV_STATE.worked:
                             e.Graphics.FillRectangle(Brushes.Green, newRect);
                             e.Handled = true;
-                    break;
-                case QRVdb.QRV_STATE.not_qrv:
+                            break;
+                        case QRVdb.QRV_STATE.not_qrv:
                             e.Graphics.FillRectangle(Brushes.Black, newRect);
                             e.Handled = true;
-                    break;
-                default:
-                    break;
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
                 else if (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
-            {
+                {
 
                     // last activity
                     var row = dgv.Rows[e.RowIndex];
@@ -1534,115 +1407,115 @@ namespace wtKST
                             LineAlignment = StringAlignment.Center,
                             Alignment = StringAlignment.Center
                         };
-                        e.Graphics.DrawString(act_string, e.CellStyle.Font, Brushes.Black, e.CellBounds.X + e.CellBounds.Width/2,
-                            e.CellBounds.Y + e.CellBounds.Height/2, sf);
+                        e.Graphics.DrawString(act_string, e.CellStyle.Font, Brushes.Black, e.CellBounds.X + e.CellBounds.Width / 2,
+                            e.CellBounds.Y + e.CellBounds.Height / 2, sf);
                     }
                     e.Handled = true;
                 }
                 else if (e.ColumnIndex == dgv.Columns["AS"].DisplayIndex)
                 {
-                try
-                {
+                    try
+                    {
                         var row = dgv.Rows[e.RowIndex];
                         if (row.Cells["AS"].Value == null)
                             return;
                         string as_string = row.Cells["AS"].Value.ToString();
 
                         if (as_string.Length > 0)
-                    {
-                            if (as_string.Equals("<") || as_string.Equals(">"))
                         {
-                            return;
-                        }
+                            if (as_string.Equals("<") || as_string.Equals(">"))
+                            {
+                                return;
+                            }
                             e.PaintBackground(e.CellBounds, false);
                             string[] a = as_string.Split(new char[] { ',' });
-                        if (a.Length<3)
-                        {
+                            if (a.Length < 3)
+                            {
                                 // draw nothing, just the background
-                            return;
-                        }
-                        int pot = Convert.ToInt32(a[0]);
-                        int Mins = Convert.ToInt32(a[2]);
-                        if (Mins > 99)
-                            Mins = 99;
-                        if (pot > 0)
-                        {
-                            if (a.Length < 2)
+                                return;
+                            }
+                            int pot = Convert.ToInt32(a[0]);
+                            int Mins = Convert.ToInt32(a[2]);
+                            if (Mins > 99)
+                                Mins = 99;
+                            if (pot > 0)
+                            {
+                                if (a.Length < 2)
                                     Console.WriteLine("ups " + a.Length + " " + as_string);
-                            var cat = a[1];
+                                var cat = a[1];
                                 Rectangle newRect = new Rectangle(e.CellBounds.X + 2,
                                     e.CellBounds.Y + 2, e.CellBounds.Width - 4,
                                     e.CellBounds.Height - 4);
                                 Rectangle b = newRect;
-                            b.Inflate(-5,0); // width -10 for the text
-                            if (cat.Equals("S"))
-                                b.Inflate(-1, -1);
-                            else if (cat.Equals("H"))
-                                b.Inflate(-2, -2);
-                            else if (cat.Equals("M") || cat.Equals("[unknown]"))
-                                b.Inflate(-4, -4);
-                            else if (cat.Equals("L"))
-                                b.Inflate(-6, -6);
-                            else // unknown
-                                b.Inflate(-5, -5);
+                                b.Inflate(-5, 0); // width -10 for the text
+                                if (cat.Equals("S"))
+                                    b.Inflate(-1, -1);
+                                else if (cat.Equals("H"))
+                                    b.Inflate(-2, -2);
+                                else if (cat.Equals("M") || cat.Equals("[unknown]"))
+                                    b.Inflate(-4, -4);
+                                else if (cat.Equals("L"))
+                                    b.Inflate(-6, -6);
+                                else // unknown
+                                    b.Inflate(-5, -5);
                                 b.X = newRect.X + 1;  // FIXME needed?
-                            if (pot == 100)
-                            {
-                                // 100
-                                e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
-                            }
-                            else if (pot > 50)
-                            {
-                                // 51..99
-                                if (Mins > 15)
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b);
-                                else if (Mins > 5)
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b);
-                                else
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
-
-                                using (StringFormat sf = new StringFormat())
+                                if (pot == 100)
                                 {
-                                        using (Font headerFont = new Font(e.CellStyle.Font.Name, e.CellStyle.Font.Size*0.8F, FontStyle.Regular))
+                                    // 100
+                                    e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
+                                }
+                                else if (pot > 50)
+                                {
+                                    // 51..99
+                                    if (Mins > 15)
+                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b);
+                                    else if (Mins > 5)
+                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b);
+                                    else
+                                        e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
+
+                                    using (StringFormat sf = new StringFormat())
                                     {
-                                        sf.Alignment = StringAlignment.Center;
-                                        sf.LineAlignment = StringAlignment.Center;
+                                        using (Font headerFont = new Font(e.CellStyle.Font.Name, e.CellStyle.Font.Size * 0.8F, FontStyle.Regular))
+                                        {
+                                            sf.Alignment = StringAlignment.Center;
+                                            sf.LineAlignment = StringAlignment.Center;
                                             Rectangle tb = newRect;
                                             tb.X = tb.X + newRect.Width - 15;
-                                        tb.Width = 15;
-                                        e.Graphics.DrawString(Mins.ToString(), headerFont, Brushes.Black, tb, sf);
+                                            tb.Width = 15;
+                                            e.Graphics.DrawString(Mins.ToString(), headerFont, Brushes.Black, tb, sf);
+                                        }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                // 0..50
-                                e.Graphics.FillEllipse(new SolidBrush(Color.Orange), b);
-                            }
+                                else
+                                {
+                                    // 0..50
+                                    e.Graphics.FillEllipse(new SolidBrush(Color.Orange), b);
+                                }
                                 e.Handled = true;
+                            }
                         }
                     }
+                    catch
+                    {
+                    }
                 }
-                catch
-                {
-                }
-            }
             }
         }
 
         private void lv_Calls_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-            {
+        {
             if (e.ColumnIndex >= 0)
             {
                 DataGridView dgv = sender as DataGridView;
                 if (sort_by_dir && dgv.Columns[e.ColumnIndex].Name == "DIR")
                 {
                     dgv.Sort(dgv.Columns["DIR"], ListSortDirection.Ascending);
-            }
+                }
                 else if (!sort_by_dir && dgv.Columns[e.ColumnIndex].Name == "CALL")
                 {
                     dgv.Sort(dgv.Columns["CALL"], ListSortDirection.Ascending);
-        }
+                }
             }
         }
 
