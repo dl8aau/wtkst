@@ -16,7 +16,8 @@ namespace wtKST
     {
         public enum QRV_STATE : int
         {
-            unknown = 0, qrv = 1, worked = 2, not_qrv = 3
+            unknown = 0, qrv = 1, not_qrv = 3,
+            worked = 8      // power of 2, so it can be added
         }
 
         private string[] BANDS;
@@ -133,6 +134,27 @@ namespace wtKST
             }
         }
 
+        public static bool worked(QRV_STATE qrv_state)
+        {
+            return ((int)qrv_state & (int)QRV_STATE.worked) == (int)QRV_STATE.worked;
+        }
+
+        public static bool not_qrv(QRV_STATE qrv_state)
+        {
+            return ((int)qrv_state & ~(int)QRV_STATE.worked) == (int)QRV_STATE.not_qrv;
+        }
+
+        public static bool worked_or_not_qrv(QRV_STATE qrv_state)
+        {
+            return worked(qrv_state) && not_qrv(qrv_state);
+        }
+
+        public static QRV_STATE set_worked(QRV_STATE qrv_state, bool worked)
+        {
+            if (worked)
+                return qrv_state | QRV_STATE.worked;
+            return qrv_state & ~QRV_STATE.worked;
+        }
         private void InitializeQRV()
         {
             QRV_local.Clear();

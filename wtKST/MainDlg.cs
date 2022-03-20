@@ -902,45 +902,36 @@ namespace wtKST
 
         bool check_in_log(DataRow row)
         {
+            // FIXME use selected_bands()
             if (Settings.Default.Band_144 &&
-                (QRVdb.QRV_STATE)row["144M"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["144M"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["144M"]))
                 return false;
             if (Settings.Default.Band_432 &&
-                (QRVdb.QRV_STATE)row["432M"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["432M"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["432M"]))
                 return false;
             if (Settings.Default.Band_1296 &&
-                (QRVdb.QRV_STATE)row["1_2G"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["1_2G"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["1_2G"]))
                 return false;
             if (Settings.Default.Band_2320 &&
-                (QRVdb.QRV_STATE)row["2_3G"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["2_3G"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["2_3G"]))
                 return false;
             if (Settings.Default.Band_3400 &&
-                (QRVdb.QRV_STATE)row["3_4G"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["3_4G"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["3_4G"]))
                 return false;
             if (Settings.Default.Band_5760 &&
-                (QRVdb.QRV_STATE)row["5_7G"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["5_7G"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["5_7G"]))
                 return false;
             if (Settings.Default.Band_10368 &&
-                (QRVdb.QRV_STATE)row["10G"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["10G"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["10G"]))
                 return false;
             if (Settings.Default.Band_24GHz &&
-                (QRVdb.QRV_STATE)row["24G"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["24G"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["24G"]))
                 return false;
             if (Settings.Default.Band_47GHz &&
-                (QRVdb.QRV_STATE)row["47G"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["47G"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["47G"]))
                 return false;
             if (Settings.Default.Band_76GHz &&
-                (QRVdb.QRV_STATE)row["76G"] != QRVdb.QRV_STATE.worked &&
-                (QRVdb.QRV_STATE)row["76G"] != QRVdb.QRV_STATE.not_qrv)
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["76G"]))
                 return false;
             return true;
         }
@@ -1044,7 +1035,7 @@ namespace wtKST
 
                     if (WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall))
                     {
-                        call_row[band] = QRVdb.QRV_STATE.worked;
+                        call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], true);
                         qrv.set_qrv_state(call_row, band, QRVdb.QRV_STATE.qrv); // if worked, mark as QRV in data base
                         found[Array.IndexOf(BANDS, band)] = true;
                         // check locator
@@ -1359,26 +1350,30 @@ namespace wtKST
                         e.CellBounds.Y + 2, e.CellBounds.Width - 4,
                         e.CellBounds.Height - 4);
                     e.PaintBackground(e.CellBounds, false);
-                    switch (state)
+                    if (QRVdb.worked(state))
                     {
-                        case QRVdb.QRV_STATE.unknown:
-                            e.Graphics.FillRectangle(Brushes.LightGray, newRect);
-                            e.Handled = true;
-                            break;
-                        case QRVdb.QRV_STATE.qrv:
-                            e.Graphics.FillRectangle(Brushes.Red, newRect);
-                            e.Handled = true;
-                            break;
-                        case QRVdb.QRV_STATE.worked:
-                            e.Graphics.FillRectangle(Brushes.Green, newRect);
-                            e.Handled = true;
-                            break;
-                        case QRVdb.QRV_STATE.not_qrv:
-                            e.Graphics.FillRectangle(Brushes.Black, newRect);
-                            e.Handled = true;
-                            break;
-                        default:
-                            break;
+                        e.Graphics.FillRectangle(Brushes.Green, newRect);
+                        e.Handled = true;
+                    }
+                    else
+                    {
+                        switch (state)
+                        {
+                            case QRVdb.QRV_STATE.unknown:
+                                e.Graphics.FillRectangle(Brushes.LightGray, newRect);
+                                e.Handled = true;
+                                break;
+                            case QRVdb.QRV_STATE.qrv:
+                                e.Graphics.FillRectangle(Brushes.Red, newRect);
+                                e.Handled = true;
+                                break;
+                            case QRVdb.QRV_STATE.not_qrv:
+                                e.Graphics.FillRectangle(Brushes.Black, newRect);
+                                e.Handled = true;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
                 else if (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
@@ -1590,7 +1585,7 @@ namespace wtKST
                     catch
                     {
                     }
-                    if (state != QRVdb.QRV_STATE.worked)
+                    if (!QRVdb.worked( state ))
                     {
                         ToolTipText = column.Name.Replace("_", ".") + ": Left click to \ntoggle QRV info";
                     }
@@ -1804,28 +1799,31 @@ namespace wtKST
                             catch
                             {
                             }
-                            switch (state)
+                            if (!QRVdb.worked(state))
                             {
-                                case QRVdb.QRV_STATE.unknown:
-                                    row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.qrv;
-                                    qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.qrv);
-                                    if (CallsRow != null)
-                                        CallsRow[band] = QRVdb.QRV_STATE.qrv;
-                                    break;
-                                case QRVdb.QRV_STATE.qrv:
-                                    row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.not_qrv;
-                                    qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.not_qrv);
-                                    if (CallsRow != null)
-                                        CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
-                                    break;
-                                case QRVdb.QRV_STATE.not_qrv:
-                                    row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.unknown;
-                                    qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.unknown);
-                                    if (CallsRow != null)
-                                        CallsRow[band] = QRVdb.QRV_STATE.unknown;
-                                    break;
+                                switch (state)
+                                {
+                                    case QRVdb.QRV_STATE.unknown:
+                                        row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.qrv;
+                                        qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.qrv);
+                                        if (CallsRow != null)
+                                            CallsRow[band] = QRVdb.QRV_STATE.qrv;
+                                        break;
+                                    case QRVdb.QRV_STATE.qrv:
+                                        row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.not_qrv;
+                                        qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.not_qrv);
+                                        if (CallsRow != null)
+                                            CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
+                                        break;
+                                    case QRVdb.QRV_STATE.not_qrv:
+                                        row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.unknown;
+                                        qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.unknown);
+                                        if (CallsRow != null)
+                                            CallsRow[band] = QRVdb.QRV_STATE.unknown;
+                                        break;
+                                }
+                                dgv.Refresh();
                             }
-                            dgv.Refresh();
                         }
                     }
                 }
