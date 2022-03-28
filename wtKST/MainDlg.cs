@@ -1139,23 +1139,6 @@ namespace wtKST
             KST.Away();
         }
 
-        private void btn_KST_Send_Click(object sender, EventArgs e)
-        {
-            if (!KST.Send(cb_Command.Text))
-            {
-                MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
-            } else
-            {
-                try
-                {
-                    last_cq_call = cb_Command.Text.Split(' ')[1];
-                }
-                catch
-                {}
-            }
-            cb_Command.ResetText();
-        }
-
         private bool wtQSO_local_lock = false;
 
         private void Check_QSO(DataRow call_row)
@@ -2324,7 +2307,7 @@ namespace wtKST
             }
         }
 
-        private void btn_KST_Send_Click_1(object sender, EventArgs e)
+        private void btn_KST_Send_Click(object sender, EventArgs e)
         {
             if (!KST.Send(cb_Command.Text))
             {
@@ -2335,6 +2318,11 @@ namespace wtKST
                 try
                 {
                     last_cq_call = cb_Command.Text.Split(' ')[1];
+                    MainDlg.Log.WriteMessage("KST message send: " + cb_Command.Text);
+                    if (cb_Command.FindStringExact(cb_Command.Text) != 0)
+                    {
+                        cb_Command.Items.Insert(0, cb_Command.Text);
+                    }
                 }
                 catch
                 { }
@@ -2855,7 +2843,7 @@ namespace wtKST
             this.btn_KST_Send.TabIndex = 2;
             this.btn_KST_Send.Text = "Send";
             this.btn_KST_Send.UseVisualStyleBackColor = true;
-            this.btn_KST_Send.Click += new System.EventHandler(this.btn_KST_Send_Click_1);
+            this.btn_KST_Send.Click += new System.EventHandler(this.btn_KST_Send_Click);
             // 
             // lbl_KST_Status
             // 
