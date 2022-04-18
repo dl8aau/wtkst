@@ -149,7 +149,6 @@
     <Compile Include="wtKST\PlaneInfoList.cs" />
     <Compile Include="wtKST\Program.cs" />
     <Compile Include="wtKST\qrv.cs" />
-    <Compile Include="wtKST\WinTestLog.cs" />
     <Compile Include="wtKST\WTSkedDlg.cs">
       <SubType>Form</SubType>
     </Compile>

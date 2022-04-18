@@ -10,29 +10,19 @@ using System.Timers;
 
 namespace WinTest
 {
-    public class wtLogSync
+    public class WtLogSync : WinTestLogBase
     {
         private IPAddress localbroadcastIP;
 
         private wtListener wtl;
 
-        public DataTable QSO { get; private set; }
-
         private System.Timers.Timer ti_get_log;
 
-        public wtLogSync()
+        public WtLogSync(LogWriteMessageDelegate mylog) : base(mylog)
         {
             localbroadcastIP = WinTest.GetIpIFBroadcastAddress();
             wtl = new wtListener(WinTest.WinTestDefaultPort);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
-
-            QSO = new DataTable("QSO");
-            QSO.Columns.Add("CALL");
-            QSO.Columns.Add("BAND");
-            QSO.Columns.Add("TIME");
-            QSO.Columns.Add("SENT");
-            QSO.Columns.Add("RCVD");
-            QSO.Columns.Add("LOC");
 
             QSO.Columns.Add("RUNSTN");
             QSO.Columns.Add("LOGID");
@@ -51,10 +41,9 @@ namespace WinTest
             ti_get_log.Enabled = true;
             ti_get_log.Interval = 10000; // check every 10s
             ti_get_log.Elapsed += new System.Timers.ElapsedEventHandler(this.ti_ti_get_log_Tick);
-
         }
 
-        private const string my_wtname = "KST1"; // FIXME!!!
+        private string my_wtname;
 
         private void send(wtMessage Msg)
         {
@@ -77,8 +66,21 @@ namespace WinTest
             }
         }
 
-        private enum WTLOGSYNCSTATE { WAIT_HELLO, GET_QSO, QSO_IN_SYNC };
-        private WTLOGSYNCSTATE wtlogsyncState = WTLOGSYNCSTATE.WAIT_HELLO;
+        private enum WTLOGSYNCSTATE { WAIT_HELLO, HELLO_RECEIVED, GET_QSO, QSO_IN_SYNC };
+
+        private WTLOGSYNCSTATE _wtlogsyncState = WTLOGSYNCSTATE.WAIT_HELLO;
+        private WTLOGSYNCSTATE wtlogsyncState
+        {
+            get { return _wtlogsyncState; }
+            set
+            {
+                if (_wtlogsyncState != value)
+                {
+                    _wtlogsyncState = value;
+                    // TODO emit event...
+                }
+            }
+        }
 
         private class logSegment
         {
@@ -282,6 +284,9 @@ namespace WinTest
         {
             if (intimer)
                 return;
+            if (wtlogsyncState != WTLOGSYNCSTATE.GET_QSO && wtlogsyncState != WTLOGSYNCSTATE.QSO_IN_SYNC)
+                return;
+
             intimer = true;
 
             ti_get_log.Interval = 10000; // check every 10s
@@ -323,10 +328,46 @@ namespace WinTest
                     break;
             }
             if (!needQSOs_sent)
-                Console.WriteLine("all done");
+            {
+                if (wtlogsyncState == WTLOGSYNCSTATE.GET_QSO)
+                    wtlogsyncState = WTLOGSYNCSTATE.QSO_IN_SYNC;
+                Console.WriteLine("all done " + QSO.Rows.Count
+                                  + " 432: "
+                                  + QSO.Select("[BAND]='432M'").Length
+                                  + " 1296: "
+                                  + QSO.Select("[BAND]='1_2G'").Length
+                                  + " 2.3: "
+                                  + QSO.Select("[BAND]='2_3G'").Length
+                                  + " 5.7: "
+                                  + QSO.Select("[BAND]='5_7G'").Length
+                                  + " 10: "
+                                  + QSO.Select("[BAND]='10G'").Length
+                                  + " 24: "
+                                  + QSO.Select("[BAND]='24G'").Length
+                );
+            }
+            else
+            {
+                if (wtlogsyncState == WTLOGSYNCSTATE.QSO_IN_SYNC)
+                    wtlogsyncState = WTLOGSYNCSTATE.GET_QSO;
+            }
             intimer = false;
         }
 
+
+        public override string getStatus()
+        {
+            return QSO.Rows.Count.ToString();
+        }
+
+        public override void Get_QSOs(string wtname)
+        {
+            // TODO: start log sync
+            my_wtname = wtname;
+            if (wtlogsyncState == WTLOGSYNCSTATE.HELLO_RECEIVED)
+                wtlogsyncState = WTLOGSYNCSTATE.GET_QSO;
+        }
+        #region Event handlers
         private Random rnd = new Random();
         private bool skip_paket()
         {
@@ -386,6 +427,9 @@ namespace WinTest
                     stationContestID = contest_ID;
                 }
 
+                if (wtlogsyncState == WTLOGSYNCSTATE.WAIT_HELLO)
+                    wtlogsyncState = WTLOGSYNCSTATE.HELLO_RECEIVED;
+
                 StationSyncStatus w = new StationSyncStatus(e.Msg.Src, first_QSO_ts);
                 int sl_index = wtStationSyncList.FindLastIndex(x => x.from == e.Msg.Src);
                 if (sl_index != -1)
@@ -415,6 +459,9 @@ namespace WinTest
                 {
                     wtStationSyncList.Add(w);
                 }
+
+                if (wtlogsyncState == WTLOGSYNCSTATE.WAIT_HELLO)
+                    wtlogsyncState = WTLOGSYNCSTATE.HELLO_RECEIVED;
             }
             else
                 if (e.Msg.Msg == WTMESSAGES.IHAVE && e.Msg.HasChecksum)

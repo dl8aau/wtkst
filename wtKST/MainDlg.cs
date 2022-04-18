@@ -31,7 +31,7 @@ namespace wtKST
 
         public DataTable CALL = new DataTable("CALL");
 
-        private WinTest.WinTestLog wtQSO = null;
+        private WinTest.WinTestLogBase wtQSO = null;
 
         private wtKST.AirScoutInterface AS_if;
 
@@ -151,7 +151,7 @@ namespace wtKST
         private ToolStripMenuItem cmn_msglist_chatReview;
         private ToolStripMenuItem cmn_msglist_openURL;
         private WinTest.wtStatus wts;
-        private WinTest.wtLogSync wtls;
+        //private WinTest.WtLogSync wtls;
         private WTSkedDlg wtskdlg;
         private uint last_sked_qrg;
         private uint kst_sked_qrg;
@@ -269,11 +269,15 @@ namespace wtKST
             scrollBar.Scroll += lv_Calls_scroll;
 
             string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName);
+#if false
             // check if we are running on Windows, otherwise Win-Test will not run
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                wtQSO = new WinTestLog(MainDlg.Log.WriteMessage);
+                wtQSO = new WinTest.WinTestLog(MainDlg.Log.WriteMessage);
             }
+#else
+            wtQSO = new WtLogSync(MainDlg.Log.WriteMessage);
+#endif
             UpdateUserBandsWidth();
             bw_GetPlanes.RunWorkerAsync();
             AS_if = new wtKST.AirScoutInterface(ref bw_GetPlanes);
@@ -282,7 +286,7 @@ namespace wtKST
                 KST.Connect();
             }
             wts = new WinTest.wtStatus();
-            wtls = new WinTest.wtLogSync();
+          //  wtls = new WinTest.wtLogSync();
         }
 
         private void set_KST_Status()
@@ -378,7 +382,7 @@ namespace wtKST
                 /* show number of calls in list and total number of users (-1 for own call) */
                 KST_Calls_Text = "Calls [" + lv_Calls.RowCount.ToString() + " / " + (CALL.Rows.Count - 1) + "]";
                 if (wtQSO != null && Settings.Default.WinTest_Activate)
-                    KST_Calls_Text += " - " + Path.GetFileName(wtQSO.getFileName());
+                    KST_Calls_Text += " - " + Path.GetFileName(wtQSO.getStatus());
             }
             else
             {
@@ -1078,8 +1082,8 @@ namespace wtKST
             }
             catch (Exception e)
             {
-                Error(MethodBase.GetCurrentMethod().Name, "(" + wtQSO.getFileName() + "): " + e.Message);
-                MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + "(" + wtQSO.getFileName() + "): " + e.Message + "\n" + e.StackTrace);
+                Error(MethodBase.GetCurrentMethod().Name, "(" + wtQSO.getStatus() + "): " + e.Message);
+                MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + "(" + wtQSO.getStatus() + "): " + e.Message + "\n" + e.StackTrace);
             }
             finally
             {
@@ -1109,8 +1113,9 @@ namespace wtKST
                                 {
                                     MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
 
-                                    wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
-                                    if (WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
+                                    //wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
+                                    wtQSO.Get_QSOs("KST");
+                                    if (!String.IsNullOrEmpty(wtQSO.MyLoc) && WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
                                     {
                                         MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
                                                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1591,22 +1596,22 @@ namespace wtKST
                         if (wtQSO != null)
                         {
                             string band = column.Name;
-                            DataRow findrow = wtQSO.QSO.Rows.Find(new object[] { call, band.Replace(".", "_") });
+                            DataRow[] findrow = wtQSO.QSO.Select(string.Format("[CALL] = '{0}' AND [BAND] = '{1}'", call, band.Replace(".", "_")));
                             if (findrow != null)
                             {
                                 ToolTipText = string.Concat(new object[]
                                 {
                                     band.Replace("_", "."),
                                     ": ",
-                                    findrow["CALL"],
+                                    findrow[0]["CALL"],
                                     "  ",
-                                    findrow["TIME"],
+                                    findrow[0]["TIME"],
                                     "  ",
-                                    findrow["SENT"],
+                                    findrow[0]["SENT"],
                                     "  ",
-                                    findrow["RCVD"],
+                                    findrow[0]["RCVD"],
                                     "  ",
-                                    findrow["LOC"]
+                                    findrow[0]["LOC"]
                                 });
                             }
                         }

@@ -7,49 +7,27 @@ using System.Text;
 
 namespace WinTest
 {
-    class WinTestLog
+    public class WinTestLog : WinTestLogBase
     {
-        public DataTable QSO { get; private set; }
         private string WinTest_FileName = "";
-        public string MyLoc { get; private set; }
-        public delegate bool LogWriteMessageDelegate(string s);
-        private LogWriteMessageDelegate LogWrite;
 
-        public WinTestLog(LogWriteMessageDelegate mylog)
+        public WinTestLog(LogWriteMessageDelegate mylog) : base (mylog)
         {
-            QSO = new DataTable("QSO");
-            QSO.Columns.Add("CALL");
-            QSO.Columns.Add("BAND");
-            QSO.Columns.Add("TIME");
-            QSO.Columns.Add("SENT");
-            QSO.Columns.Add("RCVD");
-            QSO.Columns.Add("LOC");
             DataColumn[] QSOkeys = new DataColumn[]
             {
                 QSO.Columns["CALL"],
                 QSO.Columns["BAND"]
             };
             QSO.PrimaryKey = QSOkeys;
-            LogWrite = mylog;
         }
 
-        private void Error(string methodname, string Text)
-        {
-            if (LogWrite != null)
-                LogWrite("Error - <" + methodname + "> " + Text);
-        }
 
-        public string getFileName()
+        public override string getStatus()
         {
-            return WinTest_FileName;
+            return WinTest_FileName + " " + QSO.Rows.Count;
         }
         
-        public void Clear_QSOs()
-        {
-            QSO.Clear();
-        }
-
-        public void Get_QSOs(string WinTest_INI_FileName)
+        public override void Get_QSOs(string WinTest_INI_FileName)
         {
             try
             {
