@@ -144,34 +144,34 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="KST_Macro_1" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\CQ $CALL sked 23 cm ?</Value>
+      <Value Profile="(Default)">/CQ $CALL sked 23 cm ?</Value>
     </Setting>
     <Setting Name="KST_Macro_2" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\CQ $CALL pse QRG 23 cm?</Value>
+      <Value Profile="(Default)">/CQ $CALL pse QRG 23 cm?</Value>
     </Setting>
     <Setting Name="KST_Macro_3" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\CQ $CALL sked 13 cm ?</Value>
+      <Value Profile="(Default)">/CQ $CALL sked 13 cm ?</Value>
     </Setting>
     <Setting Name="KST_Macro_4" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\CQ $CALL pse QRG 13 cm?</Value>
+      <Value Profile="(Default)">/CQ $CALL pse QRG 13 cm?</Value>
     </Setting>
     <Setting Name="KST_Macro_5" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\CQ $CALL pse call $FREQ</Value>
+      <Value Profile="(Default)">/CQ $CALL pse call $FREQ</Value>
     </Setting>
     <Setting Name="KST_Macro_6" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\CQ $CALL pse lsn $FREQ</Value>
+      <Value Profile="(Default)">/CQ $CALL pse lsn $FREQ</Value>
     </Setting>
     <Setting Name="KST_Macro_7" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\CQ $CALL in QSO nw, I meep u</Value>
+      <Value Profile="(Default)">/CQ $CALL in QSO nw, I meep u</Value>
     </Setting>
     <Setting Name="KST_Macro_8" Type="System.String" Scope="User">
-      <Value Profile="(Default)">\CQ $CALL in QSO nw, pse meep me later</Value>
+      <Value Profile="(Default)">/CQ $CALL in QSO nw, pse meep me later</Value>
     </Setting>
     <Setting Name="KST_Macro_9" Type="System.String" Scope="User">
-      <Value Profile="(Default)"></Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="KST_Macro_0" Type="System.String" Scope="User">
-      <Value Profile="(Default)"></Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="KST_M1" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
