@@ -21,6 +21,9 @@ namespace WinTest
             QSO.PrimaryKey = QSOkeys;
         }
 
+        public override void Dispose()
+        {
+        }
 
         public override string getStatus()
         {

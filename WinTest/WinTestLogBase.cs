@@ -10,7 +10,7 @@ namespace WinTest
     {
         public DataRow QSO { get; }
     }
-    public abstract class WinTestLogBase
+    public abstract class WinTestLogBase: IDisposable
     {
         public DataTable QSO { get; protected set; }
         public string MyLoc { get; protected set; }
@@ -31,6 +31,8 @@ namespace WinTest
         public abstract string getStatus();
 
         public abstract void Get_QSOs(string tmp);
+
+        public abstract void Dispose();
 
         class WtLogEventArgs : EventArgs
         {
