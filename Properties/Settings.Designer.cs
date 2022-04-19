@@ -830,12 +830,14 @@ namespace wtKST.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("qrv_local.xml")]
-        public string WinTest_QRV_Local_Table_FileName {
+        public string QRV_Local_Table_FileName {
             get {
-                return ((string)(this["WinTest_QRV_Local_Table_FileName"]));
+                return ((string)(this["QRV_Local_Table_FileName"]));
             }
             set {
-                this["WinTest_QRV_Local_Table_FileName"] = value;
+                this["QRV_Local_Table_FileName"] = value;
+            }
+        }
             }
         }
     }

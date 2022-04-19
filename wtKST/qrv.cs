@@ -161,7 +161,7 @@ namespace wtKST
             try
             {
                 string QRV_Table_Filename = Path.Combine(Directory.GetParent(Application.LocalUserAppDataPath).ToString(),
-                    "qrv_local.xml");
+                    Settings.Default.QRV_Local_Table_FileName);
                 TimeSpan ts = DateTime.Now - File.GetLastWriteTime(QRV_Table_Filename);
                 if (File.Exists(QRV_Table_Filename) && ts.Hours < 48)
                 {
@@ -186,7 +186,7 @@ namespace wtKST
         public void save_db()
         {
             string FileName = Path.Combine(Directory.GetParent(Application.LocalUserAppDataPath).ToString(),
-                "qrv_local.xml");
+                Settings.Default.QRV_Local_Table_FileName);
             DataView qrv_local_dv = new DataView(QRV_local);
             string rowfilter = "";
             foreach (string band in BANDS)
