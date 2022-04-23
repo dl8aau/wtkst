@@ -349,7 +349,6 @@ namespace wtKST
                 cb_Command.Enabled = false;
                 btn_KST_Send.Enabled = false;
                 lbl_Call.Enabled = false;
-                ti_Main.Stop();
                 AS_if.planes.Clear();
                 if (Settings.Default.KST_AutoConnect && !ti_Reconnect.Enabled)
                 {
