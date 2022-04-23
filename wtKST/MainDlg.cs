@@ -151,7 +151,6 @@ namespace wtKST
         private ToolStripMenuItem cmn_msglist_chatReview;
         private ToolStripMenuItem cmn_msglist_openURL;
         private WinTest.wtStatus wts;
-        //private WinTest.WtLogSync wtls;
         private WTSkedDlg wtskdlg;
         private uint last_sked_qrg;
         private uint kst_sked_qrg;
@@ -269,15 +268,10 @@ namespace wtKST
             scrollBar.Scroll += lv_Calls_scroll;
 
             string kstcall = WCCheck.WCCheck.Cut(Settings.Default.KST_UserName);
-#if false
-            // check if we are running on Windows, otherwise Win-Test will not run
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                wtQSO = new WinTest.WinTestLog(MainDlg.Log.WriteMessage);
-            }
-#else
-            wtQSO = new WtLogSync(MainDlg.Log.WriteMessage);
-#endif
+
+            // handle Log interface
+            init_wtQSO();
+
             UpdateUserBandsWidth();
             bw_GetPlanes.RunWorkerAsync();
             AS_if = new wtKST.AirScoutInterface(ref bw_GetPlanes);
@@ -285,8 +279,6 @@ namespace wtKST
             {
                 KST.Connect();
             }
-            wts = new WinTest.wtStatus();
-          //  wtls = new WinTest.wtLogSync();
         }
 
         private void set_KST_Status()
@@ -380,7 +372,7 @@ namespace wtKST
             {
                 /* show number of calls in list and total number of users (-1 for own call) */
                 KST_Calls_Text = "Calls [" + lv_Calls.RowCount.ToString() + " / " + (CALL.Rows.Count - 1) + "]";
-                if (wtQSO != null && Settings.Default.WinTest_Activate)
+                if (wtQSO != null)
                     KST_Calls_Text += " - " + Path.GetFileName(wtQSO.getStatus());
             }
             else
@@ -950,13 +942,11 @@ namespace wtKST
                 Dlg.cbb_KST_Chat.Enabled = false;
                 Dlg.tb_KST_Locator.Enabled = false;
                 Dlg.tb_KST_Name.Enabled = false;
-            }
-            if(wtQSO == null)
-            {
                 int idx = Dlg.tabControl1.TabPages.IndexOf(Dlg.tabPage2);
                 if (idx >= 0)
                     Dlg.tabControl1.TabPages.RemoveAt(idx);
             }
+
             string oldchat = Settings.Default.KST_Chat;
             int KST_MaxDist = Convert.ToInt32(Settings.Default.KST_MaxDist);
             if (Dlg.ShowDialog() == DialogResult.OK)
@@ -979,6 +969,7 @@ namespace wtKST
                 if (KST_MaxDist != Convert.ToInt32(Settings.Default.KST_MaxDist))
                     KST_Update_Usr_Filter();
                 macro_RefreshMacroText();
+                init_wtQSO();
             }
         }
         private void tsi_KST_Connect_Click(object sender, EventArgs e)
@@ -1006,6 +997,71 @@ namespace wtKST
         private void tsi_KST_Away_Click(object sender, EventArgs e)
         {
             KST.Away();
+        }
+
+        private void init_wtQSO()
+        {
+            if (Settings.Default.WinTest_Activate)
+            {
+                // problem: what if wtQSO is still in use somewhere?
+                if (wtQSO != null) 
+                {
+                    if (wtQSO.GetType() == typeof(WinTest.WinTestLog))
+                    {
+                            Console.WriteLine("wtQSO already WinTestLog");
+                            return;
+                    }
+                    else
+                    { 
+
+                        Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
+                        ((IDisposable)wtQSO).Dispose();
+                        wtQSO = null; // TODO: dispose?
+                    }
+                }
+                // check if we are running on Windows, otherwise Win-Test will not run
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+                {
+                    wtQSO = new WinTest.WinTestLog(MainDlg.Log.WriteMessage);
+                }
+                if (wts == null)
+                    wts = new WinTest.wtStatus();
+            }
+            else if (Settings.Default.WinTest_NetworkSync_active)
+            {
+                if (wtQSO != null)
+                {
+                    if (wtQSO.GetType() == typeof(WinTest.WtLogSync))
+                    {
+                        Console.WriteLine("wtQSO already WtLogSync");
+                        return;
+                    }
+                    else
+                    {
+
+                        Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
+                        ((IDisposable)wtQSO).Dispose();
+                        wtQSO = null; // TODO: dispose?
+                    }
+                }
+                wtQSO = new WtLogSync(MainDlg.Log.WriteMessage);
+                if (wts == null)
+                    wts = new WinTest.wtStatus();
+            } else
+            {
+                if (wtQSO != null)
+                {
+ 
+                    Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
+                    wtQSO = null; // TODO: dispose?
+                }
+                // turn off wintest status support
+                if (wts != null)
+                {
+                    Console.WriteLine("wts active - turn off");
+                    wts = null;
+                }
+            }
         }
 
         private bool wtQSO_local_lock = false;
@@ -1097,8 +1153,6 @@ namespace wtKST
             {
                 if (wtQSO != null)
                 {
-                    if (Settings.Default.WinTest_Activate)
-                    {
                         lock (wtQSO)
                         {
                             if (wtQSO_local_lock)
@@ -1112,8 +1166,10 @@ namespace wtKST
                                 {
                                     MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
 
-                                    //wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
-                                    wtQSO.Get_QSOs("KST");
+                                    if (wtQSO.GetType() == typeof(WinTestLog))
+                                        wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
+                                    else if (wtQSO.GetType() == typeof(WtLogSync))
+                                        wtQSO.Get_QSOs(Settings.Default.WinTest_StationName);
                                     if (!String.IsNullOrEmpty(wtQSO.MyLoc) && WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
                                     {
                                         MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
@@ -1130,15 +1186,10 @@ namespace wtKST
                                 }
                                 finally
                                 {
-                                wtQSO_local_lock = false;
+                                    wtQSO_local_lock = false;
+                                }
                             }
                         }
-                    }
-                    }
-                    if (!Settings.Default.WinTest_Activate && wtQSO.QSO.Rows.Count > 0)
-                    {
-                        wtQSO.Clear_QSOs();
-                    }
                 }
                 if (Settings.Default.AS_Active)
                     AS_send_ASWATCHLIST();
@@ -1846,7 +1897,7 @@ namespace wtKST
                         DataRow[] selectRow = KST.MSG_findcall(call);
 
                         this.cmn_userlist_chatReview.Visible = (selectRow.Length > 0);
-                        this.cmn_userlist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count>0);
+                        this.cmn_userlist_wtsked.Visible = (wts != null && wts.wtStatusList.Count>0);
 
                         lv_Calls_control_shown_from_Call = call;
 
@@ -1910,7 +1961,7 @@ namespace wtKST
                     DataRow[] selectRow = KST.MSG_findcall(call);
 
                     this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
-                    this.cmn_msglist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
+                    this.cmn_msglist_wtsked.Visible = (wts != null && wts.wtStatusList.Count > 0);
 
                     string msg = info.Item.SubItems[3].Text;
                     var rx = new Regex(@".*(https?://.*) .*", RegexOptions.Compiled);
@@ -1955,7 +2006,7 @@ namespace wtKST
                     DataRow[] selectRow = KST.MSG_findcall(call);
 
                     this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
-                    this.cmn_msglist_wtsked.Visible = (wtQSO != null && wts.wtStatusList.Count > 0);
+                    this.cmn_msglist_wtsked.Visible = (wts != null && wts.wtStatusList.Count > 0);
 
                     string msg = info.Item.SubItems[3].Text;
                     var rx = new Regex(@".*(https?://.*) .*", RegexOptions.Compiled);
