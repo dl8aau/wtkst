@@ -1041,13 +1041,38 @@ namespace wtKST
 
                         Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
                         ((IDisposable)wtQSO).Dispose();
-                        wtQSO = null; // TODO: dispose?
+                        wtQSO = null;
                     }
                 }
                 wtQSO = new WtLogSync(MainDlg.Log.WriteMessage);
                 if (wts == null)
                     wts = new WinTest.wtStatus();
-            } else
+            }
+            else if (Settings.Default.QARTest_Sync_active)
+            {
+                if (wtQSO != null)
+                {
+                    if (wtQSO.GetType() == typeof(WinTest.QARTestLogSync))
+                    {
+                        Console.WriteLine("wtQSO already QARTestLogSync");
+                        return;
+                    }
+                    else
+                    {
+
+                        Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
+                        ((IDisposable)wtQSO).Dispose();
+                        wtQSO = null;
+                    }
+                }
+                wtQSO = new QARTestLogSync(MainDlg.Log.WriteMessage);
+                if (wts != null)
+                {
+                    Console.WriteLine("wts active - turn off");
+                    wts = null;
+                }
+            }
+            else
             {
                 if (wtQSO != null)
                 {
@@ -1170,6 +1195,8 @@ namespace wtKST
                                         wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
                                     else if (wtQSO.GetType() == typeof(WtLogSync))
                                         wtQSO.Get_QSOs(Settings.Default.WinTest_StationName);
+                                    else if (wtQSO.GetType() == typeof(QARTestLogSync))
+                                        wtQSO.Get_QSOs("");
                                     if (!String.IsNullOrEmpty(wtQSO.MyLoc) && WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
                                     {
                                         MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",

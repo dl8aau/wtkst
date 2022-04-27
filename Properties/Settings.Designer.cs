@@ -862,5 +862,17 @@ namespace wtKST.Properties {
                 this["WinTest_NetworkSync_active"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool QARTest_Sync_active {
+            get {
+                return ((bool)(this["QARTest_Sync_active"]));
+            }
+            set {
+                this["QARTest_Sync_active"] = value;
+            }
+        }
     }
 }
