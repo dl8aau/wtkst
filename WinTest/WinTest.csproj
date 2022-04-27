@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QARTestLogSync.cs" />
     <Compile Include="WinTestLog.cs" />
     <Compile Include="WinTestLogBase.cs" />
     <Compile Include="wtLogSync.cs" />
