@@ -3438,14 +3438,17 @@ namespace wtKST
                     selItem = macro_default_Station.DropDownItems[i].Text;
             }
             macro_default_Station.DropDownItems.Clear();
-            for (int i = 0; i < wts.wtStatusList.Count; i ++)
+            if (wts != null)
             {
-                macro_default_Station.DropDownItems.Add(wts.wtStatusList[i].from);
-                ToolStripMenuItem item = macro_default_Station.DropDownItems[i] as ToolStripMenuItem;
-                //item.CheckOnClick = true;
-                item.Click += new System.EventHandler(this.macro_default_Station_CheckedChanged);
-                if (item.Text == selItem)
-                    item.Checked = true;
+                for (int i = 0; i < wts.wtStatusList.Count; i++)
+                {
+                    macro_default_Station.DropDownItems.Add(wts.wtStatusList[i].from);
+                    ToolStripMenuItem item = macro_default_Station.DropDownItems[i] as ToolStripMenuItem;
+                    //item.CheckOnClick = true;
+                    item.Click += new System.EventHandler(this.macro_default_Station_CheckedChanged);
+                    if (item.Text == selItem)
+                        item.Checked = true;
+                }
             }
         }
 
