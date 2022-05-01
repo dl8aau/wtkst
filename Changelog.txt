@@ -1,3 +1,19 @@
+3.1.4.2
+
+- fix: sent messages line lost "history"
+    Old messages sent should be available in a drop down list.
+- fix: don't crash on certain log entries (where the call is not found in the user list)
+
+3.1.4.1 (Debug from wt_network_sync)
+
+- Add network based log sync (no need anymore to run Win-Test on same PC)
+  support for Win-Test4 and QARTest
+  Log source can be changed in Options
+- fix: log scanning stopped after disconnect (you had to restart wtKST to make it work)
+- rework log checking: we will not touch the qrv database itself for "worked" QSOs
+  Log and QRV are handled seperately now (only "mixed" in the UI, "worked" is "green")
+- fix "writing CQ/ instead of /CQ causes an exception" - (3.1.3.1 change was not enough)
+
 3.1.3.4 (from KSTcom_class)
 
 - Add IARU R2/R3 chats
