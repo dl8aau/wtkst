@@ -463,7 +463,7 @@ namespace WinTest
             if (wtlogsyncState == WTLOGSYNCSTATE.HELLO_RECEIVED)
                 wtlogsyncState = WTLOGSYNCSTATE.GET_QSO;
         }
-        #region Event handlers
+
 #if DEBUG_PACKET_LOSS
         private Random rnd = new Random();
         private bool skip_paket()
