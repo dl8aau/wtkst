@@ -1673,8 +1673,8 @@ namespace wtKST
                         if (wtQSO != null)
                         {
                             string band = column.Name;
-                            DataRow[] findrow = wtQSO.QSO.Select(string.Format("[CALL] = '{0}' AND [BAND] = '{1}'", call, band.Replace(".", "_")));
-                            if (findrow != null)
+                            DataRow[] findrow = wtQSO.QSO.Select(string.Format("[CALL] LIKE '*{0}*' AND [BAND] = '{1}'", WCCheck.WCCheck.Cut(call), band.Replace(".", "_")));
+                            if (findrow != null && findrow.Count()>0)
                             {
                                 ToolTipText = string.Concat(new object[]
                                 {
