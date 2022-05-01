@@ -1,3 +1,7 @@
+3.1.4.3
+
+- fix: don't crash in Macro dialog if no Win-Test support is enabled
+
 3.1.4.2
 
 - fix: sent messages line lost "history"
@@ -11,7 +15,7 @@
   Log source can be changed in Options
 - fix: log scanning stopped after disconnect (you had to restart wtKST to make it work)
 - rework log checking: we will not touch the qrv database itself for "worked" QSOs
-  Log and QRV are handled seperately now (only "mixed" in the UI, "worked" is "green")
+  Log and QRV are handled separately now (only "mixed" in the UI, "worked" is "green")
 - fix "writing CQ/ instead of /CQ causes an exception" - (3.1.3.1 change was not enough)
 
 3.1.3.4 (from KSTcom_class)
