@@ -190,7 +190,8 @@ namespace WinTest
 
         public override void Dispose()
         {
-            qtl.close();
+            if (qtl != null) 
+                qtl.close();
         }
 
 
