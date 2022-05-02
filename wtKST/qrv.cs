@@ -146,7 +146,7 @@ namespace wtKST
 
         public static bool worked_or_not_qrv(QRV_STATE qrv_state)
         {
-            return worked(qrv_state) && not_qrv(qrv_state);
+            return worked(qrv_state) || not_qrv(qrv_state);
         }
 
         public static QRV_STATE set_worked(QRV_STATE qrv_state, bool worked)
