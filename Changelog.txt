@@ -1,3 +1,8 @@
+3.1.4.4
+
+- fix: calls worked were not hidden in user list
+- QARTestLogSync: don't crash on stopping
+
 3.1.4.3
 
 - fix: don't crash in Macro dialog if no Win-Test support is enabled
