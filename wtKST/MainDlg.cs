@@ -205,6 +205,7 @@ namespace wtKST
             KST.process_new_message += KST_Process_new_message;
             KST.process_user_update += KST_Process_user_update;
             KST.update_user_state += onUserStateChanged;
+            KST.dispText += KST_dispText;
 
             CALL.Columns.Add("CALL");
             CALL.Columns.Add("NAME");
@@ -320,6 +321,17 @@ namespace wtKST
                 lbl_Call.Text = "(" + Settings.Default.KST_UserName.ToUpper() + ")";
             }
 
+        }
+
+        private void KST_dispText(object sender, KSTcom.newdispTextEventArgs args)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new EventHandler<KSTcom.newdispTextEventArgs>(KST_dispText), new object[] { sender, args });
+                return;
+            }
+            if (!String.IsNullOrEmpty(args.text))
+                Say(args.text);
         }
 
         private void OnIdle(object sender, EventArgs args)
