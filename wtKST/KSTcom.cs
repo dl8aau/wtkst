@@ -28,7 +28,6 @@ namespace wtKST
             Standby,
             WaitLogin,
             WaitLogstat,
-            WaitSPR,
 
             // must be last
             Connected = 128,
@@ -270,32 +269,9 @@ namespace wtKST
                         {
                             MainDlg.Log.WriteMessage("Error reading user configuration: " + e.Message);
                         }
-                        // To set/reset/PRAU only propagation reception frames
-                        // SPR | value |
 
-                        tw.Send("SPR|2|\r");
-                        KSTState = KST_STATE.WaitSPR;
                         Say("LOGSTAT " + s);
-                    }
-                    break;
-                case KST_STATE.WaitSPR:
-                    /* PRAU|time|Aurora level|
-                        Aurora level:
-                        2: High lat. AU warning
-                        3: High lat. AU alert
-                        5 :Mid lat. AU warning
-                        6:Mid lat. AU alert
-                        8:Low lat. AU warning
-                        9:Low lat. AU alert
-                        Other values: no alert
-                    */
-                    if (s.IndexOf("PRAU") >= 0)
-                    {
-                        try
-                        {
-                            MainDlg.Log.WriteMessage("Login at " + s.Split('|')[2] + " - " + s);
-                        }
-                        catch { }
+
                         // End of the settings frames (session only)
                         // SDONE | chat id |
 
