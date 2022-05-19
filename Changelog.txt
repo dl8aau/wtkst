@@ -1,3 +1,11 @@
+3.1.4.5
+
+- Fix can't connect to server - some change on ON4KST side
+   After LOGSTAT: the PRAU command did not work, but we do not really
+    need it, so suppress it.
+- Implement displaying the status of the KST connection
+  Fix regression from KSTcom integration
+  
 3.1.4.4
 
 - fix: calls worked were not hidden in user list
