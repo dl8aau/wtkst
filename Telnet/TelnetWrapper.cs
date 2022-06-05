@@ -154,7 +154,8 @@ namespace De.Mud.Telnet
 			{
 				// Establish the remote endpoint for the socket.
 				IPHostEntry ipHostInfo = Dns.GetHostEntry(host);
-				IPAddress ipAddress = ipHostInfo.AddressList[0];
+				// use the IPv4 address - IPv6 had trouble on mobile network :-(
+				IPAddress ipAddress = Array.FindLast(ipHostInfo.AddressList, a => a.AddressFamily == AddressFamily.InterNetwork);
 				IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
 				//  Create a TCP/IP  socket.
