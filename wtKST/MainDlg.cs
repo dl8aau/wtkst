@@ -2530,11 +2530,13 @@ namespace wtKST
                     try
                     {
                         AS_if.planes.Clear();
+                        lv_Calls.SuspendLayout();
                         for (int i = 0; i < lv_Calls.RowCount; i++)
                         {
                             lv_Calls.Rows[i].Cells["AS"].Value = "";
-                            lv_Calls.Refresh(); // propagate to CALL table
                         }
+                        lv_Calls.Refresh(); // propagate to CALL table
+                        lv_Calls.ResumeLayout();
                     }
                     catch
                     {
