@@ -1,3 +1,14 @@
+3.1.4.6
+
+- Fix:  connecting in IPv6 seems to fail sometimes
+  Force IPv4 for now
+- (internal: CRLF fixed, update SQLite package to 1.0.116.0)
+- Fix: AS: report "no planes" correctly
+- Improvement: AS: optimize UI performance
+- Fix: AS did not display "<" or ">" anymore for calls outside of AS reach
+- Fix: WT LogSync did not restart when a log was cleared on a WT instance
+- Fix: WT Skeds and Log sync did not work sometimes
+
 3.1.4.5
 
 - Fix can't connect to server - some change on ON4KST side
