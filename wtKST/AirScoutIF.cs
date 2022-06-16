@@ -1,6 +1,8 @@
-﻿using System;
+﻿//#define DEBUG_AS
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -22,7 +24,9 @@ namespace wtKST
         private string mycall;
         private string dxcall;
         private EventWaitHandle waitHandle;
-
+#if DEBUG_AS
+        private Stopwatch stopWatch;
+#endif
         public AirScoutInterface(ref BackgroundWorker bw_GetPlanes)
         {
             localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
@@ -32,6 +36,9 @@ namespace wtKST
 
             wtl = new WinTest.wtListener(Settings.Default.AS_Port);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
+#if DEBUG_AS
+            stopWatch = new Stopwatch();
+#endif
         }
 
         private void wtMessageReceivedHandler(object sender, WinTest.wtListener.wtMessageEventArgs e)
@@ -55,7 +62,17 @@ namespace wtKST
                         bw_GetPlanes.ReportProgress(0, rxdxcall);
                     }
                     if (dxcall == rxdxcall)
+                    {
+#if DEBUG_AS
+                        stopWatch.Stop();
+                        Console.WriteLine("got AS " + dxcall + " " + e.Msg.Data + " in " + stopWatch.ElapsedMilliseconds);
+#endif
                         waitHandle.Set();
+                    }
+#if DEBUG_AS
+                    else
+                        Console.WriteLine("dxcall " + this.dxcall + "!=" + rxdxcall);
+#endif
                 }
             }
         }
@@ -136,6 +153,11 @@ namespace wtKST
 
             this.mycall = mycall;
             this.dxcall = dxcall;
+#if DEBUG_AS
+            Console.WriteLine("GetPlanes " + dxcall);
+            stopWatch.Reset();
+            stopWatch.Start();
+#endif
             wtMessage Msg = new wtMessage(WTMESSAGES.ASSETPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, 
                 string.Concat(new string[] { qrg, ",", mycall, ",", myloc, ",", dxcall, ",", dxloc }));
             try
@@ -163,6 +185,9 @@ namespace wtKST
                 waitHandle.Reset();
                 if (!waitHandle.WaitOne(rcvtimeout * 1000))
                 {
+#if DEBUG_AS
+                    Console.WriteLine("timeout " + dxcall);
+#endif
                     bw_GetPlanes.ReportProgress(0, dxcall);
                     return false;
                 }
