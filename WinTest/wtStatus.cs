@@ -69,7 +69,7 @@ namespace WinTest
             {
                 string[] data = e.Msg.Data.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                if (data.Length == 10)
+                if (data.Length == 10 || data.Length == 9)
                 {
                     string band;
                     try
