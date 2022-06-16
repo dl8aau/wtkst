@@ -1505,7 +1505,7 @@ namespace wtKST
                         var row = dgv.Rows[e.RowIndex];
                         if (row.Cells["AS"].Value == null)
                             return;
-                        string as_string = row.Cells["AS"].Value.ToString();
+                        string as_string = e.Value.ToString();
 
                         if (as_string.Length > 0)
                         {
@@ -2531,11 +2531,10 @@ namespace wtKST
                     {
                         AS_if.planes.Clear();
                         lv_Calls.SuspendLayout();
-                        for (int i = 0; i < lv_Calls.RowCount; i++)
+                        for (int i = 0; i < CALL.Rows.Count; i++)
                         {
-                            lv_Calls.Rows[i].Cells["AS"].Value = "";
+                            CALL.Rows[i]["AS"] = "";
                         }
-                        lv_Calls.Refresh(); // propagate to CALL table
                         lv_Calls.ResumeLayout();
                     }
                     catch
@@ -2547,39 +2546,23 @@ namespace wtKST
             // search the view for matching call - note that dxcall is the bare callsign, whereas
             // the list contains () for users that are away and may contain things like /p
             // so this is safer...
-            DataGridViewRow call_row = null;
-            for (int i=0; i<lv_Calls.RowCount; i++)
-            {
-                if (lv_Calls.Rows[i].Cells["CALL"].Value != null && lv_Calls.Rows[i].Cells["CALL"].Value.ToString().IndexOf(dxcall) >= 0)
-                {
-                    call_row = lv_Calls.Rows[i];
-                    break;
-                }
-            }
+            DataRow[] call_rows = CALL.Select(string.Format("[CALL] LIKE '*{0}*'", dxcall));
+
+            string newtext = "";
             if (e.ProgressPercentage > 0)
             {
-                if (call_row != null)
-                {
-                    string newtext = AS_if.GetNearestPlanePotential(dxcall);
-                    if (call_row.Cells["AS"].Value.ToString() != newtext)
-                    {
-                        call_row.Cells["AS"].Value = newtext;
-                        lv_Calls.Refresh(); // propagate to CALL table
-                    }
-                }
+                  newtext = AS_if.GetNearestPlanePotential(dxcall);
             }
             else /* e.ProgressPercentage == 0 or e.ProgressPercentage == -1 */
             {
                 //Console.WriteLine("remove " + dxcall);
                 AS_if.planes.Remove(dxcall);
-                if (call_row != null)
+            }
+            foreach (var c in call_rows)
+            {
+                if (c["AS"].ToString() != newtext)
                 {
-                    string newtext = "";
-                    if (call_row.Cells["AS"].Value.ToString() != newtext)
-                    {
-                        call_row.Cells["AS"].Value = newtext;
-                        lv_Calls.Refresh(); // propagate to CALL table
-                    }
+                    c["AS"] = newtext;
                 }
             }
         }
