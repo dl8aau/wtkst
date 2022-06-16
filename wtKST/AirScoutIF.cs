@@ -49,6 +49,11 @@ namespace wtKST
                     {
                         bw_GetPlanes.ReportProgress(1, rxdxcall);
                     }
+                    else
+                    {
+                        // report no planes available
+                        bw_GetPlanes.ReportProgress(0, rxdxcall);
+                    }
                     if (dxcall == rxdxcall)
                         waitHandle.Set();
                 }
