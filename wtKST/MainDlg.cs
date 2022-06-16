@@ -1752,19 +1752,29 @@ namespace wtKST
                         string dxloc = lv_Calls.Rows[i].Cells["LOC"].Value.ToString();
                         string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Rows[i].Cells["CALL"].Value.ToString().TrimStart(
                             new char[] { '(' }).TrimEnd(new char[] { ')' }));
-                        int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, dxloc);
-                        if (qrb >= Convert.ToInt32(Settings.Default.AS_MinDist)
-                                    && qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist)
-                                    && !mycall.Equals(dxcall))
+
+                        if (!mycall.Equals(dxcall))
                         {
-                            watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
-                            if ( i >= lv_Calls.FirstDisplayedCell.RowIndex && i < lv_Calls.FirstDisplayedCell.RowIndex + lv_Calls.DisplayedRowCount(true))
+                            int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, dxloc);
+                            var row = lv_Calls.Rows[i].Cells;//  DataBoundItem.GetType();
+                            if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
                             {
-                                AS_list.Add(new AS_Calls(dxcall, dxloc));
+                                if (!row["AS"].Value.Equals("<"))
+                                    row["AS"].Value = "<";
                             }
-                        }
-                        else
-                        {
+                            else if (qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
+                            {
+                                watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
+                                if (i >= lv_Calls.FirstDisplayedCell.RowIndex && i < lv_Calls.FirstDisplayedCell.RowIndex + lv_Calls.DisplayedRowCount(true))
+                                {
+                                    AS_list.Add(new AS_Calls(dxcall, dxloc));
+                                }
+                            }
+                            else
+                            {
+                                if (!row["AS"].Value.Equals(">"))
+                                    row["AS"].Value = ">";
+                            }
                         }
                     }
                     catch
