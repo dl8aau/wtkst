@@ -506,20 +506,19 @@ namespace WinTest
                 Console.WriteLine("HELLO: from " + e.Msg.Src + " protocol_version " + protocol_version + " master " + master +
                    " contest_ID " + contest_ID + " mode_category " + mode_category +
                    " first_QSO_ts " + first_QSO_ts.ToShortDateString() + " " + first_QSO_ts.ToShortTimeString());
- 
+
+                // clear entries
+                wtStationSyncList.Clear();
+                myLogState.Clear();
+                Clear_QSOs();
+                Console.WriteLine("restart log");
+                // TODO event?
+
                 // we monitor the protocol version and contest ID - if it changes, we better restart to load the log
-                // TODO: not enough... be more clever, maybe use first_QSO_ts?
+                // TODO: for the time being restart the log any time we receive HELLO. It is rather quick to receive and better safe than sorry...
                 if ((StationProtocolVersion != protocol_version) || (stationContestID != contest_ID))
                 {
-                    // if it was 0, we can set it now, if not, restart
-                    if (StationProtocolVersion != 0 && stationContestID != 0)
-                    {
-                        // clear entries
-                        wtStationSyncList.Clear();
-                        myLogState.Clear();
-                        Console.WriteLine("restart log");
-                        // TODO event?
-                    }
+
                     StationProtocolVersion = protocol_version;
                     stationContestID = contest_ID;
                 }
