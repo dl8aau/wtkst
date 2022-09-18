@@ -1128,6 +1128,7 @@ namespace wtKST
             }
             string wcall = WCCheck.WCCheck.Cut(call);
             string findCall = string.Format("[CALL] LIKE '*{0}*'", wcall);
+            bool[] found = new bool[BANDS.Length]; // defaults to false
 
             lock (wtQSO)
             {
@@ -1147,6 +1148,8 @@ namespace wtKST
                     {
                         if (!QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
                             call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], true);
+
+                        found[Array.IndexOf(BANDS, band)] = true;
                         // check locator
                         if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
                         {
@@ -1154,14 +1157,18 @@ namespace wtKST
                             WinTestLocatorWarning = true;
                             Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
                         }
-                    } else
-                    {
-                        // check if worked - only then remove the flag. If we touch everything, we may trigger unneeded redraws
-                        if (QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
-                            call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], false);
                     }
                 }
                 wtQSO_local_lock = false;
+                // important: I cannot know if a call is *not* in the log until I scanned the log fully, so this code to clean entries that are wrongly marked as "worked" has to be done
+                // *after* the loop
+                foreach (string band in BANDS)
+                {
+                    // if marked as worked - but not in the log anymore, just leave it as "qrv"
+                    // check if worked - only then remove the flag. If we touch everything, we may trigger unneeded redraws
+                    if (!found[Array.IndexOf(BANDS, band)] &&  QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
+                        call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], false);
+                }
             }
         }
 
