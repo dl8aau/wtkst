@@ -780,8 +780,25 @@ namespace wtKST
 
             if (!RowFilter.Equals(KST_USR_RowFilter))
             {
+                // remember the vertical scroll position as the rowfilter will screw it up
+                // it is reset in OnIdle
+                var Keep_FirstDisplayedScrollingRowIndex = lv_Calls.FirstDisplayedScrollingRowIndex;
                 (lv_Calls.DataSource as DataTable).DefaultView.RowFilter = RowFilter;
                 KST_USR_RowFilter = RowFilter;
+                // now restore the vertical position of the first entry
+                if (lv_Calls.FirstDisplayedScrollingRowIndex != Keep_FirstDisplayedScrollingRowIndex)
+                {
+                    // if we try to force the first line to something that is not visible anymore , then just ask to scroll down as far as possible
+                    // see https://stackoverflow.com/a/9823873
+                    if (Keep_FirstDisplayedScrollingRowIndex + lv_Calls.DisplayedRowCount(false) < lv_Calls.Rows.Count)
+                    {
+                        lv_Calls.FirstDisplayedScrollingRowIndex = Keep_FirstDisplayedScrollingRowIndex;
+                    }
+                    else
+                    {
+                        lv_Calls.FirstDisplayedScrollingRowIndex = lv_Calls.Rows.Count - 1;
+                    }
+                }
             }
         }
 
