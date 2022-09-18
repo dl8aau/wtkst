@@ -32,7 +32,15 @@ namespace wtKST
         public void Process_QRV(DataRow row, string qrvcall, bool call_new_in_userlist = false)
         {
             bool call_in_stationDB = false;
-            List<QRVDesignator> QRVlist = StationData.Database.QRVFind(qrvcall, row["LOC"].ToString());
+            List<QRVDesignator> QRVlist = null;
+            try
+            {
+                QRVlist = StationData.Database.QRVFind(qrvcall, row["LOC"].ToString());
+            }
+            catch(Exception ex)
+            {
+                Error(MethodBase.GetCurrentMethod().Name, "Scoutbase " + ex.Message);
+            }
             if (QRVlist != null)
             {
                 call_in_stationDB = true;
