@@ -1745,6 +1745,22 @@ namespace wtKST
             fill_AS_list();
         }
 
+        // Disable cell selection
+        private void lv_Calls_CellStateChanged(object sender, DataGridViewCellStateChangedEventArgs e)
+        {
+            if (e.StateChanged == DataGridViewElementStates.Selected)
+                e.Cell.Selected = false;
+        }
+
+        // Disable focus cues
+        protected override bool ShowFocusCues
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         private void fill_AS_list()
         {
             if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.RowCount == 0)
@@ -2978,6 +2994,7 @@ namespace wtKST
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
             this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
+            this.lv_Calls.CellStateChanged += new System.Windows.Forms.DataGridViewCellStateChangedEventHandler(this.lv_Calls_CellStateChanged);
             this.lv_Calls.ShowCellToolTips = false;
             // 
             // lbl_KST_Calls
