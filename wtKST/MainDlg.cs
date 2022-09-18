@@ -749,8 +749,6 @@ namespace wtKST
 
         private void KST_Update_Usr_Filter()
         {
-            var dt = lv_Calls.DataSource as DataTable;
-
             string RowFilter = string.Format("(CALL <> '{0}')", Settings.Default.KST_UserName.ToUpper());
             if (hide_away)
                 RowFilter += string.Format(" AND (AWAY = 0)");
