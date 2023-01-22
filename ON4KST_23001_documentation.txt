@@ -1,0 +1,230 @@
+
+Server -> Client
+
+LOGSTAT user config 
+LOGSTAT|100|2|20040703a|239E038F12E685FB75C6C03A79A1DE8A|11|3|10pt|8pt|CFEBFF|FFFFFF|CEE1FF|1|IP|4|4|5|144001.0|144500.0|12|3|6|0.0|0.0|0|0|0|0.0|0.0|0|0|0|0.0|0.0|0|0|0|31|Alain/telnet|Stiévenart|JO20HI|on4kst@skynet.be|
+LOGSTAT|100|chat id|client software version|session key|config|dx option|
+msg font|wwc font|background color|map land color|map sea color|map resolution|upper left field|
+nb x fields|nb y fields|period|
+qrg min1|qrg max1|color a1|color b1|color c1|
+qrg min2|qrg max2|color a2|color b2|color c2|
+qrg min3|qrg max3|color a3|color b3|color c3|
+qrg min4|qrg max4|color a4|color b4|color c4|
+qrg option|first name|last name|locator|email|
+
+LOGSTATS if LOGINC:
+LOGSTAT|100|2|20040703a|239E038F12E685FB75C6C03A79A1DE8A|11|Alain/telnet|Stiévenart|JO20HI|on4kst@skynet.be|
+LOGSTAT|100|chat id|client software version|session key|config|first name|last name|locator|email|
+
+if error:
+LOGSTAT|101|Unknown user %s.|
+LOGSTAT|102|%s is a bad callsign (length)!|
+LOGSTAT|103|%s is a bad callsign (used characters)!|
+LOGSTAT|104|Bad password (length)!| 
+LOGSTAT|105|Bad password (used characters)!| 
+LOGSTAT|106|Wrong selection!| 
+LOGSTAT|107|The passwords dont match!| 
+LOGSTAT|108|Invalid callsign!|
+LOGSTAT|109|Invalid password!|
+LOGSTAT|110|Invalid first name!|
+LOGSTAT|111|Invalid locator!|
+LOGSTAT|112|Invalid email address!|
+LOGSTAT|113|User already registered!|
+LOGSTAT|114|Wrong password!|
+LOGSTAT|115|Wrong selection!| 
+LOGSTAT|116|Invalid last name!|
+
+Chat message frame at login
+CR|chat id|Unix time|callsign|firstname|destination|msg|highlight|
+CR|2|1186819108|EA6VQ|Gabriel|0|OH8K, will you be on EME later today please?|0|
+CR|2|1186819055|ON4KST|Alain|2|cq test|0|
+
+Chat message frame after login
+CH|chat id|date|callsign|firstname|destination|msg|highlight|
+CH|2|20070811075836|F6APE|JEAN-NOEL|0|Good &quot;9K&quot; OH8K in which loc JP33?|0|
+chat id -> 
+ 50/70 MHz..............1
+ 144/432 MHz............2
+ Microwave..............3
+ EME/JT65...............4
+ Low Band...............5
+ 50 MHz IARI Region 2...7
+highlight -> to ignore
+
+End of CR frames
+CE|2|
+
+DX frames for the DX window
+DL|Unix time|dx utc|spotter|qrg|dx|info|spotter locator|dx locator| 
+DL|1186819108|0758|dm6hk|50173.0|OH8K|no sig in jn68 pse k|JN68|KP57|
+DL|1186819055|0757|pa0bat|2320090.0|DL4MEA|EME|JO31|JN58|
+
+End of DL frames
+DE|
+
+DX frames for the MAP window
+MA|map window|Unix time|spotter|dx|spotter locator|dx locator| 
+MA|0|1186818919|g4cbw|OH6KTL|IO83UB|KP02OJ|
+MA|0|1186818716|f0ejw|OK1UGA|IN78VJ|JO80CF|
+map window -> map qrg range into the settings (0 -> 3)
+
+End of MA frames
+ME|
+
+DX frames for the DX and the MAP windows
+DM|map window|Unix time|dx utc|spotter|qrg|info|spotter locator|dx locator| 
+DM|0|1186819122|0758|f5dqk|144370.0|OK1UGA|cq 357|JN18GR|JO80CF|
+
+End of DM frames
+DF|
+
+Locator update
+LOC|Unix time|callsign|locator| 
+LOC|1186820576|DK7DR|JN47DP|
+
+User frame at login
+UA0|chat id|callsign|firstname|locator|state|
+UA0|2|DK5EW|Erwin MMMonVHF|JN47NX|0|
+UA0|2|DK5OX|Boris 6/2m|JN59MO|2|
+UA0|2|DL3JIN|Peter|JO60LX|1|
+User state:
+    bit 0: the user is away -displayed "(callsign)" -
+    bit 1: logged within the last 5 minutes
+    bit 2: sysop
+    bit 3: it would be not used (user with privileges)
+
+Users statistics/end of users frames
+UE|chat id|nb registered users|
+UE|2|4777|
+
+User state (here/not here/more than 5 min logged)
+US4|chat id|callsign|state|
+US4|2|OH2JXA|state|
+
+User already logged
+UM3|chat id|callsign|firstname|locator|state|
+UM3|2|OZ2M|Bo|JO65FR|2|
+
+User disconnected (to remove)
+UR6|chat id|callsign|
+UR6|2|RA3MR/3|
+
+UA5 user connected (to add)
+UA5|chat id|callsign|firstname|locator|state|
+UA5|2|PA0GUS|GUUS|JO23TA|2|
+
+WC: WWC frame
+WC|14345|Unix time|time|info|
+
+AN: clx announcement
+AN|date|callsign|info|
+AN|20070813114253|i2tao|anybody know the address of UA0LV ?|
+
+SES|chat id|session key|
+SES|1|1910034479E1B1C441B71EFB2EB141F2|
+
+PRKP|time|kpp|
+PRMA|time|Bt|Bz|sws|
+PRSW|time|proton|
+PRWW|time|solar flux|A index|K index|Sun Spot Number|
+PRXR|time|xray|
+PRAU|time|Aurora level|
+Aurora level:
+2: High lat. AU warning
+3: High lat. AU alert
+5 :Mid lat. AU warning
+6:Mid lat. AU alert
+8:Low lat. AU warning
+9:Low lat. AU alert
+Other values: no alert
+
+CK: link check (you need to reply at least the 2 characters [CR] and [LF])
+CK|
+
+Client -> Server
+
+Login frame
+
+LOGIN|callsign|password|chat id|client software version|past messages number|past dx/map number|users list/update flags|last Unix timestamp for messages|last Unix timestamp for dx/map|
+LOGIN|OZ2M|a password|2|The software|25|10|0|1190616857|1190616850|
+
+Where:
+If the users list/update flags = 0, no Uxx frames will be sent (even after the login).
+Last Unix timestamp: the frames with a timestamp strictly greater than the last Unix timestamp - limited by the past number - will be sent at login
+(useful in case of reconnect).
+To avoid to miss frames it would be better to send the last received timestamp minus 1.
+The maximum numbers of past messages and dx/map are limited internally.
+LOGIN|callsign|password|chat id|client software version|
+is the same than
+LOGIN|callsign|password|chat id|client software version|1|1|1|0|0|
+
+Login frame with config from client
+
+LOGINC|callsign|password|chat id|client software version|past messages number|past dx/map number|users list/update flags|last Unix timestamp for messages|last Unix timestamp for dx/map|
+LOGINC|OZ2M|a password|2|The software|25|10|0|1190616857|1190616850|
+Same as LOGIN but the server is waiting the end settings frame (SDONE). Optional allowed frames between LOGINC and SDONE are SDXQ, SMAQ, RDXQ and RMAQ.
+
+To add a chat
+ACHAT|chat id|past messages number|past dx/map number|users list/update flags|last Unix timestamp for messages|last Unix timestamp for dx/map|
+
+to remove a chat
+DCHAT|chat id|
+
+To set DX qrg ranges (session only - any time -)
+SDXQ|chat id|qrg min1|qrg max1|qrg min2|qrg max2|...|qrg min8|qrg max8|
+all QRG are optionnal. e.g. 
+SDXQ|2| -> no DX
+SDXQ|2|50000.1|50500.0| -> one QRG range only, means the DX with the QRG upper or equal to 50000.1 and below 50500.0 will be sent.
+
+To set MAP qrg ranges (session only - any time -)
+SMAQ|chat id|qrg min1|qrg max1|qrg min2|qrg max2|qrg min3|qrg max3|qrg min4|qrg max4|
+all QRG are optionnal. e.g. 
+SMAQ|2| -> no DX map
+SMAQ|2|50000.1|54000|144360|144399| -> two QRG ranges only
+
+End of the settings frames (session only)
+SDONE|chat id|
+This frame is needed to the end of the settings frames to allowed the sending of all frames from the server.
+
+To read the DX qrg ranges (session only - any time -)
+RDXQ|chat id|
+Output:
+DXQ|chat id|qrg min1|qrg max1|qrg min2|qrg max2|...|qrg min8|qrg max8|
+
+To read the MAP qrg ranges (session only - any time -)
+RMAQ|chat id|
+Output:
+MAQ|chat id|qrg min1|qrg max1|...|qrg min4|qrg max4|
+
+CONFIG frame (to use by an Applet application)
+CONF|chat id|client software version|session key|config|dx option|
+msg font|wwc font|background color|map land color|map sea color|map resolution|upper left field|
+nb x fields|nb y fields|period|
+qrg min1|qrg max1|color a1|color b1|color c1|
+qrg min2|qrg max2|color a2|color b2|color c2|
+qrg min3|qrg max3|color a3|color b3|color c3|
+qrg min4|qrg max4|color a4|color b4|color c4|
+qrg option|
+ 
+To set/reset/PRAU only propagation reception frames
+SPR|value|
+
+To read propagation reception frames flag
+PR|
+
+Command frame
+MSG|chat id|destination|command|0|
+MSG|2|0|/SHCLX|0|
+
+/AWAY              To indicate that I am currently away.
+/BACK              To indicate that I am currently watching the chat.
+/CHAT  value       Login into another chat. Values are 50 144 GHZ EME HF.
+/CQ callsign msg   To send a public msg seen in highlight by the "callsign".
+/LSTCLX            The list of the available DX clusters.
+/SETCLX dxcluster  To give the cluster where to spot the DX.
+/SETNAME name 	   To set your firstname.
+/SETLOC locator    To set his own locator.
+/SHCLX	           To show the DX cluster where the DX spot is sent.
+/SHLOC callsign    To show the locator of a station.
+/SHUSER callsign   To show the locator of a station.
+/QUIT              To leave the chat.

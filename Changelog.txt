@@ -1,0 +1,49 @@
+3.1.4.7
+
+- Fix: short Calls sometimes are not marked as "worked" (e.g. M5M, while DM5M was in the log, too)
+- Fix: user list was "jumping" up/down, it is kept aligned to first line now
+
+3.1.4.6
+
+- Fix:  connecting in IPv6 seems to fail sometimes
+  Force IPv4 for now
+- (internal: CRLF fixed, update SQLite package to 1.0.116.0)
+- Fix: AS: report "no planes" correctly
+- Improvement: AS: optimize UI performance
+- Fix: AS did not display "<" or ">" anymore for calls outside of AS reach
+- Fix: WT LogSync did not restart when a log was cleared on a WT instance
+- Fix: WT Skeds and Log sync did not work sometimes
+
+3.1.4.5
+
+- Fix can't connect to server - some change on ON4KST side
+   After LOGSTAT: the PRAU command did not work, but we do not really
+    need it, so suppress it.
+- Implement displaying the status of the KST connection
+  Fix regression from KSTcom integration
+  
+3.1.4.4
+
+- fix: calls worked were not hidden in user list
+- QARTestLogSync: don't crash on stopping
+
+3.1.4.3
+
+- fix: don't crash in Macro dialog if no Win-Test support is enabled
+
+3.1.4.2
+
+- fix: sent messages line lost "history"
+    Old messages sent should be available in a drop down list.
+- fix: don't crash on certain log entries (where the call is not found in the user list)
+
+3.1.4.1 (Debug from wt_network_sync)
+
+- Add network based log sync (no need anymore to run Win-Test on same PC)
+  support for Win-Test4 and QARTest
+  Log source can be changed in Options
+- fix: log scanning stopped after disconnect (you had to restart wtKST to make it work)
+- rework log checking: we will not touch the qrv database itself for "worked" QSOs
+  Log and QRV are handled separately now (only "mixed" in the UI, "worked" is "green")
+- fix "writing CQ/ instead of /CQ causes an exception" - (3.1.3.1 change was not enough)
+
