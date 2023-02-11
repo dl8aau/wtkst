@@ -10,11 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using wtKST.Properties;
 
 namespace wtKST
@@ -180,15 +178,15 @@ namespace wtKST
             public String text { get; private set; }
         }
 
-        private void Say( String text)
+        private void Say(String text)
         {
             if (dispText != null)
-            { 
+            {
                 dispText(this, new newdispTextEventArgs(text));
             }
         }
 
-        public DataRow[] MSG_findcall( string call )
+        public DataRow[] MSG_findcall(string call)
         {
             string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
             DataRow[] selectRow = MSG.Select(findCall);
@@ -544,8 +542,8 @@ namespace wtKST
                                     var row_delete = USER.NewRow();
                                     row_delete.ItemArray = row.ItemArray.Clone() as object[];
 
-                                if (process_user_update != null)
-                                    process_user_update(this, new UserUpdateEventArgs(row_delete, USER_OP.USER_DELETE));
+                                    if (process_user_update != null)
+                                        process_user_update(this, new UserUpdateEventArgs(row_delete, USER_OP.USER_DELETE));
                                 }
 
                                 row.Delete();
@@ -907,7 +905,8 @@ namespace wtKST
 
         public void KSTStateMachine()
         {
-            try { 
+            try
+            {
                 if (tw != null && !tw.Connected
                     && KSTState != KST_STATE.Standby)
                 {

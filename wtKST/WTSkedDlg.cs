@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace wtKST
@@ -14,7 +10,7 @@ namespace wtKST
         public string target_wt { get { return (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).from; } }
         public DateTime sked_time { get { return validated_sked_time; } }
         public uint qrg { get { return (uint)this.num_frequency.Value; } }
-        public WinTest.WTBANDS band { get { return convert_band(this.cb_band.SelectedItem as MainDlg.bandinfo); }  }
+        public WinTest.WTBANDS band { get { return convert_band(this.cb_band.SelectedItem as MainDlg.bandinfo); } }
         public WinTest.WTMODE mode { get { return (this.cb_mode.SelectedItem != null && this.cb_mode.SelectedItem.Equals("SSB")) ? WinTest.WTMODE.ModeSSB : WinTest.WTMODE.ModeCW; } }
         public string call { get { return this.tb_Call.Text; } }
         public string notes { get { return this.tb_notes.Text; } }
@@ -64,7 +60,7 @@ namespace wtKST
             this.cb_mode.DataSource = wtmode;
 
             // use a good starting point for frequency - if not passed in constructor, use first station radio frequency
-            if(last_freq == 0)
+            if (last_freq == 0)
                 this.num_frequency.Value = (decimal)((this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000UL);
             else
                 this.num_frequency.Value = last_freq;
@@ -92,20 +88,20 @@ namespace wtKST
             return band.band_center_activity + short_sked_qrg;
         }
 
-        private WinTest.WTBANDS convert_band(MainDlg.bandinfo band )
+        private WinTest.WTBANDS convert_band(MainDlg.bandinfo band)
         {
             switch (band.band_name)
             {
-                case "144MHz":  return WinTest.WTBANDS.Band144MHz;
-                case "432MHz":  return WinTest.WTBANDS.Band432MHz;
+                case "144MHz": return WinTest.WTBANDS.Band144MHz;
+                case "432MHz": return WinTest.WTBANDS.Band432MHz;
                 case "1296MHz": return WinTest.WTBANDS.Band1_2GHz;
                 case "2320MHz": return WinTest.WTBANDS.Band2_3GHz;
                 case "3400MHz": return WinTest.WTBANDS.Band3_4GHz;
                 case "5760MHz": return WinTest.WTBANDS.Band5_7GHz;
-                case "10GHz":   return WinTest.WTBANDS.Band10GHz;
-                case "24GHz":   return WinTest.WTBANDS.Band24GHz;
-                case "47GHz":   return WinTest.WTBANDS.Band47GHz;
-                case "76GHz":   return WinTest.WTBANDS.Band76GHz;
+                case "10GHz": return WinTest.WTBANDS.Band10GHz;
+                case "24GHz": return WinTest.WTBANDS.Band24GHz;
+                case "47GHz": return WinTest.WTBANDS.Band47GHz;
+                case "76GHz": return WinTest.WTBANDS.Band76GHz;
             }
             return WinTest.WTBANDS.Band144MHz;
         }
@@ -130,10 +126,10 @@ namespace wtKST
                 // find the first matching station
                 foreach (var cb_stat in cb_station.Items)
                 {
-                    if ( ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
+                    if (((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
                           (int)(cb_stat as WinTest.wtStatus.wtStat).freq / 1000)) ||
                          ((this.cb_band.SelectedItem as MainDlg.bandinfo).in_band(
-                          (int)(cb_stat as WinTest.wtStatus.wtStat).passfreq / 1000)) )
+                          (int)(cb_stat as WinTest.wtStatus.wtStat).passfreq / 1000)))
                     {
                         cb_station.SelectedItem = cb_stat;
                         break;
@@ -164,7 +160,8 @@ namespace wtKST
                 // this happens when the wtStatus list gets empty while the dialog is open
                 DialogResult = DialogResult.Cancel;
                 Close();
-            } else
+            }
+            else
             {
                 this.bt_qsyqrg.Text = "QSY freq " + (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).passfreq / 1000;
                 this.bt_radioqrg.Text = "Radio freq " + (this.cb_station.SelectedItem as WinTest.wtStatus.wtStat).freq / 1000;

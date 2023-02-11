@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Timers;
 
@@ -64,7 +62,7 @@ namespace WinTest
              *                                 ?
              *                                         pass_freq
              *                                             ?
-             */                
+             */
             if (e.Msg.Msg == WTMESSAGES.STATUS && e.Msg.HasChecksum)
             {
                 string[] data = e.Msg.Data.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -93,7 +91,7 @@ namespace WinTest
 
                     //Console.WriteLine("STATUS: from " + e.Msg.Src + " band " + band + " mode " + mode +
                     //    " freq " + data[4] + " pass " + data[8]);
-                
+
                     ulong freq, passfreq;
                     if (!UInt64.TryParse(data[4], out freq))
                         freq = 0;
@@ -112,7 +110,7 @@ namespace WinTest
             }
         }
 
-        private void wtStatusListAdd_UIthread(string src, wtStat w )
+        private void wtStatusListAdd_UIthread(string src, wtStat w)
         {
             var el = wtStatusList.SingleOrDefault(x => x.from == src);
 
@@ -129,23 +127,23 @@ namespace WinTest
         {
             var th = new Thread(() =>
             {
-                    _context.Send(o => wtStatusListRemoveExpired_UIthread(), null);
+                _context.Send(o => wtStatusListRemoveExpired_UIthread(), null);
             })
             { IsBackground = true };
             th.Start();
-         }
+        }
 
         private void wtStatusListRemoveExpired_UIthread()
-                {
-            for (int i=0; i<wtStatusList.Count; i++)
-                    {
+        {
+            for (int i = 0; i < wtStatusList.Count; i++)
+            {
                 var el = wtStatusList[i];
-                        if (el != null)
-                        {
+                if (el != null)
+                {
                     if (DateTime.Now.Subtract(el.timestamp).TotalMinutes > 3) // 3 min timeout
                     {
                         wtStatusList.Remove(el);
-                        }
+                    }
                 }
             }
         }

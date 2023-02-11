@@ -1,14 +1,13 @@
 ﻿//#define DEBUG_PACKET_LOSS
 
 using System;
-using System.Xml;
-using System.Xml.Serialization;
 using System.Data;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Timers;
-using System.Linq;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace WinTest
 {
@@ -75,7 +74,7 @@ namespace WinTest
         public string duplicateString
         {
             get { return this.duplicate.ToString(); }
-            set { this.duplicate = Boolean.Parse(value);  }
+            set { this.duplicate = Boolean.Parse(value); }
         }
         public string stationname;
         public int points;
@@ -190,7 +189,7 @@ namespace WinTest
 
         public override void Dispose()
         {
-            if (qtl != null) 
+            if (qtl != null)
                 qtl.close();
         }
 
@@ -208,7 +207,7 @@ namespace WinTest
                 QSO.Clear();
                 qtl = new QARTtestListener(9458); // QARTest default UDP port
                 qtl.QTMessageReceived += QTMessageReceivedHandler;
-            }    
+            }
         }
 
         private void QTMessageReceivedHandler(object sender, QARTtestListener.QTMessageEventArgs e)

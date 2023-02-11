@@ -1,13 +1,11 @@
-﻿using System;
+﻿using ScoutBase.Core;
+using ScoutBase.Stations;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
-using ScoutBase.Core;
-using ScoutBase.Stations;
 using wtKST.Properties;
 
 namespace wtKST
@@ -37,7 +35,7 @@ namespace wtKST
             {
                 QRVlist = StationData.Database.QRVFind(qrvcall, row["LOC"].ToString());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Error(MethodBase.GetCurrentMethod().Name, "Scoutbase " + ex.Message);
             }
@@ -87,7 +85,7 @@ namespace wtKST
                 }
             }
             // look into our local DB
-            DataRow findrow = QRV_local.Rows.Find(new object[] {qrvcall, row["LOC"] });
+            DataRow findrow = QRV_local.Rows.Find(new object[] { qrvcall, row["LOC"] });
             if (findrow == null)
             {
                 // need a new entry

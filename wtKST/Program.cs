@@ -3,14 +3,14 @@ using System.Windows.Forms;
 
 namespace wtKST
 {
-	internal static class Program
-	{
-		[STAThread]
-		private static void Main()
-		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainDlg());
-		}
-	}
+    internal static class Program
+    {
+        [STAThread]
+        private static void Main()
+        {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainDlg());
+        }
+    }
 }

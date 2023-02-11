@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -173,7 +172,7 @@ namespace WinTest
                         b = Encoding.ASCII.GetBytes(s);
                         // calculate checksum
                         sum = 0;
-                        for (int i = 0; i < b.Length-2; i++)
+                        for (int i = 0; i < b.Length - 2; i++)
                             sum += b[i];
                         sum = (byte)(sum | (byte)0x80);
                         b[b.Length - 2] = sum;

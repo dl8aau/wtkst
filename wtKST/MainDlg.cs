@@ -4,17 +4,14 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Net;
-using System.Net.Sockets;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using WinTest;
 using wtKST.Properties;
-using System.Text.RegularExpressions;
-using System.Linq;
 
 namespace wtKST
 {
@@ -163,7 +160,7 @@ namespace wtKST
             public string Call;
             public string Locator;
 
-            public AS_Calls(string call, string loc) { Call = call;  Locator = loc; }
+            public AS_Calls(string call, string loc) { Call = call; Locator = loc; }
         };
 
         private List<AS_Calls> AS_list = new List<AS_Calls>();
@@ -259,9 +256,9 @@ namespace wtKST
             lv_Calls.Columns["47G"].Width = 20;
             lv_Calls.Columns["76G"].Width = 20;
 
-            for (int i=0; i < lv_Calls.ColumnCount; i++)
+            for (int i = 0; i < lv_Calls.ColumnCount; i++)
             {
-                    lv_Calls.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+                lv_Calls.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
             }
 
             // https://stackoverflow.com/a/28617333
@@ -311,12 +308,12 @@ namespace wtKST
             {
                 this.BeginInvoke(new EventHandler<KSTcom.userStateEventArgs>(onUserStateChanged), new object[] { sender, args });
                 return;
-                }
+            }
             if (args.state == KSTcom.USER_STATE.Here)
             {
                 lbl_Call.Text = Settings.Default.KST_UserName.ToUpper();
             }
-                    else
+            else
             {
                 lbl_Call.Text = "(" + Settings.Default.KST_UserName.ToUpper() + ")";
             }
@@ -340,7 +337,7 @@ namespace wtKST
 
             if (KST.State == KSTcom.KST_STATE.Disconnected)
             {
-                lock(CALL)
+                lock (CALL)
                 {
                     CALL.Clear();
                 }
@@ -414,8 +411,8 @@ namespace wtKST
 
             ni_Main.Text = "wtKST\nLeft click to activate";
 
-            if (!aboutBox1.Visible &&!cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture
-                 && (wtskdlg == null || !wtskdlg.Visible) )
+            if (!aboutBox1.Visible && !cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture
+                 && (wtskdlg == null || !wtskdlg.Visible))
             {
                 cb_Command.Focus();
                 cb_Command.SelectionLength = 0;
@@ -426,17 +423,17 @@ namespace wtKST
         private int next_color = 1;
 
         private void KST_Process_new_message(object sender, KSTcom.newMSGEventArgs arg)
-                {
+        {
             if (this.InvokeRequired)
-                        {
+            {
                 this.BeginInvoke(new EventHandler<KSTcom.newMSGEventArgs>(KST_Process_new_message), new object[] { sender, arg });
                 return;
-                                }
+            }
 
             DataRow Row = arg.msg;
 
-                        try
-                        {
+            try
+            {
 
                 DateTime dt = (DateTime)Row["TIME"];
 
@@ -448,7 +445,7 @@ namespace wtKST
 
                 // filter <a href="http://dr9a.de" target="_blank"><b>http_link</b></a> -> http://dr9a.de
                 Regex regex_filter_msg_http_link = new Regex(@"(.*)<a href=""(https?://.*)"" target=""_blank""><b>https?_link</b></a>(.*)", RegexOptions.Compiled);
-        
+
                 string msg = regex_filter_msg_http_link.Replace(Row["MSG"].ToString(), "$1$2 $3");
                 LV.SubItems.Add(msg);
                 for (int i = 0; i < LV.SubItems.Count; i++)
@@ -466,7 +463,7 @@ namespace wtKST
                 {
                     ListViewItem topitem = lv_Msg.TopItem;
                     Boolean AtBeginningOfList = (lv_Msg.TopItem == lv_Msg.Items[0]);
-                        // display at beginning of list (so newest entry displayed)
+                    // display at beginning of list (so newest entry displayed)
 
                     DateTime dt_top = (DateTime)lv_Msg.Items[0].Tag;
 
@@ -477,7 +474,7 @@ namespace wtKST
                             // reconnect, sort CR at begining
                             // probably better to re-generate the whole list... alternate line highlighting will not work
                             // not great, but ok for the time being...
-                            for (int i=0; i< lv_Msg.Items.Count; i++ )
+                            for (int i = 0; i < lv_Msg.Items.Count; i++)
                             {
                                 if (dt > (DateTime)lv_Msg.Items[i].Tag)
                                 {
@@ -526,7 +523,7 @@ namespace wtKST
                 bool fromMe = Row["CALL"].ToString().ToUpper().StartsWith(MyCall);
 
                 if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(MyCall)
-                    || ( fromMe && Settings.Default.KST_Show_Own_Messages ))
+                    || (fromMe && Settings.Default.KST_Show_Own_Messages))
                 {
                     // https://material.io/guidelines/style/color.html#color-color-palette
                     DataRow findrow;
@@ -557,7 +554,7 @@ namespace wtKST
                     ListViewItem MyLV = new ListViewItem();
                     if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")"))
                     {
-                        switch(color_index)
+                        switch (color_index)
                         {
                             case 1: MyLV.BackColor = Color.FromArgb(0xEF9A9A); break;// red 200
                             case 2: MyLV.BackColor = Color.FromArgb(0xCE93D8); break;// purple 200
@@ -771,7 +768,7 @@ namespace wtKST
                     }
                 }
                 if (calls_to_hide)
-                    RowFilter += add_rowfilter +  "))";
+                    RowFilter += add_rowfilter + "))";
             }
 
             RowFilter += ")";
@@ -800,7 +797,7 @@ namespace wtKST
             }
         }
 
-//FIXME re-add
+        //FIXME re-add
         private void KST_Add_Beacons_USR()
         {
             try
@@ -862,7 +859,7 @@ namespace wtKST
         public class bandinfo
         {
             public string band_name { get; set; }
-            public string band_wavelength_name { get; set;  }
+            public string band_wavelength_name { get; set; }
             public uint band_start { get; set; }
             public uint band_stop { get; set; }
             public uint band_center_activity { get; set; }
@@ -871,7 +868,7 @@ namespace wtKST
                 return (freq >= band_start && freq <= band_stop);
             }
 
-            public bandinfo (string n, string wavelength, uint start, uint stop, uint center)
+            public bandinfo(string n, string wavelength, uint start, uint stop, uint center)
             {
                 band_name = n;
                 band_wavelength_name = wavelength;
@@ -885,7 +882,7 @@ namespace wtKST
         {
             List<bandinfo> b = new List<bandinfo>();
             if (Settings.Default.Band_144)
-                b.Add(new bandinfo( "144MHz", "2 m", 144000, 146000, 144000)) ;
+                b.Add(new bandinfo("144MHz", "2 m", 144000, 146000, 144000));
             if (Settings.Default.Band_432)
                 b.Add(new bandinfo("432MHz", "70 cm", 430000, 440000, 432000));
             if (Settings.Default.Band_1296)
@@ -1006,7 +1003,7 @@ namespace wtKST
 
         private void tsi_KST_Disconnect_Click(object sender, EventArgs e)
         {
-            if (Settings.Default.KST_AutoConnect 
+            if (Settings.Default.KST_AutoConnect
                 && MessageBox.Show("The KSTAutoConnect function is on. You will be reconnected automatically after 30secs. Do you want to switch this function off?", "KSTAutoConnect", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Settings.Default.KST_AutoConnect = false;
@@ -1031,15 +1028,15 @@ namespace wtKST
             if (Settings.Default.WinTest_Activate)
             {
                 // problem: what if wtQSO is still in use somewhere?
-                if (wtQSO != null) 
+                if (wtQSO != null)
                 {
                     if (wtQSO.GetType() == typeof(WinTest.WinTestLog))
                     {
-                            Console.WriteLine("wtQSO already WinTestLog");
-                            return;
+                        Console.WriteLine("wtQSO already WinTestLog");
+                        return;
                     }
                     else
-                    { 
+                    {
 
                         Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
                         ((IDisposable)wtQSO).Dispose();
@@ -1103,7 +1100,7 @@ namespace wtKST
             {
                 if (wtQSO != null)
                 {
- 
+
                     Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
                     wtQSO = null; // TODO: dispose?
                 }
@@ -1166,7 +1163,7 @@ namespace wtKST
                 {
                     // if marked as worked - but not in the log anymore, just leave it as "qrv"
                     // check if worked - only then remove the flag. If we touch everything, we may trigger unneeded redraws
-                    if (!found[Array.IndexOf(BANDS, band)] &&  QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
+                    if (!found[Array.IndexOf(BANDS, band)] && QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
                         call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], false);
                 }
             }
@@ -1212,45 +1209,45 @@ namespace wtKST
             {
                 if (wtQSO != null)
                 {
-                        lock (wtQSO)
+                    lock (wtQSO)
+                    {
+                        if (wtQSO_local_lock)
                         {
-                            if (wtQSO_local_lock)
+                            Console.WriteLine("ti_Main_Tick - skip Check_QSOs()");
+                        }
+                        else
+                        {
+                            wtQSO_local_lock = true;
+                            try
                             {
-                                Console.WriteLine("ti_Main_Tick - skip Check_QSOs()");
+                                MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
+
+                                if (wtQSO.GetType() == typeof(WinTestLog))
+                                    wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
+                                else if (wtQSO.GetType() == typeof(WtLogSync))
+                                    wtQSO.Get_QSOs(Settings.Default.WinTest_StationName);
+                                else if (wtQSO.GetType() == typeof(QARTestLogSync))
+                                    wtQSO.Get_QSOs("");
+                                if (!String.IsNullOrEmpty(wtQSO.MyLoc) && WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
+                                {
+                                    MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
+                                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    set_KST_Status();
+                                }
+                                wtQSO_local_lock = false;
+
+                                Check_QSOs();
                             }
-                            else
+                            catch
                             {
-                                wtQSO_local_lock = true;
-                                try
-                                {
-                                    MainDlg.Log.WriteMessage("KST wt Get_QSOs start.");
 
-                                    if (wtQSO.GetType() == typeof(WinTestLog))
-                                        wtQSO.Get_QSOs(Settings.Default.WinTest_INI_FileName);
-                                    else if (wtQSO.GetType() == typeof(WtLogSync))
-                                        wtQSO.Get_QSOs(Settings.Default.WinTest_StationName);
-                                    else if (wtQSO.GetType() == typeof(QARTestLogSync))
-                                        wtQSO.Get_QSOs("");
-                                    if (!String.IsNullOrEmpty(wtQSO.MyLoc) && WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
-                                    {
-                                        MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
-                                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                        set_KST_Status();
-                                    }
-                                    wtQSO_local_lock = false;
-
-                                    Check_QSOs();
-                                }
-                                catch
-                                {
-
-                                }
-                                finally
-                                {
-                                    wtQSO_local_lock = false;
-                                }
+                            }
+                            finally
+                            {
+                                wtQSO_local_lock = false;
                             }
                         }
+                    }
                 }
                 if (Settings.Default.AS_Active)
                     AS_send_ASWATCHLIST();
@@ -1360,8 +1357,8 @@ namespace wtKST
             {
                 p.Y += TitleBarHeight + Cursor.Size.Height;
             }
-            else 
-            if( p.Y + TitleBarHeight - Cursor.Size.Height + TextLineHeight - TextBlockHeight > 0)// move text above the mouse pointer
+            else
+            if (p.Y + TitleBarHeight - Cursor.Size.Height + TextLineHeight - TextBlockHeight > 0)// move text above the mouse pointer
             {
                 p.Y += TitleBarHeight - Cursor.Size.Height + TextLineHeight - TextBlockHeight;
             }
@@ -1644,7 +1641,7 @@ namespace wtKST
                 string call = row.Cells["CALL"].Value.ToString();
                 string name = row.Cells["NAME"].Value.ToString();
                 string loc = row.Cells["LOC"].Value.ToString();
-                if (column.Name == "CALL" || column.Name == "NAME" || column.Name == "LOC" || column.Name == "CONTACTED" )
+                if (column.Name == "CALL" || column.Name == "NAME" || column.Name == "LOC" || column.Name == "CONTACTED")
                 {
                     ToolTipText = string.Concat(new object[]
                     {
@@ -1698,7 +1695,7 @@ namespace wtKST
                     catch
                     {
                     }
-                    if (!QRVdb.worked( state ))
+                    if (!QRVdb.worked(state))
                     {
                         ToolTipText = column.Name.Replace("_", ".") + ": Left click to \ntoggle QRV info";
                     }
@@ -1708,7 +1705,7 @@ namespace wtKST
                         {
                             string band = column.Name;
                             DataRow[] findrow = wtQSO.QSO.Select(string.Format("[CALL] LIKE '*{0}*' AND [BAND] = '{1}'", WCCheck.WCCheck.Cut(call), band.Replace(".", "_")));
-                            if (findrow != null && findrow.Count()>0)
+                            if (findrow != null && findrow.Count() > 0)
                             {
                                 ToolTipText = string.Concat(new object[]
                                 {
@@ -1821,7 +1818,7 @@ namespace wtKST
                 }
             }
 
-            lock(AS_watchlist)
+            lock (AS_watchlist)
             {
                 AS_watchlist = watchlist;
             }
@@ -1866,7 +1863,7 @@ namespace wtKST
                 {
                     sort_by_dir = true;
                     dgv.Sort(dgv.Columns["DIR"], ListSortDirection.Ascending);
-            }
+                }
                 return;
             }
 
@@ -1984,7 +1981,7 @@ namespace wtKST
                         DataRow[] selectRow = KST.MSG_findcall(call);
 
                         this.cmn_userlist_chatReview.Visible = (selectRow.Length > 0);
-                        this.cmn_userlist_wtsked.Visible = (wts != null && wts.wtStatusList.Count>0);
+                        this.cmn_userlist_wtsked.Visible = (wts != null && wts.wtStatusList.Count > 0);
 
                         lv_Calls_control_shown_from_Call = call;
 
@@ -2057,13 +2054,13 @@ namespace wtKST
                         lv_msg_control_url_shown_from_Call = rx.Replace(msg, "$1"); // we only take the first match...
 
                         this.cmn_msglist_openURL.Visible = true;
-                }
+                    }
                     else
                     {
                         this.cmn_msglist_openURL.Visible = false;
-            }
+                    }
                     this.cmn_msglist.Show(lv_Msg, p);
-        }
+                }
             }
         }
 
@@ -2102,13 +2099,13 @@ namespace wtKST
                         lv_msg_control_url_shown_from_Call = rx.Replace(msg, "$1"); // we only take the first match...
 
                         this.cmn_msglist_openURL.Visible = true;
-                }
+                    }
                     else
                     {
                         this.cmn_msglist_openURL.Visible = false;
-            }
+                    }
                     this.cmn_msglist.Show(lv_MyMsg, p);
-        }
+                }
             }
         }
 
@@ -2176,7 +2173,7 @@ namespace wtKST
         /// <returns>frequency in MHz</returns>
         private uint get_sked_band_qrg(string band)
         {
-            foreach( var b in new List<bandinfo>(selected_bands()))
+            foreach (var b in new List<bandinfo>(selected_bands()))
             {
                 if (b.band_wavelength_name.Equals(band))
                     return b.band_center_activity / 1000;
@@ -2204,7 +2201,7 @@ namespace wtKST
 
                 if (!String.IsNullOrEmpty(lv_Calls_control_shown_from_Call))
                     return lv_Calls_control_shown_from_Call;
-                }
+            }
             else if (Control.Name.Equals("lv_Msg") || Control.Name.Equals("lv_MyMsg"))
             {
                 Console.WriteLine(Control.GetType().ToString());
@@ -2267,7 +2264,7 @@ namespace wtKST
                 // [JO02OB - 113\\260] AP in 2min
                 if (findrow != null)
                     notes = String.Format("[{0} - {1}°]", findrow["LOC"].ToString(), findrow["DIR"].ToString());
-                wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()), 
+                wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()),
                                         notes, last_sked_qrg, kst_sked_qrg, kst_sked_mode, kst_sked_band_freq);
                 if (wtskdlg.ShowDialog() == DialogResult.OK)
                 {
@@ -2284,7 +2281,7 @@ namespace wtKST
 
         private void cmn_item_chatReview_Click(object sender, EventArgs e)
         {
-            ToolStripItem clickedItem =  sender as ToolStripItem;
+            ToolStripItem clickedItem = sender as ToolStripItem;
             string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
 
             if (!String.IsNullOrEmpty(call))
@@ -2324,7 +2321,7 @@ namespace wtKST
             if (!KST.Send(cb_Command.Text))
             {
                 MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
-        }
+            }
             else
             {
                 try
@@ -2529,14 +2526,14 @@ namespace wtKST
                 AS_Calls[] myAs_List;
 
                 if (AS_list.Count == 0)
-                        continue;
+                    continue;
                 lock (AS_list)
                 {
                     myAs_List = new AS_Calls[AS_list.Count];
                     AS_list.CopyTo(myAs_List);
                 }
 
-                foreach(AS_Calls a in myAs_List)
+                foreach (AS_Calls a in myAs_List)
                 {
                     if (!Settings.Default.AS_Active)
                         break;
@@ -2599,7 +2596,7 @@ namespace wtKST
             string newtext = "";
             if (e.ProgressPercentage > 0)
             {
-                  newtext = AS_if.GetNearestPlanePotential(dxcall);
+                newtext = AS_if.GetNearestPlanePotential(dxcall);
             }
             else /* e.ProgressPercentage == 0 or e.ProgressPercentage == -1 */
             {
@@ -3417,12 +3414,12 @@ namespace wtKST
             string band = " ";
 
 
-            for (int i = 0; i < macro_default_Station.DropDownItems.Count; i ++)
+            for (int i = 0; i < macro_default_Station.DropDownItems.Count; i++)
             {
                 ToolStripMenuItem item = macro_default_Station.DropDownItems[i] as ToolStripMenuItem;
                 if (item.Checked)
-                {                    
-                    var wtElem = wts.wtStatusList.SingleOrDefault(x => x.from == item.Text );
+                {
+                    var wtElem = wts.wtStatusList.SingleOrDefault(x => x.from == item.Text);
 
                     passfreq = wtElem.passfreq;
                     band = wtElem.band;
@@ -3477,7 +3474,7 @@ namespace wtKST
         private void update_station_selection_list()
         {
             string selItem = " ";
-            for (int i = 0; i < macro_default_Station.DropDownItems.Count; i ++)
+            for (int i = 0; i < macro_default_Station.DropDownItems.Count; i++)
             {
                 ToolStripMenuItem item = macro_default_Station.DropDownItems[i] as ToolStripMenuItem;
                 if (item.Checked)
@@ -3500,7 +3497,7 @@ namespace wtKST
 
         private void macro_default_Station_DropDownOpening(object sender, EventArgs e)
         {
-                update_station_selection_list();
+            update_station_selection_list();
         }
 
         private void macro_default_Station_CheckedChanged(object sender, EventArgs e)
@@ -3515,7 +3512,7 @@ namespace wtKST
             }
 
             selItem.Checked = !selItem_State;
-            
+
         }
 
         private void macro_RefreshMacroText()
