@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
 
 namespace WinTest
 {
@@ -24,7 +20,7 @@ namespace WinTest
             try
             {
                 UdpClient client = new UdpClient();
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast , 1);
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
                 client.Client.ReceiveTimeout = 10000;

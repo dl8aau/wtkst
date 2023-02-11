@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -85,7 +81,7 @@ namespace wtKST
             // https://stackoverflow.com/a/11708952 - strange hack... width is width(text+text) - width(text)
             SizeF textSize = e.Graphics.MeasureString(text, e.CellStyle.Font, e.CellBounds.Width, sf);
             float textHeight = textSize.Height;
-            float textWidth = e.Graphics.MeasureString(text + text, e.CellStyle.Font, e.CellBounds.Width, sf).Width 
+            float textWidth = e.Graphics.MeasureString(text + text, e.CellStyle.Font, e.CellBounds.Width, sf).Width
                 - textSize.Width;
             if (e.ColumnIndex == dataGridView1.Columns["Message"].Index)
             {

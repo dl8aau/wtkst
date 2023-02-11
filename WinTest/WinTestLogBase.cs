@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 
 namespace WinTest
 {
@@ -10,7 +7,7 @@ namespace WinTest
     {
         public DataRow QSO { get; }
     }
-    public abstract class WinTestLogBase: IDisposable
+    public abstract class WinTestLogBase : IDisposable
     {
         public DataTable QSO { get; protected set; }
         public string MyLoc { get; protected set; }

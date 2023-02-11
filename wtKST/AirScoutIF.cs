@@ -2,12 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using WinTest;
 using wtKST.Properties;
@@ -81,7 +79,7 @@ namespace wtKST
         {
             string qrg = qrg_from_settings();
             wtMessage Msg = new wtMessage(WTMESSAGES.ASWATCHLIST, Settings.Default.AS_My_Name,
-                                Settings.Default.AS_Local_Active ? Settings.Default.AS_Local_Name : Settings.Default.AS_Server_Name, 
+                                Settings.Default.AS_Local_Active ? Settings.Default.AS_Local_Name : Settings.Default.AS_Server_Name,
                                 string.Concat(new string[]
             {
                 qrg, ",", WCCheck.WCCheck.SanitizeCall(MyCall), ",", MyLoc, watchlist
@@ -138,7 +136,7 @@ namespace wtKST
                 .GetAllNetworkInterfaces()
                 .Where(n => n.OperationalStatus == OperationalStatus.Up)
                 .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                .Where(n => n.GetIPProperties().GatewayAddresses.Count > 0 ) // only interfaces with a gateway
+                .Where(n => n.GetIPProperties().GatewayAddresses.Count > 0) // only interfaces with a gateway
                 .SelectMany(n => n.GetIPProperties()?.UnicastAddresses)
                 .Where(g => g.Address.AddressFamily == AddressFamily.InterNetwork) // filter IPv4
                 .Select(g => g?.Address)
@@ -158,7 +156,7 @@ namespace wtKST
             stopWatch.Reset();
             stopWatch.Start();
 #endif
-            wtMessage Msg = new wtMessage(WTMESSAGES.ASSETPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name, 
+            wtMessage Msg = new wtMessage(WTMESSAGES.ASSETPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name,
                 string.Concat(new string[] { qrg, ",", mycall, ",", myloc, ",", dxcall, ",", dxloc }));
             try
             {

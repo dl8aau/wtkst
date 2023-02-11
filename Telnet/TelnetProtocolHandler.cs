@@ -29,777 +29,777 @@ using System.Drawing;
 
 namespace De.Mud.Telnet
 {
-	/// <summary>
-	/// This is a telnet protocol handler. The handler needs implementations
-	/// for several methods to handle the telnet options and to be able to
-	/// read and write the buffer.
-	/// </summary>
-	public abstract class TelnetProtocolHandler
-	{
-		#region Globals and properties
+    /// <summary>
+    /// This is a telnet protocol handler. The handler needs implementations
+    /// for several methods to handle the telnet options and to be able to
+    /// read and write the buffer.
+    /// </summary>
+    public abstract class TelnetProtocolHandler
+    {
+        #region Globals and properties
 
-		/// <summary>
-		/// temporary buffer for data-telnetstuff-data transformation
-		/// </summary>
-		private byte[] tempbuf = new byte[0];
+        /// <summary>
+        /// temporary buffer for data-telnetstuff-data transformation
+        /// </summary>
+        private byte[] tempbuf = new byte[0];
 
-		/// <summary>
-		/// the data sent on pressing [RETURN] \n
-		/// </summary>
-		private byte[] crlf = new byte[2];
-		/// <summary>
-		/// the data sent on pressing [LineFeed] \r
-		/// </summary>
-		private byte[] cr = new byte[2];
+        /// <summary>
+        /// the data sent on pressing [RETURN] \n
+        /// </summary>
+        private byte[] crlf = new byte[2];
+        /// <summary>
+        /// the data sent on pressing [LineFeed] \r
+        /// </summary>
+        private byte[] cr = new byte[2];
 
-		/// <summary>
-		/// Gets or sets the data sent on pressing [RETURN] \n
-		/// </summary>
-		public string CRLF
-		{
-			get
-			{
-				return System.Text.Encoding.Default.GetString(crlf);
-			}
-			set
-			{
-				crlf = System.Text.Encoding.Default.GetBytes(value);
-			}
-		}
+        /// <summary>
+        /// Gets or sets the data sent on pressing [RETURN] \n
+        /// </summary>
+        public string CRLF
+        {
+            get
+            {
+                return System.Text.Encoding.Default.GetString(crlf);
+            }
+            set
+            {
+                crlf = System.Text.Encoding.Default.GetBytes(value);
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets the data sent on pressing [LineFeed] \r
-		/// </summary>
-		public string CR
-		{ 
-			get 
-			{
-				return System.Text.Encoding.Default.GetString(cr);
-			}
-			set 
-			{
-				cr = System.Text.Encoding.Default.GetBytes(value);
-			}
-		}
-        
-		/// <summary>
-		/// The current terminal type for TTYPE telnet option.
-		/// </summary>
-		protected string terminalType = "dumb"; 
+        /// <summary>
+        /// Gets or sets the data sent on pressing [LineFeed] \r
+        /// </summary>
+        public string CR
+        {
+            get
+            {
+                return System.Text.Encoding.Default.GetString(cr);
+            }
+            set
+            {
+                cr = System.Text.Encoding.Default.GetBytes(value);
+            }
+        }
 
-		/// <summary>
-		/// The window size of the terminal for the NAWS telnet option.
-		/// </summary>
-		protected Size windowSize = Size.Empty;
+        /// <summary>
+        /// The current terminal type for TTYPE telnet option.
+        /// </summary>
+        protected string terminalType = "dumb";
 
-		/// <summary>
-		/// Set the local echo option of telnet.
-		/// </summary>
-		/// <param name="echo">true for local echo, false for no local echo</param>
-		protected abstract void SetLocalEcho(bool echo);
+        /// <summary>
+        /// The window size of the terminal for the NAWS telnet option.
+        /// </summary>
+        protected Size windowSize = Size.Empty;
 
-		/// <summary>
-		/// Generate an EOR (end of record) request. For use by prompt displaying.
-		/// </summary>
-		protected abstract void NotifyEndOfRecord();
+        /// <summary>
+        /// Set the local echo option of telnet.
+        /// </summary>
+        /// <param name="echo">true for local echo, false for no local echo</param>
+        protected abstract void SetLocalEcho(bool echo);
 
-		/// <summary>
-		/// Send data to the remote host.
-		/// </summary>
-		/// <param name="b">array of bytes to send</param>
-		protected abstract void Write(byte[] b);
+        /// <summary>
+        /// Generate an EOR (end of record) request. For use by prompt displaying.
+        /// </summary>
+        protected abstract void NotifyEndOfRecord();
 
-		/// <summary>
-		/// Send one byte to the remote host.
-		/// </summary>
-		/// <param name="b">the byte to be sent</param>
-		private void Write(byte b) 
-		{
-			Write(new byte[] {b});
-		}
+        /// <summary>
+        /// Send data to the remote host.
+        /// </summary>
+        /// <param name="b">array of bytes to send</param>
+        protected abstract void Write(byte[] b);
 
-		/// <summary>
-		/// Reset the protocol handler. This may be necessary after the
-		/// connection was closed or some other problem occured.
-		/// </summary>
-		protected void Reset() 
-		{
-			neg_state = 0;
-			receivedDX = new byte[256]; 
-			sentDX = new byte[256];
-			receivedWX = new byte[256]; 
-			sentWX = new byte[256];
-		}
+        /// <summary>
+        /// Send one byte to the remote host.
+        /// </summary>
+        /// <param name="b">the byte to be sent</param>
+        private void Write(byte b)
+        {
+            Write(new byte[] { b });
+        }
 
-		#endregion
+        /// <summary>
+        /// Reset the protocol handler. This may be necessary after the
+        /// connection was closed or some other problem occured.
+        /// </summary>
+        protected void Reset()
+        {
+            neg_state = 0;
+            receivedDX = new byte[256];
+            sentDX = new byte[256];
+            receivedWX = new byte[256];
+            sentWX = new byte[256];
+        }
 
-		/// <summary>
-		/// Create a new telnet protocol handler.
-		/// </summary>
-		public TelnetProtocolHandler() 
-		{
-			Reset();
+        #endregion
 
-			crlf[0] = 13; 
-			crlf[1] = 10;
-			cr[0] = 13; 
-			cr[1] = 0;
-		}
+        /// <summary>
+        /// Create a new telnet protocol handler.
+        /// </summary>
+        public TelnetProtocolHandler()
+        {
+            Reset();
 
-		/// <summary>
-		/// state variable for telnet negotiation reader
-		/// </summary>
-		private byte neg_state = 0;
-		
-		/// <summary>
-		/// What IAC SB we are handling right now
-		/// </summary>
-		private byte current_sb;
+            crlf[0] = 13;
+            crlf[1] = 10;
+            cr[0] = 13;
+            cr[1] = 0;
+        }
 
-		#region Telnet protocol codes
+        /// <summary>
+        /// state variable for telnet negotiation reader
+        /// </summary>
+        private byte neg_state = 0;
 
-		// constants for the negotiation state
-		private const byte STATE_DATA            = 0;
-		private const byte STATE_IAC             = 1;
-		private const byte STATE_IACSB           = 2;
-		private const byte STATE_IACWILL         = 3;
-		private const byte STATE_IACDO           = 4;
-		private const byte STATE_IACWONT         = 5;
-		private const byte STATE_IACDONT         = 6;
-		private const byte STATE_IACSBIAC        = 7;
-		private const byte STATE_IACSBDATA       = 8;
-		private const byte STATE_IACSBDATAIAC    = 9;
+        /// <summary>
+        /// What IAC SB we are handling right now
+        /// </summary>
+        private byte current_sb;
 
-		/// <summary>
-		/// IAC - init sequence for telnet negotiation.
-		/// </summary>
-		private const byte IAC             = 255;
-		/// <summary>
-		/// [IAC] End Of Record
-		/// </summary>
-		private const byte EOR             = 239;
-		/// <summary>
-		/// [IAC] WILL
-		/// </summary>
-		private const byte WILL            = 251;
-		/// <summary>
-		/// [IAC] WONT
-		/// </summary>
-		private const byte WONT            = 252;
-		/// <summary>
-		/// [IAC] DO
-		/// </summary>
-		private const byte DO              = 253;
-		/// <summary>
-		/// [IAC] DONT
-		/// </summary>
-		private const byte DONT            = 254;
-		/// <summary>
-		/// [IAC] Sub Begin
-		/// </summary>
-		private const byte SB              = 250;
-		/// <summary>
-		/// [IAC] Sub End
-		/// </summary>
-		private const byte SE              = 240;
-		/// <summary>
-		/// Telnet option: binary mode
-		/// </summary>
-		private const byte TELOPT_BINARY   = 0;  /* binary mode */
-		/// <summary>
-		/// Telnet option: echo text
-		/// </summary>
-		private const byte TELOPT_ECHO     = 1;  /* echo on/off */
-		/// <summary>
-		/// Telnet option: sga
-		/// </summary>
-		private const byte TELOPT_SGA      = 3;  /* supress go ahead */
-		/// <summary>
-		/// Telnet option: End Of Record
-		/// </summary>
-		private const byte TELOPT_EOR      = 25; /* end of record */
-		/// <summary>
-		/// Telnet option: Negotiate About Window Size
-		/// </summary>
-		private const byte TELOPT_NAWS     = 31; /* NA-WindowSize*/
-		/// <summary>
-		/// Telnet option: Terminal Type
-		/// </summary>
-		private const byte TELOPT_TTYPE    = 24;  /* terminal type */
+        #region Telnet protocol codes
 
-		private static byte[] IACWILL  = { IAC, WILL };
-		private static byte[] IACWONT  = { IAC, WONT };
-		private static byte[] IACDO    = { IAC, DO   };
-		private static byte[] IACDONT  = { IAC, DONT };
-		private static byte[] IACSB    = { IAC, SB   };
-		private static byte[] IACSE    = { IAC, SE   };
+        // constants for the negotiation state
+        private const byte STATE_DATA = 0;
+        private const byte STATE_IAC = 1;
+        private const byte STATE_IACSB = 2;
+        private const byte STATE_IACWILL = 3;
+        private const byte STATE_IACDO = 4;
+        private const byte STATE_IACWONT = 5;
+        private const byte STATE_IACDONT = 6;
+        private const byte STATE_IACSBIAC = 7;
+        private const byte STATE_IACSBDATA = 8;
+        private const byte STATE_IACSBDATAIAC = 9;
 
-		/// <summary>
-		/// Telnet option qualifier 'IS'
-		/// </summary>
-		private static byte TELQUAL_IS = (byte)0;
-		/// <summary>
-		/// Telnet option qualifier 'SEND'
-		/// </summary>
-		private static byte TELQUAL_SEND = (byte)1;
+        /// <summary>
+        /// IAC - init sequence for telnet negotiation.
+        /// </summary>
+        private const byte IAC = 255;
+        /// <summary>
+        /// [IAC] End Of Record
+        /// </summary>
+        private const byte EOR = 239;
+        /// <summary>
+        /// [IAC] WILL
+        /// </summary>
+        private const byte WILL = 251;
+        /// <summary>
+        /// [IAC] WONT
+        /// </summary>
+        private const byte WONT = 252;
+        /// <summary>
+        /// [IAC] DO
+        /// </summary>
+        private const byte DO = 253;
+        /// <summary>
+        /// [IAC] DONT
+        /// </summary>
+        private const byte DONT = 254;
+        /// <summary>
+        /// [IAC] Sub Begin
+        /// </summary>
+        private const byte SB = 250;
+        /// <summary>
+        /// [IAC] Sub End
+        /// </summary>
+        private const byte SE = 240;
+        /// <summary>
+        /// Telnet option: binary mode
+        /// </summary>
+        private const byte TELOPT_BINARY = 0;  /* binary mode */
+        /// <summary>
+        /// Telnet option: echo text
+        /// </summary>
+        private const byte TELOPT_ECHO = 1;  /* echo on/off */
+        /// <summary>
+        /// Telnet option: sga
+        /// </summary>
+        private const byte TELOPT_SGA = 3;  /* supress go ahead */
+        /// <summary>
+        /// Telnet option: End Of Record
+        /// </summary>
+        private const byte TELOPT_EOR = 25; /* end of record */
+        /// <summary>
+        /// Telnet option: Negotiate About Window Size
+        /// </summary>
+        private const byte TELOPT_NAWS = 31; /* NA-WindowSize*/
+        /// <summary>
+        /// Telnet option: Terminal Type
+        /// </summary>
+        private const byte TELOPT_TTYPE = 24;  /* terminal type */
 
-		#endregion
+        private static byte[] IACWILL = { IAC, WILL };
+        private static byte[] IACWONT = { IAC, WONT };
+        private static byte[] IACDO = { IAC, DO };
+        private static byte[] IACDONT = { IAC, DONT };
+        private static byte[] IACSB = { IAC, SB };
+        private static byte[] IACSE = { IAC, SE };
 
-		/// <summary>
-		/// What IAC DO(NT) request do we have received already ?
-		/// </summary>
-		private byte[] receivedDX;
-		/// <summary>
-		/// What IAC WILL/WONT request do we have received already ?
-		/// </summary>
-		private byte[] receivedWX;
-		/// <summary>
-		/// What IAC DO/DONT request do we have sent already ?
-		/// </summary>
-		private byte[] sentDX;
-		/// <summary>
-		/// What IAC WILL/WONT request do we have sent already ?
-		/// </summary>
-		private byte[] sentWX;
+        /// <summary>
+        /// Telnet option qualifier 'IS'
+        /// </summary>
+        private static byte TELQUAL_IS = (byte)0;
+        /// <summary>
+        /// Telnet option qualifier 'SEND'
+        /// </summary>
+        private static byte TELQUAL_SEND = (byte)1;
 
-		#region The actual negotiation handling for the telnet protocol
+        #endregion
 
-		/// <summary>
-		/// Send a Telnet Escape character
-		/// </summary>
-		/// <param name="code">IAC code</param>
-		protected void SendTelnetControl(byte code)
-		{
-			byte[] b = new byte[2];
+        /// <summary>
+        /// What IAC DO(NT) request do we have received already ?
+        /// </summary>
+        private byte[] receivedDX;
+        /// <summary>
+        /// What IAC WILL/WONT request do we have received already ?
+        /// </summary>
+        private byte[] receivedWX;
+        /// <summary>
+        /// What IAC DO/DONT request do we have sent already ?
+        /// </summary>
+        private byte[] sentDX;
+        /// <summary>
+        /// What IAC WILL/WONT request do we have sent already ?
+        /// </summary>
+        private byte[] sentWX;
 
-			b[0] = IAC;
-			b[1] = code;
-			Write(b);
-		}
+        #region The actual negotiation handling for the telnet protocol
 
-		/// <summary>
-		/// Handle an incoming IAC SB type bytes IAC SE
-		/// </summary>
-		/// <param name="type">type of SB</param>
-		/// <param name="sbdata">byte array as bytes</param>
-		/// <param name="sbcount">nr of bytes. may be 0 too</param>
-		private void HandleSB(byte type, byte[] sbdata, int sbcount)
-		{
-			switch (type)
-			{
-				case TELOPT_TTYPE:
-					if (sbcount > 0 && sbdata[0] == TELQUAL_SEND)
-					{
-						Write(IACSB);
-						Write(TELOPT_TTYPE);
-						Write(TELQUAL_IS);
-						/* FIXME: need more logic here if we use 
+        /// <summary>
+        /// Send a Telnet Escape character
+        /// </summary>
+        /// <param name="code">IAC code</param>
+        protected void SendTelnetControl(byte code)
+        {
+            byte[] b = new byte[2];
+
+            b[0] = IAC;
+            b[1] = code;
+            Write(b);
+        }
+
+        /// <summary>
+        /// Handle an incoming IAC SB type bytes IAC SE
+        /// </summary>
+        /// <param name="type">type of SB</param>
+        /// <param name="sbdata">byte array as bytes</param>
+        /// <param name="sbcount">nr of bytes. may be 0 too</param>
+        private void HandleSB(byte type, byte[] sbdata, int sbcount)
+        {
+            switch (type)
+            {
+                case TELOPT_TTYPE:
+                    if (sbcount > 0 && sbdata[0] == TELQUAL_SEND)
+                    {
+                        Write(IACSB);
+                        Write(TELOPT_TTYPE);
+                        Write(TELQUAL_IS);
+                        /* FIXME: need more logic here if we use 
 						* more than one terminal type
 						*/
-						Write(System.Text.Encoding.Default.GetBytes(terminalType));
-						Write(IACSE);
-					}
-					break;
-			}
-		}
-
-	
-		/// <summary>
-		/// Transpose special telnet codes like 0xff or newlines to values
-		/// that are compliant to the protocol. This method will also send
-		/// the buffer immediately after transposing the data.
-		/// </summary>
-		/// <param name="buf">the data buffer to be sent</param>
-		protected void Transpose(byte[] buf)
-		{
-			int i;
-
-			byte[] nbuf, xbuf;
-			int nbufptr = 0;
-			nbuf = new byte[buf.Length * 2];
-
-			for (i = 0; i < buf.Length; i++)
-			{
-				switch (buf[i])
-				{
-						// Escape IAC twice in stream ... to be telnet protocol compliant
-						// this is there in binary and non-binary mode.
-					case IAC:
-						nbuf[nbufptr++] = IAC;
-						nbuf[nbufptr++] = IAC;
-						break;
-						// We need to heed RFC 854. LF (\n) is 10, CR (\r) is 13
-						// we assume that the Terminal sends \n for lf+cr and \r for just cr
-						// linefeed+carriage return is CR LF  
-					case 10:    // \n
-						if (receivedDX[TELOPT_BINARY + 128] != DO)
-						{
-							while (nbuf.Length - nbufptr < crlf.Length)
-							{
-								xbuf = new byte[nbuf.Length * 2];
-								Array.Copy(nbuf, 0, xbuf, 0, nbufptr);
-								nbuf = xbuf;
-							}
-							for (int j = 0; j < crlf.Length; j++)
-								nbuf[nbufptr++] = crlf[j];
-							break;
-						} 
-						else 
-						{
-							// copy verbatim in binary mode.
-							nbuf[nbufptr++] = buf[i];
-						}
-						break;
-						// carriage return is CR NUL */ 
-					case 13:    // \r
-						if (receivedDX[TELOPT_BINARY + 128] != DO) 
-						{
-							while (nbuf.Length - nbufptr < cr.Length)
-							{
-								xbuf = new byte[nbuf.Length * 2];
-								Array.Copy(nbuf, 0, xbuf, 0, nbufptr);
-								nbuf = xbuf;
-							}
-							for (int j = 0; j < cr.Length; j++)
-								nbuf[nbufptr++] = cr[j];
-						} 
-						else
-						{
-							// copy verbatim in binary mode.
-							nbuf[nbufptr++] = buf[i];
-						}
-						break;
-						// all other characters are just copied
-					default:
-						nbuf[nbufptr++] = buf[i];
-						break;
-				}
-			}
-			xbuf = new byte[nbufptr];
-			Array.Copy(nbuf, 0, xbuf, 0, nbufptr);
-			Write(xbuf);
-		}
+                        Write(System.Text.Encoding.Default.GetBytes(terminalType));
+                        Write(IACSE);
+                    }
+                    break;
+            }
+        }
 
 
-		/// <summary>
-		/// Handle telnet protocol negotiation. The buffer will be parsed
-		/// and necessary actions are taken according to the telnet protocol.
-		/// <see cref="RFC-Telnet"/>
-		/// </summary>
-		/// <param name="nbuf">the byte buffer used for negotiation</param>
-		/// <returns>a new buffer after negotiation</returns>
-		protected int Negotiate(byte[] nbuf)
-		{
-			int count = tempbuf.Length;
-			if (count == 0)     // buffer is empty.
-				return -1;
+        /// <summary>
+        /// Transpose special telnet codes like 0xff or newlines to values
+        /// that are compliant to the protocol. This method will also send
+        /// the buffer immediately after transposing the data.
+        /// </summary>
+        /// <param name="buf">the data buffer to be sent</param>
+        protected void Transpose(byte[] buf)
+        {
+            int i;
 
-			byte[] sendbuf = new byte[3];
-			byte[] sbbuf   = new byte[tempbuf.Length];
-			byte[] buf     = tempbuf;
-			
-			byte b;
-			byte reply;
-			
-			int sbcount = 0;
-			int boffset = 0;
-			int noffset = 0;
+            byte[] nbuf, xbuf;
+            int nbufptr = 0;
+            nbuf = new byte[buf.Length * 2];
 
-			bool done    = false;
-			bool foundSE = false;
-			
-			//bool dobreak = false;
+            for (i = 0; i < buf.Length; i++)
+            {
+                switch (buf[i])
+                {
+                    // Escape IAC twice in stream ... to be telnet protocol compliant
+                    // this is there in binary and non-binary mode.
+                    case IAC:
+                        nbuf[nbufptr++] = IAC;
+                        nbuf[nbufptr++] = IAC;
+                        break;
+                    // We need to heed RFC 854. LF (\n) is 10, CR (\r) is 13
+                    // we assume that the Terminal sends \n for lf+cr and \r for just cr
+                    // linefeed+carriage return is CR LF  
+                    case 10:    // \n
+                        if (receivedDX[TELOPT_BINARY + 128] != DO)
+                        {
+                            while (nbuf.Length - nbufptr < crlf.Length)
+                            {
+                                xbuf = new byte[nbuf.Length * 2];
+                                Array.Copy(nbuf, 0, xbuf, 0, nbufptr);
+                                nbuf = xbuf;
+                            }
+                            for (int j = 0; j < crlf.Length; j++)
+                                nbuf[nbufptr++] = crlf[j];
+                            break;
+                        }
+                        else
+                        {
+                            // copy verbatim in binary mode.
+                            nbuf[nbufptr++] = buf[i];
+                        }
+                        break;
+                    // carriage return is CR NUL */ 
+                    case 13:    // \r
+                        if (receivedDX[TELOPT_BINARY + 128] != DO)
+                        {
+                            while (nbuf.Length - nbufptr < cr.Length)
+                            {
+                                xbuf = new byte[nbuf.Length * 2];
+                                Array.Copy(nbuf, 0, xbuf, 0, nbufptr);
+                                nbuf = xbuf;
+                            }
+                            for (int j = 0; j < cr.Length; j++)
+                                nbuf[nbufptr++] = cr[j];
+                        }
+                        else
+                        {
+                            // copy verbatim in binary mode.
+                            nbuf[nbufptr++] = buf[i];
+                        }
+                        break;
+                    // all other characters are just copied
+                    default:
+                        nbuf[nbufptr++] = buf[i];
+                        break;
+                }
+            }
+            xbuf = new byte[nbufptr];
+            Array.Copy(nbuf, 0, xbuf, 0, nbufptr);
+            Write(xbuf);
+        }
 
-			while (!done && (boffset < count && noffset < nbuf.Length))
-			{
-				b = buf[boffset++];
 
-				// of course, byte is a signed entity (-128 -> 127)
-				// but apparently the SGI Netscape 3.0 doesn't seem
-				// to care and provides happily values up to 255
-				if (b >= 128)
-					b = (byte)((int)b - 256);
+        /// <summary>
+        /// Handle telnet protocol negotiation. The buffer will be parsed
+        /// and necessary actions are taken according to the telnet protocol.
+        /// <see cref="RFC-Telnet"/>
+        /// </summary>
+        /// <param name="nbuf">the byte buffer used for negotiation</param>
+        /// <returns>a new buffer after negotiation</returns>
+        protected int Negotiate(byte[] nbuf)
+        {
+            int count = tempbuf.Length;
+            if (count == 0)     // buffer is empty.
+                return -1;
 
-				switch (neg_state)
-				{
-					case STATE_DATA:
-						if (b == IAC)
-						{
-							neg_state = STATE_IAC;
-							//dobreak = true; // leave the loop so we can sync.
-						} 
-						else 
-						{
-							nbuf[noffset++] = b;
-						}
-						break;
-					
-					case STATE_IAC:
-						switch (b)
-						{
-							case IAC:
-								neg_state = STATE_DATA;
-								nbuf[noffset++] = IAC; // got IAC, IAC: set option to IAC
-								break;
-							
-							case WILL:
-								neg_state = STATE_IACWILL;
-								break;
-							
-							case WONT:
-								neg_state = STATE_IACWONT;
-								break;
-							
-							case DONT:
-								neg_state = STATE_IACDONT;
-								break;
-							
-							case DO:
-								neg_state = STATE_IACDO;
-								break;
-							
-							case EOR:
-								NotifyEndOfRecord();
-								//dobreak = true; // leave the loop so we can sync.
-								neg_state = STATE_DATA;
-								break;
-							
-							case SB:
-								neg_state = STATE_IACSB;
-								sbcount = 0;
-								break;
-							
-							default:
-								neg_state = STATE_DATA;
-								break;
-						}
-						break;
-					
-					case STATE_IACWILL:
-						switch(b)
-						{
-							case TELOPT_ECHO:
-								reply = DO;
-								SetLocalEcho(false);
-								break;
+            byte[] sendbuf = new byte[3];
+            byte[] sbbuf = new byte[tempbuf.Length];
+            byte[] buf = tempbuf;
 
-							case TELOPT_SGA:
-								reply = DO;
-								break;
-							
-							case TELOPT_EOR:
-								reply = DO;
-								break;
+            byte b;
+            byte reply;
 
-							case TELOPT_BINARY:
-								reply = DO;
-								break;
+            int sbcount = 0;
+            int boffset = 0;
+            int noffset = 0;
 
-							default:
-								reply = DONT;
-								break;
-						}
-						
-						if (reply != sentDX[b + 128] || WILL != receivedWX[b + 128])
-						{
-							sendbuf[0] = IAC;
-							sendbuf[1] = reply;
-							sendbuf[2] = b;
-							Write(sendbuf);
-							
-							sentDX[b + 128] = reply;
-							receivedWX[b + 128] = WILL;
-						}
+            bool done = false;
+            bool foundSE = false;
 
-						neg_state = STATE_DATA;
-						break;
-					
-					case STATE_IACWONT:
-						
-						switch(b) 
-						{
-							case TELOPT_ECHO:
-								SetLocalEcho(true);
-								reply = DONT;
-								break;
-							
-							case TELOPT_SGA:
-								reply = DONT;
-								break;
+            //bool dobreak = false;
 
-							case TELOPT_EOR:
-								reply = DONT;
-								break;
+            while (!done && (boffset < count && noffset < nbuf.Length))
+            {
+                b = buf[boffset++];
 
-							case TELOPT_BINARY:
-								reply = DONT;
-								break;
+                // of course, byte is a signed entity (-128 -> 127)
+                // but apparently the SGI Netscape 3.0 doesn't seem
+                // to care and provides happily values up to 255
+                if (b >= 128)
+                    b = (byte)((int)b - 256);
 
-							default:
-								reply = DONT;
-								break;
-						}
+                switch (neg_state)
+                {
+                    case STATE_DATA:
+                        if (b == IAC)
+                        {
+                            neg_state = STATE_IAC;
+                            //dobreak = true; // leave the loop so we can sync.
+                        }
+                        else
+                        {
+                            nbuf[noffset++] = b;
+                        }
+                        break;
 
-						if(reply != sentDX[b + 128] || WONT != receivedWX[b + 128])
-						{
-							sendbuf[0] = IAC;
-							sendbuf[1] = reply;
-							sendbuf[2] = b;
-							Write(sendbuf);
-							
-							sentDX[b + 128] = reply;
-							receivedWX[b + 128] = WILL;
-						}
+                    case STATE_IAC:
+                        switch (b)
+                        {
+                            case IAC:
+                                neg_state = STATE_DATA;
+                                nbuf[noffset++] = IAC; // got IAC, IAC: set option to IAC
+                                break;
 
-						neg_state = STATE_DATA;
-						break;
-					
-					case STATE_IACDO:
-						switch (b)
-						{
-							case TELOPT_ECHO:
-								reply = WILL;
-								SetLocalEcho(true);
-								break;
-							
-							case TELOPT_SGA:
-								reply = WILL;
-								break;
-							
-							case TELOPT_TTYPE:
-								reply = WILL;
-								break;
-							
-							case TELOPT_BINARY:
-								reply = WILL;
-								break;
-							
-							case TELOPT_NAWS:
-								Size size = windowSize;
-								receivedDX[b] = DO;
+                            case WILL:
+                                neg_state = STATE_IACWILL;
+                                break;
 
-								if(size.GetType() != typeof(Size))
-								{
-									// this shouldn't happen
-									Write(IAC);
-									Write(WONT);
-									Write(TELOPT_NAWS);
-									reply = WONT;
-									sentWX[b] = WONT;
-									break;
-								}
+                            case WONT:
+                                neg_state = STATE_IACWONT;
+                                break;
 
-								reply = WILL;
-								sentWX[b] = WILL;
-								sendbuf[0]=IAC;
-								sendbuf[1]=WILL;
-								sendbuf[2]=TELOPT_NAWS;
-								
-								Write(sendbuf);
-								Write(IAC);
-								Write(SB);
-								Write(TELOPT_NAWS);
-								Write((byte) (size.Width >> 8));
-								Write((byte) (size.Width & 0xff));
-								Write((byte) (size.Height >> 8));
-								Write((byte) (size.Height & 0xff));
-								Write(IAC);Write(SE);
-								break;
-							
-							default:
-								reply = WONT;
-								break;
-						}
+                            case DONT:
+                                neg_state = STATE_IACDONT;
+                                break;
 
-						if (reply != sentWX[128 + b] || DO != receivedDX[128 + b])
-						{
-							sendbuf[0] = IAC;
-							sendbuf[1] = reply;
-							sendbuf[2] = b;
-							Write(sendbuf);
-							
-							sentWX[b + 128] = reply;
-							receivedDX[b + 128] = DO;
-						}
-						
-						neg_state = STATE_DATA;
-						break;
-					
-					case STATE_IACDONT:
-						switch (b)
-						{
-							case TELOPT_ECHO:
-								reply = WONT;
-								SetLocalEcho(false);
-								break;
+                            case DO:
+                                neg_state = STATE_IACDO;
+                                break;
 
-							case TELOPT_SGA:
-								reply = WONT;
-								break;
+                            case EOR:
+                                NotifyEndOfRecord();
+                                //dobreak = true; // leave the loop so we can sync.
+                                neg_state = STATE_DATA;
+                                break;
 
-							case TELOPT_NAWS:
-								reply = WONT;
-								break;
+                            case SB:
+                                neg_state = STATE_IACSB;
+                                sbcount = 0;
+                                break;
 
-							case TELOPT_BINARY:
-								reply = WONT;
-								break;
+                            default:
+                                neg_state = STATE_DATA;
+                                break;
+                        }
+                        break;
 
-							default:
-								reply = WONT;
-								break;
-						}
-						
-						if (reply != sentWX[b + 128] || DONT != receivedDX[b + 128])
-						{
-							sendbuf[0] = IAC;
-							sendbuf[1] = reply;
-							sendbuf[2] = b;
-							Write(sendbuf);
-							
-							sentWX[b + 128] = reply;
-							receivedDX[b + 128] = DONT;
-						}
-						
-						neg_state = STATE_DATA;
-						break;
-					
-					case STATE_IACSBIAC:
+                    case STATE_IACWILL:
+                        switch (b)
+                        {
+                            case TELOPT_ECHO:
+                                reply = DO;
+                                SetLocalEcho(false);
+                                break;
 
-						// If SE not found in this buffer, move on until we get it
-						for (int i = boffset; i < tempbuf.Length; i++)
-							if (tempbuf[i] == SE)
-								foundSE = true;
+                            case TELOPT_SGA:
+                                reply = DO;
+                                break;
 
-						if (!foundSE)
-						{
-							boffset--;
-							done = true;
-							break;
-						}
+                            case TELOPT_EOR:
+                                reply = DO;
+                                break;
 
-						foundSE = false;
+                            case TELOPT_BINARY:
+                                reply = DO;
+                                break;
 
-						if (b == IAC)
-						{
-							sbcount = 0;
-							current_sb = b;
-							neg_state = STATE_IACSBDATA;
-						}
-						else
-						{
-							neg_state = STATE_DATA;
-						}
-						break;
-					
-					case STATE_IACSB:
+                            default:
+                                reply = DONT;
+                                break;
+                        }
 
-						// If SE not found in this buffer, move on until we get it
-						for (int i = boffset; i < tempbuf.Length; i++)
-							if (tempbuf[i] == SE)
-								foundSE = true;
+                        if (reply != sentDX[b + 128] || WILL != receivedWX[b + 128])
+                        {
+                            sendbuf[0] = IAC;
+                            sendbuf[1] = reply;
+                            sendbuf[2] = b;
+                            Write(sendbuf);
 
-						if (!foundSE)
-						{
-							boffset--;
-							done = true;
-							break;
-						}
+                            sentDX[b + 128] = reply;
+                            receivedWX[b + 128] = WILL;
+                        }
 
-						foundSE = false;
+                        neg_state = STATE_DATA;
+                        break;
 
-						switch (b)
-						{
-							case IAC:
-								neg_state = STATE_IACSBIAC;
-								break;
-							
-							default:
-								current_sb = b;
-								sbcount = 0;
-								neg_state = STATE_IACSBDATA;
-								break;
-						}
-						break;
-					
-					case STATE_IACSBDATA:
+                    case STATE_IACWONT:
 
-						// If SE not found in this buffer, move on until we get it
-						for (int i = boffset; i < tempbuf.Length; i++)
-							if (tempbuf[i] == SE)
-								foundSE = true;
+                        switch (b)
+                        {
+                            case TELOPT_ECHO:
+                                SetLocalEcho(true);
+                                reply = DONT;
+                                break;
 
-						if (!foundSE)
-						{
-							boffset--;
-							done = true;
-							break;
-						}
+                            case TELOPT_SGA:
+                                reply = DONT;
+                                break;
 
-						foundSE = false;
+                            case TELOPT_EOR:
+                                reply = DONT;
+                                break;
 
-						switch (b)
-						{
-							case IAC:
-								neg_state = STATE_IACSBDATAIAC;
-								break;
-							default:
-								sbbuf[sbcount++] = b;
-								break;
-						}
-						break;
-					
-					case STATE_IACSBDATAIAC:
-						switch (b)
-						{
-							case IAC:
-								neg_state = STATE_IACSBDATA;
-								sbbuf[sbcount++] = IAC;
-								break;
-							case SE:
-								HandleSB(current_sb,sbbuf,sbcount);
-								current_sb = 0;
-								neg_state = STATE_DATA;
-								break;
-							case SB:
-								HandleSB(current_sb,sbbuf,sbcount);
-								neg_state = STATE_IACSB;
-								break;
-							default:
-								neg_state = STATE_DATA;
-								break;
-						}
-						break;
-					
-					default:
-						neg_state = STATE_DATA;
-						break;
-				}
-			}
-			
-			// shrink tempbuf to new processed size.
-			byte[] xb = new byte[count - boffset];
-			Array.Copy(tempbuf, boffset, xb, 0, count - boffset);
-			tempbuf = xb;
+                            case TELOPT_BINARY:
+                                reply = DONT;
+                                break;
 
-			return noffset;
-		}
+                            default:
+                                reply = DONT;
+                                break;
+                        }
 
-		#endregion
+                        if (reply != sentDX[b + 128] || WONT != receivedWX[b + 128])
+                        {
+                            sendbuf[0] = IAC;
+                            sendbuf[1] = reply;
+                            sendbuf[2] = b;
+                            Write(sendbuf);
 
-		/// <summary>
-		/// Adds bytes to the input buffer we'll parse for codes.
-		/// </summary>
-		/// <param name="b">Bytes array from which to add.</param>
-		/// <param name="len">Number of bytes to add.</param>
-		protected void InputFeed(byte[] b, int len)
-		{
-			byte[] bytesTmp = new byte[tempbuf.Length + len];
+                            sentDX[b + 128] = reply;
+                            receivedWX[b + 128] = WILL;
+                        }
 
-			Array.Copy(tempbuf, 0, bytesTmp, 0, tempbuf.Length);
-			Array.Copy(b, 0, bytesTmp, tempbuf.Length, len);
-			
-			tempbuf = bytesTmp;
-		}
-	}
+                        neg_state = STATE_DATA;
+                        break;
+
+                    case STATE_IACDO:
+                        switch (b)
+                        {
+                            case TELOPT_ECHO:
+                                reply = WILL;
+                                SetLocalEcho(true);
+                                break;
+
+                            case TELOPT_SGA:
+                                reply = WILL;
+                                break;
+
+                            case TELOPT_TTYPE:
+                                reply = WILL;
+                                break;
+
+                            case TELOPT_BINARY:
+                                reply = WILL;
+                                break;
+
+                            case TELOPT_NAWS:
+                                Size size = windowSize;
+                                receivedDX[b] = DO;
+
+                                if (size.GetType() != typeof(Size))
+                                {
+                                    // this shouldn't happen
+                                    Write(IAC);
+                                    Write(WONT);
+                                    Write(TELOPT_NAWS);
+                                    reply = WONT;
+                                    sentWX[b] = WONT;
+                                    break;
+                                }
+
+                                reply = WILL;
+                                sentWX[b] = WILL;
+                                sendbuf[0] = IAC;
+                                sendbuf[1] = WILL;
+                                sendbuf[2] = TELOPT_NAWS;
+
+                                Write(sendbuf);
+                                Write(IAC);
+                                Write(SB);
+                                Write(TELOPT_NAWS);
+                                Write((byte)(size.Width >> 8));
+                                Write((byte)(size.Width & 0xff));
+                                Write((byte)(size.Height >> 8));
+                                Write((byte)(size.Height & 0xff));
+                                Write(IAC); Write(SE);
+                                break;
+
+                            default:
+                                reply = WONT;
+                                break;
+                        }
+
+                        if (reply != sentWX[128 + b] || DO != receivedDX[128 + b])
+                        {
+                            sendbuf[0] = IAC;
+                            sendbuf[1] = reply;
+                            sendbuf[2] = b;
+                            Write(sendbuf);
+
+                            sentWX[b + 128] = reply;
+                            receivedDX[b + 128] = DO;
+                        }
+
+                        neg_state = STATE_DATA;
+                        break;
+
+                    case STATE_IACDONT:
+                        switch (b)
+                        {
+                            case TELOPT_ECHO:
+                                reply = WONT;
+                                SetLocalEcho(false);
+                                break;
+
+                            case TELOPT_SGA:
+                                reply = WONT;
+                                break;
+
+                            case TELOPT_NAWS:
+                                reply = WONT;
+                                break;
+
+                            case TELOPT_BINARY:
+                                reply = WONT;
+                                break;
+
+                            default:
+                                reply = WONT;
+                                break;
+                        }
+
+                        if (reply != sentWX[b + 128] || DONT != receivedDX[b + 128])
+                        {
+                            sendbuf[0] = IAC;
+                            sendbuf[1] = reply;
+                            sendbuf[2] = b;
+                            Write(sendbuf);
+
+                            sentWX[b + 128] = reply;
+                            receivedDX[b + 128] = DONT;
+                        }
+
+                        neg_state = STATE_DATA;
+                        break;
+
+                    case STATE_IACSBIAC:
+
+                        // If SE not found in this buffer, move on until we get it
+                        for (int i = boffset; i < tempbuf.Length; i++)
+                            if (tempbuf[i] == SE)
+                                foundSE = true;
+
+                        if (!foundSE)
+                        {
+                            boffset--;
+                            done = true;
+                            break;
+                        }
+
+                        foundSE = false;
+
+                        if (b == IAC)
+                        {
+                            sbcount = 0;
+                            current_sb = b;
+                            neg_state = STATE_IACSBDATA;
+                        }
+                        else
+                        {
+                            neg_state = STATE_DATA;
+                        }
+                        break;
+
+                    case STATE_IACSB:
+
+                        // If SE not found in this buffer, move on until we get it
+                        for (int i = boffset; i < tempbuf.Length; i++)
+                            if (tempbuf[i] == SE)
+                                foundSE = true;
+
+                        if (!foundSE)
+                        {
+                            boffset--;
+                            done = true;
+                            break;
+                        }
+
+                        foundSE = false;
+
+                        switch (b)
+                        {
+                            case IAC:
+                                neg_state = STATE_IACSBIAC;
+                                break;
+
+                            default:
+                                current_sb = b;
+                                sbcount = 0;
+                                neg_state = STATE_IACSBDATA;
+                                break;
+                        }
+                        break;
+
+                    case STATE_IACSBDATA:
+
+                        // If SE not found in this buffer, move on until we get it
+                        for (int i = boffset; i < tempbuf.Length; i++)
+                            if (tempbuf[i] == SE)
+                                foundSE = true;
+
+                        if (!foundSE)
+                        {
+                            boffset--;
+                            done = true;
+                            break;
+                        }
+
+                        foundSE = false;
+
+                        switch (b)
+                        {
+                            case IAC:
+                                neg_state = STATE_IACSBDATAIAC;
+                                break;
+                            default:
+                                sbbuf[sbcount++] = b;
+                                break;
+                        }
+                        break;
+
+                    case STATE_IACSBDATAIAC:
+                        switch (b)
+                        {
+                            case IAC:
+                                neg_state = STATE_IACSBDATA;
+                                sbbuf[sbcount++] = IAC;
+                                break;
+                            case SE:
+                                HandleSB(current_sb, sbbuf, sbcount);
+                                current_sb = 0;
+                                neg_state = STATE_DATA;
+                                break;
+                            case SB:
+                                HandleSB(current_sb, sbbuf, sbcount);
+                                neg_state = STATE_IACSB;
+                                break;
+                            default:
+                                neg_state = STATE_DATA;
+                                break;
+                        }
+                        break;
+
+                    default:
+                        neg_state = STATE_DATA;
+                        break;
+                }
+            }
+
+            // shrink tempbuf to new processed size.
+            byte[] xb = new byte[count - boffset];
+            Array.Copy(tempbuf, boffset, xb, 0, count - boffset);
+            tempbuf = xb;
+
+            return noffset;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Adds bytes to the input buffer we'll parse for codes.
+        /// </summary>
+        /// <param name="b">Bytes array from which to add.</param>
+        /// <param name="len">Number of bytes to add.</param>
+        protected void InputFeed(byte[] b, int len)
+        {
+            byte[] bytesTmp = new byte[tempbuf.Length + len];
+
+            Array.Copy(tempbuf, 0, bytesTmp, 0, tempbuf.Length);
+            Array.Copy(b, 0, bytesTmp, tempbuf.Length, len);
+
+            tempbuf = bytesTmp;
+        }
+    }
 }

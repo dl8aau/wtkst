@@ -3,76 +3,76 @@ using System.Collections;
 
 namespace WCCheck
 {
-	public class WCCheck
-	{
-		public class PrefixEntry
-		{
-			public string Prefix = "";
+    public class WCCheck
+    {
+        public class PrefixEntry
+        {
+            public string Prefix = "";
 
-			public string Name = "";
+            public string Name = "";
 
-			public string Start = "";
+            public string Start = "";
 
-			public string Stop = "";
+            public string Stop = "";
 
-			public string PREFIX
-			{
-				get
-				{
-					return Prefix;
-				}
-			}
+            public string PREFIX
+            {
+                get
+                {
+                    return Prefix;
+                }
+            }
 
-			public string STOP
-			{
-				get
-				{
-					return Stop;
-				}
-			}
+            public string STOP
+            {
+                get
+                {
+                    return Stop;
+                }
+            }
 
-			public string START
-			{
-				get
-				{
-					return Start;
-				}
-			}
+            public string START
+            {
+                get
+                {
+                    return Start;
+                }
+            }
 
-			public PrefixEntry(string APrefix, string AName, string AStart, string AStop)
-			{
+            public PrefixEntry(string APrefix, string AName, string AStart, string AStop)
+            {
                 Prefix = APrefix;
                 Name = AName;
                 Start = AStart;
                 Stop = AStop;
-			}
-		}
+            }
+        }
 
-		public class PrefixList : ArrayList
-		{
-			public class LengthComparer : IComparer
-			{
-				int IComparer.Compare(object x, object y)
-				{
-					int result;
-					if (((WCCheck.PrefixEntry)x).Start.Length < ((WCCheck.PrefixEntry)y).Start.Length)
-					{
-						result = 1;
-					}
-					else if (((WCCheck.PrefixEntry)x).Start.Length > ((WCCheck.PrefixEntry)y).Start.Length)
-					{
-						result = -1;
-					}
-					else
-					{
-						result = ((WCCheck.PrefixEntry)x).Start.CompareTo(((WCCheck.PrefixEntry)y).Start);
-					}
-					return result;
-				}
-			}
+        public class PrefixList : ArrayList
+        {
+            public class LengthComparer : IComparer
+            {
+                int IComparer.Compare(object x, object y)
+                {
+                    int result;
+                    if (((WCCheck.PrefixEntry)x).Start.Length < ((WCCheck.PrefixEntry)y).Start.Length)
+                    {
+                        result = 1;
+                    }
+                    else if (((WCCheck.PrefixEntry)x).Start.Length > ((WCCheck.PrefixEntry)y).Start.Length)
+                    {
+                        result = -1;
+                    }
+                    else
+                    {
+                        result = ((WCCheck.PrefixEntry)x).Start.CompareTo(((WCCheck.PrefixEntry)y).Start);
+                    }
+                    return result;
+                }
+            }
 
-			public PrefixList()
-			{
+            public PrefixList()
+            {
                 Add(new WCCheck.PrefixEntry("C3", "Andorra", "C3", "C3"));
                 Add(new WCCheck.PrefixEntry("OE", "Austria", "OE", "OE"));
                 Add(new WCCheck.PrefixEntry("ON", "Belgium", "ON", "OT"));
@@ -156,130 +156,130 @@ namespace WCCheck
                 Add(new WCCheck.PrefixEntry("TA", "Turkey", "TA", "TA"));
                 Add(new WCCheck.PrefixEntry("T7", "San Marino", "T7", "T7"));
                 Sort(new WCCheck.PrefixList.LengthComparer());
-			}
-		}
+            }
+        }
 
-		public static double Radius;
+        public static double Radius;
 
-		private static WCCheck.PrefixList Prefixes;
+        private static WCCheck.PrefixList Prefixes;
 
-		static WCCheck()
-		{
-			WCCheck.Radius = 6378.2;
-			WCCheck.Prefixes = new WCCheck.PrefixList();
-		}
+        static WCCheck()
+        {
+            WCCheck.Radius = 6378.2;
+            WCCheck.Prefixes = new WCCheck.PrefixList();
+        }
 
-		public static double Lat(string S)
-		{
-			double StepB = 10.0;
-			double StepB2 = StepB / 10.0;
-			double StepB3 = StepB2 / 24.0;
-			double StartB = -90.0;
-			double StartB2 = 0.0;
-			double StartB3 = StepB3 / 2.0;
-			double result;
-			try
-			{
-				S = S.ToUpper();
-				if (S[1] < 'A' || S[1] > 'Z' || S[3] < '0' || S[3] > '9' || S[5] < 'A' || S[5] > 'X')
-				{
-					result = -360.0;
-				}
-				else
-				{
-					result = StartB + StepB * (double)(Convert.ToInt16(S[1]) - 65) + StartB2 + StepB2 * (double)(Convert.ToInt16(S[3]) - 48) + StartB3 + StepB3 * (double)(Convert.ToInt16(S[5]) - 65);
-				}
-			}
-			catch
-			{
-				result = -360.0;
-			}
-			return result;
-		}
+        public static double Lat(string S)
+        {
+            double StepB = 10.0;
+            double StepB2 = StepB / 10.0;
+            double StepB3 = StepB2 / 24.0;
+            double StartB = -90.0;
+            double StartB2 = 0.0;
+            double StartB3 = StepB3 / 2.0;
+            double result;
+            try
+            {
+                S = S.ToUpper();
+                if (S[1] < 'A' || S[1] > 'Z' || S[3] < '0' || S[3] > '9' || S[5] < 'A' || S[5] > 'X')
+                {
+                    result = -360.0;
+                }
+                else
+                {
+                    result = StartB + StepB * (double)(Convert.ToInt16(S[1]) - 65) + StartB2 + StepB2 * (double)(Convert.ToInt16(S[3]) - 48) + StartB3 + StepB3 * (double)(Convert.ToInt16(S[5]) - 65);
+                }
+            }
+            catch
+            {
+                result = -360.0;
+            }
+            return result;
+        }
 
-		public static double Lon(string S)
-		{
-			double result;
-			try
-			{
-				double StepL = 20.0;
-				double StepL2 = StepL / 10.0;
-				double StepL3 = StepL2 / 24.0;
-				double StartL = -180.0;
-				double StartL2 = 0.0;
-				double StartL3 = StepL3 / 2.0;
-				S = S.ToUpper();
-				if (S[0] < 'A' || S[0] > 'Z' || S[2] < '0' || S[2] > '9' || S[4] < 'A' || S[4] > 'X')
-				{
-					result = -360.0;
-				}
-				else
-				{
-					result = StartL + StepL * (double)(Convert.ToInt16(S[0]) - 65) + StartL2 + StepL2 * (double)(Convert.ToInt16(S[2]) - 48) + StartL3 + StepL3 * (double)(Convert.ToInt16(S[4]) - 65);
-				}
-			}
-			catch
-			{
-				result = -360.0;
-			}
-			return result;
-		}
+        public static double Lon(string S)
+        {
+            double result;
+            try
+            {
+                double StepL = 20.0;
+                double StepL2 = StepL / 10.0;
+                double StepL3 = StepL2 / 24.0;
+                double StartL = -180.0;
+                double StartL2 = 0.0;
+                double StartL3 = StepL3 / 2.0;
+                S = S.ToUpper();
+                if (S[0] < 'A' || S[0] > 'Z' || S[2] < '0' || S[2] > '9' || S[4] < 'A' || S[4] > 'X')
+                {
+                    result = -360.0;
+                }
+                else
+                {
+                    result = StartL + StepL * (double)(Convert.ToInt16(S[0]) - 65) + StartL2 + StepL2 * (double)(Convert.ToInt16(S[2]) - 48) + StartL3 + StepL3 * (double)(Convert.ToInt16(S[4]) - 65);
+                }
+            }
+            catch
+            {
+                result = -360.0;
+            }
+            return result;
+        }
 
-		public static string Loc(double L, double B)
-		{
-			string result;
-			try
-			{
-				double StepB = 10.0;
-				double StepB2 = StepB / 10.0;
-				double StepB3 = StepB2 / 24.0;
-				double StartB = -90.0;
-				double StartB2 = 0.0;
-				double StartB3 = StepB3 / 2.0;
-				double StepL = 20.0;
-				double StepL2 = StepL / 10.0;
-				double StepL3 = StepL2 / 24.0;
-				double StartL = -180.0;
-				double StartL2 = 0.0;
-				double StartL3 = StepL3 / 2.0;
-				int i0 = Convert.ToInt32(Math.Floor((L - StartL) / StepL));
-				char S0 = Convert.ToChar(i0 + 65);
-				L = L - (double)i0 * StepL - StartL;
-				int i = Convert.ToInt32(Math.Floor((L - StartL2) / StepL2));
-				char S = Convert.ToChar(i + 48);
-				L = L - (double)i * StepL2 - StartL2;
-				int i2 = Convert.ToInt32((L - StartL3) / StepL3);
-				char S2 = Convert.ToChar(i2 + 65);
-				int i3 = Convert.ToInt32(Math.Floor((B - StartB) / StepB));
-				char S3 = Convert.ToChar(i3 + 65);
-				B = B - (double)i3 * StepB - StartB;
-				int i4 = Convert.ToInt32(Math.Floor((B - StartB2) / StepB2));
-				char S4 = Convert.ToChar(i4 + 48);
-				B = B - (double)i4 * StepB2 - StartB2;
-				int i5 = Convert.ToInt32((B - StartB3) / StepB3);
-				char S5 = Convert.ToChar(i5 + 65);
-				string S6 = string.Concat(new object[]
-				{
-					S0,
-					S3,
-					S,
-					S4,
-					S2,
-					S5
-				});
-				result = S6;
-			}
-			catch
-			{
-				result = "";
-			}
-			return result;
-		}
+        public static string Loc(double L, double B)
+        {
+            string result;
+            try
+            {
+                double StepB = 10.0;
+                double StepB2 = StepB / 10.0;
+                double StepB3 = StepB2 / 24.0;
+                double StartB = -90.0;
+                double StartB2 = 0.0;
+                double StartB3 = StepB3 / 2.0;
+                double StepL = 20.0;
+                double StepL2 = StepL / 10.0;
+                double StepL3 = StepL2 / 24.0;
+                double StartL = -180.0;
+                double StartL2 = 0.0;
+                double StartL3 = StepL3 / 2.0;
+                int i0 = Convert.ToInt32(Math.Floor((L - StartL) / StepL));
+                char S0 = Convert.ToChar(i0 + 65);
+                L = L - (double)i0 * StepL - StartL;
+                int i = Convert.ToInt32(Math.Floor((L - StartL2) / StepL2));
+                char S = Convert.ToChar(i + 48);
+                L = L - (double)i * StepL2 - StartL2;
+                int i2 = Convert.ToInt32((L - StartL3) / StepL3);
+                char S2 = Convert.ToChar(i2 + 65);
+                int i3 = Convert.ToInt32(Math.Floor((B - StartB) / StepB));
+                char S3 = Convert.ToChar(i3 + 65);
+                B = B - (double)i3 * StepB - StartB;
+                int i4 = Convert.ToInt32(Math.Floor((B - StartB2) / StepB2));
+                char S4 = Convert.ToChar(i4 + 48);
+                B = B - (double)i4 * StepB2 - StartB2;
+                int i5 = Convert.ToInt32((B - StartB3) / StepB3);
+                char S5 = Convert.ToChar(i5 + 65);
+                string S6 = string.Concat(new object[]
+                {
+                    S0,
+                    S3,
+                    S,
+                    S4,
+                    S2,
+                    S5
+                });
+                result = S6;
+            }
+            catch
+            {
+                result = "";
+            }
+            return result;
+        }
 
-		public static int QRB(string MyLoc, string Loc)
-		{
-			return (int)WCCheck.QRB(WCCheck.Lat(MyLoc), WCCheck.Lon(MyLoc), WCCheck.Lat(Loc), WCCheck.Lon(Loc));
-		}
+        public static int QRB(string MyLoc, string Loc)
+        {
+            return (int)WCCheck.QRB(WCCheck.Lat(MyLoc), WCCheck.Lon(MyLoc), WCCheck.Lat(Loc), WCCheck.Lon(Loc));
+        }
 
         public static double QRB(double mylat, double mylon, double lat, double lon)
         {
@@ -296,8 +296,8 @@ namespace WCCheck
             return R * 2.0 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1.0 - a));
         }
 
-		public static double QTF(string MyLoc, string Loc)
-		{
+        public static double QTF(string MyLoc, string Loc)
+        {
             return WCCheck.QTF(WCCheck.Lat(MyLoc), WCCheck.Lon(MyLoc), WCCheck.Lat(Loc), WCCheck.Lon(Loc));
         }
 
@@ -341,156 +341,156 @@ namespace WCCheck
         /* Cut() tries to remove everything that does not belong to the inner call sign
          */
         public static string Cut(string S)
-		{
-			string result;
-			try
-			{
-				S = S.Trim().ToUpper();
-				if (S.IndexOf('-') >= 0)
-				{
-					S = S.Remove(S.IndexOf('-'));
-				}
-				while (S.Length > 0 && S.IndexOf(' ') >= 0)
-				{
-					S = S.Remove(S.IndexOf(' '), 1);
-				}
-				if (S.Length > 0 && S.IndexOf('/') >= 0)
-				{
-					if (S.IndexOf('/') >= S.Length - 4)
-					{
-						S = S.Remove(S.IndexOf('/'), S.Length - S.IndexOf('/'));
-					}
-					if (S.IndexOf('/') >= 0)
-					{
-						S = S.Remove(0, S.IndexOf('/') + 1);
-					}
-					if (S.IndexOf('/') >= 0 && S.IndexOf('/') >= S.Length - 4)
-					{
-						S = S.Remove(S.IndexOf('/'), S.Length - S.IndexOf('/'));
-					}
-				}
-				result = S;
-			}
-			catch
-			{
-				result = "";
-			}
-			return result;
-		}
+        {
+            string result;
+            try
+            {
+                S = S.Trim().ToUpper();
+                if (S.IndexOf('-') >= 0)
+                {
+                    S = S.Remove(S.IndexOf('-'));
+                }
+                while (S.Length > 0 && S.IndexOf(' ') >= 0)
+                {
+                    S = S.Remove(S.IndexOf(' '), 1);
+                }
+                if (S.Length > 0 && S.IndexOf('/') >= 0)
+                {
+                    if (S.IndexOf('/') >= S.Length - 4)
+                    {
+                        S = S.Remove(S.IndexOf('/'), S.Length - S.IndexOf('/'));
+                    }
+                    if (S.IndexOf('/') >= 0)
+                    {
+                        S = S.Remove(0, S.IndexOf('/') + 1);
+                    }
+                    if (S.IndexOf('/') >= 0 && S.IndexOf('/') >= S.Length - 4)
+                    {
+                        S = S.Remove(S.IndexOf('/'), S.Length - S.IndexOf('/'));
+                    }
+                }
+                result = S;
+            }
+            catch
+            {
+                result = "";
+            }
+            return result;
+        }
 
-		public static string Prefix(string S)
-		{
-			S = WCCheck.Cut(S);
-			string result;
-			for (int i = 0; i < WCCheck.Prefixes.Count; i++)
-			{
-				try
-				{
-					string Start = ((WCCheck.PrefixEntry)WCCheck.Prefixes[i]).Start;
-					string Stop = ((WCCheck.PrefixEntry)WCCheck.Prefixes[i]).Stop;
-					string Prefix = ((WCCheck.PrefixEntry)WCCheck.Prefixes[i]).Prefix;
-					S = S.Substring(0, Start.Length);
-					if (S.CompareTo(Start) >= 0 && S.CompareTo(Stop) <= 0)
-					{
-						result = Prefix;
-						return result;
-					}
-				}
-				catch
-				{
-				}
-			}
-			result = "???";
-			return result;
-		}
+        public static string Prefix(string S)
+        {
+            S = WCCheck.Cut(S);
+            string result;
+            for (int i = 0; i < WCCheck.Prefixes.Count; i++)
+            {
+                try
+                {
+                    string Start = ((WCCheck.PrefixEntry)WCCheck.Prefixes[i]).Start;
+                    string Stop = ((WCCheck.PrefixEntry)WCCheck.Prefixes[i]).Stop;
+                    string Prefix = ((WCCheck.PrefixEntry)WCCheck.Prefixes[i]).Prefix;
+                    S = S.Substring(0, Start.Length);
+                    if (S.CompareTo(Start) >= 0 && S.CompareTo(Stop) <= 0)
+                    {
+                        result = Prefix;
+                        return result;
+                    }
+                }
+                catch
+                {
+                }
+            }
+            result = "???";
+            return result;
+        }
 
-		public static int IsCall(string S)
-		{
-			int result;
-			try
-			{
-				S = S.Trim();
-				S = S.ToUpper();
-				for (int i = 0; i < S.Length; i++)
-				{
-					if ((S[i] < 'A' || S[i] > 'Z') && (S[i] < '0' || S[i] > '9') && S[i] != '/')
-					{
-						result = -1;
-						return result;
-					}
-				}
-				S = WCCheck.Cut(S);
-				if (S.Length < 3)
-				{
-					result = -1;
-				}
-				else if (char.IsNumber(S, 0))
-				{
-					if (char.IsLetter(S, 1) && char.IsNumber(S, 2))
-					{
-						result = 1;
-					}
-					else
-					{
-						result = -1;
-					}
-				}
-				else if (char.IsLetter(S, 1))
-				{
-					if (char.IsNumber(S, 2))
-					{
-						result = 1;
-					}
-					else
-					{
-						result = -1;
-					}
-				}
-				else if (char.IsLetter(S, 2))
-				{
-					result = 1;
-				}
-				else if (char.IsLetter(S, 3))
-				{
-					result = 1;
-				}
-				else
-				{
-					result = -1;
-				}
-			}
-			catch
-			{
-				result = -1;
-			}
-			return result;
-		}
+        public static int IsCall(string S)
+        {
+            int result;
+            try
+            {
+                S = S.Trim();
+                S = S.ToUpper();
+                for (int i = 0; i < S.Length; i++)
+                {
+                    if ((S[i] < 'A' || S[i] > 'Z') && (S[i] < '0' || S[i] > '9') && S[i] != '/')
+                    {
+                        result = -1;
+                        return result;
+                    }
+                }
+                S = WCCheck.Cut(S);
+                if (S.Length < 3)
+                {
+                    result = -1;
+                }
+                else if (char.IsNumber(S, 0))
+                {
+                    if (char.IsLetter(S, 1) && char.IsNumber(S, 2))
+                    {
+                        result = 1;
+                    }
+                    else
+                    {
+                        result = -1;
+                    }
+                }
+                else if (char.IsLetter(S, 1))
+                {
+                    if (char.IsNumber(S, 2))
+                    {
+                        result = 1;
+                    }
+                    else
+                    {
+                        result = -1;
+                    }
+                }
+                else if (char.IsLetter(S, 2))
+                {
+                    result = 1;
+                }
+                else if (char.IsLetter(S, 3))
+                {
+                    result = 1;
+                }
+                else
+                {
+                    result = -1;
+                }
+            }
+            catch
+            {
+                result = -1;
+            }
+            return result;
+        }
 
-		public static int IsLoc(string S)
-		{
-			S = S.Trim();
-			S = S.ToUpper();
-			int result;
-			if (S.Length == 6)
-			{
-				if (S[0] >= 'A' && S[0] <= 'X' && S[1] >= 'A' && S[1] <= 'X' && S[2] >= '0' && S[2] <= '9' && S[3] >= '0' && S[3] <= '9' && S[4] >= 'A' && S[4] <= 'X' && S[5] >= 'A' && S[5] <= 'X')
-				{
-					result = 1;
-					return result;
-				}
-			}
-			result = -1;
-			return result;
-		}
+        public static int IsLoc(string S)
+        {
+            S = S.Trim();
+            S = S.ToUpper();
+            int result;
+            if (S.Length == 6)
+            {
+                if (S[0] >= 'A' && S[0] <= 'X' && S[1] >= 'A' && S[1] <= 'X' && S[2] >= '0' && S[2] <= '9' && S[3] >= '0' && S[3] <= '9' && S[4] >= 'A' && S[4] <= 'X' && S[5] >= 'A' && S[5] <= 'X')
+                {
+                    result = 1;
+                    return result;
+                }
+            }
+            result = -1;
+            return result;
+        }
 
-		public static bool IsNumeric(string S)
-		{
-			int i = 0;
-			while (i < S.Length && S[i] >= '0' && S[i] <= '9')
-			{
-				i++;
-			}
-			return i >= S.Length;
-		}
-	}
+        public static bool IsNumeric(string S)
+        {
+            int i = 0;
+            while (i < S.Length && S[i] >= '0' && S[i] <= '9')
+            {
+                i++;
+            }
+            return i >= S.Length;
+        }
+    }
 }

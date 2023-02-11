@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 namespace WinTest
@@ -11,7 +9,7 @@ namespace WinTest
     {
         private string WinTest_FileName = "";
 
-        public WinTestLog(LogWriteMessageDelegate mylog) : base (mylog)
+        public WinTestLog(LogWriteMessageDelegate mylog) : base(mylog)
         {
             DataColumn[] QSOkeys = new DataColumn[]
             {
@@ -29,7 +27,7 @@ namespace WinTest
         {
             return WinTest_FileName + " " + QSO.Rows.Count;
         }
-        
+
         public override void Get_QSOs(string WinTest_INI_FileName)
         {
             try

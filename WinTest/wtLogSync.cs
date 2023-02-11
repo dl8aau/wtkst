@@ -2,13 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Text;
 using System.Timers;
 
 namespace WinTest
@@ -113,8 +110,8 @@ namespace WinTest
             public enum wtAvailableFrom { Owner, LoggedElse };
             public wtAvailableFrom AvailableFrom;
 
-            public StationLogStat( string StationUniqueID, wtAvailableFrom AvailableFrom, List<logSegment> ls)
-                :base(StationUniqueID, ls)
+            public StationLogStat(string StationUniqueID, wtAvailableFrom AvailableFrom, List<logSegment> ls)
+                : base(StationUniqueID, ls)
             {
 
                 this.AvailableFrom = AvailableFrom;
@@ -129,7 +126,7 @@ namespace WinTest
             public DateTime first_QSO_ts;
 
             public StationSyncStatus(string from, DateTime first_QSO_ts)
-                :base(from, "", "", 0, 0)
+                : base(from, "", "", 0, 0)
             {
                 this.first_QSO_ts = first_QSO_ts;
                 this.logstat = new List<StationLogStat>();
@@ -166,7 +163,7 @@ namespace WinTest
             string StationName = lst.StationUniqueID.Split('@')[0];
             string LogId = lst.StationUniqueID.Split('@')[1];
             var rows = QSO.Select(string.Format("([RUNSTN] = '{0}') AND ([LOGID] = '{1}')", StationName, LogId));
-            if (rows!= null && rows.Count() > 0)
+            if (rows != null && rows.Count() > 0)
             {
                 try
                 {
@@ -174,7 +171,7 @@ namespace WinTest
 
                     for (int i = 0; i < rows.Count(); i++)
                     {
-                         lognrs.Add((uint)rows[i]["LOGNR"]);
+                        lognrs.Add((uint)rows[i]["LOGNR"]);
                     }
                     lognrs.Sort();
                     lst.ls[0].count_from = lognrs[0];
@@ -197,7 +194,7 @@ namespace WinTest
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message );
+                    Console.WriteLine(e.Message);
                 }
             }
             return false;
@@ -221,20 +218,20 @@ namespace WinTest
             if (myls != null)
             {
                 // check if we are done
-                if (lst.ls.Count ==  myls.ls.Count)
+                if (lst.ls.Count == myls.ls.Count)
                 {
                     bool done = true;
 
-                    for(int i = 0; i<lst.ls.Count; i++ )
+                    for (int i = 0; i < lst.ls.Count; i++)
                     {
                         if (lst.ls[i].count_from != myls.ls[i].count_from
-                            || lst.ls[i].count_to != myls.ls[i].count_to )
+                            || lst.ls[i].count_to != myls.ls[i].count_to)
                         {
                             done = false;
                             break;
                         }
                     }
-                    if (done) 
+                    if (done)
                         return SECTION_STATE.SECTION_DONE;
                 }
                 // send NEEDQSO, we are missing parts
@@ -657,22 +654,22 @@ namespace WinTest
                         rle_index = 1;
                     }
 
-                    while(rle_index < count_to_data.Length)
+                    while (rle_index < count_to_data.Length)
                     {
                         segment++;
                         ls.Add(new logSegment());
                         uint count_skip, count_diff;
                         if (!UInt32.TryParse(count_to_data[rle_index], out count_skip))
                             return;
-                        if (!UInt32.TryParse(count_to_data[rle_index+1], out count_diff))
+                        if (!UInt32.TryParse(count_to_data[rle_index + 1], out count_diff))
                             return;
-                        ls[segment].count_from = ls[segment-1].count_to + count_skip + 1;
+                        ls[segment].count_from = ls[segment - 1].count_to + count_skip + 1;
                         ls[segment].count_to = ls[segment - 1].count_to + count_skip + count_diff;
                         rle_index += 2;
                     }
 
-//                    Console.WriteLine("IHAVE: from " + e.Msg.Src + " stationUniqueID " + stationUniqueID + " AvailableFrom " + AvailableFrom.ToString() +
-//                        " uniqueIDCount " + FirstRow + " QSOs " + count_from + "-" + count_to + " and " + count_next + "-" + count_end);
+                    //                    Console.WriteLine("IHAVE: from " + e.Msg.Src + " stationUniqueID " + stationUniqueID + " AvailableFrom " + AvailableFrom.ToString() +
+                    //                        " uniqueIDCount " + FirstRow + " QSOs " + count_from + "-" + count_to + " and " + count_next + "-" + count_end);
 
                     StationLogStat sls = new StationLogStat(stationUniqueID, AvailableFrom, ls);
 
@@ -680,7 +677,7 @@ namespace WinTest
                     if (sl_index != -1)
                     {
                         int ssl_index = wtStationSyncList[sl_index].logstat.FindLastIndex(x => x.StationUniqueID == stationUniqueID);
-                         if (ssl_index != -1)
+                        if (ssl_index != -1)
                         {
                             if (wtStationSyncList[sl_index].logstat[ssl_index] != sls)
                                 wtStationSyncList[sl_index].logstat[ssl_index] = sls;
@@ -690,8 +687,8 @@ namespace WinTest
                             wtStationSyncList[sl_index].logstat.Add(sls);
                         }
 
-//                        foreach (var s in sl.logstat)
-//                            Console.WriteLine(sl.from + ": " + s.StationUniqueID + " " + s.count_from + "-" + s.count_to);
+                        //                        foreach (var s in sl.logstat)
+                        //                            Console.WriteLine(sl.from + ": " + s.StationUniqueID + " " + s.count_from + "-" + s.count_to);
                     }
 
                 }
@@ -819,7 +816,7 @@ namespace WinTest
                             ti_get_log.Start();
                         }
                     }
-                    catch(Exception ex) { Console.WriteLine(ex.Message);  }
+                    catch (Exception ex) { Console.WriteLine(ex.Message); }
                 }
             }
             else if (e.Msg.Msg == WTMESSAGES.UPDQSO && e.Msg.HasChecksum)
