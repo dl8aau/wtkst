@@ -1914,10 +1914,10 @@ namespace wtKST
                             cb_Command.SelectionLength = 0;
                         }
                     }
+                    string loc = row.Cells["LOC"].Value.ToString();
+
                     if (column.Name == "AS" && Settings.Default.AS_Active)
                     {
-                        string loc = row.Cells["LOC"].Value.ToString();
-
                         AS_if.show_path(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
                     }
                     if (column.Name[0] > '0' && column.Name[0] < '9')
@@ -1925,7 +1925,7 @@ namespace wtKST
                         lock (CALL)
                         {
                             // band columns
-                            DataRow CallsRow = CALL.Rows.Find(call);
+                            DataRow[] call_rows = CALL.Select(string.Format("[CALL] LIKE '*{0}*'", call));
                             string band = column.Name;
                             state = QRVdb.QRV_STATE.unknown;
                             try
@@ -1941,20 +1941,20 @@ namespace wtKST
                                 {
                                     case QRVdb.QRV_STATE.unknown:
                                         row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.qrv;
-                                        qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.qrv);
-                                        if (CallsRow != null)
+                                        qrv.set_qrv_state(call, loc, band, QRVdb.QRV_STATE.qrv);
+                                        foreach(var CallsRow in call_rows)
                                             CallsRow[band] = QRVdb.QRV_STATE.qrv;
                                         break;
                                     case QRVdb.QRV_STATE.qrv:
                                         row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.not_qrv;
-                                        qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.not_qrv);
-                                        if (CallsRow != null)
+                                        qrv.set_qrv_state(call, loc, band, QRVdb.QRV_STATE.not_qrv);
+                                        foreach (var CallsRow in call_rows)
                                             CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
                                         break;
                                     case QRVdb.QRV_STATE.not_qrv:
                                         row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.unknown;
-                                        qrv.set_qrv_state(CallsRow, band, QRVdb.QRV_STATE.unknown);
-                                        if (CallsRow != null)
+                                        qrv.set_qrv_state(call, loc, band, QRVdb.QRV_STATE.unknown);
+                                        foreach (var CallsRow in call_rows)
                                             CallsRow[band] = QRVdb.QRV_STATE.unknown;
                                         break;
                                 }

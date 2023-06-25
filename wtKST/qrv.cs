@@ -128,9 +128,9 @@ namespace wtKST
             }
         }
 
-        public void set_qrv_state(DataRow Row, string band, QRV_STATE state)
+        public void set_qrv_state(string call, string loc, string band, QRV_STATE state)
         {
-            DataRow qrv_row = QRV_local.Rows.Find(new object[] { Row["CALL"], Row["LOC"] });
+            DataRow qrv_row = QRV_local.Rows.Find(new object[] { call, loc });
             if (qrv_row != null)
             {
                 if (state == QRV_STATE.worked)
