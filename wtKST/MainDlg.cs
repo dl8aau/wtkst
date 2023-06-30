@@ -147,6 +147,8 @@ namespace wtKST
         private ToolStripMenuItem cmn_msglist_wtsked;
         private ToolStripMenuItem cmn_msglist_chatReview;
         private ToolStripMenuItem cmn_msglist_openURL;
+        private ToolStripTextBox cmn_msglist_toolStripTextBox_DirQRB;
+
         private WinTest.wtStatus wts;
         private WTSkedDlg wtskdlg;
         private uint last_sked_qrg;
@@ -2044,6 +2046,15 @@ namespace wtKST
                 {
                     DataRow[] selectRow = KST.MSG_findcall(call);
 
+                    DataRow userRow = CALL.Rows.Find(call);
+
+
+                    string loc = userRow["LOC"].ToString();
+                    this.cmn_msglist_toolStripTextBox_DirQRB.Text = string.Concat(new object[]
+                        {
+                        WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc).ToString("000"), "° ",
+                        WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc), " km"
+                        });
                     this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
                     this.cmn_msglist_wtsked.Visible = (wts != null && wts.wtStatusList.Count > 0);
 
@@ -2696,12 +2707,13 @@ namespace wtKST
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.cmn_msglist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
-            this.cmn_msglist_openURL = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmn_msglist_toolStripTextBox_DirQRB = new System.Windows.Forms.ToolStripTextBox();
             this.cmn_msglist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_openURL = new System.Windows.Forms.ToolStripMenuItem();
             this.ss_Main.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -2985,19 +2997,19 @@ namespace wtKST
             this.lv_Calls.MultiSelect = false;
             this.lv_Calls.Name = "lv_Calls";
             this.lv_Calls.ReadOnly = true;
-            this.lv_Calls.RowTemplate.Height = 17;
             this.lv_Calls.RowHeadersVisible = false;
+            this.lv_Calls.RowTemplate.Height = 17;
+            this.lv_Calls.ShowCellToolTips = false;
             this.lv_Calls.Size = new System.Drawing.Size(353, 658);
             this.lv_Calls.TabIndex = 14;
             this.lv_Calls.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_MouseDown);
             this.lv_Calls.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_MouseMove);
             this.lv_Calls.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.lv_Calls_CellPainting);
+            this.lv_Calls.CellStateChanged += new System.Windows.Forms.DataGridViewCellStateChangedEventHandler(this.lv_Calls_CellStateChanged);
             this.lv_Calls.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lv_Calls_CellValueChanged);
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
             this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
-            this.lv_Calls.CellStateChanged += new System.Windows.Forms.DataGridViewCellStateChangedEventHandler(this.lv_Calls_CellStateChanged);
-            this.lv_Calls.ShowCellToolTips = false;
             // 
             // lbl_KST_Calls
             // 
@@ -3316,30 +3328,39 @@ namespace wtKST
             this.cmn_userlist_wtsked,
             this.cmn_userlist_chatReview});
             this.cmn_userlist.Name = "cmn_userlist";
-            this.cmn_userlist.Size = new System.Drawing.Size(150, 48);
-            // 
-            // cmn_msglist
-            // 
-            this.cmn_msglist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cmn_msglist_wtsked,
-            this.cmn_msglist_chatReview,
-            this.cmn_msglist_openURL});
-            this.cmn_msglist.Name = "cmn_msglist";
-            this.cmn_msglist.Size = new System.Drawing.Size(149, 48);
+            this.cmn_userlist.Size = new System.Drawing.Size(149, 48);
             // 
             // cmn_userlist_wtsked
             // 
             this.cmn_userlist_wtsked.Name = "cmn_userlist_wtsked";
-            this.cmn_userlist_wtsked.Size = new System.Drawing.Size(149, 22);
+            this.cmn_userlist_wtsked.Size = new System.Drawing.Size(148, 22);
             this.cmn_userlist_wtsked.Text = "Win-Test &Sked";
             this.cmn_userlist_wtsked.Click += new System.EventHandler(this.cmn_item_wtsked_Click);
             // 
             // cmn_userlist_chatReview
             // 
-            this.cmn_userlist_chatReview.Name = "cmn_userlist_chatReviewT";
+            this.cmn_userlist_chatReview.Name = "cmn_userlist_chatReview";
             this.cmn_userlist_chatReview.Size = new System.Drawing.Size(148, 22);
             this.cmn_userlist_chatReview.Text = "Chat &Review";
             this.cmn_userlist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
+            // 
+            // cmn_msglist
+            // 
+            this.cmn_msglist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmn_msglist_toolStripTextBox_DirQRB,
+            this.cmn_msglist_wtsked,
+            this.cmn_msglist_chatReview,
+            this.cmn_msglist_openURL});
+            this.cmn_msglist.Name = "cmn_msglist";
+            this.cmn_msglist.Size = new System.Drawing.Size(181, 117);
+            // 
+            // toolStripTextBox_CallQRBDir
+            // 
+            this.cmn_msglist_toolStripTextBox_DirQRB.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.cmn_msglist_toolStripTextBox_DirQRB.Name = "toolStripTextBox_CallQRBDir";
+            this.cmn_msglist_toolStripTextBox_DirQRB.ReadOnly = true;
+            this.cmn_msglist_toolStripTextBox_DirQRB.Size = new System.Drawing.Size(100, 23);
+            this.cmn_msglist_toolStripTextBox_DirQRB.Text = "Call 1000km 350°";
             // 
             // cmn_msglist_wtsked
             // 
@@ -3350,15 +3371,15 @@ namespace wtKST
             // 
             // cmn_msglist_chatReview
             // 
-            this.cmn_msglist_chatReview.Name = "cmn_msglist_chatReviewT";
             this.cmn_msglist_chatReview.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_chatReview.Name = "cmn_msglist_chatReview";
             this.cmn_msglist_chatReview.Text = "Chat &Review";
             this.cmn_msglist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
             // 
             // cmn_msglist_openURL
             // 
-            this.cmn_msglist_openURL.Name = "cmn_msglist_chatReviewT";
             this.cmn_msglist_openURL.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_openURL.Name = "cmn_msglist_openURL";
             this.cmn_msglist_openURL.Text = "&Open URL";
             this.cmn_msglist_openURL.Click += new System.EventHandler(this.cmn_item_openURL_Click);
             // 
@@ -3396,6 +3417,7 @@ namespace wtKST
             this.cmn_Notify.ResumeLayout(false);
             this.cmn_userlist.ResumeLayout(false);
             this.cmn_msglist.ResumeLayout(false);
+            this.cmn_msglist.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
