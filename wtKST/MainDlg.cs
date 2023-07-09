@@ -2048,13 +2048,18 @@ namespace wtKST
 
                     DataRow userRow = CALL.Rows.Find(call);
 
+                    if (userRow != null) 
+                    {
+                       string loc = userRow["LOC"].ToString();
+                       this.cmn_msglist_toolStripTextBox_DirQRB.Text = string.Concat(new object[]
+                       {
+                            WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc).ToString("000"), "° ",
+                            WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc), " km"
+                       });
+                       this.cmn_msglist_toolStripTextBox_DirQRB.Visible = true;
+                    } else
+                        this.cmn_msglist_toolStripTextBox_DirQRB.Visible = false;
 
-                    string loc = userRow["LOC"].ToString();
-                    this.cmn_msglist_toolStripTextBox_DirQRB.Text = string.Concat(new object[]
-                        {
-                        WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc).ToString("000"), "° ",
-                        WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc), " km"
-                        });
                     this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
                     this.cmn_msglist_wtsked.Visible = (wts != null && wts.wtStatusList.Count > 0);
 
