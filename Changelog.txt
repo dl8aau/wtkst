@@ -1,3 +1,8 @@
+3.1.4.8
+
+- Fix: setting QRV state for Calls with multiple entries
+- Improvement: add QRB/QTF to context menu for messages
+
 3.1.4.7
 
 - Fix: short Calls sometimes are not marked as "worked" (e.g. M5M, while DM5M was in the log, too)
