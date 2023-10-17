@@ -2120,6 +2120,21 @@ namespace wtKST
                     {
                         this.cmn_msglist_openURL.Visible = false;
                     }
+                    DataRow userRow = CALL.Rows.Find(call);
+
+                    if (userRow != null)
+                    {
+                        string loc = userRow["LOC"].ToString();
+                        this.cmn_msglist_toolStripTextBox_DirQRB.Text = string.Concat(new object[]
+                        {
+                            WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc).ToString("000"), "° ",
+                            WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc), " km"
+                        });
+                        this.cmn_msglist_toolStripTextBox_DirQRB.Visible = true;
+                    }
+                    else
+                        this.cmn_msglist_toolStripTextBox_DirQRB.Visible = false;
+
                     this.cmn_msglist.Show(lv_MyMsg, p);
                 }
             }
