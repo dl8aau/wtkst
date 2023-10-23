@@ -479,7 +479,7 @@ namespace WinTest
                         "StationName" "ToStation" <from:initClock> <ProtocolVersion> "MASTER|SLAVE" \
                               <ContestID> <ModeCategoryID> <FirstQsoTimeStamp>
                  */
-                string[] data = e.Msg.Data.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] data = e.Msg.Data.Split(new char[] { ' ' });
 
                 DateTime ts = new DateTime(1970, 1, 1, 0, 0, 0, 0);
                 ts = ts.AddSeconds((double)Int32.Parse(data[0]));
@@ -539,7 +539,7 @@ namespace WinTest
             // we need to parse STATUS, too, as HELLO is only sent when a new log is opened...
             if (e.Msg.Msg == WTMESSAGES.STATUS && e.Msg.HasChecksum)
             {
-                string[] data = e.Msg.Data.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] data = e.Msg.Data.Split(new char[] { ' ' });
 
                 int sl_index = wtStationSyncList.FindLastIndex(x => x.from == e.Msg.Src);
                 // use 0 for unknown parts - we are mainly interested in the name
@@ -590,7 +590,7 @@ namespace WinTest
                   (from 110 to 114), and the next 5 are existing (from 115 to 119)
 
                 */
-                string[] data = e.Msg.Data.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] data = e.Msg.Data.Split(new char[] { ' ' });
 
                 if (data.Length == 5 && (e.Msg.Dst == "" || e.Msg.Dst == my_wtname))
                 {
@@ -617,7 +617,7 @@ namespace WinTest
                         InitialState = 0;
 
                     // can be of the format "30-1-3" - run length encoded
-                    string[] count_to_data = data[4].Split(new char[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] count_to_data = data[4].Split(new char[] { '-' });
 
                     List<logSegment> ls = new List<logSegment>();
 
@@ -698,7 +698,8 @@ namespace WinTest
             {
                 /*
                     #
-                    # ADDQSO: "FromStation" "ToStation" "StationName" <time> <freq> <modeID> <bandID>
+                    # ADDQSO: "FromStation" "ToStation" 
+                    # "StationName" <time> <freq> <modeID> <bandID>
                     #   <Radio> <RunStn> <StationFlags> <dwUniqueID> <SerialNum> "LoggedCall" "RprtSend"
                     #   "RprtRcvd" "GridSquare" "MiscInfo" "MiscInfo2" <QtcSerialSent> "FromCounty"
                     #   "Precedence" "Operator" <LogUniqueID>
@@ -712,7 +713,10 @@ namespace WinTest
                     #   "" "" 75\x91\x00'
                     #  {21 22 23}
                 */
-                string[] data = e.Msg.Data.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] data = e.Msg.Data.Split(new char[] { ' ' });
+
+                if (data != null && data.Length != 21)
+                    return;
 
                 string StationName = data[0];
 
@@ -739,18 +743,23 @@ namespace WinTest
                 row["BAND"] = band;
 
                 DateTime ts = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                ts = ts.AddSeconds((double)Int32.Parse(data[1]));
-                row["TIME"] = ts.ToString("HH:mm"); // FIXME warum nicht als object? So fehlt das Datum
-                uint serial_sent = UInt32.Parse(data[9]);
-                row["SENT"] = data[11] + serial_sent.ToString("D3");
+                try
+                { 
+                    ts = ts.AddSeconds((double)Int32.Parse(data[1]));
+                    row["TIME"] = ts.ToString("HH:mm"); // FIXME warum nicht als object? So fehlt das Datum
+                    uint serial_sent = UInt32.Parse(data[9]);
+                    row["SENT"] = data[11] + serial_sent.ToString("D3");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ADDQSO exception ts" + ex.Message);
+                    return;
+                }
                 row["RCVD"] = data[12];
                 row["LOC"] = data[13];
 
                 row["RUNSTN"] = StationName;
-                if (data.Length == 17)
-                    row["LOGID"] = data[16];
-                else
-                    row["LOGID"] = data[15];
+                row["LOGID"] = data[20];
                 row["LOGNR"] = txIDQSONumber;
 
 #if DEBUG_PACKET_LOSS
@@ -831,7 +840,7 @@ namespace WinTest
                     # 'UPDQSO: "10GHz" "" "10GHz" 1650212808 12960000 1 "DG3AAD" "CHECK" 1650212808 12960000 1 0 0 0 1 146 "DG3AAD/P" "59" "59004" "JO41WM" "" "" 0 "" "" "" 63986
                     #
                  */
-                string[] data = e.Msg.Data.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] data = e.Msg.Data.Split(new char[] { ' ' });
 
                 string StationName = data[0];
                 string OldStationName = data[5];
@@ -844,7 +853,7 @@ namespace WinTest
                 if (txIDQSONumber == 0)
                     txIDQSONumber = 1;
 
-                string logid = data[19];
+                string logid = data[24];
 #if DEBUG_PACKET_LOSS
                 if (skip_paket())
                     return;
