@@ -1,3 +1,8 @@
+3.1.4.9
+
+- Fix: Win-Test network sync does not work sometimes
+- Fix: add QRB/QTF to context menu for messages in own messages list
+
 3.1.4.8
 
 - Fix: setting QRV state for Calls with multiple entries
