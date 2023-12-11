@@ -664,7 +664,7 @@ namespace wtKST
 
                         row["COLOR"] = 0;
                         row["TIME"] = USER["TIME"];
-                        row["CONTACTED"] = USER["CONTACTED"]; // FIXME update how?
+                        row["CONTACTED"] = USER["CONTACTED"];
                         row["AWAY"] = USER["AWAY"];
                         row["RECENTLOGIN"] = USER["RECENTLOGIN"];
 
@@ -713,8 +713,11 @@ namespace wtKST
                                 row["QRB"] = qrb;
                                 row["DIR"] = qtf;
                             }
-                            row["TIME"] = USER["TIME"];
-                            row["CONTACTED"] = USER["CONTACTED"]; // FIXME update how?
+                            if ( !row["TIME"].Equals(USER["TIME"]) || !row["CONTACTED"].Equals(USER["CONTACTED"]) )
+                            {
+                                row["TIME"] = USER["TIME"];
+                                row["CONTACTED"] = USER["CONTACTED"]; // need to touch "CONTACTED" to trigger a change
+                            }
                             if (!row["AWAY"].Equals(USER["AWAY"]))
                                 row["AWAY"] = USER["AWAY"];
                             if (!row["RECENTLOGIN"].Equals(USER["RECENTLOGIN"]))
@@ -1209,6 +1212,9 @@ namespace wtKST
             ti_Main.Stop();
             if (KST.State == KSTcom.KST_STATE.Connected)
             {
+                if (lv_Calls != null)
+                    lv_Calls.InvalidateColumn(lv_Calls.Columns["CONTACTED"].DisplayIndex); // trigger a redraw of the activity column to update the time
+
                 if (wtQSO != null)
                 {
                     lock (wtQSO)
