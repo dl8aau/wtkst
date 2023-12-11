@@ -373,6 +373,10 @@ namespace wtKST
                             {
                                 findrow["CONTACTED"] = 0; // clear counter on activity
                                 findrow["TIME"] = dt; // store time of activity
+                                // propagate change
+                                if (process_user_update != null)
+                                    process_user_update(this, new UserUpdateEventArgs(findrow, USER_OP.USER_MODIFY));
+
                             }
                         }
 
