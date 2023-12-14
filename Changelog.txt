@@ -1,3 +1,7 @@
+3.1.4.10
+
+- Fix: Activity was not correctly updated in user list
+
 3.1.4.9
 
 - Fix: Win-Test network sync does not work sometimes
