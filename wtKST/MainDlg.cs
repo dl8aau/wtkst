@@ -469,34 +469,8 @@ namespace wtKST
 
                     DateTime dt_top = (DateTime)lv_Msg.Items[0].Tag;
 
-                    if (KST.msg_latest_first)
-                    {
-                        if (KST.is_reconnect())
-                        {
-                            // reconnect, sort CR at begining
-                            // probably better to re-generate the whole list... alternate line highlighting will not work
-                            // not great, but ok for the time being...
-                            for (int i = 0; i < lv_Msg.Items.Count; i++)
-                            {
-                                if (dt > (DateTime)lv_Msg.Items[i].Tag)
-                                {
-                                    lv_Msg.Items.Insert(i, LV);
-                                    current_index = i;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // add at end of list
-                            lv_Msg.Items.Insert(lv_Msg.Items.Count, LV);
-                            current_index = lv_Msg.Items.Count - 1;
-                        }
-                    }
-                    else
-                    {
-                        lv_Msg.Items.Insert(0, LV);
-                    }
+                    lv_Msg.Items.Insert(0, LV);
+
                     if (AtBeginningOfList)
                         lv_Msg.TopItem = lv_Msg.Items[0];
                     else
@@ -607,14 +581,7 @@ namespace wtKST
                     {
                         MyLV.SubItems[i].Name = lv_MyMsg.Columns[i].Text;
                     }
-                    if (KST.msg_latest_first)
-                    {
-                        lv_MyMsg.Items.Insert(lv_MyMsg.Items.Count, MyLV);
-                    }
-                    else
-                    {
-                        lv_MyMsg.Items.Insert(0, MyLV);
-                    }
+                    lv_MyMsg.Items.Insert(0, MyLV);
                     lv_MyMsg.Items[0].EnsureVisible();
                     int hwnd = MainDlg.GetForegroundWindow();
                     if (hwnd != base.Handle.ToInt32())

@@ -45,14 +45,14 @@ namespace wtKST
         private TelnetWrapper tw;
 
         private DateTime latestMessageTimestamp = DateTime.MinValue;
-        private bool latestMessageTimestampSet = false;
+        private bool initiialMessagesReceived = false;
+        private List<DataRow> MsgRows = new List<DataRow> { }; // used to store all messages in the current block
 
         private System.Timers.Timer ti_Receive;
         private System.Timers.Timer ti_Linkcheck;
 
         private bool SendMyName = false;
         private bool SendMyLocator = false;
-        public bool msg_latest_first = false;
         private bool CheckStartUpAway = true;
 #if DEBUG_INJECT_KST
         private System.Timers.Timer ti_debug;
@@ -157,12 +157,7 @@ namespace wtKST
         public void MSG_clear()
         {
             MSG.Clear();
-            latestMessageTimestampSet = false;
-        }
-
-        public bool is_reconnect()
-        {
-            return latestMessageTimestampSet;
+            initiialMessagesReceived = false;
         }
 
         public event EventHandler<newdispTextEventArgs> dispText;
@@ -207,7 +202,7 @@ namespace wtKST
                         + Settings.Default.KST_Chat.Substring(0, 1) + "|wtKST " + typeof(MainDlg).Assembly.GetName().Version +
                         "|25|0|1|" +
                         // we try to get the messages up to our latest one
-                        (!latestMessageTimestampSet ? "0" :
+                        (!initiialMessagesReceived ? "0" :
                         ((latestMessageTimestamp - new DateTime(1970, 1, 1)).TotalSeconds - 1).ToString())
                         + "|0|\r");
                         KSTState = KST_STATE.WaitLogstat;
@@ -274,7 +269,6 @@ namespace wtKST
                         KSTState = KST_STATE.Connected;
                         Say("Connected to KST chat.");
                         MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
-                        msg_latest_first = true;
                         CheckStartUpAway = true;
 
                         if (SendMyName)
@@ -349,7 +343,6 @@ namespace wtKST
                         else
                             Row["MSG"] = "(" + recipient + ") " + msg[6].Trim();
                         Row["RECIPIENT"] = recipient;
-                        msg_latest_first = (s.Substring(0, 2)).Equals("CR");
 
                         // check if the message is already in the list
                         DataRow check_row = MSG.Rows.Find(new object[] { Row["TIME"], Row["CALL"], Row["MSG"] });
@@ -358,6 +351,10 @@ namespace wtKST
                         {
                             // add message to list, it is new
                             MSG.Rows.Add(Row);
+                            // CE is sent after we received the "old" messages. Unfortunately they are not sorted by time
+                            // so we store them in a list first
+                            if (!initiialMessagesReceived)
+                                MsgRows.Add(Row);
                         }
 
                         lock (USER)
@@ -380,10 +377,8 @@ namespace wtKST
                             }
                         }
 
-                        if (process_new_message != null)
-                        {
+                        if (initiialMessagesReceived && process_new_message != null)
                             process_new_message(this, new newMSGEventArgs(Row));
-                        }
 
                         break;
 
@@ -397,7 +392,20 @@ namespace wtKST
 
                     // End of CR frames
                     case "CE":
-                        latestMessageTimestampSet = true;
+                        if (!initiialMessagesReceived)
+                        {
+                            if (process_new_message != null)
+                            {
+                                // CE is sent after we received the "old" messages. Unfortunately they are not sorted by time
+                                // so we need to sort them from the list we stored them
+                                MsgRows.Sort((x, y) => DateTime.Compare((DateTime)x["TIME"], (DateTime)y["TIME"]));
+
+                                foreach (DataRow r in MsgRows)
+                                    process_new_message(this, new newMSGEventArgs(r));
+                            }
+                        }
+                        MsgRows.Clear();
+                        initiialMessagesReceived = true;
                         break;
                 }
             }
@@ -805,6 +813,8 @@ namespace wtKST
                 tw.Dispose();
                 tw.Close();
                 MsgQueue.Clear();
+                MSG.Clear();
+                initiialMessagesReceived = false;
                 KSTBuffer = "";
                 Say("Disconnected from KST chat...");
             }
