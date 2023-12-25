@@ -7,9 +7,11 @@
 using De.Mud.Telnet;
 using Net.Graphite.Telnet;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -404,7 +406,6 @@ namespace wtKST
                                     process_new_message(this, new newMSGEventArgs(r));
                             }
                         }
-                        MsgRows.Clear();
                         initiialMessagesReceived = true;
                         break;
                 }
@@ -468,10 +469,23 @@ namespace wtKST
                                 Int32 usr_state = Int32.Parse(usr[5]);
                                 row["AWAY"] = (usr_state & 1) == 1;
                                 row["RECENTLOGIN"] = (usr_state & 2) == 2;
-
-                                row["CONTACTED"] = 0;
+                                row["CONTACTED"] = 0; // clear counter on activity
                                 row["TIME"] = DateTime.MinValue;
 
+                                if (MsgRows.Count>0)
+                                {
+                                    // check if call was contacted already
+                                    var contacted = MsgRows.Where(mrow => mrow["RECIPIENT"].Equals(row["CALL"]));
+                                    row["CONTACTED"] = contacted.Count();
+
+                                    // check if call wrote anything
+                                    var sentmsgs = MsgRows.Where(mrow => mrow["CALL"].Equals(row["CALL"]));
+
+                                    if (sentmsgs.Count() > 0)
+                                    {
+                                        row["TIME"] = (DateTime)sentmsgs.First()["TIME"]; ; // store time of activity
+                                    }
+                                }
                                 lock (USER)
                                 {
                                     USER.Rows.Add(row);
@@ -575,6 +589,10 @@ namespace wtKST
                                 Away();
                             CheckStartUpAway = false;
                         }
+                        // do we still have messages to use for updating activity of users? Clear, as we do not need them anymore
+                        if (MsgRows.Count>0)
+                            MsgRows.Clear();
+
                         if (process_user_update != null)
                             process_user_update(this, new UserUpdateEventArgs(null, USER_OP.USER_DONE));
                         break;
@@ -815,6 +833,7 @@ namespace wtKST
                 MsgQueue.Clear();
                 MSG.Clear();
                 initiialMessagesReceived = false;
+                MsgRows.Clear();
                 KSTBuffer = "";
                 Say("Disconnected from KST chat...");
             }
