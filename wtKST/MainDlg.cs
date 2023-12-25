@@ -2297,9 +2297,9 @@ namespace wtKST
 
                 string call_cut = WCCheck.WCCheck.SanitizeCall(call);
                 DataRow[] selectRow = KST.MSG_findcall(call_cut);
-                foreach (var msg_row in selectRow)
+                foreach (var msg_row in selectRow) // potential issue: collection may change while this executes
                 {
-                    Console.WriteLine(msg_row["TIME"].ToString() + " " + msg_row["CALL"].ToString() + " -> " + msg_row["RECIPIENT"].ToString() + " " + msg_row["MSG"].ToString());
+                    //Console.WriteLine(msg_row["TIME"].ToString() + " " + msg_row["CALL"].ToString() + " -> " + msg_row["RECIPIENT"].ToString() + " " + msg_row["MSG"].ToString());
                     chat_review_table.Rows.Add(msg_row["TIME"], msg_row["CALL"], msg_row["MSG"]);
                 }
                 // we need to sort by time - so that the newest entry is the first
@@ -2412,24 +2412,6 @@ namespace wtKST
                 Point p = new Point(e.X, e.Y);
                 p = cb_Command.PointToScreen(p);
                 Point cp = lv_Calls.PointToClient(p);
-#if FIXME_DV
-                ListViewHitTestInfo info = lv_Calls.HitTest(cp);
-                if (info != null && info.Item != null)
-                {
-                    int newindex = lv_Calls.TopItem.Index - Math.Sign(e.Delta);
-                    if (newindex < 0)
-                    {
-                        newindex = 0;
-                    }
-                    if (newindex > lv_Calls.Items.Count)
-                    {
-                        newindex = lv_Calls.Items.Count;
-                    }
-                    lv_Calls.TopItem = lv_Calls.Items[newindex];
-                    ((HandledMouseEventArgs)e).Handled = true;
-                }
-                else
-#endif
                 {
                     cp = lv_Msg.PointToClient(p);
                     ListViewHitTestInfo info = lv_Msg.HitTest(cp);
