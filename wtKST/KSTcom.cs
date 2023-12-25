@@ -675,19 +675,6 @@ namespace wtKST
                     {
                         USER.Clear();
                     }
-                    /*
-                     TODO: hier oder eher wenn connectet
-                    if (Settings.Default.ShowBeacons)
-                        KST_Add_Beacons_USR();
-                    */
-                    /*
-                     TODO: brauche ich ti_Main?
-                    ti_Main.Interval = 5000;
-                    if (!ti_Main.Enabled)
-                    {
-                        ti_Main.Start();
-                    }
-                    */
                     Say("Connecting to KST chat..." + Settings.Default.KST_ServerName + " Port " + 23001);
                 }
                 catch (Exception e)
