@@ -1,6 +1,7 @@
 3.1.4.10
 
 - Fix: Activity was not correctly updated in user list
+- Fix: Initial messages received right at login displayed correctly and update Activity
 
 3.1.4.9
 
