@@ -47,7 +47,7 @@ namespace wtKST
         private TelnetWrapper tw;
 
         private DateTime latestMessageTimestamp = DateTime.MinValue;
-        private bool initiialMessagesReceived = false;
+        private bool initialMessagesReceived = false;
         private List<DataRow> MsgRows = new List<DataRow> { }; // used to store all messages in the current block
 
         private System.Timers.Timer ti_Receive;
@@ -159,7 +159,7 @@ namespace wtKST
         public void MSG_clear()
         {
             MSG.Clear();
-            initiialMessagesReceived = false;
+            initialMessagesReceived = false;
         }
 
         public event EventHandler<newdispTextEventArgs> dispText;
@@ -204,7 +204,7 @@ namespace wtKST
                         + Settings.Default.KST_Chat.Substring(0, 1) + "|wtKST " + typeof(MainDlg).Assembly.GetName().Version +
                         "|25|0|1|" +
                         // we try to get the messages up to our latest one
-                        (!initiialMessagesReceived ? "0" :
+                        (!initialMessagesReceived ? "0" :
                         ((latestMessageTimestamp - new DateTime(1970, 1, 1)).TotalSeconds - 1).ToString())
                         + "|0|\r");
                         KSTState = KST_STATE.WaitLogstat;
@@ -355,7 +355,7 @@ namespace wtKST
                             MSG.Rows.Add(Row);
                             // CE is sent after we received the "old" messages. Unfortunately they are not sorted by time
                             // so we store them in a list first
-                            if (!initiialMessagesReceived)
+                            if (!initialMessagesReceived)
                                 MsgRows.Add(Row);
                         }
 
@@ -379,7 +379,7 @@ namespace wtKST
                             }
                         }
 
-                        if (initiialMessagesReceived && process_new_message != null)
+                        if (initialMessagesReceived && process_new_message != null)
                             process_new_message(this, new newMSGEventArgs(Row));
 
                         break;
@@ -394,7 +394,7 @@ namespace wtKST
 
                     // End of CR frames
                     case "CE":
-                        if (!initiialMessagesReceived)
+                        if (!initialMessagesReceived)
                         {
                             if (process_new_message != null)
                             {
@@ -406,7 +406,7 @@ namespace wtKST
                                     process_new_message(this, new newMSGEventArgs(r));
                             }
                         }
-                        initiialMessagesReceived = true;
+                        initialMessagesReceived = true;
                         break;
                 }
             }
@@ -819,7 +819,7 @@ namespace wtKST
                 tw.Close();
                 MsgQueue.Clear();
                 MSG.Clear();
-                initiialMessagesReceived = false;
+                initialMessagesReceived = false;
                 MsgRows.Clear();
                 KSTBuffer = "";
                 Say("Disconnected from KST chat...");
