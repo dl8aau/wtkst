@@ -446,7 +446,8 @@ namespace wtKST
                 LV.SubItems.Add(Row["NAME"].ToString());
 
                 // filter <a href="http://dr9a.de" target="_blank"><b>http_link</b></a> -> http://dr9a.de
-                Regex regex_filter_msg_http_link = new Regex(@"(.*)<a href=""(https?://.*)"" target=""_blank""><b>https?_link</b></a>(.*)", RegexOptions.Compiled);
+                // changed to <a href=`http://www.heise.de` target=`_blank`...> Jan-2024
+                Regex regex_filter_msg_http_link = new Regex(@"(.*)<a href=(?:""|`)(https?://.*)(?:""|`) target=(?:""|`)_blank(?:""|`)><b>https?_link</b></a>(.*)", RegexOptions.Compiled);
 
                 string msg = regex_filter_msg_http_link.Replace(Row["MSG"].ToString(), "$1$2 $3");
                 LV.SubItems.Add(msg);
