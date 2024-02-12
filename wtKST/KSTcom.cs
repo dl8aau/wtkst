@@ -131,7 +131,7 @@ namespace wtKST
                 sr_debug.ReadLine();
             while (++i < 20 && ++sr_debug_linecnt <= (sr_debug_last_line + 1) && !sr_debug.EndOfStream)
             {
-                string line = sr_debug.ReadLine();
+                string line = Encoding.UTF8.GetString(Encoding.Default.GetBytes(sr_debug.ReadLine()));
                 if (line.Substring(0, 1).Equals("C"))
                 {
                     Receive_MSG(line);
@@ -784,12 +784,6 @@ namespace wtKST
                         to_sent = "MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|" + to_sent + "|0|\r";
                         tw.Send(to_sent);
                         MainDlg.Log.WriteMessage("KST message send: " + text);
-                        /* ????? what is the code supposed to do?
-                        if (cb_Command.FindStringExact(text) != 0)
-                        {
-                            cb_Command.Items.Insert(0, text);
-                        }
-                        */
                     }
                     catch (Exception e)
                     {
@@ -850,7 +844,7 @@ namespace wtKST
             {
             }
             Console.WriteLine(t);
-            string s = e.Data.Replace("\0", "");
+            string s = Encoding.UTF8.GetString(Encoding.Default.GetBytes(e.Data.Replace("\0", "")));
             lock (MsgQueue)
             {
                 KSTBuffer += s;
