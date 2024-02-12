@@ -1256,19 +1256,41 @@ namespace wtKST
             }
         }
 
-        private void MainDlg_Load(object sender, EventArgs e)
+        private bool IsVisibleOnAnyScreen(Rectangle rect)
         {
-            // Set window location
-            if (Settings.Default.WindowLocation != null)
+            foreach (Screen screen in Screen.AllScreens)
             {
-                Location = Settings.Default.WindowLocation;
+                if (screen.WorkingArea.IntersectsWith(rect))
+                {
+                    return true;
+                }
             }
 
-            // Set window size
-            if (Settings.Default.WindowSize != null)
+            return false;
+        }
+
+        private void MainDlg_Load(object sender, EventArgs e)
+        {
+            // https://stackoverflow.com/a/942069
+            // https://learn.microsoft.com/en-us/answers/questions/1370989/function-to-save-restore-last-used-form-size-posit
+
+            // Set window location and size
+            if (Settings.Default.WindowLocation != null &&
+                Settings.Default.WindowSize != null &&
+                IsVisibleOnAnyScreen(new Rectangle(Settings.Default.WindowLocation, Settings.Default.WindowSize)))
             {
+                Location = Settings.Default.WindowLocation;
                 Size = Settings.Default.WindowSize;
             }
+            else
+            {
+                if (Settings.Default.WindowSize != null)
+                    Size = Settings.Default.WindowSize;
+                StartPosition = FormStartPosition.Manual;
+                Location = new Point(Screen.PrimaryScreen.WorkingArea.Width - this.Width,
+                                     Screen.PrimaryScreen.WorkingArea.Height - this.Height);
+            }
+
             // horizontal splitter between user list and messages
             if (Settings.Default.WindowSplitterDistance1 > 200)
                 this.splitContainer1.SplitterDistance = Settings.Default.WindowSplitterDistance1;
