@@ -1,3 +1,10 @@
+3.1.4.11
+
+- Fix: make sure window is visible on multi screen setups when screen
+        was changed (use primary screen by default)
+- Fix: URLs in http/https links do not work anymore
+- Support UTF8 for received text (transmit does not work yet)
+
 3.1.4.10
 
 - Fix: Activity was not correctly updated in user list
