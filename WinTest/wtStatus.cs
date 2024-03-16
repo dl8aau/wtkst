@@ -33,6 +33,7 @@ namespace WinTest
 
         private readonly SynchronizationContext _context = SynchronizationContext.Current;
         private System.Timers.Timer ti_check_timestamps;
+        private System.Timers.Timer ti_send_status_msg;
 
         private string my_wtname;
 
@@ -47,6 +48,18 @@ namespace WinTest
             ti_check_timestamps.Enabled = true;
             ti_check_timestamps.Interval = 60000; // check every minute
             ti_check_timestamps.Elapsed += new System.Timers.ElapsedEventHandler(this.ti_check_timestamps_Tick);
+
+            ti_send_status_msg = new System.Timers.Timer();
+            ti_send_status_msg.Enabled = true;
+            ti_send_status_msg.Interval = 30000; // every 5 minutes
+            ti_send_status_msg.Elapsed += Ti_send_status_msg_Elapsed;
+
+        }
+
+        private void Ti_send_status_msg_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            wtMessage Msg = new wtMessage(WTMESSAGES.GAB, my_wtname, "KEEPALIVE", "KEEPALIVE");
+            WinTest.send(Msg);
         }
 
         private void wtMessageReceivedHandler(object sender, wtListener.wtMessageEventArgs e)
