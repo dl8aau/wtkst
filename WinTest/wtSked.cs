@@ -6,35 +6,8 @@ namespace WinTest
 {
     public class wtSked
     {
-        private IPAddress localbroadcastIP;
-
-        public wtSked()
-        {
-            localbroadcastIP = WinTest.GetIpIFBroadcastAddress();
-        }
-
         private const string my_wtname = "KST"; // FIXME!!!
 
-        private void send(wtMessage Msg)
-        {
-            try
-            {
-                UdpClient client = new UdpClient();
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
-                client.Client.ReceiveTimeout = 10000;
-                IPEndPoint groupEp = new IPEndPoint(localbroadcastIP, WinTest.WinTestDefaultPort);
-                client.Connect(groupEp);
-                Console.WriteLine("send: " + Msg.Data);
-                byte[] b = Msg.ToBytes();
-                client.Send(b, b.Length);
-                client.Close();
-            }
-            catch
-            {
-            }
-        }
         /*
          * 'WT Msg LOCKSKED src wtKST dest  data wtKST checksum True
 WT Msg UNLOCKSKED src wtKST dest  data wtKST checksum True
@@ -59,13 +32,13 @@ WT Msg UNLOCKSKED src STN1 dest  data STN1 checksum True
         public void send_locksked(string target_wt)
         {
             wtMessage Msg = new wtMessage(WTMESSAGES.LOCKSKED, my_wtname, "", "\"" + my_wtname + "\"");
-            send(Msg);
+            WinTest.send(Msg);
         }
 
         public void send_unlocksked(string target_wt)
         {
             wtMessage Msg = new wtMessage(WTMESSAGES.UNLOCKSKED, my_wtname, "", "\"" + my_wtname + "\"");
-            send(Msg);
+            WinTest.send(Msg);
         }
 
         public void send_addsked(string target_wt, DateTime t, uint qrg, WTBANDS band, WTMODE mode, string call, string notes)
@@ -77,7 +50,7 @@ WT Msg UNLOCKSKED src STN1 dest  data STN1 checksum True
                 " ", (10*qrg).ToString(), " ", ((int)band).ToString(),
                 " ", ((int)mode).ToString(), " \"", call, "\" \"", notes, "\""
             }));
-            send(Msg);
+            WinTest.send(Msg);
         }
 
     }

@@ -211,5 +211,26 @@ namespace WinTest
             return broadcastAddress;
         }
 
+        public static void send(wtMessage Msg)
+        {
+            try
+            {
+                UdpClient client = new UdpClient();
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
+                client.Client.ReceiveTimeout = 10000;
+                IPEndPoint groupEp = new IPEndPoint(GetIpIFBroadcastAddress(), WinTest.WinTestDefaultPort);
+                client.Connect(groupEp);
+                //Console.WriteLine("send: " + Msg.Data);
+                byte[] b = Msg.ToBytes();
+                client.Send(b, b.Length);
+                client.Close();
+            }
+            catch
+            {
+            }
+        }
+
     }
 }

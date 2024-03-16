@@ -12,15 +12,12 @@ namespace WinTest
 {
     public class WtLogSync : WinTestLogBase
     {
-        private IPAddress localbroadcastIP;
-
         private wtListener wtl;
 
         private System.Timers.Timer ti_get_log;
 
         public WtLogSync(LogWriteMessageDelegate mylog) : base(mylog)
         {
-            localbroadcastIP = WinTest.GetIpIFBroadcastAddress();
             wtl = new wtListener(WinTest.WinTestDefaultPort);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
 
@@ -49,27 +46,6 @@ namespace WinTest
             wtl.close();
         }
         private string my_wtname;
-
-        private void send(wtMessage Msg)
-        {
-            try
-            {
-                UdpClient client = new UdpClient();
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
-                client.Client.ReceiveTimeout = 10000;
-                IPEndPoint groupEp = new IPEndPoint(localbroadcastIP, WinTest.WinTestDefaultPort);
-                client.Connect(groupEp);
-                //Console.WriteLine("send: " + Msg.Data);
-                byte[] b = Msg.ToBytes();
-                client.Send(b, b.Length);
-                client.Close();
-            }
-            catch
-            {
-            }
-        }
 
         private enum WTLOGSYNCSTATE { WAIT_HELLO, HELLO_RECEIVED, GET_QSO, QSO_IN_SYNC };
 
@@ -141,7 +117,7 @@ namespace WinTest
         private void send_status()
         {
             wtMessage Msg = new wtMessage(WTMESSAGES.STATUS, my_wtname, "", "0 12 0 0 0 \"0\" 0 \"1\" 0 \"\""); //FIXME really const or need to adapt
-            send(Msg);
+            WinTest.send(Msg);
         }
 
         private void send_needqso(string target_wt, string StationUniqueID, uint count_from, uint count_to)
@@ -150,7 +126,7 @@ namespace WinTest
             {
                 " \"", StationUniqueID, "\" ", count_from.ToString(), " ", count_to.ToString()
             }));
-            send(Msg);
+            WinTest.send(Msg);
         }
 
         private bool find_qsos_count_to(ref logState lst)
