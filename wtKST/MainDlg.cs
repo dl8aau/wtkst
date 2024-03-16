@@ -1029,7 +1029,7 @@ namespace wtKST
                     wtQSO = new WinTest.WinTestLog(MainDlg.Log.WriteMessage);
                 }
                 if (wts == null)
-                    wts = new WinTest.wtStatus();
+                    wts = new WinTest.wtStatus(Settings.Default.WinTest_StationName);
             }
             else if (Settings.Default.WinTest_NetworkSync_active)
             {
@@ -1050,7 +1050,7 @@ namespace wtKST
                 }
                 wtQSO = new WtLogSync(MainDlg.Log.WriteMessage);
                 if (wts == null)
-                    wts = new WinTest.wtStatus();
+                    wts = new WinTest.wtStatus(Settings.Default.WinTest_StationName);
             }
             else if (Settings.Default.QARTest_Sync_active)
             {

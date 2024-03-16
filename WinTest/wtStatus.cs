@@ -34,8 +34,11 @@ namespace WinTest
         private readonly SynchronizationContext _context = SynchronizationContext.Current;
         private System.Timers.Timer ti_check_timestamps;
 
-        public wtStatus()
+        private string my_wtname;
+
+        public wtStatus(string wtname)
         {
+            my_wtname = wtname;
             wtl = new wtListener(WinTest.WinTestDefaultPort);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
             wtStatusList = new BindingList<wtStat>();
