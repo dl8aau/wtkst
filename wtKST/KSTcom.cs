@@ -224,12 +224,12 @@ namespace wtKST
                             if (WCCheck.WCCheck.IsCall(call) >= 0)
                             {
                                 string[] subs = s.Split('|');
-                                if (subs[2].Equals("Wrong password!")) // maybe test subs[1] for 114? OK seems 100
+                                if (!subs[1].Equals("100"))
                                 {
-                                    System.Windows.Forms.MessageBox.Show("Password wrong", "Login failed",
+                                    System.Windows.Forms.MessageBox.Show(subs[2], "Login failed",
                                         System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
                                     tw.Close();
-                                    MainDlg.Log.WriteMessage("Password wrong ");
+                                    MainDlg.Log.WriteMessage("Password wrong " + subs[1] + " " + subs[2]);
                                     break;
                                 }
                                 // If name not set... take it from ON4KST
