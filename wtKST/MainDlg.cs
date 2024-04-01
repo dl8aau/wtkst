@@ -1367,6 +1367,68 @@ namespace wtKST
             tt_Info.Show(text, this, p, 5000);
         }
 
+        /// <summary>
+        /// Paint airplane scatter status - visualize status by an elipse with different size and color
+        /// </summary>
+        /// <param name="pot">"Potential" of a plane - 100=on the path, 75=soon on the path, 50=soon on the path, but too low</param>
+        /// <param name="cat">"Category" of the plane ([S]uper heavy, [H]eavy, [M]edium, [L]ight</param>
+        /// <param name="Mins">minutes until the plane is on the path</param>
+        /// <param name="CellBounds">Bounds of the cell to paint</param>
+        /// <param name="gfx">Graphics context to draw to</param>
+        /// 
+        private void paintAScell(int pot, string cat, int Mins, Rectangle CellBounds, Graphics gfx)
+        {
+            Rectangle newRect = new Rectangle(CellBounds.X + 2,
+                CellBounds.Y + 2, CellBounds.Width - 4,
+                CellBounds.Height - 4);
+            Rectangle b = newRect;
+            b.Inflate(-5, 0); // width -10 for the text
+            if (cat.Equals("S"))
+                b.Inflate(-1, -1);
+            else if (cat.Equals("H"))
+                b.Inflate(-2, -2);
+            else if (cat.Equals("M") || cat.Equals("[unknown]"))
+                b.Inflate(-4, -4);
+            else if (cat.Equals("L"))
+                b.Inflate(-6, -6);
+            else // unknown
+                b.Inflate(-5, -5);
+            b.X = newRect.X + 1;  // FIXME needed?
+            if (pot == 100)
+            {
+                // 100
+                gfx.FillEllipse(new SolidBrush(Color.Magenta), b);
+            }
+            else if (pot > 50)
+            {
+                // 51..99
+                if (Mins > 15)
+                    gfx.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b); // Pale Pink
+                else if (Mins > 5)
+                    gfx.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b); // Golden Gate Bridge Orange
+                else
+                    gfx.FillEllipse(new SolidBrush(Color.Red), b);
+
+                using (StringFormat sf = new StringFormat())
+                {
+                    sf.Alignment = StringAlignment.Center;
+                    sf.LineAlignment = StringAlignment.Center;
+                    Rectangle tb = newRect;
+                    tb.X = newRect.Width - 15 + tb.X;
+                    tb.Width = 15;
+                    using (Font font = new Font("Tahoma", 6.6F, FontStyle.Regular))
+                    {
+                        gfx.DrawString(Mins.ToString(), font, Brushes.Black, tb, sf);
+                    }
+                }
+            }
+            else
+            {
+                // 0..50
+                gfx.FillEllipse(new SolidBrush(Color.Orange), b);
+            }
+        }
+
         private void lv_Calls_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             if (e.ColumnIndex < 0)
@@ -1546,57 +1608,9 @@ namespace wtKST
                                 if (a.Length < 2)
                                     Console.WriteLine("ups " + a.Length + " " + as_string);
                                 var cat = a[1];
-                                Rectangle newRect = new Rectangle(e.CellBounds.X + 2,
-                                    e.CellBounds.Y + 2, e.CellBounds.Width - 4,
-                                    e.CellBounds.Height - 4);
-                                Rectangle b = newRect;
-                                b.Inflate(-5, 0); // width -10 for the text
-                                if (cat.Equals("S"))
-                                    b.Inflate(-1, -1);
-                                else if (cat.Equals("H"))
-                                    b.Inflate(-2, -2);
-                                else if (cat.Equals("M") || cat.Equals("[unknown]"))
-                                    b.Inflate(-4, -4);
-                                else if (cat.Equals("L"))
-                                    b.Inflate(-6, -6);
-                                else // unknown
-                                    b.Inflate(-5, -5);
-                                b.X = newRect.X + 1;  // FIXME needed?
-                                if (pot == 100)
-                                {
-                                    // 100
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
-                                }
-                                else if (pot > 50)
-                                {
-                                    // 51..99
-                                    if (Mins > 15)
-                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b);
-                                    else if (Mins > 5)
-                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b);
-                                    else
-                                        e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
-
-                                    using (StringFormat sf = new StringFormat())
-                                    {
-                                        using (Font headerFont = new Font(e.CellStyle.Font.Name, e.CellStyle.Font.Size * 0.8F, FontStyle.Regular))
-                                        {
-                                            sf.Alignment = StringAlignment.Center;
-                                            sf.LineAlignment = StringAlignment.Center;
-                                            Rectangle tb = newRect;
-                                            tb.X = tb.X + newRect.Width - 15;
-                                            tb.Width = 15;
-                                            e.Graphics.DrawString(Mins.ToString(), headerFont, Brushes.Black, tb, sf);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    // 0..50
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.Orange), b);
-                                }
-                                e.Handled = true;
+                                paintAScell(pot, cat, Mins, e.CellBounds, e.Graphics);
                             }
+                            e.Handled = true;
                         }
                     }
                     catch
