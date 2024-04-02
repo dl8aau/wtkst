@@ -12,6 +12,8 @@ using System.Threading;
 using System.Windows.Forms;
 using WinTest;
 using wtKST.Properties;
+using WebSocket;
+using WebRTC;
 
 namespace wtKST
 {
@@ -31,6 +33,7 @@ namespace wtKST
         private WinTest.WinTestLogBase wtQSO = null;
 
         private wtKST.AirScoutInterface AS_if;
+        private WebRTCPeer AS_webRTC;
 
         public static LogWriter Log = new LogWriter(Directory.GetParent(Application.LocalUserAppDataPath).ToString());
 
@@ -157,7 +160,7 @@ namespace wtKST
         private uint kst_sked_band_freq;
         private string last_cq_call;
 
-        private class AS_Calls
+        internal class AS_Calls
         {
             public string Call;
             public string Locator;
@@ -275,6 +278,7 @@ namespace wtKST
             UpdateUserBandsWidth();
             bw_GetPlanes.RunWorkerAsync();
             AS_if = new wtKST.AirScoutInterface(ref bw_GetPlanes);
+            AS_webRTC = new WebRTCPeer(ref bw_GetPlanes);
             if (Settings.Default.KST_AutoConnect)
             {
                 KST.Connect();
@@ -1225,8 +1229,7 @@ namespace wtKST
                         }
                     }
                 }
-                if (Settings.Default.AS_Active)
-                    AS_send_ASWATCHLIST();
+                AS_send_ASWATCHLIST();
             }
             int interval = Convert.ToInt32(Settings.Default.UpdateInterval) * 1000;
             if (interval > 10000)
@@ -1658,29 +1661,60 @@ namespace wtKST
                 }
                 if (column.Name == "AS")
                 {
-                    string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
-                    string s = AS_if.GetNearestPlanes(ascall);
-                    if (string.IsNullOrEmpty(s))
+                    if (Settings.Default.AS_Active)
                     {
-                        ToolTipText = "No planes\n\nLeft click for map";
-                        lock (CALL)
+                        string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                        string s = AS_if.GetNearestPlanes(ascall);
+                        if (string.IsNullOrEmpty(s))
                         {
-                            DataRow Row = CALL.Rows.Find(ascall);
-                            if (Row != null && Settings.Default.AS_Active)
+                            ToolTipText = "No planes\n\nLeft click for map";
+                            lock (CALL)
                             {
-                                int qrb = (int)Row["QRB"];
-                                if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
-                                    ToolTipText = "Too close for planes\n\nLeft click for map";
-                                else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
-                                    ToolTipText = "Too far away for planes\n\nLeft click for map";
+                                DataRow Row = CALL.Rows.Find(ascall);
+                                if (Row != null )
+                                {
+                                    int qrb = (int)Row["QRB"];
+                                    if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                                        ToolTipText = "Too close for planes\n\nLeft click for map";
+                                    else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
+                                        ToolTipText = "Too far away for planes\n\nLeft click for map";
+                                }
                             }
                         }
+                        else
+                        {
+                            string t = s.Remove(0, s.IndexOf("\n\n") + 2);
+                            t = t.Remove(t.IndexOf("\n"));
+                            ToolTipText = t + "\n\nLeft click for map\nRight click for more";
+                        }
                     }
-                    else
+                    else if (Settings.Default.WS_Active)
                     {
-                        string t = s.Remove(0, s.IndexOf("\n\n") + 2);
-                        t = t.Remove(t.IndexOf("\n"));
-                        ToolTipText = t + "\n\nLeft click for map\nRight click for more";
+                        string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                        string s = AS_webRTC.GetNearestPlanes(ascall);
+                        if (string.IsNullOrEmpty(s))
+                        {
+                            ToolTipText = "No planes\n\nLeft click for map";
+                            lock (CALL)
+                            {
+                                DataRow Row = CALL.Rows.Find(ascall);
+                                if (Row != null)
+                                {
+                                    int qrb = (int)Row["QRB"];
+                                    if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                                        ToolTipText = "Too close for planes\n\nLeft click for map";
+                                    else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
+                                        ToolTipText = "Too far away for planes\n\nLeft click for map";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            string t = s.Remove(0, s.IndexOf("\n\n") + 2);
+                            t = t.Remove(t.IndexOf("\n"));
+                            ToolTipText = t + "\n\nLeft click for map\nRight click for more";
+                        }
+
                     }
                 }
                 if (!String.IsNullOrEmpty(column.Name) && column.Name[0] > '0' && column.Name[0] < '9')
@@ -1763,7 +1797,7 @@ namespace wtKST
 
         private void fill_AS_list()
         {
-            if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.RowCount == 0)
+            if ((!Settings.Default.AS_Active && !Settings.Default.WS_Active) || lv_Calls == null || lv_Calls.RowCount == 0)
                 return;
 
             string watchlist = "";
@@ -1914,9 +1948,12 @@ namespace wtKST
                     }
                     string loc = row.Cells["LOC"].Value.ToString();
 
-                    if (column.Name == "AS" && Settings.Default.AS_Active)
+                    if (column.Name == "AS" && (Settings.Default.AS_Active || Settings.Default.WS_Active))
                     {
-                        AS_if.show_path(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
+                        if (Properties.Settings.Default.AS_Active)
+                            AS_if.show_path(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
+                        else if (Properties.Settings.Default.WS_Active)
+                            AS_webRTC.ShowPath(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
                     }
                     if (column.Name[0] > '0' && column.Name[0] < '9')
                     {
@@ -2515,7 +2552,14 @@ namespace wtKST
             lock (AS_watchlist)
             {
                 string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
-                AS_if.send_watchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
+                if (Settings.Default.AS_Active)
+                {
+                    AS_if.send_watchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
+                }
+                if (Settings.Default.WS_Active)
+                {
+                    AS_webRTC.SendWatchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
+                }
             }
         }
 
@@ -2523,7 +2567,7 @@ namespace wtKST
         {
             while (!bw_GetPlanes.CancellationPending)
             {
-                if (KST.State < KSTcom.KST_STATE.Connected || !Settings.Default.AS_Active)
+                if (KST.State < KSTcom.KST_STATE.Connected || (!Settings.Default.AS_Active && !Settings.Default.WS_Active))
                 {
                     Thread.Sleep(200); // TODO: better to use WaitHandles
                     continue;
@@ -2535,7 +2579,11 @@ namespace wtKST
                 AS_Calls[] myAs_List;
 
                 if (AS_list.Count == 0)
+                {
+                    Thread.Sleep(200); // TODO: better to use WaitHandles
                     continue;
+                }
+
                 lock (AS_list)
                 {
                     myAs_List = new AS_Calls[AS_list.Count];
@@ -2571,11 +2619,62 @@ namespace wtKST
                     {
                     }
                 }
+
+                // handle web socket if active
+                if (Settings.Default.WS_Active)
+                {
+                    // copy over myAs_List to JSON locations
+                    List<JSONLocation> aslist = new List<JSONLocation>();
+                    myAs_List.ToList().ForEach(item => aslist.Add(new JSONLocation(item.Call, item.Locator)));
+
+                    if (!AS_webRTC.GetPlanes(mycall, Settings.Default.KST_Loc, aslist))
+                    {
+                        errors++;
+                        if (errors > 10)
+                        {
+                            bw_GetPlanes.ReportProgress(0, null);
+                            break;
+                        }
+                    }
+
+                    Thread.Sleep(10000);
+                }
             }
         }
 
         private void bw_GetPlanes_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
+            // update planes from websocket
+            if (e.ProgressPercentage == 2)
+            {
+                try
+                {
+                    AS_webRTC.planes.Keys.ToList().ForEach(call =>
+                    {
+                        string text = AS_webRTC.GetNearestPlanePotential(call);
+
+                        // search the view for matching call - note that dxcall is the bare callsign, whereas
+                        // the list contains () for users that are away and may contain things like /p
+                        // so this is safer...
+                        DataRow[] rows = CALL.Select(string.Format("[CALL] LIKE '*{0}*'", call));
+
+                        foreach (var c in rows)
+                        {
+                            if (c["AS"].ToString() != text)
+                            {
+                                c["AS"] = text;
+                            }
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error while processing Get_Planes: " + ex.ToString());
+                }
+
+                return;
+            }
+
             string dxcall = (string)e.UserState;
             if (dxcall == null)
             {
