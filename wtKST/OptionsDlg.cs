@@ -53,7 +53,6 @@ namespace wtKST
         private TextBox tb_AS_MaxDist;
         private Label label9;
         private TextBox tb_AS_MinDist;
-        private Label label8;
         public CheckBox cb_AS_Active;
         private GroupBox Bands;
         private CheckBox checkBox1296;
@@ -114,6 +113,14 @@ namespace wtKST
         private GroupBox groupBox1;
         private GroupBox groupBox4;
         public CheckBox cb_QARTest_Active;
+        public CheckBox cb_WS_Active;
+        private Label label30;
+        private TextBox tb_WS_Password;
+        private Label label28;
+        private TextBox tb_WS_Username;
+        private Label label31;
+        private TextBox tb_WS_ChannelID;
+        private Label label8;
         public CheckBox cb_WinTest_Active;
 
         public OptionsDlg()
@@ -236,11 +243,17 @@ namespace wtKST
             this.checkBox432 = new System.Windows.Forms.CheckBox();
             this.checkBox144 = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.label31 = new System.Windows.Forms.Label();
+            this.tb_WS_ChannelID = new System.Windows.Forms.TextBox();
+            this.label30 = new System.Windows.Forms.Label();
+            this.tb_WS_Password = new System.Windows.Forms.TextBox();
+            this.label28 = new System.Windows.Forms.Label();
+            this.tb_WS_Username = new System.Windows.Forms.TextBox();
+            this.cb_WS_Active = new System.Windows.Forms.CheckBox();
             this.cb_AS_local = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.cb_AS_QRG = new System.Windows.Forms.ComboBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
@@ -285,6 +298,7 @@ namespace wtKST
             this.tB_macro_1 = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.cB_macro_1 = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -928,6 +942,13 @@ namespace wtKST
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.label31);
+            this.tabPage4.Controls.Add(this.tb_WS_ChannelID);
+            this.tabPage4.Controls.Add(this.label30);
+            this.tabPage4.Controls.Add(this.tb_WS_Password);
+            this.tabPage4.Controls.Add(this.label28);
+            this.tabPage4.Controls.Add(this.tb_WS_Username);
+            this.tabPage4.Controls.Add(this.cb_WS_Active);
             this.tabPage4.Controls.Add(this.cb_AS_local);
             this.tabPage4.Controls.Add(this.label7);
             this.tabPage4.Controls.Add(this.label16);
@@ -953,13 +974,82 @@ namespace wtKST
             this.tabPage4.Text = "Airplane Scatter";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(15, 254);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(106, 13);
+            this.label31.TabIndex = 34;
+            this.label31.Text = "AirScout Channel ID:";
+            // 
+            // tb_WS_ChannelID
+            // 
+            this.tb_WS_ChannelID.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WS_ChannelID", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_WS_ChannelID.Location = new System.Drawing.Point(126, 251);
+            this.tb_WS_ChannelID.Name = "tb_WS_ChannelID";
+            this.tb_WS_ChannelID.Size = new System.Drawing.Size(87, 20);
+            this.tb_WS_ChannelID.TabIndex = 33;
+            this.tb_WS_ChannelID.Text = global::wtKST.Properties.Settings.Default.WS_ChannelID;
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(235, 228);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(99, 13);
+            this.label30.TabIndex = 32;
+            this.label30.Text = "AirScout Password:";
+            // 
+            // tb_WS_Password
+            // 
+            this.tb_WS_Password.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WS_Password", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_WS_Password.Location = new System.Drawing.Point(346, 225);
+            this.tb_WS_Password.Name = "tb_WS_Password";
+            this.tb_WS_Password.PasswordChar = '*';
+            this.tb_WS_Password.Size = new System.Drawing.Size(100, 20);
+            this.tb_WS_Password.TabIndex = 31;
+            this.tb_WS_Password.Text = global::wtKST.Properties.Settings.Default.WS_Password;
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(15, 228);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(101, 13);
+            this.label28.TabIndex = 28;
+            this.label28.Text = "AirScout Username:";
+            // 
+            // tb_WS_Username
+            // 
+            this.tb_WS_Username.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WS_Username", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_WS_Username.Location = new System.Drawing.Point(126, 225);
+            this.tb_WS_Username.Name = "tb_WS_Username";
+            this.tb_WS_Username.Size = new System.Drawing.Size(87, 20);
+            this.tb_WS_Username.TabIndex = 27;
+            this.tb_WS_Username.Text = global::wtKST.Properties.Settings.Default.WS_Username;
+            // 
+            // cb_WS_Active
+            // 
+            this.cb_WS_Active.AutoSize = true;
+            this.cb_WS_Active.Checked = global::wtKST.Properties.Settings.Default.WS_Active;
+            this.cb_WS_Active.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_WS_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "WS_Active", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cb_WS_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_WS_Active.Location = new System.Drawing.Point(16, 189);
+            this.cb_WS_Active.Name = "cb_WS_Active";
+            this.cb_WS_Active.Size = new System.Drawing.Size(297, 17);
+            this.cb_WS_Active.TabIndex = 26;
+            this.cb_WS_Active.Text = "Activate web service for browser based AirScout versions";
+            this.cb_WS_Active.UseVisualStyleBackColor = true;
+            // 
             // cb_AS_local
             // 
             this.cb_AS_local.AutoSize = true;
             this.cb_AS_local.Checked = global::wtKST.Properties.Settings.Default.AS_Local_Active;
             this.cb_AS_local.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Local_Active", true));
             this.cb_AS_local.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_AS_local.Location = new System.Drawing.Point(18, 101);
+            this.cb_AS_local.Location = new System.Drawing.Point(18, 87);
             this.cb_AS_local.Name = "cb_AS_local";
             this.cb_AS_local.Size = new System.Drawing.Size(177, 17);
             this.cb_AS_local.TabIndex = 10;
@@ -971,7 +1061,7 @@ namespace wtKST
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(202, 102);
+            this.label7.Location = new System.Drawing.Point(202, 88);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(70, 13);
             this.label7.TabIndex = 11;
@@ -981,7 +1071,7 @@ namespace wtKST
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(299, 67);
+            this.label16.Location = new System.Drawing.Point(299, 53);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(60, 13);
             this.label16.TabIndex = 25;
@@ -1001,26 +1091,16 @@ namespace wtKST
             "3.4G",
             "5.7G",
             "10G"});
-            this.cb_AS_QRG.Location = new System.Drawing.Point(368, 63);
+            this.cb_AS_QRG.Location = new System.Drawing.Point(368, 49);
             this.cb_AS_QRG.Name = "cb_AS_QRG";
             this.cb_AS_QRG.Size = new System.Drawing.Size(78, 21);
             this.cb_AS_QRG.TabIndex = 9;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(13, 180);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(224, 13);
-            this.label8.TabIndex = 15;
-            this.label8.Text = "Get aircraft positions in the range of minumum:";
             // 
             // label15
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(158, 67);
+            this.label15.Location = new System.Drawing.Point(158, 53);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(55, 13);
             this.label15.TabIndex = 7;
@@ -1030,7 +1110,7 @@ namespace wtKST
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(273, 180);
+            this.label9.Location = new System.Drawing.Point(273, 147);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(102, 13);
             this.label9.TabIndex = 17;
@@ -1040,7 +1120,7 @@ namespace wtKST
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(15, 67);
+            this.label14.Location = new System.Drawing.Point(15, 53);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(70, 13);
             this.label14.TabIndex = 5;
@@ -1050,7 +1130,7 @@ namespace wtKST
             // 
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(199, 131);
+            this.label13.Location = new System.Drawing.Point(199, 117);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(27, 13);
             this.label13.TabIndex = 19;
@@ -1060,7 +1140,7 @@ namespace wtKST
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(417, 180);
+            this.label11.Location = new System.Drawing.Point(417, 147);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(29, 13);
             this.label11.TabIndex = 16;
@@ -1070,7 +1150,7 @@ namespace wtKST
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(13, 131);
+            this.label12.Location = new System.Drawing.Point(13, 117);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(141, 13);
             this.label12.TabIndex = 13;
@@ -1081,7 +1161,7 @@ namespace wtKST
             this.tb_Options_AS_Local_Server_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Local_Name", true));
             this.tb_Options_AS_Local_Server_Name.Enabled = global::wtKST.Properties.Settings.Default.AS_Local_Active;
             this.tb_Options_AS_Local_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(276, 99);
+            this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(276, 85);
             this.tb_Options_AS_Local_Server_Name.Name = "tb_Options_AS_Local_Server_Name";
             this.tb_Options_AS_Local_Server_Name.Size = new System.Drawing.Size(51, 20);
             this.tb_Options_AS_Local_Server_Name.TabIndex = 12;
@@ -1094,7 +1174,7 @@ namespace wtKST
             this.cb_AS_Active.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_AS_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Active", true));
             this.cb_AS_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_AS_Active.Location = new System.Drawing.Point(16, 29);
+            this.cb_AS_Active.Location = new System.Drawing.Point(16, 15);
             this.cb_AS_Active.Name = "cb_AS_Active";
             this.cb_AS_Active.Size = new System.Drawing.Size(366, 17);
             this.cb_AS_Active.TabIndex = 4;
@@ -1105,7 +1185,7 @@ namespace wtKST
             // 
             this.tb_Options_AS_My_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_My_Name", true));
             this.tb_Options_AS_My_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_AS_My_Name.Location = new System.Drawing.Point(217, 64);
+            this.tb_Options_AS_My_Name.Location = new System.Drawing.Point(217, 50);
             this.tb_Options_AS_My_Name.Name = "tb_Options_AS_My_Name";
             this.tb_Options_AS_My_Name.Size = new System.Drawing.Size(66, 20);
             this.tb_Options_AS_My_Name.TabIndex = 8;
@@ -1115,7 +1195,7 @@ namespace wtKST
             // 
             this.tb_AS_MinDist.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_MinDist", true));
             this.tb_AS_MinDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_AS_MinDist.Location = new System.Drawing.Point(234, 177);
+            this.tb_AS_MinDist.Location = new System.Drawing.Point(234, 144);
             this.tb_AS_MinDist.Name = "tb_AS_MinDist";
             this.tb_AS_MinDist.Size = new System.Drawing.Size(33, 20);
             this.tb_AS_MinDist.TabIndex = 16;
@@ -1125,7 +1205,7 @@ namespace wtKST
             // 
             this.tb_Options_AS_Server_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Server_Name", true));
             this.tb_Options_AS_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_AS_Server_Name.Location = new System.Drawing.Point(89, 64);
+            this.tb_Options_AS_Server_Name.Location = new System.Drawing.Point(89, 50);
             this.tb_Options_AS_Server_Name.Name = "tb_Options_AS_Server_Name";
             this.tb_Options_AS_Server_Name.Size = new System.Drawing.Size(51, 20);
             this.tb_Options_AS_Server_Name.TabIndex = 6;
@@ -1135,7 +1215,7 @@ namespace wtKST
             // 
             this.tb_AS_MaxDist.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_MaxDist", true));
             this.tb_AS_MaxDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_AS_MaxDist.Location = new System.Drawing.Point(378, 177);
+            this.tb_AS_MaxDist.Location = new System.Drawing.Point(378, 144);
             this.tb_AS_MaxDist.Name = "tb_AS_MaxDist";
             this.tb_AS_MaxDist.Size = new System.Drawing.Size(33, 20);
             this.tb_AS_MaxDist.TabIndex = 18;
@@ -1145,7 +1225,7 @@ namespace wtKST
             // 
             this.tb_AS_Timeout.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Timeout", true));
             this.tb_AS_Timeout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_AS_Timeout.Location = new System.Drawing.Point(160, 128);
+            this.tb_AS_Timeout.Location = new System.Drawing.Point(160, 114);
             this.tb_AS_Timeout.Name = "tb_AS_Timeout";
             this.tb_AS_Timeout.Size = new System.Drawing.Size(33, 20);
             this.tb_AS_Timeout.TabIndex = 14;
@@ -1472,6 +1552,16 @@ namespace wtKST
             this.cB_macro_1.Size = new System.Drawing.Size(15, 14);
             this.cB_macro_1.TabIndex = 11;
             this.cB_macro_1.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label8.Location = new System.Drawing.Point(13, 147);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(224, 13);
+            this.label8.TabIndex = 15;
+            this.label8.Text = "Get aircraft positions in the range of minumum:";
             // 
             // OptionsDlg
             // 

@@ -215,5 +215,17 @@
     <Setting Name="QARTest_Sync_active" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="WS_Active" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="WS_Username" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="WS_Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="WS_ChannelID" Type="System.String" Scope="User">
+      <Value Profile="(Default)">AS</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
