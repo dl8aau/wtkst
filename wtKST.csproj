@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AssemblyName>wtKST</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <WarningLevel>4</WarningLevel>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -121,6 +121,22 @@
     </Compile>
     <Compile Include="WCCheck\WCCheck.cs" />
     <Compile Include="WCCheck\WCUtils.cs" />
+    <Compile Include="WebRTC\JSONRequests.cs" />
+    <Compile Include="WebRTC\JSONResponses.cs" />
+    <Compile Include="WebRTC\WebClientEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WebRTC\WebRTCPeer.cs" />
+    <Compile Include="WebRTC\WebRTCStartArgs.cs" />
+    <Compile Include="WebRTC\WebRTCStatus.cs" />
+    <Compile Include="WebRTC\WebRTCWebStat.cs" />
+    <Compile Include="WebRTC\WebRTCWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WebSocket\Helpers.cs" />
+    <Compile Include="WebSocket\JSONRequests.cs" />
+    <Compile Include="WebSocket\JSONResponses.cs" />
+    <Compile Include="WebSocket\WebSocketServer.cs" />
     <Compile Include="wtKST\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -211,6 +227,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="SIPSorcery">
+      <Version>6.2.1</Version>
+    </PackageReference>
     <PackageReference Include="System.Data.SQLite.Core">
       <Version>1.0.116</Version>
     </PackageReference>
