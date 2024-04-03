@@ -227,6 +227,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ILRepack">
+      <Version>2.0.29</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="ILRepack.MSBuild.Task">
+      <Version>2.0.13</Version>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
     </PackageReference>
@@ -238,4 +246,19 @@
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="ILRepack" AfterTargets="Build">
+
+        <PropertyGroup>
+            <WorkingDirectory>$(SolutionDirectory)bin\$(Configuration)\$(TargetFramework)</WorkingDirectory>
+        </PropertyGroup>
+
+        <ILRepack
+            OutputType="$(OutputType)"
+            MainAssembly="$(AssemblyName).exe"
+            OutputAssembly="$(TargetDir)merged\$(AssemblyName).exe"
+            InputAssemblies="$(WorkingDirectory)\*.dll"
+	    WilcardInputAssemblies="true"
+            WorkingDirectory="$(WorkingDirectory)" />
+
+</Target>
 </Project>
