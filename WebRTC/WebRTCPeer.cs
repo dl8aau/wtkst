@@ -33,7 +33,9 @@ namespace WebRTC
             WebRTCStartArgs args = new WebRTCStartArgs();
             args.AirScoutUsername = Settings.Default.WS_Username;
             args.AirScoutPassword = Settings.Default.WS_Password;
-            args.ChannelID = Settings.Default.WS_ChannelID;
+            args.AirScoutLoginURL = Settings.Default.WS_LoginURL;
+            args.AirScoutRootURL = Settings.Default.WS_API_URL;
+            args.ChannelID = Settings.Default.AS_Server_Name;
             bw_WebRTC.RunWorkerAsync(args);
 
         }

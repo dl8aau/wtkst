@@ -913,13 +913,25 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("AS")]
-        public string WS_ChannelID {
+        [global::System.Configuration.DefaultSettingValueAttribute("http://134.97.32.144/page/dist/login.php?login=1")]
+        public string WS_LoginURL {
             get {
-                return ((string)(this["WS_ChannelID"]));
+                return ((string)(this["WS_LoginURL"]));
             }
             set {
-                this["WS_ChannelID"] = value;
+                this["WS_LoginURL"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://134.97.32.144/airscout/api/v1")]
+        public string WS_API_URL {
+            get {
+                return ((string)(this["WS_API_URL"]));
+            }
+            set {
+                this["WS_API_URL"] = value;
             }
         }
     }

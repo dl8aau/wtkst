@@ -224,8 +224,11 @@
     <Setting Name="WS_Password" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="WS_ChannelID" Type="System.String" Scope="User">
-      <Value Profile="(Default)">AS</Value>
+    <Setting Name="WS_LoginURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://134.97.32.144/page/dist/login.php?login=1</Value>
+    </Setting>
+    <Setting Name="WS_API_URL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://134.97.32.144/airscout/api/v1</Value>
     </Setting>
   </Settings>
 </SettingsFile>
