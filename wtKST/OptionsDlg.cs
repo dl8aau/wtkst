@@ -659,7 +659,7 @@ namespace wtKST
             // 
             this.cb_QARTest_Active.AutoSize = true;
             this.cb_QARTest_Active.Checked = global::wtKST.Properties.Settings.Default.QARTest_Sync_active;
-            this.cb_QARTest_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "QARTest_Sync_active", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cb_QARTest_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "QARTest_Sync_active", true));
             this.cb_QARTest_Active.Enabled = false;
             this.cb_QARTest_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_QARTest_Active.Location = new System.Drawing.Point(8, 22);
@@ -688,7 +688,7 @@ namespace wtKST
             // 
             this.cb_WinTestNet_Active.AutoSize = true;
             this.cb_WinTestNet_Active.Checked = global::wtKST.Properties.Settings.Default.WinTest_NetworkSync_active;
-            this.cb_WinTestNet_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "WinTest_NetworkSync_active", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cb_WinTestNet_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "WinTest_NetworkSync_active", true));
             this.cb_WinTestNet_Active.Enabled = false;
             this.cb_WinTestNet_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_WinTestNet_Active.Location = new System.Drawing.Point(8, 22);
@@ -701,7 +701,7 @@ namespace wtKST
             // 
             // tb_Options_WinTest_Station_Name
             // 
-            this.tb_Options_WinTest_Station_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WinTest_StationName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_Options_WinTest_Station_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WinTest_StationName", true));
             this.tb_Options_WinTest_Station_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_Options_WinTest_Station_Name.Location = new System.Drawing.Point(112, 40);
             this.tb_Options_WinTest_Station_Name.Name = "tb_Options_WinTest_Station_Name";
