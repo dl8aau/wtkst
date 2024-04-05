@@ -401,7 +401,7 @@ namespace WebRTC
                 {
                     using (WebClientEx client = new WebClientEx(cookies))
                     {
-                        string url = "http://134.97.32.144/airscout/api/v1/wtkst/" + GUID;
+                        string url = args.AirScoutRootURL + "/wtkst/" + GUID;
                         client.Headers[HttpRequestHeader.ContentType] = "application/json";
                         try
                         {
