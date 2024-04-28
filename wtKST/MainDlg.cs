@@ -12,7 +12,6 @@ using System.Threading;
 using System.Windows.Forms;
 using WinTest;
 using wtKST.Properties;
-using WebSocket;
 using WebRTC;
 
 namespace wtKST

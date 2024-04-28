@@ -133,10 +133,6 @@
     <Compile Include="WebRTC\WebRTCWorker.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="WebSocket\Helpers.cs" />
-    <Compile Include="WebSocket\JSONRequests.cs" />
-    <Compile Include="WebSocket\JSONResponses.cs" />
-    <Compile Include="WebSocket\WebSocketServer.cs" />
     <Compile Include="wtKST\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -247,18 +243,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="ILRepack" AfterTargets="Build">
-
-        <PropertyGroup>
-            <WorkingDirectory>$(SolutionDirectory)bin\$(Configuration)\$(TargetFramework)</WorkingDirectory>
-        </PropertyGroup>
-
-        <ILRepack
-            OutputType="$(OutputType)"
-            MainAssembly="$(AssemblyName).exe"
-            OutputAssembly="$(TargetDir)merged\$(AssemblyName).exe"
-            InputAssemblies="$(WorkingDirectory)\*.dll"
-	    WilcardInputAssemblies="true"
-            WorkingDirectory="$(WorkingDirectory)" />
-
-</Target>
+    <PropertyGroup>
+      <WorkingDirectory>$(SolutionDirectory)bin\$(Configuration)\$(TargetFramework)</WorkingDirectory>
+    </PropertyGroup>
+    <ILRepack OutputType="$(OutputType)" MainAssembly="$(AssemblyName).exe" OutputAssembly="$(TargetDir)merged\$(AssemblyName).exe" InputAssemblies="$(WorkingDirectory)\*.dll" WilcardInputAssemblies="true" WorkingDirectory="$(WorkingDirectory)" />
+  </Target>
 </Project>

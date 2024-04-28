@@ -262,9 +262,9 @@ namespace WebRTC
                         {
                             if ((Status != WebRTCStatus.ERROR) && (Status == WebRTCStatus.OFFERING) && (PC != null))
                             {
-                                var answer = JsonConvert.DeserializeObject<string>(webstat.answer);
+//                                var answer = JsonConvert.DeserializeObject<string>(webstat.answer);
                                 RTCSessionDescriptionInit descriptioninit;
-                                if (!RTCSessionDescriptionInit.TryParse(answer, out descriptioninit))
+                                if (!RTCSessionDescriptionInit.TryParse(webstat.answer, out descriptioninit))
                                 {
                                     start = DateTime.MinValue;
                                     Status = WebRTCStatus.ERROR;
@@ -309,9 +309,8 @@ namespace WebRTC
                     {
                         if (!String.IsNullOrEmpty(webstat.answer) && (webstat.answer != "{}"))
                         {
-                            var answer = JsonConvert.DeserializeObject<string>(webstat.answer);
                             RTCSessionDescriptionInit descriptioninit;
-                            if (!RTCSessionDescriptionInit.TryParse(answer, out descriptioninit))
+                            if (!RTCSessionDescriptionInit.TryParse(webstat.answer, out descriptioninit))
                             {
                                 start = DateTime.MinValue;
                                 Status = WebRTCStatus.ERROR;
