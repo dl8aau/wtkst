@@ -1394,22 +1394,40 @@ namespace wtKST
                     }
                     e.Handled = true;
                 }
-                else
+                else if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex || e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex
+                      || e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
                 {
-                    if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex || e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex || e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
+                    e.PaintBackground(e.ClipBounds, false);
+
+                    // columns with filter function (CALL, ACT column - Band handled above)
+                    if ((e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && hide_away) ||
+                        (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex && ignore_inactive))
                     {
-                        // CALL column
-                        if ((e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && hide_away) ||
-                            (e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex && sort_by_dir) ||
-                            (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex && ignore_inactive))
-                        {
-                            e.PaintBackground(e.ClipBounds, false);
-                            e.Graphics.FillRectangle(Brushes.LightGray, e.CellBounds);
-                            e.PaintContent(e.CellBounds);
-                            e.Handled = true;
-                            return;
-                        }
+                        e.Graphics.FillRectangle(Brushes.LightGray, e.CellBounds);
                     }
+
+                    // mark sorting column - draw text + icon
+                    if ((e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex) ||
+                        (e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex))
+                    {
+                        //Draw Text Custom
+                        TextRenderer.DrawText(e.Graphics, string.Format("{0}", e.FormattedValue),
+                        e.CellStyle.Font, e.CellBounds, e.CellStyle.ForeColor,
+                        TextFormatFlags.VerticalCenter | TextFormatFlags.Left);
+
+                        //Draw Sort Icon
+                        var sortIcon = ((e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex && sort_by_dir) ||
+                            (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && !sort_by_dir)) ? "▼" : " ";
+                        //Or draw an icon here.
+                        TextRenderer.DrawText(e.Graphics, sortIcon,
+                            e.CellStyle.Font, e.CellBounds, e.CellStyle.ForeColor,
+                            TextFormatFlags.VerticalCenter | TextFormatFlags.Right);
+                    }
+                    else
+                    {
+                        e.PaintContent(e.CellBounds);
+                    }
+                    e.Handled = true;
                 }
             }
             else
