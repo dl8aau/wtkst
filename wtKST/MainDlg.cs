@@ -222,6 +222,8 @@ namespace wtKST
             lv_Calls.Columns["LOC"].HeaderCell.Value = "Locator";
             lv_Calls.Columns["LOC"].Width = 50;
             lv_Calls.Columns["AS"].Width = 30;
+            lv_Calls.Columns["AS"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None; // fix the width
+            lv_Calls.Columns["AS"].Resizable = DataGridViewTriState.False;
 
             lv_Calls.Columns["TIME"].Visible = false;
 
