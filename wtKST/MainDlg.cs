@@ -1799,6 +1799,7 @@ namespace wtKST
             lock (AS_list)
             {
                 AS_list.Clear();
+                List<AS_Calls> tmp_AS_list = new List<AS_Calls>();
 
                 string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
 
@@ -1829,6 +1830,10 @@ namespace wtKST
                                 {
                                     AS_list.Add(new AS_Calls(dxcall, dxloc));
                                 }
+                                else
+                                {
+                                    tmp_AS_list.Add(new AS_Calls(dxcall, dxloc));
+                                }
                             }
                             else
                             {
@@ -1841,6 +1846,8 @@ namespace wtKST
                     {
                     }
                 }
+                // concat the currently not displayed calls to the end of AS_list
+                AS_list.AddRange(tmp_AS_list);
             }
 
             lock (AS_watchlist)
@@ -2558,25 +2565,41 @@ namespace wtKST
                 string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
 
                 // here we make a local copy of the current AS_list
-                AS_Calls[] myAs_List;
+                DataTable myAs_Table = new DataTable("AS_Table"); ;
+                myAs_Table.Columns.Add("Time", typeof(DateTime));
+                myAs_Table.Columns.Add("Call");
+                myAs_Table.Columns.Add("Locator");
+
+                DataView myAS_view;
 
                 if (AS_list.Count == 0)
-                    continue;
-                lock (AS_list)
                 {
-                    myAs_List = new AS_Calls[AS_list.Count];
-                    AS_list.CopyTo(myAs_List);
+                    Thread.Sleep(200);
+                    continue;
                 }
 
-                foreach (AS_Calls a in myAs_List)
+                lock (AS_list)
+                {
+                    myAs_Table.Clear();
+                    foreach (var as_entry in AS_list)
+                    {
+                        myAs_Table.Rows.Add(AS_if.GetLastUpdateTime(as_entry.Call), as_entry.Call, as_entry.Locator);
+                    }
+                    // we need to sort by time - start with oldest entry
+                    myAS_view = myAs_Table.DefaultView;
+                    myAS_view.Sort = "Time ASC";
+                }
+
+                foreach (DataRowView a in myAS_view)
                 {
                     if (!Settings.Default.AS_Active)
                         break;
                     try
                     {
-                        string dxloc = a.Locator;
+                        string dxloc = a.Row["Locator"].ToString();
                         // FIXME: handle /p etc.
-                        string dxcall = a.Call;
+                        string dxcall = a.Row["Call"].ToString();
+                        TimeSpan age = DateTime.UtcNow.Subtract((DateTime)(a.Row["Time"]));
 
                         if (Settings.Default.AS_Active)
                         {
@@ -2591,7 +2614,10 @@ namespace wtKST
 
                             }
                         }
-                        Thread.Sleep(200);
+                        if (TimeSpan.Compare(age, new TimeSpan(0, 2, 0)) > 0)
+                            Thread.Sleep(50); // if the entry is pretty old, be more aggressive
+                        else
+                            Thread.Sleep(200);
                     }
                     catch
                     {

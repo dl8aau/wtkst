@@ -157,6 +157,16 @@ namespace wtKST
             planes.Remove(call);
         }
 
+        public DateTime GetLastUpdateTime(string call)
+        {
+            PlaneInfoList infolist = null;
+            if (planes.TryGetValue(call, out infolist))
+            {
+                return infolist.UTC;
+            }
+            return DateTime.MinValue;
+        }
+
         /* called from BackgroundWorker bw_GetPlanes - reports results through bw_GetPlanes.ReportProgress */
         public bool GetPlanes(string mycall, string myloc, string dxcall, string dxloc)
         {
