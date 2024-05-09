@@ -1332,7 +1332,7 @@ namespace wtKST
             ni_Main.Dispose(); //remove notification icon
         }
 
-        private void ShowToolTip(string text, Control control, Point p)
+        private void ToolTipPos(string text, Control control, ref Point p)
         {
             int BorderWith = (base.Width - base.ClientSize.Width) / 2;
             int TitleBarHeight = base.Height - base.ClientSize.Height - 2 * BorderWith;
@@ -1355,6 +1355,11 @@ namespace wtKST
             {
                 p.Y = 0;
             }
+        }
+
+        private void ShowToolTip(string text, Control control, Point p)
+        {
+            ToolTipPos(text, control, ref p);
             tt_Info.Show(text, this, p, 5000);
         }
 
