@@ -2025,7 +2025,7 @@ namespace wtKST
                         }
                         else
                         {
-                            ToolTipText = s + "\n\nLeft click for map\nRight click for more";
+                            ToolTipText = s + "\nLeft click for map";
                         }
                     }
                     ShowToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
