@@ -354,7 +354,7 @@ namespace wtKST
                 cb_Command.Enabled = false;
                 btn_KST_Send.Enabled = false;
                 lbl_Call.Enabled = false;
-                AS_if.planes.Clear();
+                AS_if.ClearPlanes();
                 if (Settings.Default.KST_AutoConnect && !ti_Reconnect.Enabled)
                 {
                     ti_Reconnect.Start();
@@ -2599,7 +2599,7 @@ namespace wtKST
                 {
                     try
                     {
-                        AS_if.planes.Clear();
+                        AS_if.ClearPlanes();
                         lv_Calls.SuspendLayout();
                         for (int i = 0; i < CALL.Rows.Count; i++)
                         {
@@ -2626,7 +2626,7 @@ namespace wtKST
             else /* e.ProgressPercentage == 0 or e.ProgressPercentage == -1 */
             {
                 //Console.WriteLine("remove " + dxcall);
-                AS_if.planes.Remove(dxcall);
+                AS_if.RemovePlanes(dxcall);
             }
             foreach (var c in call_rows)
             {

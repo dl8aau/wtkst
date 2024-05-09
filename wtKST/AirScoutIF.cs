@@ -14,7 +14,7 @@ namespace wtKST
 {
     class AirScoutInterface
     {
-        public Dictionary<string, PlaneInfoList> planes = new Dictionary<string, PlaneInfoList>();
+        private Dictionary<string, PlaneInfoList> planes = new Dictionary<string, PlaneInfoList>();
         private IPEndPoint localep;
         private WinTest.wtListener wtl;
         private BackgroundWorker bw_GetPlanes;
@@ -23,20 +23,24 @@ namespace wtKST
         private string dxcall;
         private EventWaitHandle waitHandle;
 #if DEBUG_AS
-        private Stopwatch stopWatch;
+        private Stopwatch stopWatch = new Stopwatch();
 #endif
         public AirScoutInterface(ref BackgroundWorker bw_GetPlanes)
         {
-            localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
+            try
+            {
+                localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
 
-            this.bw_GetPlanes = bw_GetPlanes;
-            waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+                this.bw_GetPlanes = bw_GetPlanes;
+                waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 
-            wtl = new WinTest.wtListener(Settings.Default.AS_Port);
-            wtl.wtMessageReceived += wtMessageReceivedHandler;
+                wtl = new WinTest.wtListener(Settings.Default.AS_Port);
+                wtl.wtMessageReceived += wtMessageReceivedHandler;
 #if DEBUG_AS
             stopWatch = new Stopwatch();
 #endif
+            }
+            catch (Exception ex) { }
         }
 
         private void wtMessageReceivedHandler(object sender, WinTest.wtListener.wtMessageEventArgs e)
@@ -141,6 +145,16 @@ namespace wtKST
                 .Where(g => g.Address.AddressFamily == AddressFamily.InterNetwork) // filter IPv4
                 .Select(g => g?.Address)
                 .FirstOrDefault(a => a != null);
+        }
+
+        public void ClearPlanes()
+        {
+            planes.Clear();
+        }
+
+        public void RemovePlanes(string call)
+        {
+            planes.Remove(call);
         }
 
         /* called from BackgroundWorker bw_GetPlanes - reports results through bw_GetPlanes.ReportProgress */
