@@ -12,6 +12,7 @@ using System.Threading;
 using System.Windows.Forms;
 using WinTest;
 using wtKST.Properties;
+using Application = System.Windows.Forms.Application;
 
 namespace wtKST
 {
@@ -56,7 +57,7 @@ namespace wtKST
 
         private Label lbl_KST_Calls;
 
-        private ListView lv_Msg;
+        private System.Windows.Forms.ListView lv_Msg;
 
         private ColumnHeader lvh_Time;
 
@@ -68,7 +69,7 @@ namespace wtKST
 
         private Label lbl_KST_Msg;
 
-        private ListView lv_MyMsg;
+        private System.Windows.Forms.ListView lv_MyMsg;
 
         private ColumnHeader columnHeader1;
 
@@ -109,7 +110,7 @@ namespace wtKST
 
         private ToolStripStatusLabel tsl_Info;
 
-        private Button btn_KST_Send;
+        private System.Windows.Forms.Button btn_KST_Send;
 
         private ToolStripStatusLabel tsl_Error;
 
@@ -125,13 +126,13 @@ namespace wtKST
 
         private System.Windows.Forms.Timer ti_Error;
 
-        private ComboBox cb_Command;
+        private System.Windows.Forms.ComboBox cb_Command;
 
         private System.Windows.Forms.Timer ti_Top;
 
         private System.Windows.Forms.Timer ti_Reconnect;
 
-        private ToolTip tt_Info;
+        private System.Windows.Forms.ToolTip tt_Info;
 
         private BackgroundWorker bw_GetPlanes;
 
@@ -2526,7 +2527,6 @@ namespace wtKST
         }
 
         /* send the current list of CALLS to AS server - allows AS to batch process
-         * TODO: better to send only calls that are not away or still needed
          */
         private void AS_send_ASWATCHLIST()
         {
