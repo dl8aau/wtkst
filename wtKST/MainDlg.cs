@@ -367,7 +367,7 @@ namespace wtKST
             }
 
             KST_Update_Usr_Filter();
-            fill_AS_list();
+            //fill_AS_list();
 
             string KST_Calls_Text = lbl_KST_Calls.Text;
             if (lv_Calls.RowCount > 0)
@@ -1747,6 +1747,11 @@ namespace wtKST
             fill_AS_list();
         }
 
+        private void lv_Calls_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            fill_AS_list();
+        }
+
         private void lv_Calls_mousewheel_event(object sender, EventArgs e)
         {
             fill_AS_list();
@@ -1771,7 +1776,7 @@ namespace wtKST
 
         private void fill_AS_list()
         {
-            if (!AS_if.IsActive() || lv_Calls == null || lv_Calls.RowCount == 0)
+            if (AS_if==null || !AS_if.IsActive() || lv_Calls == null || lv_Calls.RowCount == 0)
                 return;
 
             string watchlist = "";
@@ -2947,6 +2952,7 @@ namespace wtKST
             this.lv_Calls.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lv_Calls_CellValueChanged);
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
+            this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_Calls_DataBindingComplete);
             this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
             // 
             // lbl_KST_Calls
