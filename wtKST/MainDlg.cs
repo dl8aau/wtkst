@@ -133,6 +133,7 @@ namespace wtKST
         private System.Windows.Forms.Timer ti_Reconnect;
 
         private System.Windows.Forms.ToolTip tt_Info;
+        private System.Windows.Forms.ToolTip tt_ASInfo;
 
         private BackgroundWorker bw_GetPlanes;
 
@@ -148,7 +149,10 @@ namespace wtKST
         private ToolStripMenuItem cmn_msglist_wtsked;
         private ToolStripMenuItem cmn_msglist_chatReview;
         private ToolStripMenuItem cmn_msglist_openURL;
+        private ToolStripMenuItem cmn_msglist_AS_details;
         private ToolStripTextBox cmn_msglist_toolStripTextBox_DirQRB;
+        private ToolStripLabel cmn_msglist_AS_status;
+        private Label cmn_msglist_Label;
 
         private WinTest.wtStatus wts;
         private WTSkedDlg wtskdlg;
@@ -1369,10 +1373,89 @@ namespace wtKST
             }
         }
 
+        private System.Windows.Forms.Timer ti_ToolTip_active = new System.Windows.Forms.Timer();
+        private bool ToolTip_AS_active = false;
+
         private void ShowToolTip(string text, Control control, Point p)
         {
             ToolTipPos(text, control, ref p);
             tt_Info.Show(text, this, p, 5000);
+        }
+
+        private void ShowASToolTip(string text, Control control, Point p)
+        {
+            ToolTipPos(text, control, ref p);
+            tt_ASInfo.Show(text, this, p, 10000);
+            ti_ToolTip_active.Start();
+            ToolTip_AS_active = true;
+        }
+
+        private void ti_ToolTip_active_Tick(object sender, EventArgs e)
+        {
+            ToolTip_AS_active = false;
+            ti_ToolTip_active.Stop();
+        }
+
+        private void ToolTipp_AS_Popup(System.Object sender, System.Windows.Forms.PopupEventArgs e)
+        {
+            System.Windows.Forms.ToolTip tt = (sender as System.Windows.Forms.ToolTip);
+            string toolTipText = tt.GetToolTip(e.AssociatedControl);
+
+            using (Font f = new Font("Tahoma", 9))
+            {
+                Size ttsize = TextRenderer.MeasureText(toolTipText, f);
+                ttsize.Height += f.Height / 2;
+                e.ToolTipSize = ttsize;
+            }
+        }
+
+        private void ToolTipp_AS_Draw(System.Object sender,
+            System.Windows.Forms.DrawToolTipEventArgs e)
+        {
+            // Draw the standard background.
+            e.DrawBackground();
+            e.DrawBorder();
+
+            using (StringFormat sf = new StringFormat())
+            using (Font f = new Font("Tahoma", 9))
+            {
+                int line = 0;
+                Regex pattern = new Regex(@"(?<pot>\d+) : \[?(?<ID>\w+)\]?\[(?<cat>\w)\] --> (?<dist>\w+) \[(?<min>\w+)mins\]");
+                sf.FormatFlags = StringFormatFlags.NoWrap;
+                sf.SetTabStops(0.0f, new float[] { 40.0f });
+
+                foreach ( var s in e.ToolTipText.Split(new string[] { "\n" }, StringSplitOptions.None))
+                {
+                    if (line >1 && s.Length > 0)
+                    {
+                        try
+                        {
+                            Match match = pattern.Match(s);
+                            int pot = int.Parse(match.Groups["pot"].Value);
+                            string ID = match.Groups["ID"].Value;
+                            string cat = match.Groups["cat"].Value;
+                            string dist = match.Groups["dist"].Value;
+                            string min = match.Groups["min"].Value;
+                            int Mins = int.Parse(min);
+
+                            paintAScell(pot, cat, Mins, new Rectangle(0, line * f.Height-3, 33, f.Height+4), e.Graphics);
+                            // for the text we have to use DrawString - textrenderer does not support tabs it seems
+                            e.Graphics.DrawString(( ID.Length<7 ? ID.PadRight(7) : ID) + "\t" + dist + " " + (pot<100 ? min + "mins" : ""), f,
+                                    SystemBrushes.ActiveCaptionText, new Point(45, line * f.Height), sf);
+                        }
+                        catch (Exception ex)
+                        {
+                            MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + " " + s + "\n" + ex.Message + "\n" + ex.StackTrace);
+                        }
+                    }
+                    else
+                    {
+                        e.Graphics.DrawString(s, e.Font, SystemBrushes.ActiveCaptionText, new Point(0, line * e.Font.Height), sf);
+                    }
+                    line++;
+                }
+            }
+            e.Graphics.Dispose();
         }
 
         /// <summary>
@@ -2042,6 +2125,8 @@ namespace wtKST
                         else
                         {
                             ToolTipText = s + "\nLeft click for map";
+                            ShowASToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
+                            return;
                         }
                     }
                     ShowToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
@@ -2077,17 +2162,22 @@ namespace wtKST
                     DataRow[] selectRow = KST.MSG_findcall(call);
 
                     DataRow userRow = CALL.Rows.Find(call);
+                    int qrb = 0;
+                    double qtf = 0.0;
 
-                    if (userRow != null) 
+                    if (userRow != null)
                     {
-                       string loc = userRow["LOC"].ToString();
-                       this.cmn_msglist_toolStripTextBox_DirQRB.Text = string.Concat(new object[]
-                       {
-                            WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc).ToString("000"), "° ",
-                            WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc), " km"
-                       });
-                       this.cmn_msglist_toolStripTextBox_DirQRB.Visible = true;
-                    } else
+                        string loc = userRow["LOC"].ToString();
+                        qtf = WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
+                        qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                        this.cmn_msglist_toolStripTextBox_DirQRB.Text = string.Concat(new object[]
+                        {
+                            qtf.ToString("000"), "° ",
+                            qrb, " km"
+                        });
+                        this.cmn_msglist_toolStripTextBox_DirQRB.Visible = true;
+                    }
+                    else
                         this.cmn_msglist_toolStripTextBox_DirQRB.Visible = false;
 
                     this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
@@ -2105,8 +2195,109 @@ namespace wtKST
                     {
                         this.cmn_msglist_openURL.Visible = false;
                     }
+
+                    this.cmn_msglist_AS_details.Visible = Settings.Default.AS_Active;
+                    if (Settings.Default.AS_Active && !String.IsNullOrEmpty(call))
+                    {
+                        this.cmn_msglist_AS_status.Visible = true;
+                        using (Graphics graphic = Graphics.FromImage(this.cmn_msglist_AS_status.Image))
+                        using (SolidBrush brush = new SolidBrush(Control.DefaultBackColor))
+                        {
+                            graphic.FillRectangle(brush, new RectangleF(0, 0,
+                                cmn_msglist_AS_status.Image.Width, cmn_msglist_AS_status.Image.Height));
+
+                            if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                            {
+                                TextRenderer.DrawText(graphic, "   < ", cmn_msglist_AS_status.Font, new Point(0,0), cmn_msglist_AS_status.ForeColor);
+                            }
+                            else
+                            {
+                                string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                                string as_string = AS_if.GetNearestPlanePotential(ascall);
+
+                                if (!string.IsNullOrEmpty(as_string) && as_string != "0")
+                                {
+                                    string[] a = as_string.Split(new char[] { ',' });
+                                    if (a.Length == 3)
+                                    {
+                                        int pot = Convert.ToInt32(a[0]);
+                                        int Mins = Convert.ToInt32(a[2]);
+                                        if (Mins > 99)
+                                            Mins = 99;
+                                        if (pot > 0)
+                                        {
+                                            var cat = a[1];
+
+                                                paintAScell(pot, cat, Mins, new Rectangle(0, 0, cmn_msglist_AS_status.Image.Width, cmn_msglist_AS_status.Image.Height), graphic);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        this.cmn_msglist_AS_status.Text = "Left click for map";
+                    }
+                    else
+                        this.cmn_msglist_AS_status.Visible = false;
+
                     this.cmn_msglist.Show(lv_Msg, p);
                 }
+            }
+        }
+
+        private void cmn_msglist_toolStripLabel_AS_clicked(object sender, EventArgs e)
+        {
+            ToolStripItem clickedItem = sender as ToolStripItem;
+            if (Settings.Default.AS_Active)
+            {
+                string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
+
+                if (!String.IsNullOrEmpty(call))
+                {
+                    DataRow userRow = CALL.Rows.Find(call);
+
+                    if (userRow != null)
+                    {
+                        string loc = userRow["LOC"].ToString();
+
+                        string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                        AS_if.show_path(ascall, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
+                    }
+                }
+            }
+        }
+
+        private void cmn_item_AS_Click(object sender, MouseEventArgs e)
+        {
+            ToolStripItem clickedItem = sender as ToolStripItem;
+            string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
+
+            if (!String.IsNullOrEmpty(call))
+            {
+                string ToolTipText;
+                string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                string s = AS_if.GetNearestPlanes(ascall);
+                if (string.IsNullOrEmpty(s))
+                {
+                    ToolTipText = "No planes";
+                    lock (CALL)
+                    {
+                        DataRow Row = CALL.Rows.Find(ascall);
+                        if (Row != null && Settings.Default.AS_Active)
+                        {
+                            int qrb = (int)Row["QRB"];
+                            if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                                ToolTipText = "Too close for planes";
+                            else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
+                                ToolTipText = "Too far away for planes";
+                        }
+                    }
+                }
+                else
+                {
+                    ToolTipText = s;
+                }
+                ShowASToolTip(ToolTipText, lv_Msg, lv_Msg.PointToClient(Cursor.Position));
+                this.cmn_msglist_Label.Text = ToolTipText;
             }
         }
 
@@ -2174,7 +2365,7 @@ namespace wtKST
         {
             Point p = new Point(e.X, e.Y);
             ListViewHitTestInfo info = lv_Msg.HitTest(p);
-            if (OldMousePos != p && info != null && info.SubItem != null)
+            if (OldMousePos != p && info != null && info.SubItem != null && !ToolTip_AS_active)
             {
                 OldMousePos = p;
                 if (info.SubItem.Name == "Messages")
@@ -2192,7 +2383,7 @@ namespace wtKST
         {
             Point p = new Point(e.X, e.Y);
             ListViewHitTestInfo info = lv_MyMsg.HitTest(p);
-            if (OldMousePos != p && info != null && info.SubItem != null)
+            if (OldMousePos != p && info != null && info.SubItem != null && !ToolTip_AS_active)
             {
                 OldMousePos = p;
                 if (info.SubItem.Name == "Messages")
@@ -2755,15 +2946,19 @@ namespace wtKST
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
+            this.tt_ASInfo = new System.Windows.Forms.ToolTip(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_msglist_toolStripTextBox_DirQRB = new System.Windows.Forms.ToolStripTextBox();
+            this.cmn_msglist_AS_status = new System.Windows.Forms.ToolStripLabel();
+            this.cmn_msglist_Label = new System.Windows.Forms.Label();
             this.cmn_msglist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist_openURL = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_AS_details = new System.Windows.Forms.ToolStripMenuItem();
             this.ss_Main.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -3360,10 +3555,22 @@ namespace wtKST
             // 
             this.ti_Reconnect.Interval = 30000;
             this.ti_Reconnect.Tick += new System.EventHandler(this.ti_Reconnect_Tick);
+            //
+            // ti_ToolTip_active
+            //
+            this.ti_ToolTip_active.Interval = 10000;
+            this.ti_ToolTip_active.Tick += new System.EventHandler(ti_ToolTip_active_Tick);
             // 
             // tt_Info
             // 
             this.tt_Info.ShowAlways = true;
+            // 
+            // tt_ASInfo
+            // 
+            this.tt_ASInfo.ShowAlways = true;
+            this.tt_ASInfo.OwnerDraw = true;
+            this.tt_ASInfo.Popup += new PopupEventHandler(this.ToolTipp_AS_Popup);
+            this.tt_ASInfo.Draw += new DrawToolTipEventHandler(this.ToolTipp_AS_Draw);
             // 
             // bw_GetPlanes
             // 
@@ -3401,17 +3608,36 @@ namespace wtKST
             this.cmn_msglist_toolStripTextBox_DirQRB,
             this.cmn_msglist_wtsked,
             this.cmn_msglist_chatReview,
-            this.cmn_msglist_openURL});
+            this.cmn_msglist_openURL,
+            this.cmn_msglist_AS_status,
+            this.cmn_msglist_AS_details
+            });
             this.cmn_msglist.Name = "cmn_msglist";
             this.cmn_msglist.Size = new System.Drawing.Size(181, 117);
+            this.cmn_msglist.ImageScalingSize = new System.Drawing.Size(40, 20);
+
+            //
+            // cmn_msglist_Label
+            //
+            this.cmn_msglist_Label.AutoSize = true;
             // 
-            // toolStripTextBox_CallQRBDir
+            // cmn_msglist_toolStripTextBox_DirQRB
             // 
             this.cmn_msglist_toolStripTextBox_DirQRB.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.cmn_msglist_toolStripTextBox_DirQRB.Name = "toolStripTextBox_CallQRBDir";
             this.cmn_msglist_toolStripTextBox_DirQRB.ReadOnly = true;
             this.cmn_msglist_toolStripTextBox_DirQRB.Size = new System.Drawing.Size(100, 23);
             this.cmn_msglist_toolStripTextBox_DirQRB.Text = "Call 1000km 350°";
+            // 
+            // 
+            // cmn_msglist_AS_status
+            // 
+            this.cmn_msglist_AS_status.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.cmn_msglist_AS_status.Name = "cmn_msglist_toolStripTextBox_AS";
+            this.cmn_msglist_AS_status.Size = new System.Drawing.Size(206, 23);
+            this.cmn_msglist_AS_status.Text = "";
+            this.cmn_msglist_AS_status.Image = new Bitmap(40, 20);
+            this.cmn_msglist_AS_status.Click += new EventHandler(cmn_msglist_toolStripLabel_AS_clicked);
             // 
             // cmn_msglist_wtsked
             // 
@@ -3433,6 +3659,13 @@ namespace wtKST
             this.cmn_msglist_openURL.Name = "cmn_msglist_openURL";
             this.cmn_msglist_openURL.Text = "&Open URL";
             this.cmn_msglist_openURL.Click += new System.EventHandler(this.cmn_item_openURL_Click);
+            // 
+            // cmn_msglist_AS_details
+            // 
+            this.cmn_msglist_AS_details.Size = new System.Drawing.Size(200, 22);
+            this.cmn_msglist_AS_details.Name = "cmn_msglist_AS";
+            this.cmn_msglist_AS_details.Text = "&Airscout Details";
+            this.cmn_msglist_AS_details.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cmn_item_AS_Click);
             // 
             // MainDlg
             // 
