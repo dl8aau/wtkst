@@ -1,8 +1,20 @@
+3.1.4.12
+
+- Improvement: new Airscout visulization UI
+    visualize the planes in the detailed plane list
+    Access to AS information is available also on the right mouse menu in the messages windows
+- Fix/Improvement: list of stations for which Airscout is called was computed far too agressive and without the users
+    currently not visible in the list
+- Fix: make "away" handling work for two logins with same call + suffix
+- Improvement: send a "KEEPALIVE" packet to Win-Test every 5min
+    Needed for some Wifi-Routers
+   
 3.1.4.11
 
 - Fix: make sure window is visible on multi screen setups when screen
         was changed (use primary screen by default)
 - Fix: URLs in http/https links do not work anymore
+- Fix: Password too short error was not handled
 - Support UTF8 for received text (transmit does not work yet)
 
 3.1.4.10
