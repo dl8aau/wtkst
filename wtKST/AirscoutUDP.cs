@@ -238,7 +238,9 @@ namespace wtKST
                     for (int i = 0; i < planecount; i++)
                     {
                         PlaneInfo info = new PlaneInfo(a[6 + i * 5], a[7 + i * 5], Convert.ToInt32(a[8 + i * 5]), Convert.ToInt32(a[9 + i * 5]), Convert.ToInt32(a[10 + i * 5]));
-                        infolist.Add(info);
+                        // ignore entries too far into the future
+                        if (info.Mins < 30)
+                            infolist.Add(info);
                     }
                     planes.Remove(dxcall);
                     if (infolist.Count > 0)
