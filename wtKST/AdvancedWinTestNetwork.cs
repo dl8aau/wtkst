@@ -46,6 +46,9 @@ namespace wtKST
                 global::wtKST.Properties.Settings.Default.AdvancedWinTestNetwork_BroadcastIP = this.textBox1.Text;
                 global::wtKST.Properties.Settings.Default.AdvancedWinTestNetwork_UDPPort = this.textBox2.Text;
                 global::wtKST.Properties.Settings.Default.Save();
+                WinTest.WinTest.advancedWinTestPort = int.Parse(Settings.Default.AdvancedWinTestNetwork_UDPPort);
+                WinTest.WinTest.advancedNetActivated = Settings.Default.AdvancedWinTestNetwork_Activate;
+                WinTest.WinTest.advancedWinTestBroadcastAddress = IPAddress.Parse(Settings.Default.AdvancedWinTestNetwork_BroadcastIP);
                 this.Close();
             }
             else
@@ -214,6 +217,9 @@ namespace wtKST
             global::wtKST.Properties.Settings.Default.AdvancedWinTestNetwork_BroadcastIP = defaultBroadcastIP.ToString();
             global::wtKST.Properties.Settings.Default.AdvancedWinTestNetwork_UDPPort = defaultUDPPort.ToString();
             global::wtKST.Properties.Settings.Default.Save();
+            WinTest.WinTest.advancedWinTestPort = int.Parse(Settings.Default.AdvancedWinTestNetwork_UDPPort);
+            WinTest.WinTest.advancedNetActivated = Settings.Default.AdvancedWinTestNetwork_Activate;
+            WinTest.WinTest.advancedWinTestBroadcastAddress = IPAddress.Parse(Settings.Default.AdvancedWinTestNetwork_BroadcastIP);
             UpdateTextboxState();
         }
 

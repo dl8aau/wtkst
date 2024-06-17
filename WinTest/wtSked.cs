@@ -7,10 +7,20 @@ namespace WinTest
     public class wtSked
     {
         private IPAddress localbroadcastIP;
+        private int localbroadcastPort;
 
         public wtSked()
         {
-            localbroadcastIP = WinTest.GetIpIFBroadcastAddress();
+            if (WinTest.advancedNetActivated)
+            {
+                localbroadcastIP = WinTest.advancedWinTestBroadcastAddress;
+                localbroadcastPort = WinTest.advancedWinTestPort;
+            }
+            else
+            {
+                localbroadcastIP=WinTest.GetIpIFBroadcastAddress();
+                localbroadcastPort=WinTest.WinTestDefaultPort;
+            }
         }
 
         private const string my_wtname = "KST"; // FIXME!!!
@@ -24,7 +34,7 @@ namespace WinTest
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
                 client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
                 client.Client.ReceiveTimeout = 10000;
-                IPEndPoint groupEp = new IPEndPoint(localbroadcastIP, WinTest.WinTestDefaultPort);
+                IPEndPoint groupEp = new IPEndPoint(localbroadcastIP, localbroadcastPort);
                 client.Connect(groupEp);
                 Console.WriteLine("send: " + Msg.Data);
                 byte[] b = Msg.ToBytes();
