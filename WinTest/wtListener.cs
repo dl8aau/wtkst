@@ -8,15 +8,26 @@ namespace WinTest
     public class wtListener
     {
         private volatile bool Listen;
-        private UdpClient u;
 
+        // problem: we need to use the UDPClient from Wintest.cs, as we cannot have the same port open twice
         public wtListener(int UDPPort)
         {
             IPEndPoint ep = new IPEndPoint(IPAddress.Any, UDPPort);
-            u = new UdpClient();
+            UdpClient u = new UdpClient();
+            u.ExclusiveAddressUse = false;
             u.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
             //u.Client.ReceiveTimeout = 1000;
             u.Client.Bind(ep);
+            Listener(u);
+        }
+
+        public wtListener(UdpClient UdpClient)
+        {
+            Listener(UdpClient);
+        }
+
+        private void Listener(UdpClient u)
+        { 
             Listen = true;
 
             Thread listener = new Thread(() =>
@@ -25,6 +36,7 @@ namespace WinTest
                 {
                     try
                     {
+                        IPEndPoint ep = u.Client.LocalEndPoint as IPEndPoint;
                         byte[] data = u.Receive(ref ep);
                         if (data.Length > 0)
                         {
@@ -63,9 +75,6 @@ namespace WinTest
         public void close()
         {
             Listen = false;
-
-            u.Client.Shutdown(SocketShutdown.Both);
-            u.Close();
         }
     }
 }

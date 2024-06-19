@@ -211,21 +211,40 @@ namespace WinTest
             return broadcastAddress;
         }
 
+        private static UdpClient client = null;
+
+        public static UdpClient UdpClient
+        {
+            get
+            {
+                try
+                {
+                    if (client == null)
+                    {
+                        client = new UdpClient();
+                        client.ExclusiveAddressUse = false;
+                        client.EnableBroadcast = true;
+                        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+                        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+                        client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
+                        client.Client.Bind(new IPEndPoint(IPAddress.Any, WinTest.WinTestDefaultPort));
+                    }
+                }
+                catch
+                {
+
+                }
+                return client;
+            }
+        }
         public static void send(wtMessage Msg)
         {
             try
             {
-                UdpClient client = new UdpClient();
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
-                client.Client.ReceiveTimeout = 10000;
                 IPEndPoint groupEp = new IPEndPoint(GetIpIFBroadcastAddress(), WinTest.WinTestDefaultPort);
-                client.Connect(groupEp);
                 //Console.WriteLine("send: " + Msg.Data);
                 byte[] b = Msg.ToBytes();
-                client.Send(b, b.Length);
-                client.Close();
+                UdpClient.Send(b, b.Length, groupEp);
             }
             catch
             {

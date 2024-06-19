@@ -18,7 +18,7 @@ namespace WinTest
 
         public WtLogSync(LogWriteMessageDelegate mylog) : base(mylog)
         {
-            wtl = new wtListener(WinTest.WinTestDefaultPort);
+            wtl = new wtListener(WinTest.UdpClient);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
 
             QSO.Columns.Add("RUNSTN");
@@ -431,7 +431,6 @@ namespace WinTest
 
         public override void Get_QSOs(string wtname)
         {
-            // TODO: start log sync
             my_wtname = wtname;
             if (wtlogsyncState == WTLOGSYNCSTATE.HELLO_RECEIVED)
                 wtlogsyncState = WTLOGSYNCSTATE.GET_QSO;

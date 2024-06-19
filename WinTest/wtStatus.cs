@@ -40,7 +40,7 @@ namespace WinTest
         public wtStatus(string wtname)
         {
             my_wtname = wtname;
-            wtl = new wtListener(WinTest.WinTestDefaultPort);
+            wtl = new wtListener(WinTest.UdpClient);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
             wtStatusList = new BindingList<wtStat>();
 
