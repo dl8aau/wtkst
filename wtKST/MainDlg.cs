@@ -19,7 +19,7 @@ namespace wtKST
     public class MainDlg : Form
     {
 
-        private static readonly string[] BANDS = new string[] { "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G" };
+        private static readonly string[] BANDS = new string[] { "50M", "70M", "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G" };
 
         private KSTcom KST;
 
@@ -254,6 +254,8 @@ namespace wtKST
             lv_Calls.Columns["DIR"].Visible = false;
             lv_Calls.Columns["AWAY"].Visible = false;
             lv_Calls.Columns["COLOR"].Visible = false;
+            lv_Calls.Columns["50M"].Width = 20;
+            lv_Calls.Columns["70M"].Width = 20;
             lv_Calls.Columns["144M"].Width = 20;
             lv_Calls.Columns["432M"].Width = 20;
             lv_Calls.Columns["1_2G"].Width = 20;
@@ -861,6 +863,10 @@ namespace wtKST
         private List<bandinfo> selected_bands()
         {
             List<bandinfo> b = new List<bandinfo>();
+            if (Settings.Default.Band_50)
+                b.Add(new bandinfo("50MHz", "6 m", 50000, 52000, 50000));
+            if (Settings.Default.Band_70)
+                b.Add(new bandinfo("70MHz", "4 m", 70000, 70500, 70000));
             if (Settings.Default.Band_144)
                 b.Add(new bandinfo("144MHz", "2 m", 144000, 146000, 144000));
             if (Settings.Default.Band_432)
@@ -887,6 +893,8 @@ namespace wtKST
         // hide bands that should not be displayed by making their width = 0
         private void UpdateUserBandsWidth()
         {
+            lv_Calls.Columns["50M"].Visible = Settings.Default.Band_50;
+            lv_Calls.Columns["70M"].Visible = Settings.Default.Band_70;
             lv_Calls.Columns["144M"].Visible = Settings.Default.Band_144;
             lv_Calls.Columns["432M"].Visible = Settings.Default.Band_432;
             lv_Calls.Columns["1_2G"].Visible = Settings.Default.Band_1296;
@@ -902,6 +910,12 @@ namespace wtKST
         bool check_in_log(DataRow row)
         {
             // FIXME use selected_bands()
+            if (Settings.Default.Band_50 &&
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["50M"]))
+                return false;
+            if (Settings.Default.Band_70 &&
+                !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["70M"]))
+                return false;
             if (Settings.Default.Band_144 &&
                 !QRVdb.worked_or_not_qrv((QRVdb.QRV_STATE)row["144M"]))
                 return false;

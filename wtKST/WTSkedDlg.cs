@@ -92,6 +92,8 @@ namespace wtKST
         {
             switch (band.band_name)
             {
+                case "50MHz": return WinTest.WTBANDS.Band50MHz;
+                case "70MHz": return WinTest.WTBANDS.Band70MHz;
                 case "144MHz": return WinTest.WTBANDS.Band144MHz;
                 case "432MHz": return WinTest.WTBANDS.Band432MHz;
                 case "1296MHz": return WinTest.WTBANDS.Band1_2GHz;

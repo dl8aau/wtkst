@@ -92,6 +92,12 @@
     <Setting Name="WindowSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">1220, 768</Value>
     </Setting>
+    <Setting Name="Band_50" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Band_70" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
     <Setting Name="Band_144" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
