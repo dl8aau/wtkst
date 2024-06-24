@@ -173,6 +173,14 @@ namespace WebRTC
         private int QRGFromSettings()
         {
             int qrg = 144;
+            if (Settings.Default.AS_QRG == "50M")
+            {
+                qrg = 50;
+            }
+            if (Settings.Default.AS_QRG == "70M")
+            {
+                qrg = 70;
+            }
             if (Settings.Default.AS_QRG == "432M")
             {
                 qrg = 432;

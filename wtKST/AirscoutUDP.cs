@@ -124,6 +124,14 @@ namespace wtKST
         private string qrg_from_settings()
         {
             string qrg = "1440000";
+            if (Settings.Default.AS_QRG == "50M")
+            {
+                qrg = "500000";
+            }
+            if (Settings.Default.AS_QRG == "70M")
+            {
+                qrg = "700000";
+            }
             if (Settings.Default.AS_QRG == "432M")
             {
                 qrg = "4320000";

@@ -49,9 +49,15 @@ namespace wtKST
                 }
                 foreach (var QRV in QRVlist)
                 {
-                    // "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G"
+                    // "50M", "70M", "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G"
                     switch (QRV.Band)
                     {
+                        case BAND.B50M:
+                            row["50M"] = QRV_STATE.qrv;
+                            break;
+                        case BAND.B70M:
+                            row["70M"] = QRV_STATE.qrv;
+                            break;
                         case BAND.B144M:
                             row["144M"] = QRV_STATE.qrv;
                             break;
@@ -111,14 +117,20 @@ namespace wtKST
                 // merge only if set
                 foreach (string band in BANDS)
                 {
-                    if ((QRVdb.QRV_STATE)findrow[band] != QRV_STATE.unknown)
+                    Object f = findrow[band];
+                    if (f != null && f.GetType() != typeof(DBNull) && (QRVdb.QRV_STATE)f != QRV_STATE.unknown)
                         row[band] = findrow[band];
                 }
             }
             else
             {
                 foreach (string band in BANDS)
-                    row[band] = findrow[band];
+                {
+                    if (!findrow.IsNull(band))
+                        row[band] = findrow[band];
+                    else
+                        row[band] = QRV_STATE.unknown;
+                }
             }
 
             if (call_new_in_userlist)

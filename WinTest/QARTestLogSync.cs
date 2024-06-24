@@ -218,6 +218,12 @@ namespace WinTest
 
             switch (e.ci.band)
             {
+                case "50":
+                    row["BAND"] = "50M";
+                    break;
+                case "70":
+                    row["BAND"] = "70M";
+                    break;
                 case "144":
                     row["BAND"] = "144M";
                     break;

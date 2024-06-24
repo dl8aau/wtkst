@@ -41,8 +41,11 @@ namespace WinTest
         UNKNOWN = 255
     }
 
+    // unfortunately not in http://download.win-test.com/v4/lua/constants.wts - reverse engineered
     public enum WTBANDS
     {
+        Band50MHz = 10,
+        Band70MHz = 11,
         Band144MHz = 12,
         Band432MHz = 14,
         Band1_2GHz = 16,
