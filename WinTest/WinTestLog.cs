@@ -66,6 +66,12 @@ namespace WinTest
                         row["CALL"] = call;
                         switch (band)
                         {
+                            case 10:
+                                row["BAND"] = "50M";
+                                break;
+                            case 11:
+                                row["BAND"] = "70M";
+                                break;
                             case 12:
                                 row["BAND"] = "144M";
                                 break;

@@ -56,9 +56,11 @@ namespace wtKST
         private Label label8;
         public CheckBox cb_AS_Active;
         private GroupBox Bands;
-        private CheckBox checkBox1296;
-        private CheckBox checkBox432;
+        private CheckBox checkBox50;
+        private CheckBox checkBox70;
         private CheckBox checkBox144;
+        private CheckBox checkBox432;
+        private CheckBox checkBox1296;
         private CheckBox checkBox10GHz;
         private CheckBox checkBox24GHz;
         private CheckBox checkBox47GHz;
@@ -235,6 +237,8 @@ namespace wtKST
             this.checkBox1296 = new System.Windows.Forms.CheckBox();
             this.checkBox432 = new System.Windows.Forms.CheckBox();
             this.checkBox144 = new System.Windows.Forms.CheckBox();
+            this.checkBox70 = new System.Windows.Forms.CheckBox();
+            this.checkBox50 = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.cb_AS_local = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -768,6 +772,8 @@ namespace wtKST
             this.Bands.Controls.Add(this.checkBox1296);
             this.Bands.Controls.Add(this.checkBox432);
             this.Bands.Controls.Add(this.checkBox144);
+            this.Bands.Controls.Add(this.checkBox70);
+            this.Bands.Controls.Add(this.checkBox50);
             this.Bands.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Bands.Location = new System.Drawing.Point(9, 87);
             this.Bands.Name = "Bands";
@@ -784,10 +790,10 @@ namespace wtKST
             this.checkBox76GHz.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox76GHz.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_76GHz", true));
             this.checkBox76GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox76GHz.Location = new System.Drawing.Point(46, 96);
+            this.checkBox76GHz.Location = new System.Drawing.Point(257, 96);
             this.checkBox76GHz.Name = "checkBox76GHz";
             this.checkBox76GHz.Size = new System.Drawing.Size(59, 17);
-            this.checkBox76GHz.TabIndex = 24;
+            this.checkBox76GHz.TabIndex = 26;
             this.checkBox76GHz.Text = "76GHz";
             this.checkBox76GHz.UseVisualStyleBackColor = true;
             // 
@@ -799,10 +805,10 @@ namespace wtKST
             this.checkBox10GHz.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox10GHz.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_10368", true));
             this.checkBox10GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox10GHz.Location = new System.Drawing.Point(46, 73);
+            this.checkBox10GHz.Location = new System.Drawing.Point(257, 73);
             this.checkBox10GHz.Name = "checkBox10GHz";
             this.checkBox10GHz.Size = new System.Drawing.Size(59, 17);
-            this.checkBox10GHz.TabIndex = 21;
+            this.checkBox10GHz.TabIndex = 23;
             this.checkBox10GHz.Text = "10GHz";
             this.checkBox10GHz.UseVisualStyleBackColor = true;
             // 
@@ -814,10 +820,10 @@ namespace wtKST
             this.checkBox24GHz.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox24GHz.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_24GHz", true));
             this.checkBox24GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox24GHz.Location = new System.Drawing.Point(150, 73);
+            this.checkBox24GHz.Location = new System.Drawing.Point(48, 96);
             this.checkBox24GHz.Name = "checkBox24GHz";
             this.checkBox24GHz.Size = new System.Drawing.Size(59, 17);
-            this.checkBox24GHz.TabIndex = 22;
+            this.checkBox24GHz.TabIndex = 24;
             this.checkBox24GHz.Text = "24GHz";
             this.checkBox24GHz.UseVisualStyleBackColor = true;
             // 
@@ -829,10 +835,10 @@ namespace wtKST
             this.checkBox47GHz.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox47GHz.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_47GHz", true));
             this.checkBox47GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox47GHz.Location = new System.Drawing.Point(263, 73);
+            this.checkBox47GHz.Location = new System.Drawing.Point(156, 96);
             this.checkBox47GHz.Name = "checkBox47GHz";
             this.checkBox47GHz.Size = new System.Drawing.Size(59, 17);
-            this.checkBox47GHz.TabIndex = 23;
+            this.checkBox47GHz.TabIndex = 25;
             this.checkBox47GHz.Text = "47GHz";
             this.checkBox47GHz.UseVisualStyleBackColor = true;
             // 
@@ -844,10 +850,10 @@ namespace wtKST
             this.checkBox2320.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox2320.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_2320", true));
             this.checkBox2320.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox2320.Location = new System.Drawing.Point(33, 50);
+            this.checkBox2320.Location = new System.Drawing.Point(244, 50);
             this.checkBox2320.Name = "checkBox2320";
             this.checkBox2320.Size = new System.Drawing.Size(72, 17);
-            this.checkBox2320.TabIndex = 18;
+            this.checkBox2320.TabIndex = 20;
             this.checkBox2320.Text = "2320MHz";
             this.checkBox2320.UseVisualStyleBackColor = true;
             // 
@@ -859,10 +865,10 @@ namespace wtKST
             this.checkBox3400.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox3400.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_3400", true));
             this.checkBox3400.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox3400.Location = new System.Drawing.Point(137, 50);
+            this.checkBox3400.Location = new System.Drawing.Point(35, 73);
             this.checkBox3400.Name = "checkBox3400";
             this.checkBox3400.Size = new System.Drawing.Size(72, 17);
-            this.checkBox3400.TabIndex = 19;
+            this.checkBox3400.TabIndex = 21;
             this.checkBox3400.Text = "3400MHz";
             this.checkBox3400.UseVisualStyleBackColor = true;
             // 
@@ -874,10 +880,10 @@ namespace wtKST
             this.checkBox5760.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox5760.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_5760", true));
             this.checkBox5760.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox5760.Location = new System.Drawing.Point(250, 50);
+            this.checkBox5760.Location = new System.Drawing.Point(143, 73);
             this.checkBox5760.Name = "checkBox5760";
             this.checkBox5760.Size = new System.Drawing.Size(72, 17);
-            this.checkBox5760.TabIndex = 20;
+            this.checkBox5760.TabIndex = 22;
             this.checkBox5760.Text = "5760MHz";
             this.checkBox5760.UseVisualStyleBackColor = true;
             // 
@@ -889,10 +895,10 @@ namespace wtKST
             this.checkBox1296.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox1296.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_1296", true));
             this.checkBox1296.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox1296.Location = new System.Drawing.Point(250, 27);
+            this.checkBox1296.Location = new System.Drawing.Point(143, 50);
             this.checkBox1296.Name = "checkBox1296";
             this.checkBox1296.Size = new System.Drawing.Size(72, 17);
-            this.checkBox1296.TabIndex = 17;
+            this.checkBox1296.TabIndex = 19;
             this.checkBox1296.Text = "1296MHz";
             this.checkBox1296.UseVisualStyleBackColor = true;
             // 
@@ -904,10 +910,10 @@ namespace wtKST
             this.checkBox432.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox432.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_432", true));
             this.checkBox432.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox432.Location = new System.Drawing.Point(143, 27);
+            this.checkBox432.Location = new System.Drawing.Point(41, 50);
             this.checkBox432.Name = "checkBox432";
             this.checkBox432.Size = new System.Drawing.Size(66, 17);
-            this.checkBox432.TabIndex = 16;
+            this.checkBox432.TabIndex = 18;
             this.checkBox432.Text = "432MHz";
             this.checkBox432.UseVisualStyleBackColor = true;
             // 
@@ -919,12 +925,42 @@ namespace wtKST
             this.checkBox144.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox144.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_144", true));
             this.checkBox144.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox144.Location = new System.Drawing.Point(39, 27);
+            this.checkBox144.Location = new System.Drawing.Point(250, 27);
             this.checkBox144.Name = "checkBox144";
             this.checkBox144.Size = new System.Drawing.Size(66, 17);
-            this.checkBox144.TabIndex = 15;
+            this.checkBox144.TabIndex = 17;
             this.checkBox144.Text = "144MHz";
             this.checkBox144.UseVisualStyleBackColor = true;
+            // 
+            // checkBox70
+            // 
+            this.checkBox70.AutoSize = true;
+            this.checkBox70.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox70.Checked = global::wtKST.Properties.Settings.Default.Band_70;
+            this.checkBox70.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox70.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_70", true));
+            this.checkBox70.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox70.Location = new System.Drawing.Point(155, 27);
+            this.checkBox70.Name = "checkBox70";
+            this.checkBox70.Size = new System.Drawing.Size(60, 17);
+            this.checkBox70.TabIndex = 16;
+            this.checkBox70.Text = "70MHz";
+            this.checkBox70.UseVisualStyleBackColor = true;
+            // 
+            // checkBox50
+            // 
+            this.checkBox50.AutoSize = true;
+            this.checkBox50.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox50.Checked = global::wtKST.Properties.Settings.Default.Band_50;
+            this.checkBox50.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox50.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "Band_50", true));
+            this.checkBox50.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkBox50.Location = new System.Drawing.Point(47, 27);
+            this.checkBox50.Name = "checkBox50";
+            this.checkBox50.Size = new System.Drawing.Size(60, 17);
+            this.checkBox50.TabIndex = 15;
+            this.checkBox50.Text = "50MHz";
+            this.checkBox50.UseVisualStyleBackColor = true;
             // 
             // tabPage4
             // 
@@ -994,6 +1030,8 @@ namespace wtKST
             this.cb_AS_QRG.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_AS_QRG.FormattingEnabled = true;
             this.cb_AS_QRG.Items.AddRange(new object[] {
+            "50M",
+            "70M",
             "144M",
             "432M",
             "1.2G",
