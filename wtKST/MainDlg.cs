@@ -330,6 +330,8 @@ namespace wtKST
                 Say(args.text);
         }
 
+        private DateTime KST_Update_User_Filter_last_called = DateTime.Now;
+
         private void OnIdle(object sender, EventArgs args)
         {
             KST.KSTStateMachine();
@@ -356,6 +358,7 @@ namespace wtKST
                 }
 
                 KST.State = KSTcom.KST_STATE.Standby;
+                KST_USR_RowFilter = "";
             }
             if (KST.State >= KSTcom.KST_STATE.Connected)
             {
@@ -370,9 +373,18 @@ namespace wtKST
                 {
                     ti_Reconnect.Stop();
                 }
+                if (KST_USR_RowFilter.Equals(""))
+                    KST_Update_Usr_Filter(); // initial filter
+
+                // rate limit - ideally calling filter update should not be needed here
+                // should be triggered appropriately
+                if (KST_Update_User_Filter_last_called.AddSeconds(1) <= DateTime.Now)
+                {
+                    KST_Update_Usr_Filter(true); // only check filter here! it should not have changed
+                    KST_Update_User_Filter_last_called = DateTime.Now;
+            }
             }
 
-            KST_Update_Usr_Filter();
             //fill_AS_list();
 
             string KST_Calls_Text = lbl_KST_Calls.Text;
@@ -713,7 +725,7 @@ namespace wtKST
 
         private string KST_USR_RowFilter = "";
 
-        private void KST_Update_Usr_Filter()
+        private void KST_Update_Usr_Filter(bool check = false)
         {
             string RowFilter = string.Format("(CALL <> '{0}')", Settings.Default.KST_UserName.ToUpper());
             if (hide_away)
@@ -751,6 +763,15 @@ namespace wtKST
 
             if (!RowFilter.Equals(KST_USR_RowFilter))
             {
+                if (check)
+                {
+                    // just check if a change would have an effect
+                    Console.WriteLine("RowFilter is " + KST_USR_RowFilter);
+                    Console.WriteLine("should be " + RowFilter);
+                    MainDlg.Log.WriteMessage("RowFilter is " + KST_USR_RowFilter);
+                    MainDlg.Log.WriteMessage("should be " + RowFilter);
+                    return;
+                }
                 // remember the vertical scroll position as the rowfilter will screw it up
                 // it is reset in OnIdle
                 var Keep_FirstDisplayedScrollingRowIndex = lv_Calls.FirstDisplayedScrollingRowIndex;
@@ -1977,6 +1998,7 @@ namespace wtKST
                     hide_away = false;
                 else
                     hide_away = true;
+                KST_Update_Usr_Filter();
                 return;
             }
 
@@ -1993,6 +2015,7 @@ namespace wtKST
                     sort_by_dir = true;
                     dgv.Sort(dgv.Columns["DIR"], ListSortDirection.Ascending);
                 }
+                KST_Update_Usr_Filter();
                 return;
             }
 
@@ -2003,6 +2026,7 @@ namespace wtKST
                     ignore_inactive = false;
                 else
                     ignore_inactive = true;
+                KST_Update_Usr_Filter();
                 return;
             }
             // band columns
@@ -2012,6 +2036,7 @@ namespace wtKST
                     hide_worked = false;
                 else
                     hide_worked = true;
+                KST_Update_Usr_Filter();
                 return;
             }
         }
