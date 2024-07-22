@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -722,6 +723,13 @@ namespace wtKST
             string RowFilter = string.Format("(CALL <> '{0}')", Settings.Default.KST_UserName.ToUpper());
             if (hide_away)
                 RowFilter += string.Format(" AND (AWAY = 0)");
+
+            if (ignore_inactive)
+            {
+                var last_activity_max = DateTime.UtcNow.AddMinutes(-120);
+                RowFilter += string.Format(" AND (CONTACTED < 3)");
+                RowFilter += string.Format(" AND (TIME > #{0}#)", last_activity_max.ToString("g", CultureInfo.InvariantCulture.DateTimeFormat));
+            }
 
             int MaxDist = Convert.ToInt32(Settings.Default.KST_MaxDist);
             if (MaxDist != 0)
