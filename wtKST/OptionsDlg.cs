@@ -163,20 +163,16 @@ namespace wtKST
                 this.cb_QARTest_Active.Enabled = true;
             }
 
+            // AS handling
+            mCBsASCheckedChangedTriggered = false;
+            mCBsWSCheckedChangedTriggered = false;
             if (this.cb_AS_Active.Checked)
             {
-                this.panel_AS.Enabled = true;
-                this.cb_WS_Active.Checked = false;
-            }
-            else if (this.cb_WS_Active.Checked)
-            {
-                this.panel_WS.Enabled = true;
-                this.cb_AS_Active.Checked = false;
+                CBHandleASActive();
             }
             else
             {
-                this.cb_AS_Active.Enabled = true;
-                this.cb_WS_Active.Enabled = true;
+                CBHandleWSActive();
             }
         }
 
@@ -1187,7 +1183,7 @@ namespace wtKST
             this.cb_AS_Active.Name = "cb_AS_Active";
             this.cb_AS_Active.Size = new System.Drawing.Size(243, 17);
             this.cb_AS_Active.TabIndex = 5;
-            this.cb_AS_Active.Text = "Activate local Airscout serivce (same network)";
+            this.cb_AS_Active.Text = "Activate local Airscout service (same network)";
             this.cb_AS_Active.UseVisualStyleBackColor = true;
             this.cb_AS_Active.CheckedChanged += new System.EventHandler(this.cb_AS_Active_CheckedChanged);
             // 
@@ -1652,6 +1648,7 @@ namespace wtKST
             this.Controls.Add(this.btn_OK);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "OptionsDlg";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Options";
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -1764,12 +1761,17 @@ namespace wtKST
             }
         }
 
-        private void cb_WS_Active_CheckedChanged(object sender, EventArgs e)
+        private bool mCBsASCheckedChangedTriggered = false;
+        private bool mCBsWSCheckedChangedTriggered = false;
+
+        private void CBHandleWSActive()
         {
             if (this.cb_WS_Active.Checked)
             {
                 this.panel_AS.Enabled = false;
                 this.cb_AS_Active.Checked = false;
+                this.cb_AS_Active.Enabled = false;
+                mCBsASCheckedChangedTriggered = true;
 
                 foreach (Control c in this.panel_WS.Controls)
                 {
@@ -1778,16 +1780,29 @@ namespace wtKST
             }
             else
             {
+                mCBsASCheckedChangedTriggered = false;
                 disable_AS_panels_enable_cbs();
             }
         }
 
-        private void cb_AS_Active_CheckedChanged(object sender, EventArgs e)
+        private void cb_WS_Active_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mCBsWSCheckedChangedTriggered)
+            {
+                mCBsWSCheckedChangedTriggered = false;
+                return;
+            }
+            CBHandleWSActive();
+        }
+
+        private void CBHandleASActive()
         {
             if (this.cb_AS_Active.Checked)
             {
                 this.panel_WS.Enabled = false;
                 this.cb_WS_Active.Checked = false;
+                this.cb_WS_Active.Enabled = false;
+                mCBsWSCheckedChangedTriggered = true;
                 foreach (Control c in this.panel_AS.Controls)
                 {
                     c.Enabled = true;
@@ -1795,8 +1810,19 @@ namespace wtKST
             }
             else
             {
+                mCBsWSCheckedChangedTriggered = false;
                 disable_AS_panels_enable_cbs();
             }
+        }
+
+        private void cb_AS_Active_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mCBsASCheckedChangedTriggered)
+            {
+                mCBsASCheckedChangedTriggered = false;
+                return;
+            }
+            CBHandleASActive();
         }
 
         private void disable_AS_panels_enable_cbs()
