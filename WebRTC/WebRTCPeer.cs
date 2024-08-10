@@ -43,12 +43,22 @@ namespace WebRTC
         private void bw_WebRTC_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             // status change received
-            if (e.ProgressPercentage == 1)
+            if (e.ProgressPercentage == WebRTCWorker.ProgressStatus)
             {
                 Status = (WebRTCStatus)e.UserState;
             }
+            // report progress
+            else if (e.ProgressPercentage == WebRTCWorker.ProgressInfo)
+            {
+                Console.WriteLine("BW_WebRTC progress: " + (String)e.UserState);
+            }
+            // report error
+            else if (e.ProgressPercentage == WebRTCWorker.ProgressError)
+            {
+                Console.WriteLine("BW_WebRTC error: " + (String)e.UserState);
+            }
             // message received
-            else if (e.ProgressPercentage == 100)
+            else if (e.ProgressPercentage == WebRTCWorker.ProgressMsg)
             {
                 string msg = (string)e.UserState;
                 try

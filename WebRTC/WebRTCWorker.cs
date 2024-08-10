@@ -26,9 +26,6 @@ namespace WebRTC
         // worker status
         WebRTCStatus Status = WebRTCStatus.UNDEFINED;
 
-        // Message to send
-        string Message = "";
-
         /// <summary>
         /// Modified constructor
         /// </summary>
@@ -37,6 +34,11 @@ namespace WebRTC
             this.WorkerReportsProgress = true;
             this.WorkerSupportsCancellation = true;
         }
+
+        public const int ProgressError = -1;
+        public const int ProgressInfo = 0;
+        public const int ProgressStatus = 1;
+        public const int ProgressMsg = 100;
 
         /// <summary>
         /// Modified DoWork procedure
@@ -52,32 +54,32 @@ namespace WebRTC
             // check args
             if (args == null)
             {
-                this.ReportProgress(-1, "Cannot start worker, arguments missing!");
+                this.ReportProgress(ProgressError, "Cannot start worker, arguments missing!");
                 return;
             }
             if (String.IsNullOrEmpty(args.ChannelID))
             {
-                this.ReportProgress(-1, "Cannot start worker, ChannelName missing!");
+                this.ReportProgress(ProgressError, "Cannot start worker, ChannelName missing!");
                 return;
             }
             if (String.IsNullOrEmpty(args.AirScoutRootURL))
             {
-                this.ReportProgress(-1, "Cannot start worker, AirScoutRootURL missing!");
+                this.ReportProgress(ProgressError, "Cannot start worker, AirScoutRootURL missing!");
                 return;
             }
             if (String.IsNullOrEmpty(args.AirScoutLoginURL))
             {
-                this.ReportProgress(-1, "Cannot start worker, AirScoutLoginURL missing!");
+                this.ReportProgress(ProgressError, "Cannot start worker, AirScoutLoginURL missing!");
                 return;
             }
             if (String.IsNullOrEmpty(args.AirScoutUsername))
             {
-                this.ReportProgress(-1, "Cannot start worker, AirScoutUsername missing!");
+                this.ReportProgress(ProgressError, "Cannot start worker, AirScoutUsername missing!");
                 return;
             }
             if (String.IsNullOrEmpty(args.AirScoutPassword))
             {
-                this.ReportProgress(-1, "Cannot start worker, AirScoutPassword missing!");
+                this.ReportProgress(ProgressError, "Cannot start worker, AirScoutPassword missing!");
                 return;
             }
 
@@ -86,7 +88,7 @@ namespace WebRTC
 
             DateTime start = DateTime.MinValue;
 
-            this.ReportProgress(0, "Started.");
+            this.ReportProgress(ProgressInfo, "Started.");
 
             while (!this.CancellationPending)
             {
@@ -121,11 +123,11 @@ namespace WebRTC
 
                             if (webstat.answer.Contains("answer"))
                             {
-                                this.ReportProgress(0, "Answer received: " + webstat.answer);
+                                this.ReportProgress(ProgressInfo, "Answer received: " + webstat.answer);
                             }
                             else
                             {
-                                this.ReportProgress(0, "Answer discarded: " + webstat.answer);
+                                this.ReportProgress(ProgressInfo, "Answer discarded: " + webstat.answer);
                                 webstat.answer = "{}";
                             }
 
@@ -139,7 +141,7 @@ namespace WebRTC
                         if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Forbidden)
                         {
                             Status = WebRTCStatus.IDLE;
-                            this.ReportProgress(-1, "Not logged in!");
+                            this.ReportProgress(ProgressError, "Not logged in! Check Username/Password");
                         }
                         // other error
                         else
@@ -147,14 +149,14 @@ namespace WebRTC
                             string resp = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
                             start = DateTime.MinValue;
                             Status = WebRTCStatus.ERROR;
-                            this.ReportProgress(-1, resp);
+                            this.ReportProgress(ProgressError, resp);
                         }
                     }
                     catch (Exception ex)
                     {
                         start = DateTime.MinValue;
                         Status = WebRTCStatus.ERROR;
-                        this.ReportProgress(-1, ex.ToString());
+                        this.ReportProgress(ProgressError, ex.ToString());
                     }
                 }
 
@@ -163,7 +165,7 @@ namespace WebRTC
                 {
                     try
                     {
-                        this.ReportProgress(0, "Logging in...");
+                        this.ReportProgress(ProgressInfo, "Logging in...");
 
                         Status = WebRTCStatus.LOGGINGIN;
                         using (WebClientEx client = new WebClientEx(cookies))
@@ -180,7 +182,7 @@ namespace WebRTC
                         if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Forbidden)
                         {
                             Status = WebRTCStatus.ERROR;
-                            this.ReportProgress(-1, "Error while logging in!");
+                            this.ReportProgress(ProgressError, "Error while logging in! Check Username/Password");
 
                             // wait here a bit longer 
                             Thread.Sleep(10000);
@@ -191,14 +193,14 @@ namespace WebRTC
                             string resp = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
                             start = DateTime.MinValue;
                             Status = WebRTCStatus.ERROR;
-                            this.ReportProgress(-1, resp);
+                            this.ReportProgress(ProgressError, resp);
                         }
                     }
                     catch (Exception ex)
                     {
                         start = DateTime.MinValue;
                         Status = WebRTCStatus.ERROR;
-                        this.ReportProgress(-1, ex.ToString());
+                        this.ReportProgress(ProgressError, ex.ToString());
                     }
                 }
 
@@ -225,7 +227,7 @@ namespace WebRTC
                             string response = Encoding.UTF8.GetString(client.UploadData(url, "PUT", Encoding.UTF8.GetBytes(json)));
                         }
 
-                        this.ReportProgress(0, "Offer sent: " + json);
+                        this.ReportProgress(ProgressInfo, "Offer sent: " + json);
 
                     }
                     catch (WebException ex) when (ex.Response is HttpWebResponse response)
@@ -234,7 +236,7 @@ namespace WebRTC
                         if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Forbidden)
                         {
                             Status = WebRTCStatus.IDLE;
-                            this.ReportProgress(-1, "Not logged in!");
+                            this.ReportProgress(ProgressError, "Not logged in!");
                         }
                         // other error
                         else
@@ -242,14 +244,14 @@ namespace WebRTC
                             string resp = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
                             start = DateTime.MinValue;
                             Status = WebRTCStatus.ERROR;
-                            this.ReportProgress(-1, resp);
+                            this.ReportProgress(ProgressError, resp);
                         }
                     }
                     catch (Exception ex)
                     {
                         start = DateTime.MinValue;
                         Status = WebRTCStatus.ERROR;
-                        this.ReportProgress(-1, ex.ToString());
+                        this.ReportProgress(ProgressError, ex.ToString());
                     }
                 }
 
@@ -283,7 +285,7 @@ namespace WebRTC
                         if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Forbidden)
                         {
                             Status = WebRTCStatus.IDLE;
-                            this.ReportProgress(-1, "Not logged in!");
+                            this.ReportProgress(ProgressError, "Not logged in!");
                         }
                         // other error
                         else
@@ -291,14 +293,14 @@ namespace WebRTC
                             string resp = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
                             start = DateTime.MinValue;
                             Status = WebRTCStatus.ERROR;
-                            this.ReportProgress(-1, resp);
+                            this.ReportProgress(ProgressError, resp);
                         }
                     }
                     catch (Exception ex)
                     {
                         start = DateTime.MinValue;
                         Status = WebRTCStatus.ERROR;
-                        this.ReportProgress(-1, ex.ToString());
+                        this.ReportProgress(ProgressError, ex.ToString());
                     }
                 }
 
@@ -328,7 +330,7 @@ namespace WebRTC
                         if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Forbidden)
                         {
                             Status = WebRTCStatus.IDLE;
-                            this.ReportProgress(-1, "Not logged in!");
+                            this.ReportProgress(ProgressError, "Not logged in!");
                         }
                         // other error
                         else
@@ -336,14 +338,14 @@ namespace WebRTC
                             string resp = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
                             start = DateTime.MinValue;
                             Status = WebRTCStatus.ERROR;
-                            this.ReportProgress(-1, resp);
+                            this.ReportProgress(ProgressError, resp);
                         }
                     }
                     catch (Exception ex)
                     {
                         start = DateTime.MinValue;
                         Status = WebRTCStatus.ERROR;
-                        this.ReportProgress(-1, ex.ToString());
+                        this.ReportProgress(ProgressError, ex.ToString());
                     }
                 }
 
@@ -353,7 +355,7 @@ namespace WebRTC
                     {
                         if (PC.connectionState == RTCPeerConnectionState.connected)
                         {
-                            this.ReportProgress(0, "Connected!");
+                            this.ReportProgress(ProgressInfo, "Connected!");
 
                             Status = WebRTCStatus.CONNECTED;
                         }
@@ -364,7 +366,7 @@ namespace WebRTC
                         if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.Forbidden)
                         {
                             Status = WebRTCStatus.IDLE;
-                            this.ReportProgress(-1, "Not logged in!");
+                            this.ReportProgress(ProgressError, "Not logged in!");
                         }
                         // other error
                         else
@@ -372,14 +374,14 @@ namespace WebRTC
                             string resp = new StreamReader(ex.Response.GetResponseStream()).ReadToEnd();
                             start = DateTime.MinValue;
                             Status = WebRTCStatus.ERROR;
-                            this.ReportProgress(-1, resp);
+                            this.ReportProgress(ProgressError, resp);
                         }
                     }
                     catch (Exception ex)
                     {
                         start = DateTime.MinValue;
                         Status = WebRTCStatus.ERROR;
-                        this.ReportProgress(-1, ex.ToString());
+                        this.ReportProgress(ProgressError, ex.ToString());
                     }
                 }
 
@@ -388,7 +390,7 @@ namespace WebRTC
                 {
                     if ((DateTime.UtcNow - start).TotalSeconds > 10)
                     {
-                        this.ReportProgress(-1, "Timeout!");
+                        this.ReportProgress(ProgressError, "Timeout!");
 
                         start = DateTime.MinValue;
                         Status = WebRTCStatus.ERROR;
@@ -430,14 +432,14 @@ namespace WebRTC
                 }
 
                 // display status
-                this.ReportProgress(1, Status);
+                this.ReportProgress(ProgressStatus, Status);
 
                 Thread.Sleep(1000);
             }
 
-            this.ReportProgress(0, "Stopped.");
+            this.ReportProgress(ProgressInfo, "Stopped.");
             Status = WebRTCStatus.IDLE;
-            this.ReportProgress(1, Status);
+            this.ReportProgress(ProgressStatus, Status);
         }
 
         /// <summary>
@@ -469,13 +471,13 @@ namespace WebRTC
                     case DataChannelPayloadProtocols.WebRTC_Binary:
                         msg = Encoding.UTF8.GetString(data);
                         Console.WriteLine($"Data channel {datachan.label} message {type} received: {msg}.");
-                        this.ReportProgress(100, msg);
+                        this.ReportProgress(ProgressMsg, msg);
                         break;
 
                     case DataChannelPayloadProtocols.WebRTC_String:
                         msg = Encoding.UTF8.GetString(data);
                         Console.WriteLine($"Data channel {datachan.label} message {type} received: {msg}.");
-                        this.ReportProgress(100, msg);
+                        this.ReportProgress(ProgressMsg, msg);
 
                         break;
                 }
@@ -512,13 +514,13 @@ namespace WebRTC
                 RTCDataChannel channel = PC.DataChannels.ElementAt(0);
                 channel.send(msg);
 
-                this.ReportProgress(0, "Message sent: " + msg);
+                this.ReportProgress(ProgressInfo, "Message sent: " + msg);
 
                 return true;
             }
             catch (Exception ex)
             {
-                this.ReportProgress(-1, ex.ToString());
+                this.ReportProgress(ProgressError, ex.ToString());
                 return false;
             }
         }
