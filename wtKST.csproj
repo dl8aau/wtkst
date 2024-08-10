@@ -140,6 +140,7 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
     <Compile Include="wtKST\AirScoutIF.cs" />
+    <Compile Include="wtKST\AirscoutUDP.cs" />
     <Compile Include="wtKST\ChatReview.cs">
       <SubType>Form</SubType>
     </Compile>

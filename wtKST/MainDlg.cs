@@ -8,11 +8,9 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows.Forms;
 using WinTest;
 using wtKST.Properties;
-using WebRTC;
 
 namespace wtKST
 {
@@ -31,8 +29,7 @@ namespace wtKST
 
         private WinTest.WinTestLogBase wtQSO = null;
 
-        private wtKST.AirScoutInterface AS_if;
-        private WebRTCPeer AS_webRTC;
+        private wtKST.AirScoutInterface AS_if = null;
 
         public static LogWriter Log = new LogWriter(Directory.GetParent(Application.LocalUserAppDataPath).ToString());
 
@@ -135,8 +132,6 @@ namespace wtKST
 
         private ToolTip tt_Info;
 
-        private BackgroundWorker bw_GetPlanes;
-
         private bool WinTestLocatorWarning = false;
         private bool hide_away = false;
         private bool sort_by_dir = false;
@@ -159,15 +154,6 @@ namespace wtKST
         private uint kst_sked_band_freq;
         private string last_cq_call;
 
-        internal class AS_Calls
-        {
-            public string Call;
-            public string Locator;
-
-            public AS_Calls(string call, string loc) { Call = call; Locator = loc; }
-        };
-
-        private List<AS_Calls> AS_list = new List<AS_Calls>();
         private ToolStripMenuItem macroToolStripMenuItem;
         private ToolStripMenuItem menu_btn_macro_1;
         private ToolStripMenuItem menu_btn_macro_2;
@@ -275,9 +261,9 @@ namespace wtKST
             init_wtQSO();
 
             UpdateUserBandsWidth();
-            bw_GetPlanes.RunWorkerAsync();
-            AS_if = new wtKST.AirScoutInterface(ref bw_GetPlanes);
-            AS_webRTC = new WebRTCPeer(ref bw_GetPlanes);
+            AS_if = new wtKST.AirScoutInterface();
+            AS_if.UpdateASStatusEvent += AS_UpdateASStatus;
+            AS_if.Connect(); // TODO
             if (Settings.Default.KST_AutoConnect)
             {
                 KST.Connect();
@@ -712,8 +698,7 @@ namespace wtKST
                     }
                     break;
                 case KSTcom.USER_OP.USER_DONE:
-                    if (Settings.Default.AS_Active)
-                        AS_send_ASWATCHLIST();
+                    AS_send_ASWATCHLIST();
                     break;
             }
         }
@@ -970,6 +955,7 @@ namespace wtKST
                     KST_Update_Usr_Filter();
                 macro_RefreshMacroText();
                 init_wtQSO();
+                AS_if.Connect(); //TODO!
             }
         }
         private void tsi_KST_Connect_Click(object sender, EventArgs e)
@@ -1305,7 +1291,7 @@ namespace wtKST
         {
             try
             {
-                bw_GetPlanes.CancelAsync();
+                AS_if.OnFormClosing();
                 ni_Main.Visible = false; // hide NotificationIcon
                 Say("Saving QRV-Database");
                 qrv.save_db();
@@ -1660,7 +1646,7 @@ namespace wtKST
                 }
                 if (column.Name == "AS")
                 {
-                    if (Settings.Default.AS_Active)
+                    if (AS_if.IsActive())
                     {
                         string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
                         string s = AS_if.GetNearestPlanes(ascall);
@@ -1686,34 +1672,6 @@ namespace wtKST
                             t = t.Remove(t.IndexOf("\n"));
                             ToolTipText = t + "\n\nLeft click for map\nRight click for more";
                         }
-                    }
-                    else if (Settings.Default.WS_Active)
-                    {
-                        string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
-                        string s = AS_webRTC.GetNearestPlanes(ascall);
-                        if (string.IsNullOrEmpty(s))
-                        {
-                            ToolTipText = "No planes\n\nLeft click for map";
-                            lock (CALL)
-                            {
-                                DataRow Row = CALL.Rows.Find(ascall);
-                                if (Row != null)
-                                {
-                                    int qrb = (int)Row["QRB"];
-                                    if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
-                                        ToolTipText = "Too close for planes\n\nLeft click for map";
-                                    else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
-                                        ToolTipText = "Too far away for planes\n\nLeft click for map";
-                                }
-                            }
-                        }
-                        else
-                        {
-                            string t = s.Remove(0, s.IndexOf("\n\n") + 2);
-                            t = t.Remove(t.IndexOf("\n"));
-                            ToolTipText = t + "\n\nLeft click for map\nRight click for more";
-                        }
-
                     }
                 }
                 if (!String.IsNullOrEmpty(column.Name) && column.Name[0] > '0' && column.Name[0] < '9')
@@ -1794,59 +1752,59 @@ namespace wtKST
             }
         }
 
+
         private void fill_AS_list()
         {
-            if ((!Settings.Default.AS_Active && !Settings.Default.WS_Active) || lv_Calls == null || lv_Calls.RowCount == 0)
+            if (!AS_if.IsActive() || lv_Calls == null || lv_Calls.RowCount == 0)
                 return;
 
             string watchlist = "";
+            List<AirScoutInterface.AS_Calls> AS_list = new List<AirScoutInterface.AS_Calls>();
 
             // called if the user list changes
-            lock (AS_list)
+            AS_list.Clear();
+
+            string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
+
+            // find visible users
+            for (int i = 0; i < lv_Calls.RowCount; i++)
             {
-                AS_list.Clear();
-
-                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
-
-                // find visible users
-                for (int i = 0; i < lv_Calls.RowCount; i++)
+                try
                 {
-                    try
-                    {
-                        if (lv_Calls.Rows[i].Cells["LOC"].Value == null)
-                            continue;
-                        string dxloc = lv_Calls.Rows[i].Cells["LOC"].Value.ToString();
-                        string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Rows[i].Cells["CALL"].Value.ToString().TrimStart(
-                            new char[] { '(' }).TrimEnd(new char[] { ')' }));
+                    if (lv_Calls.Rows[i].Cells["LOC"].Value == null)
+                        continue;
+                    string dxloc = lv_Calls.Rows[i].Cells["LOC"].Value.ToString();
+                    string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Rows[i].Cells["CALL"].Value.ToString().TrimStart(
+                        new char[] { '(' }).TrimEnd(new char[] { ')' }));
 
-                        if (!mycall.Equals(dxcall))
+                    if (!mycall.Equals(dxcall))
+                    {
+                        int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, dxloc);
+                        var row = lv_Calls.Rows[i].Cells;//  DataBoundItem.GetType();
+                        if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
                         {
-                            int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, dxloc);
-                            var row = lv_Calls.Rows[i].Cells;//  DataBoundItem.GetType();
-                            if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                            if (!row["AS"].Value.Equals("<"))
+                                row["AS"].Value = "<";
+                        }
+                        else if (qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
+                        {
+                            watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
+                            if (i >= lv_Calls.FirstDisplayedCell.RowIndex && i < lv_Calls.FirstDisplayedCell.RowIndex + lv_Calls.DisplayedRowCount(true))
                             {
-                                if (!row["AS"].Value.Equals("<"))
-                                    row["AS"].Value = "<";
-                            }
-                            else if (qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
-                            {
-                                watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
-                                if (i >= lv_Calls.FirstDisplayedCell.RowIndex && i < lv_Calls.FirstDisplayedCell.RowIndex + lv_Calls.DisplayedRowCount(true))
-                                {
-                                    AS_list.Add(new AS_Calls(dxcall, dxloc));
-                                }
-                            }
-                            else
-                            {
-                                if (!row["AS"].Value.Equals(">"))
-                                    row["AS"].Value = ">";
+                                AS_list.Add(new AirScoutInterface.AS_Calls(dxcall, dxloc));
                             }
                         }
-                    }
-                    catch
-                    {
+                        else
+                        {
+                            if (!row["AS"].Value.Equals(">"))
+                                row["AS"].Value = ">";
+                        }
                     }
                 }
+                catch
+                {
+                }
+                AS_if.update_AS_list(AS_list);
             }
 
             lock (AS_watchlist)
@@ -1947,12 +1905,9 @@ namespace wtKST
                     }
                     string loc = row.Cells["LOC"].Value.ToString();
 
-                    if (column.Name == "AS" && (Settings.Default.AS_Active || Settings.Default.WS_Active))
+                    if (column.Name == "AS")
                     {
-                        if (Properties.Settings.Default.AS_Active)
-                            AS_if.show_path(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
-                        else if (Properties.Settings.Default.WS_Active)
-                            AS_webRTC.ShowPath(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
+                        AS_if.ShowPath(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
                     }
                     if (column.Name[0] > '0' && column.Name[0] < '9')
                     {
@@ -2021,7 +1976,7 @@ namespace wtKST
 
                         this.cmn_userlist.Show(lv_Calls, dgv.PointToClient(Cursor.Position));
                     }
-                    else if (column.Name == "AS" && Settings.Default.AS_Active)
+                    else if (column.Name == "AS" && AS_if.IsActive())
                     {
                         string call = WCCheck.WCCheck.SanitizeCall(row.Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", ""));
                         string s = AS_if.GetNearestPlanes(call);
@@ -2031,7 +1986,7 @@ namespace wtKST
                             lock (CALL)
                             {
                                 DataRow Row = CALL.Rows.Find(call);
-                                if (Row != null && Settings.Default.AS_Active)
+                                if (Row != null)
                                 {
                                     int qrb = (int)Row["QRB"];
                                     if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
@@ -2541,7 +2496,6 @@ namespace wtKST
         }
 
         /* send the current list of CALLS to AS server - allows AS to batch process
-         * TODO: better to send only calls that are not away or still needed
          */
         private void AS_send_ASWATCHLIST()
         {
@@ -2551,176 +2505,49 @@ namespace wtKST
             lock (AS_watchlist)
             {
                 string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
-                if (Settings.Default.AS_Active)
-                {
-                    AS_if.send_watchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
-                }
-                if (Settings.Default.WS_Active)
-                {
-                    AS_webRTC.SendWatchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
-                }
+                AS_if.SendWatchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
             }
         }
 
-        private void bw_GetPlanes_DoWork(object sender, DoWorkEventArgs e)
+        private void AS_UpdateASStatus(object sender, AirScoutInterface.UpdateASStatusEventArgs args)
         {
-            while (!bw_GetPlanes.CancellationPending)
+            if (this.InvokeRequired)
             {
-                if (KST.State < KSTcom.KST_STATE.Connected || (!Settings.Default.AS_Active && !Settings.Default.WS_Active))
-                {
-                    Thread.Sleep(200); // TODO: better to use WaitHandles
-                    continue;
-                }
-                int errors = 0;
-                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
-
-                // here we make a local copy of the current AS_list
-                AS_Calls[] myAs_List;
-
-                if (AS_list.Count == 0)
-                {
-                    Thread.Sleep(200); // TODO: better to use WaitHandles
-                    continue;
-                }
-
-                lock (AS_list)
-                {
-                    myAs_List = new AS_Calls[AS_list.Count];
-                    AS_list.CopyTo(myAs_List);
-                }
-
-                foreach (AS_Calls a in myAs_List)
-                {
-                    if (!Settings.Default.AS_Active)
-                        break;
-                    try
-                    {
-                        string dxloc = a.Locator;
-                        // FIXME: handle /p etc.
-                        string dxcall = a.Call;
-
-                        if (Settings.Default.AS_Active)
-                        {
-                            if (!AS_if.GetPlanes(mycall, Settings.Default.KST_Loc, dxcall, dxloc))
-                            {
-                                errors++;
-                                if (errors > 10)
-                                {
-                                    bw_GetPlanes.ReportProgress(0, null);
-                                    break;
-                                }
-
-                            }
-                        }
-                        Thread.Sleep(200);
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                // handle web socket if active
-                if (Settings.Default.WS_Active)
-                {
-                    // copy over myAs_List to JSON locations
-                    List<JSONLocation> aslist = new List<JSONLocation>();
-                    myAs_List.ToList().ForEach(item => aslist.Add(new JSONLocation(item.Call, item.Locator)));
-
-                    if (!AS_webRTC.GetPlanes(mycall, Settings.Default.KST_Loc, aslist))
-                    {
-                        errors++;
-                        if (errors > 10)
-                        {
-                            bw_GetPlanes.ReportProgress(0, null);
-                            break;
-                        }
-                    }
-
-                    Thread.Sleep(10000);
-                }
+                this.BeginInvoke(new EventHandler<AirScoutInterface.UpdateASStatusEventArgs>(AS_UpdateASStatus), new object[] { sender, args });
+                return;
             }
-        }
-
-        private void bw_GetPlanes_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            // update planes from websocket
-            if (e.ProgressPercentage == 2)
+            if (args.dxcall == null)
             {
+                // remove all AS information from CALL
                 try
                 {
-                    AS_webRTC.planes.Keys.ToList().ForEach(call =>
+                    lv_Calls.SuspendLayout();
+                    for (int i = 0; i < CALL.Rows.Count; i++)
                     {
-                        string text = AS_webRTC.GetNearestPlanePotential(call);
-
-                        // search the view for matching call - note that dxcall is the bare callsign, whereas
-                        // the list contains () for users that are away and may contain things like /p
-                        // so this is safer...
-                        DataRow[] rows = CALL.Select(string.Format("[CALL] LIKE '*{0}*'", call));
-
-                        foreach (var c in rows)
-                        {
-                            if (c["AS"].ToString() != text)
-                            {
-                                c["AS"] = text;
-                            }
-                        }
-                    });
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error while processing Get_Planes: " + ex.ToString());
-                }
-
-                return;
-            }
-
-            string dxcall = (string)e.UserState;
-            if (dxcall == null)
-            {
-                if (e.ProgressPercentage == 0)
-                {
-                    try
-                    {
-                        AS_if.planes.Clear();
-                        lv_Calls.SuspendLayout();
-                        for (int i = 0; i < CALL.Rows.Count; i++)
-                        {
-                            CALL.Rows[i]["AS"] = "";
-                        }
-                        lv_Calls.ResumeLayout();
+                        CALL.Rows[i]["AS"] = "";
                     }
-                    catch
+                    lv_Calls.ResumeLayout();
+                }
+                catch
+                {
+                }
+
+            }
+            else
+            {
+                // search the view for matching call - note that dxcall is the bare callsign, whereas
+                // the list contains () for users that are away and may contain things like /p
+                // so this is safer...
+                DataRow[] call_rows = CALL.Select(string.Format("[CALL] LIKE '*{0}*'", args.dxcall));
+
+                foreach (var c in call_rows)
+                {
+                    if (c["AS"].ToString() != args.newtext)
                     {
+                        c["AS"] = args.newtext;
                     }
                 }
-                return;
             }
-            // search the view for matching call - note that dxcall is the bare callsign, whereas
-            // the list contains () for users that are away and may contain things like /p
-            // so this is safer...
-            DataRow[] call_rows = CALL.Select(string.Format("[CALL] LIKE '*{0}*'", dxcall));
-
-            string newtext = "";
-            if (e.ProgressPercentage > 0)
-            {
-                newtext = AS_if.GetNearestPlanePotential(dxcall);
-            }
-            else /* e.ProgressPercentage == 0 or e.ProgressPercentage == -1 */
-            {
-                //Console.WriteLine("remove " + dxcall);
-                AS_if.planes.Remove(dxcall);
-            }
-            foreach (var c in call_rows)
-            {
-                if (c["AS"].ToString() != newtext)
-                {
-                    c["AS"] = newtext;
-                }
-            }
-        }
-
-        private void bw_GetPlanes_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
         }
 
         [DllImport("user32.dll")]
@@ -2801,7 +2628,6 @@ namespace wtKST
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
-            this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
@@ -3409,14 +3235,6 @@ namespace wtKST
             // tt_Info
             // 
             this.tt_Info.ShowAlways = true;
-            // 
-            // bw_GetPlanes
-            // 
-            this.bw_GetPlanes.WorkerReportsProgress = true;
-            this.bw_GetPlanes.WorkerSupportsCancellation = true;
-            this.bw_GetPlanes.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bw_GetPlanes_DoWork);
-            this.bw_GetPlanes.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bw_GetPlanes_ProgressChanged);
-            this.bw_GetPlanes.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bw_GetPlanes_RunWorkerCompleted);
             // 
             // cmn_userlist
             // 

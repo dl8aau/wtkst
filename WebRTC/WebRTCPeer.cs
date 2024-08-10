@@ -2,10 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
 using wtKST;
 using wtKST.Properties;
 
@@ -13,8 +9,7 @@ namespace WebRTC
 {
     public class WebRTCPeer
     {
-        public Dictionary<string, PlaneInfoList> planes = new Dictionary<string, PlaneInfoList>();
-
+        private Dictionary<string, PlaneInfoList> planes;
         private BackgroundWorker bw_GetPlanes;
         private WebRTCWorker bw_WebRTC;
 
@@ -22,23 +17,76 @@ namespace WebRTC
 
         public bool Connected = false;
 
-        public WebRTCPeer(ref BackgroundWorker bw_GetPlanes)
+        public WebRTCPeer(ref BackgroundWorker bw_GetPlanes, ref Dictionary<string, PlaneInfoList> planes)
         {
             this.bw_GetPlanes = bw_GetPlanes;
+            this.planes = planes;
 
             bw_WebRTC = new WebRTCWorker();
             bw_WebRTC.ProgressChanged += bw_WebRTC_ProgressChanged;
+            bw_WebRTC.RunWorkerCompleted += Bw_WebRTC_RunWorkerCompleted;
 
-            // start WebRTC worker
-            WebRTCStartArgs args = new WebRTCStartArgs();
-            args.AirScoutUsername = Settings.Default.WS_Username;
-            args.AirScoutPassword = Settings.Default.WS_Password;
-            args.AirScoutLoginURL = Settings.Default.WS_LoginURL;
-            args.AirScoutRootURL = Settings.Default.WS_API_URL;
-            args.ChannelID = Settings.Default.AS_Server_Name;
-            bw_WebRTC.RunWorkerAsync(args);
 
         }
+
+        private void Bw_WebRTC_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Console.WriteLine("WebRTC completed");
+            if (e.Cancelled)
+                Console.WriteLine("worker was canceled");
+            if (mRestartWorker)
+            {
+                Console.WriteLine("restarting now");
+                StartWorker();
+                mRestartWorker = false;
+            }
+        }
+
+        private WebRTCStartArgs mWebRTCargs = new WebRTCStartArgs();
+        private bool mRestartWorker = false;
+
+        public void Connect()
+        {
+            Console.WriteLine("WebRTC connect");
+
+            // if WebRTC worker is already running, check if parameters changed
+            if (bw_WebRTC.IsBusy)
+            {
+                if (mWebRTCargs.AirScoutUsername != Settings.Default.WS_Username ||
+                    mWebRTCargs.AirScoutPassword != Settings.Default.WS_Password ||
+                    mWebRTCargs.AirScoutLoginURL != Settings.Default.WS_LoginURL ||
+                    mWebRTCargs.AirScoutRootURL != Settings.Default.WS_API_URL ||
+                    mWebRTCargs.ChannelID != Settings.Default.AS_Server_Name)
+                {
+                    Console.WriteLine("WebRTC restart");
+                    bw_WebRTC.CancelAsync();
+                    mRestartWorker = true;
+                }
+                else
+                    mRestartWorker = false;
+                return; // no restart needed or restart in the completion event
+            }
+            StartWorker();
+        }
+
+        private void StartWorker()
+        {
+            // start WebRTC worker
+            mWebRTCargs.AirScoutUsername = Settings.Default.WS_Username;
+            mWebRTCargs.AirScoutPassword = Settings.Default.WS_Password;
+            mWebRTCargs.AirScoutLoginURL = Settings.Default.WS_LoginURL;
+            mWebRTCargs.AirScoutRootURL = Settings.Default.WS_API_URL;
+            mWebRTCargs.ChannelID = Settings.Default.AS_Server_Name;
+            bw_WebRTC.RunWorkerAsync(mWebRTCargs);
+        }
+        public void Stop()
+        {
+            Console.WriteLine("WebRTC stop");
+            if (bw_WebRTC.IsBusy)
+                bw_WebRTC.CancelAsync();
+        }
+
+        public bool IsActive() { return Settings.Default.WS_Active; }
 
         private void bw_WebRTC_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -56,6 +104,8 @@ namespace WebRTC
             else if (e.ProgressPercentage == WebRTCWorker.ProgressError)
             {
                 Console.WriteLine("BW_WebRTC error: " + (String)e.UserState);
+                // propagate to interface
+                bw_GetPlanes.ReportProgress(AirScoutInterface.ReportError, e.UserState);
             }
             // message received
             else if (e.ProgressPercentage == WebRTCWorker.ProgressMsg)
@@ -92,11 +142,11 @@ namespace WebRTC
                                 infolist.Sort(new PlaneInfoComparer());
 
                                 planes.Add(item.call, infolist);
+                                bw_GetPlanes.ReportProgress(AirScoutInterface.ReportNewPlane, item.call);
                             }
-
+                            else // report no planes available
+                                bw_GetPlanes.ReportProgress(AirScoutInterface.ReportNoPlane, item.call);
                         });
-
-                        bw_GetPlanes.ReportProgress(2);
                     }
                 }
                 catch (Exception ex)
@@ -120,7 +170,7 @@ namespace WebRTC
         */
     }
 
-        public int QRGFromSettings()
+        private int QRGFromSettings()
         {
             int qrg = 144;
             if (Settings.Default.AS_QRG == "432M")
@@ -176,7 +226,6 @@ namespace WebRTC
 
         public bool GetPlanes(string mycall, string myloc, List<JSONLocation> aslist)
         {
-
             if (Status != WebRTCStatus.CONNECTED)
                 return false;
 
@@ -193,71 +242,14 @@ namespace WebRTC
             }
             catch
             {
-                bw_GetPlanes.ReportProgress(0, null);
+                bw_GetPlanes.ReportProgress(AirScoutInterface.ReportNoPlane, null);
                 return false;
             }
         }
 
-        public string GetNearestPlanes(string call)
+        public bool isConnected()
         {
-            if (Status != WebRTCStatus.CONNECTED)
-                return "";
-
-            PlaneInfoList infolist = null;
-            string result;
-            if (planes.TryGetValue(call, out infolist))
-            {
-                string s = DateTime.UtcNow.ToString("HH:mm") + " [" + (DateTime.UtcNow - infolist.UTC).Minutes.ToString() + "mins ago]\n\n";
-                int planes_per_Potential = 0;
-                int current_Potential = 0;
-
-                foreach (PlaneInfo info in infolist)
-                {
-                    if (current_Potential != info.Potential)
-                    {
-                        current_Potential = info.Potential;
-                        planes_per_Potential = 0;
-                    }
-                    if (++planes_per_Potential > 5)
-                        continue;
-                    s = string.Concat(new object[]
-                    {
-                        s,
-                        info.Potential.ToString(),
-                        " : ",
-                        info.Call,
-                        "[",
-                        info.Category,
-                        "] --> ",
-                        info.IntQRB.ToString(),
-                        "km [",
-                        info.Mins,
-                        "mins]\n"
-                    });
-                }
-                result = s;
-            }
-            else
-            {
-                result = "";
-            }
-            return result;
-        }
-
-        public string GetNearestPlanePotential(string call)
-        {
-            call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
-            PlaneInfoList infolist = null;
-            string result;
-            if (planes.TryGetValue(call, out infolist))
-            {
-                result = infolist[0].Potential + "," + infolist[0].Category + "," + infolist[0].Mins;
-            }
-            else
-            {
-                result = "0";
-            }
-            return result;
+            return (Status == WebRTCStatus.CONNECTED);
         }
 
         public void ShowPath(string dxcall, string dxloc, string mycall, string myloc)
