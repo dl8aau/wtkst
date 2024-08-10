@@ -225,10 +225,10 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="WS_LoginURL" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://134.97.32.144/page/dist/login.php?login=1</Value>
+      <Value Profile="(Default)">https://www.airscout.app/page/dist/login.php?login=1</Value>
     </Setting>
     <Setting Name="WS_API_URL" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://134.97.32.144/airscout/api/v1</Value>
+      <Value Profile="(Default)">https://www.airscout.app/airscout/api/v1</Value>
     </Setting>
   </Settings>
 </SettingsFile>

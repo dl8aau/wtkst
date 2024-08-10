@@ -913,7 +913,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://134.97.32.144/page/dist/login.php?login=1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.airscout.app/page/dist/login.php?login=1")]
         public string WS_LoginURL {
             get {
                 return ((string)(this["WS_LoginURL"]));
@@ -925,7 +925,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://134.97.32.144/airscout/api/v1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.airscout.app/airscout/api/v1")]
         public string WS_API_URL {
             get {
                 return ((string)(this["WS_API_URL"]));
