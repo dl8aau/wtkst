@@ -367,7 +367,7 @@ namespace wtKST
                     ti_Reconnect.Start();
                 }
 
-                KST.State = KSTcom.KST_STATE.Standby;
+                KST.SetStateStandby();
                 KST_USR_RowFilter = "";
             }
             if (KST.State >= KSTcom.KST_STATE.Connected)
