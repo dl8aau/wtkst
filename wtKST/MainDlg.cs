@@ -210,6 +210,7 @@ namespace wtKST
             KST.process_user_update += KST_Process_user_update;
             KST.update_user_state += onUserStateChanged;
             KST.dispText += KST_dispText;
+            KST.KSTStateChanged += KST_StateChanged;
 
             CALL.Columns.Add("CALL");
             CALL.Columns.Add("NAME");
@@ -288,29 +289,6 @@ namespace wtKST
             }
         }
 
-        private void set_KST_Status()
-        {
-            if (KST.State < KSTcom.KST_STATE.Connected)
-            {
-                lbl_KST_Status.BackColor = Color.LightGray;
-                lbl_KST_Status.Text = "Status: Disconnected ";
-                return;
-            }
-            lbl_KST_Status.BackColor = Color.PaleTurquoise;
-            lbl_KST_Status.Text = string.Concat(new string[]
-            {
-                "Status: Connected to ",
-                Settings.Default.KST_Chat,
-                " chat   [",
-                Settings.Default.KST_UserName,
-                " ",
-                Settings.Default.KST_Name,
-                " ",
-                Settings.Default.KST_Loc,
-                "]"
-            });
-        }
-
         private void onUserStateChanged(object sender, KSTcom.userStateEventArgs args)
         {
             if (this.InvokeRequired)
@@ -338,6 +316,55 @@ namespace wtKST
             }
             if (!String.IsNullOrEmpty(args.text))
                 Say(args.text);
+        }
+
+        private void KST_StateChanged(object sender, KSTcom.KSTStateEventArgs args)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new EventHandler<KSTcom.KSTStateEventArgs>(KST_StateChanged), new object[] { sender, args });
+                return;
+            }
+            // from set_KST_Status
+            if (args.KSTState < KSTcom.KST_STATE.Connected)
+            {
+                lbl_KST_Status.BackColor = Color.LightGray;
+                lbl_KST_Status.Text = "Status: Disconnected ";
+            }
+            else
+            {
+                lbl_KST_Status.BackColor = Color.PaleTurquoise;
+                lbl_KST_Status.Text = string.Concat(new string[]
+                {
+                "Status: Connected to ",
+                Settings.Default.KST_Chat,
+                " chat   [",
+                Settings.Default.KST_UserName,
+                " ",
+                Settings.Default.KST_Name,
+                " ",
+                Settings.Default.KST_Loc,
+                "]"
+                });
+            }
+            // "LED" handling
+            switch (args.KSTState)
+            {
+                default:
+                    if (tsl_LED_KST_Status.BackColor != Color.Red)
+                        tsl_LED_KST_Status.BackColor = Color.Red;
+                    break;
+                case KSTcom.KST_STATE.WaitLogin:
+                case KSTcom.KST_STATE.WaitLogstat:
+                case KSTcom.KST_STATE.Disconnecting:
+                    if (tsl_LED_KST_Status.BackColor != Color.Yellow)
+                        tsl_LED_KST_Status.BackColor = Color.Yellow;
+                    break;
+                case KSTcom.KST_STATE.Connected:
+                    if (tsl_LED_KST_Status.BackColor != Color.Green)
+                        tsl_LED_KST_Status.BackColor = Color.Green;
+                    break;
+            }
         }
 
         private DateTime KST_Update_User_Filter_last_called = DateTime.Now;
@@ -427,8 +454,6 @@ namespace wtKST
             {
                 lbl_KST_MyMsg.Text = "My Messages";
             }
-
-            set_KST_Status();
 
             ni_Main.Text = "wtKST\nLeft click to activate";
 
@@ -1009,7 +1034,6 @@ namespace wtKST
                     lv_MyMsg.Items.Clear();
                 }
                 UpdateUserBandsWidth();
-                set_KST_Status();
                 if (KST_MaxDist != Convert.ToInt32(Settings.Default.KST_MaxDist))
                     KST_Update_Usr_Filter();
                 macro_RefreshMacroText();
@@ -1255,7 +1279,6 @@ namespace wtKST
                                 {
                                     MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
                                                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    set_KST_Status();
                                 }
                                 wtQSO_local_lock = false;
 
