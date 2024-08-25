@@ -181,6 +181,9 @@ namespace wtKST
         private ToolStripMenuItem menu_btn_macro_0;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem macro_default_Station;
+        private ToolStripStatusLabel tsl_LED_AS_Status;
+        private ToolStripStatusLabel tsl_LED_Log_Status;
+        private ToolStripStatusLabel tsl_LED_KST_Status;
         private string AS_watchlist = "";
 
         public MainDlg()
@@ -2711,6 +2714,9 @@ namespace wtKST
             this.ss_Main = new System.Windows.Forms.StatusStrip();
             this.tsl_Info = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsl_Error = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsl_LED_AS_Status = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsl_LED_Log_Status = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsl_LED_KST_Status = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -2801,7 +2807,10 @@ namespace wtKST
             // 
             this.ss_Main.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsl_Info,
-            this.tsl_Error});
+            this.tsl_Error,
+            this.tsl_LED_KST_Status,
+            this.tsl_LED_AS_Status,
+            this.tsl_LED_Log_Status});
             this.ss_Main.Location = new System.Drawing.Point(0, 708);
             this.ss_Main.Name = "ss_Main";
             this.ss_Main.Size = new System.Drawing.Size(1202, 22);
@@ -2819,9 +2828,43 @@ namespace wtKST
             this.tsl_Error.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tsl_Error.ForeColor = System.Drawing.Color.Red;
             this.tsl_Error.Name = "tsl_Error";
-            this.tsl_Error.Size = new System.Drawing.Size(1159, 17);
+            this.tsl_Error.Text = "";
+            this.tsl_Error.Size = new System.Drawing.Size(1108, 17);
             this.tsl_Error.Spring = true;
             this.tsl_Error.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // tsl_LED_KST_Status
+            // 
+            this.tsl_LED_KST_Status.AutoSize = false;
+            this.tsl_LED_KST_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
+            this.tsl_LED_KST_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
+            this.tsl_LED_KST_Status.Name = "tsl_LED_KST_Status";
+            this.tsl_LED_KST_Status.Size = new System.Drawing.Size(12, 12);
+            this.tsl_LED_KST_Status.Text = "ON4KST Chat Status LED";
+            this.tsl_LED_KST_Status.ToolTipText = "ON4KST Chat Status LED";
+            this.tsl_LED_KST_Status.BackColor = Color.Red;
+            // 
+            // tsl_LED_AS_Status
+            // 
+            this.tsl_LED_AS_Status.AutoSize = false;
+            this.tsl_LED_AS_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
+            this.tsl_LED_AS_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
+            this.tsl_LED_AS_Status.Name = "tsl_LED_AS_Status";
+            this.tsl_LED_AS_Status.Size = new System.Drawing.Size(12, 12);
+            this.tsl_LED_AS_Status.Text = "Airscout Status LED";
+            this.tsl_LED_AS_Status.ToolTipText = "Airscout Status LED";
+            this.tsl_LED_AS_Status.BackColor = Color.Red;
+            // 
+            // tsl_LED_Log_Status
+            // 
+            this.tsl_LED_Log_Status.AutoSize = false;
+            this.tsl_LED_Log_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
+            this.tsl_LED_Log_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
+            this.tsl_LED_Log_Status.Name = "tsl_LED_AS_Status";
+            this.tsl_LED_Log_Status.Size = new System.Drawing.Size(12, 12);
+            this.tsl_LED_Log_Status.Text = "Log sync Status LED";
+            this.tsl_LED_Log_Status.ToolTipText = "Log sync Status LED";
+            this.tsl_LED_Log_Status.BackColor = Color.Red;
             // 
             // splitContainer1
             // 
