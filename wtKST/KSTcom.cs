@@ -7,7 +7,6 @@
 using De.Mud.Telnet;
 using Net.Graphite.Telnet;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -33,12 +32,37 @@ namespace wtKST
             Connected = 128,
         }
 
-        private KST_STATE KSTState = KST_STATE.Standby;
+        private KST_STATE kstState = KST_STATE.Standby;
 
         public KST_STATE State
         {
-            get { return KSTState; }
-            set { KSTState = value; }
+            get { return kstState; }
+            private set { 
+                kstState = value;
+                if (KSTStateChanged != null)
+                {
+                    KSTStateChanged(this, new KSTStateEventArgs(kstState));
+                }
+            }
+        }
+
+
+        public void SetStateStandby()
+        {
+            State = KST_STATE.Standby;
+        }
+
+        public event EventHandler<KSTStateEventArgs> KSTStateChanged;
+        public class KSTStateEventArgs : EventArgs
+        {
+            /// <summary>
+            /// called when KSTState changes
+            /// </summary>
+            public KSTStateEventArgs(KST_STATE KSTState)
+            {
+                this.KSTState = KSTState;
+            }
+            public KST_STATE KSTState { get; private set; }
         }
 
         private DataTable MSG = new DataTable("MSG");    // holds all the messages exchanged as sent by the KST server
@@ -108,7 +132,7 @@ namespace wtKST
             this.ti_debug.Interval = 5000;
             this.ti_debug.Elapsed += new System.Timers.ElapsedEventHandler(this.ti_debug_Tick);
             this.ti_debug.Start();
-            KSTState = KST_STATE.Connected;
+            State = KST_STATE.Connected;
 #endif
         }
 
@@ -192,7 +216,7 @@ namespace wtKST
 
         private void KST_Receive(string s)
         {
-            switch (KSTState)
+            switch (State)
             {
                 case KST_STATE.WaitLogin:
                     if (s.IndexOf("login") >= 0)
@@ -207,7 +231,7 @@ namespace wtKST
                         (!initialMessagesReceived ? "0" :
                         ((latestMessageTimestamp - new DateTime(1970, 1, 1)).TotalSeconds - 1).ToString())
                         + "|0|\r");
-                        KSTState = KST_STATE.WaitLogstat;
+                        State = KST_STATE.WaitLogstat;
                         Say("Login " + Settings.Default.KST_UserName + " send.");
                     }
                     break;
@@ -268,7 +292,7 @@ namespace wtKST
                         // SDONE | chat id |
 
                         tw.Send("SDONE|" + Settings.Default.KST_Chat.Substring(0, 1) + "|\r");
-                        KSTState = KST_STATE.Connected;
+                        State = KST_STATE.Connected;
                         Say("Connected to KST chat.");
                         MainDlg.Log.WriteMessage("Connected to: " + Settings.Default.KST_Chat);
                         CheckStartUpAway = true;
@@ -651,7 +675,7 @@ namespace wtKST
         // state changes
         public void Connect()
         {
-            if (KSTState == KST_STATE.Standby &&
+            if (State == KST_STATE.Standby &&
                 !string.IsNullOrEmpty(Settings.Default.KST_ServerName) &&
                 !string.IsNullOrEmpty(Settings.Default.KST_UserName))
             {
@@ -667,7 +691,7 @@ namespace wtKST
                         return;
                     }
                     tw.Receive();
-                    KSTState = KST_STATE.WaitLogin;
+                    State = KST_STATE.WaitLogin;
                     lock (USER)
                     {
                         USER.Clear();
@@ -684,11 +708,11 @@ namespace wtKST
 
         public void Disconnect()
         {
-            if (KSTState >= KST_STATE.Connected)
+            if (State >= KST_STATE.Connected)
             {
                 tw.Send("/q\r");
                 Say("Disconnected from KST chat...");
-                KSTState = KST_STATE.Disconnecting;
+                State = KST_STATE.Disconnecting;
             }
         }
 
@@ -713,12 +737,15 @@ namespace wtKST
             public USER_STATE state { get; private set; }
         }
 
-
+        private bool IsConnected()
+        {
+            return (State >= KST_STATE.Connected);
+        }
 
         public void Here()
         {
             UserState = USER_STATE.Here;
-            if (KSTState >= KST_STATE.Connected)
+            if (IsConnected())
             {
                 tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/BACK|0|\r");
                 if (update_user_state != null)
@@ -729,7 +756,7 @@ namespace wtKST
         public void Away()
         {
             UserState = USER_STATE.Away;
-            if (KSTState >= KST_STATE.Connected)
+            if (IsConnected())
             {
 #if !DEBUG_INJECT_KST
                 tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/AWAY|0|\r");
@@ -741,7 +768,7 @@ namespace wtKST
 
         public void Setname(string name)
         {
-            if (KSTState >= KST_STATE.Connected)
+            if (IsConnected())
             {
 #if !DEBUG_INJECT_KST
                 tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/SETNAME " + name + "|0|\r");
@@ -751,7 +778,7 @@ namespace wtKST
 
         public void Setloc(string locator)
         {
-            if (KSTState >= KST_STATE.Connected)
+            if (IsConnected())
             {
 #if !DEBUG_INJECT_KST
                 tw.Send("MSG|" + Settings.Default.KST_Chat.Substring(0, 1) + "|0|/SETLOC " + locator + "|0|\r");
@@ -822,7 +849,7 @@ namespace wtKST
             {
             }
 
-            KSTState = KST_STATE.Disconnected;
+            State = KST_STATE.Disconnected;
         }
 
         /* one shot timer to handle the connect/reconnect during /set name */
@@ -868,7 +895,7 @@ namespace wtKST
                         KSTBuffer = buffer[buffer.Length - 1]; // keep the tail
                 }
             }
-            if (KSTState >= KST_STATE.Connected)
+            if (IsConnected())
             {
                 ti_Linkcheck.Stop();   // restart the linkcheck timer
                 ti_Linkcheck.Start();
@@ -910,7 +937,7 @@ namespace wtKST
 
         private void ti_Linkcheck_Tick(Object source, System.Timers.ElapsedEventArgs e)
         {
-            if (KSTState == KST_STATE.Connected)
+            if (State == KST_STATE.Connected)
             {
                 tw.Send("\r\n"); // send to check if link is still up
             }
@@ -922,22 +949,22 @@ namespace wtKST
             try
             {
                 if (tw != null && !tw.Connected
-                    && KSTState != KST_STATE.Standby)
+                    && State != KST_STATE.Standby)
                 {
-                    KSTState = KST_STATE.Disconnected;
+                    State = KST_STATE.Disconnected;
                 }
             }
             catch
             {
-                KSTState = KST_STATE.Disconnected;
+                State = KST_STATE.Disconnected;
             }
 
-            if (KSTState == KST_STATE.Disconnecting)
+            if (State == KST_STATE.Disconnecting)
             {
                 if (tw != null && tw.Connected)
                     tw.Disconnect();
             }
-            if (KSTState == KSTcom.KST_STATE.Disconnected)
+            if (State == KSTcom.KST_STATE.Disconnected)
             {
                 if (ti_Linkcheck.Enabled)
                     ti_Linkcheck.Stop();
