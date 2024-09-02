@@ -4,23 +4,27 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using wtKST;
 using wtKST.Properties;
+using static wtKST.AirScoutInterface;
 
 namespace WebRTC
 {
-    public class WebRTCPeer
+    // needs to be "internal" - otherwise passing the delegate to _asStateSetter does not work
+    internal class WebRTCPeer
     {
         private Dictionary<string, PlaneInfoList> planes;
         private BackgroundWorker bw_GetPlanes;
         private WebRTCWorker bw_WebRTC;
+        private Action<AS_STATE> asStateSetter;
 
         private WebRTCStatus Status = WebRTCStatus.UNDEFINED;
 
         public bool Connected = false;
 
-        public WebRTCPeer(ref BackgroundWorker bw_GetPlanes, ref Dictionary<string, PlaneInfoList> planes)
+        public WebRTCPeer(ref BackgroundWorker bw_GetPlanes, ref Dictionary<string, PlaneInfoList> planes, Action<AS_STATE> _asStateSetter)
         {
             this.bw_GetPlanes = bw_GetPlanes;
             this.planes = planes;
+            this.asStateSetter = _asStateSetter;
 
             bw_WebRTC = new WebRTCWorker();
             bw_WebRTC.ProgressChanged += bw_WebRTC_ProgressChanged;
@@ -84,6 +88,7 @@ namespace WebRTC
             Console.WriteLine("WebRTC stop");
             if (bw_WebRTC.IsBusy)
                 bw_WebRTC.CancelAsync();
+            asStateSetter(AS_STATE.AS_INACTIVE);
         }
 
         public bool IsActive() { return Settings.Default.WS_Active; }
@@ -93,7 +98,16 @@ namespace WebRTC
             // status change received
             if (e.ProgressPercentage == WebRTCWorker.ProgressStatus)
             {
-                Status = (WebRTCStatus)e.UserState;
+                if (Status != (WebRTCStatus)e.UserState)
+                {
+                    Status = (WebRTCStatus)e.UserState;
+                    if (Status == WebRTCStatus.CONNECTED)
+                        asStateSetter(AS_STATE.AS_IN_SYNC);
+                    else if (Status == WebRTCStatus.ERROR || Status == WebRTCStatus.IDLE)
+                        asStateSetter(AS_STATE.AS_INACTIVE);
+                    else
+                        asStateSetter(AS_STATE.AS_UPDATING);
+                }
             }
             // report progress
             else if (e.ProgressPercentage == WebRTCWorker.ProgressInfo)

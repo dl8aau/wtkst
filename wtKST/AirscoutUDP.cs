@@ -10,6 +10,7 @@ using wtKST.Properties;
 using System.ComponentModel;
 using System.Threading;
 using System.Diagnostics;
+using static wtKST.AirScoutInterface;
 
 namespace wtKST
 {
@@ -23,6 +24,8 @@ namespace wtKST
 
         private BackgroundWorker bw_GetPlanes;
 
+        private Action<AS_STATE> asStateSetter;
+
         public bool Connected = false;
 
         private IPEndPoint localep;
@@ -35,10 +38,11 @@ namespace wtKST
 #if DEBUG_AS
         private Stopwatch stopWatch;
 #endif
-        public AirscoutUDP(ref BackgroundWorker bw_GetPlanes, ref Dictionary<string, PlaneInfoList> planes)
+        public AirscoutUDP(ref BackgroundWorker bw_GetPlanes, ref Dictionary<string, PlaneInfoList> planes, Action<AS_STATE> asStateSetter)
         {
             this.bw_GetPlanes = bw_GetPlanes;
             this.planes = planes;
+            this.asStateSetter = asStateSetter;
 
             msgWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 
@@ -59,6 +63,8 @@ namespace wtKST
         {
             wtl.wtMessageReceived -= wtMessageReceivedHandler;
         }
+
+        DateTime mTimestamp = DateTime.UtcNow;
 
         private void wtMessageReceivedHandler(object sender, WinTest.wtListener.wtMessageEventArgs e)
         {
@@ -87,6 +93,12 @@ namespace wtKST
                         Console.WriteLine("got AS " + dxcall + " " + e.Msg.Data + " in " + stopWatch.ElapsedMilliseconds);
 #endif
                         msgWaitHandle.Set();
+
+                        if (DateTime.UtcNow.Subtract(mTimestamp).TotalMilliseconds < 30000)
+                            asStateSetter( AS_STATE.AS_IN_SYNC );
+                        else
+                            asStateSetter( AS_STATE.AS_UPDATING );
+                        mTimestamp = DateTime.UtcNow;
                     }
 #if DEBUG_AS
                     else
@@ -215,6 +227,7 @@ namespace wtKST
                     Console.WriteLine("timeout " + dxcall);
 #endif
                     bw_GetPlanes.ReportProgress(0, dxcall);
+                    asStateSetter( AS_STATE.AS_INACTIVE );
                     return false;
                 }
                 return true;
@@ -223,6 +236,7 @@ namespace wtKST
             {
                 bw_GetPlanes.ReportProgress(0, null);
                 bw_GetPlanes.ReportProgress(-1, dxcall);
+                asStateSetter( AS_STATE.AS_INACTIVE );
                 return false;
             }
         }

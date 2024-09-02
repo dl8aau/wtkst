@@ -278,6 +278,7 @@ namespace wtKST
             AS_if = new wtKST.AirScoutInterface();
             AS_if.UpdateASStatusEvent += AS_UpdateASStatus;
             AS_if.Connect(); // TODO
+            AS_if.ASStateChanged += AS_StateChanged;
             if (Settings.Default.KST_AutoConnect)
             {
                 KST.Connect();
@@ -358,6 +359,31 @@ namespace wtKST
                 case KSTcom.KST_STATE.Connected:
                     if (tsl_LED_KST_Status.BackColor != Color.Green)
                         tsl_LED_KST_Status.BackColor = Color.Green;
+                    break;
+            }
+        }
+
+
+        private void AS_StateChanged(object sender, AirScoutInterface.ASStateEventArgs args)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new EventHandler<AirScoutInterface.ASStateEventArgs>(AS_StateChanged), new object[] { sender, args });
+                return;
+            }
+            switch (args.ASState)
+            {
+                default:
+                    if (tsl_LED_AS_Status.BackColor != Color.Red)
+                        tsl_LED_AS_Status.BackColor = Color.Red;
+                    break;
+                case AirScoutInterface.AS_STATE.AS_UPDATING:
+                    if (tsl_LED_AS_Status.BackColor != Color.Yellow)
+                        tsl_LED_AS_Status.BackColor = Color.Yellow;
+                    break;
+                case AirScoutInterface.AS_STATE.AS_IN_SYNC:
+                    if (tsl_LED_AS_Status.BackColor != Color.Green)
+                        tsl_LED_AS_Status.BackColor = Color.Green;
                     break;
             }
         }

@@ -36,8 +36,8 @@ namespace wtKST
             this.bw_GetPlanes.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bw_GetPlanes_ProgressChanged);
             this.bw_GetPlanes.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bw_GetPlanes_RunWorkerCompleted);
 
-            this.mUDPAS = new AirscoutUDP(ref bw_GetPlanes, ref planes); // more clever...
-            this.mWebRTC = new WebRTCPeer(ref bw_GetPlanes, ref planes); // TODO more clever...
+            this.mUDPAS = new AirscoutUDP(ref bw_GetPlanes, ref planes, AsStateSetter); // more clever...
+            this.mWebRTC = new WebRTCPeer(ref bw_GetPlanes, ref planes, AsStateSetter); // TODO more clever...
         }
 
         public void Dispose()
@@ -79,6 +79,43 @@ namespace wtKST
         {
             this.bw_GetPlanes.CancelAsync();
         }
+
+        public enum AS_STATE
+        {
+            AS_INACTIVE,
+            AS_UPDATING,
+            AS_IN_SYNC,
+        };
+
+        private AS_STATE asState = AS_STATE.AS_INACTIVE;
+
+        public AS_STATE ASState
+        {
+            get { return asState; }
+            protected set
+            {
+                asState = value;
+                if (ASStateChanged != null)
+                {
+                    ASStateChanged(this, new ASStateEventArgs(asState));
+                }
+            }
+        }
+
+        public event EventHandler<ASStateEventArgs> ASStateChanged;
+        public class ASStateEventArgs : EventArgs
+        {
+            /// <summary>
+            /// called when ASState changes
+            /// </summary>
+            public ASStateEventArgs(AS_STATE ASState)
+            {
+                this.ASState = ASState;
+            }
+            public AS_STATE ASState { get; private set; }
+        }
+
+        private void AsStateSetter(AS_STATE ASState) { this.ASState = ASState; }
 
         /// <summary>
         /// called from BackgroundWorker bw_GetPlanes - reports results through bw_GetPlanes.ReportProgress
