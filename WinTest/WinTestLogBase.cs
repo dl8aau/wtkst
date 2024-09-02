@@ -23,6 +23,7 @@ namespace WinTest
         public void Clear_QSOs()
         {
             QSO.Clear();
+            LogState = LOG_STATE.LOG_INACTIVE;
         }
 
         public abstract string getStatus();
@@ -45,6 +46,39 @@ namespace WinTest
 
         public event EventHandler AddQSO;
 
+        public enum LOG_STATE
+        {
+            LOG_INACTIVE,
+            LOG_SYNCING,
+            LOG_IN_SYNC,
+        };
+
+        private LOG_STATE logState = LOG_STATE.LOG_INACTIVE;
+
+        public LOG_STATE LogState {
+            get { return logState; }
+            protected set
+            {
+                logState = value;
+                if (LogStateChanged != null)
+                {
+                    LogStateChanged(this, new LogStateEventArgs(logState));
+                }
+            }
+        }
+
+        public event EventHandler<LogStateEventArgs> LogStateChanged;
+        public class LogStateEventArgs : EventArgs
+        {
+            /// <summary>
+            /// called when LogState changes
+            /// </summary>
+            public LogStateEventArgs(LOG_STATE LogState)
+            {
+                this.LogState = LogState;
+            }
+            public LOG_STATE LogState { get; private set; }
+        }
 
         public WinTestLogBase(LogWriteMessageDelegate mylog)
         {
