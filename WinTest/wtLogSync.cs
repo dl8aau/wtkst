@@ -357,6 +357,8 @@ namespace WinTest
 
                 // iterate over all logstat lists
                 bool needQSOs_sent = false;
+                bool timeoutRemoveStation = false;
+                bool wtStationsActive = false;
 
                 lock (wtStationSyncList)
                 {
@@ -364,10 +366,12 @@ namespace WinTest
                     {
                         foreach (var ls in sl.logstat)
                         {
+                            wtStationsActive = true;
                             // prefer owner on first iteration
                             if (ls.AvailableFrom == StationLogStat.wtAvailableFrom.Owner)
                             {
                                 var cs = check_section(ls, sl.from);
+                                Console.WriteLine("checking owner " + ls.StationUniqueID + " result " + cs);
                                 if (cs == SECTION_STATE.SECTION_DONE)
                                 {
                                     Console.WriteLine(ls.StationUniqueID + " done (owner) " + DateTime.Now.ToString("h:mm:ss"));
@@ -379,8 +383,15 @@ namespace WinTest
                                     if (find_alternative_source(sl.from, ls.StationUniqueID))
                                     {
                                         needQSOs_sent = true;
-                                        goto exitLoop;
                                     }
+                                    else
+                                    {
+                                        // remove the station
+                                        wtStationSyncList.RemoveAll(x => x.from == sl.from);
+                                        Console.WriteLine("remove " + sl.from);
+                                        timeoutRemoveStation = true;
+                                    }
+                                    goto exitLoop;
                                 }
                                 else if (cs == SECTION_STATE.NEED_QSO_SENT)
                                 {
@@ -398,6 +409,7 @@ namespace WinTest
                             if (ls.AvailableFrom != StationLogStat.wtAvailableFrom.Owner)
                             {
                                 var cs = check_section(ls, sl.from);
+                                Console.WriteLine("checking " + ls.StationUniqueID + " result " + cs);
                                 if (cs == SECTION_STATE.SECTION_DONE)
                                 {
                                     Console.WriteLine(ls.StationUniqueID + " done " + DateTime.Now.ToString("h:mm:ss"));
@@ -409,8 +421,15 @@ namespace WinTest
                                     if (find_alternative_source(sl.from, ls.StationUniqueID))
                                     {
                                         needQSOs_sent = true;
-                                        goto exitLoop;
                                     }
+                                    else
+                                    {
+                                        // remove the station
+                                        wtStationSyncList.RemoveAll(x => x.from == sl.from);
+                                        Console.WriteLine("remove " + sl.from);
+                                        timeoutRemoveStation = true;
+                                    }
+                                    goto exitLoop;
                                 }
                                 else if (cs == SECTION_STATE.NEED_QSO_SENT)
                                 {
@@ -422,7 +441,7 @@ namespace WinTest
                     }
                 exitLoop:;
                 }
-                if (!needQSOs_sent)
+                if (wtStationsActive && !needQSOs_sent && !timeoutRemoveStation)
                 {
                     if (WtlogsyncState == WTLOGSYNCSTATE.GET_QSO)
                         WtlogsyncState = WTLOGSYNCSTATE.QSO_IN_SYNC;
