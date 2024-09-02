@@ -4,6 +4,10 @@
 - Improvement/Fix: Win-Test network sync could fail if it went into a timeout. Also lock some code
   path to avoid issues with concurrent update of the sync list data.
 - Improvement: add 50/70 MHz (feature req: 50/70MHz support #5)
+- Improvement: ignore planes estimated to be availabe in more than 30min
+- Fix: "away" handling: does not work for two logins with same call + suffix
+- Improvement: filter out inactive users in list and improve user list filter
+- Improvement: better visualize sorting options for calls area
 
 3.1.4.11
 
