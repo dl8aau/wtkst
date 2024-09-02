@@ -358,67 +358,70 @@ namespace WinTest
                 // iterate over all logstat lists
                 bool needQSOs_sent = false;
 
-                foreach (var sl in wtStationSyncList)
+                lock (wtStationSyncList)
                 {
-                    foreach (var ls in sl.logstat)
+                    foreach (var sl in wtStationSyncList)
                     {
-                        // prefer owner on first iteration
-                        if (ls.AvailableFrom == StationLogStat.wtAvailableFrom.Owner)
+                        foreach (var ls in sl.logstat)
                         {
-                            var cs = check_section(ls, sl.from);
-                            if (cs == SECTION_STATE.SECTION_DONE)
+                            // prefer owner on first iteration
+                            if (ls.AvailableFrom == StationLogStat.wtAvailableFrom.Owner)
                             {
-                                Console.WriteLine(ls.StationUniqueID + " done (owner) " + DateTime.Now.ToString("h:mm:ss"));
-                            }
-                            else if (cs == SECTION_STATE.SECTION_TIMEOUT)
-                            {
-                                Console.WriteLine(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
-                                // we need to find another source:
-                                if (find_alternative_source(sl.from, ls.StationUniqueID))
+                                var cs = check_section(ls, sl.from);
+                                if (cs == SECTION_STATE.SECTION_DONE)
+                                {
+                                    Console.WriteLine(ls.StationUniqueID + " done (owner) " + DateTime.Now.ToString("h:mm:ss"));
+                                }
+                                else if (cs == SECTION_STATE.SECTION_TIMEOUT)
+                                {
+                                    Console.WriteLine(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
+                                    // we need to find another source:
+                                    if (find_alternative_source(sl.from, ls.StationUniqueID))
+                                    {
+                                        needQSOs_sent = true;
+                                        goto exitLoop;
+                                    }
+                                }
+                                else if (cs == SECTION_STATE.NEED_QSO_SENT)
                                 {
                                     needQSOs_sent = true;
                                     goto exitLoop;
                                 }
                             }
-                            else if (cs == SECTION_STATE.NEED_QSO_SENT)
-                            {
-                                needQSOs_sent = true;
-                                goto exitLoop;
-                            }
                         }
                     }
-                }
-                foreach (var sl in wtStationSyncList)
-                {
-                    foreach (var ls in sl.logstat)
+                    foreach (var sl in wtStationSyncList)
                     {
-                        // done owner above, so only use what is left
-                        if (ls.AvailableFrom != StationLogStat.wtAvailableFrom.Owner)
+                        foreach (var ls in sl.logstat)
                         {
-                            var cs = check_section(ls, sl.from);
-                            if (cs == SECTION_STATE.SECTION_DONE)
+                            // done owner above, so only use what is left
+                            if (ls.AvailableFrom != StationLogStat.wtAvailableFrom.Owner)
                             {
-                                Console.WriteLine(ls.StationUniqueID + " done " + DateTime.Now.ToString("h:mm:ss"));
-                            }
-                            else if (cs == SECTION_STATE.SECTION_TIMEOUT)
-                            {
-                                Console.WriteLine(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
-                                // we need to find another source:
-                                if (find_alternative_source(sl.from, ls.StationUniqueID))
+                                var cs = check_section(ls, sl.from);
+                                if (cs == SECTION_STATE.SECTION_DONE)
+                                {
+                                    Console.WriteLine(ls.StationUniqueID + " done " + DateTime.Now.ToString("h:mm:ss"));
+                                }
+                                else if (cs == SECTION_STATE.SECTION_TIMEOUT)
+                                {
+                                    Console.WriteLine(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
+                                    // we need to find another source:
+                                    if (find_alternative_source(sl.from, ls.StationUniqueID))
+                                    {
+                                        needQSOs_sent = true;
+                                        goto exitLoop;
+                                    }
+                                }
+                                else if (cs == SECTION_STATE.NEED_QSO_SENT)
                                 {
                                     needQSOs_sent = true;
                                     goto exitLoop;
                                 }
                             }
-                            else if (cs == SECTION_STATE.NEED_QSO_SENT)
-                            {
-                                needQSOs_sent = true;
-                                goto exitLoop;
-                            }
                         }
                     }
+                exitLoop:;
                 }
-                exitLoop:
                 if (!needQSOs_sent)
                 {
                     if (WtlogsyncState == WTLOGSYNCSTATE.GET_QSO)
@@ -516,7 +519,10 @@ namespace WinTest
                    " first_QSO_ts " + first_QSO_ts.ToShortDateString() + " " + first_QSO_ts.ToShortTimeString());
 
                 // clear entries
-                wtStationSyncList.Clear();
+                lock (wtStationSyncList)
+                { 
+                    wtStationSyncList.Clear();
+                }
                 myLogState.Clear();
                 Clear_QSOs();
                 Console.WriteLine("restart log");
@@ -535,15 +541,18 @@ namespace WinTest
                     WtlogsyncState = WTLOGSYNCSTATE.HELLO_RECEIVED;
 
                 StationSyncStatus w = new StationSyncStatus(e.Msg.Src, first_QSO_ts);
-                int sl_index = wtStationSyncList.FindLastIndex(x => x.from == e.Msg.Src);
-                if (sl_index != -1)
+                lock (wtStationSyncList)
                 {
-                    wtStationSyncList[sl_index].timestamp = w.timestamp;
-                    wtStationSyncList[sl_index].first_QSO_ts = w.first_QSO_ts;
-                }
-                else
-                {
-                    wtStationSyncList.Add(w);
+                    int sl_index = wtStationSyncList.FindLastIndex(x => x.from == e.Msg.Src);
+                    if (sl_index != -1)
+                    {
+                        wtStationSyncList[sl_index].timestamp = w.timestamp;
+                        wtStationSyncList[sl_index].first_QSO_ts = w.first_QSO_ts;
+                    }
+                    else
+                    {
+                        wtStationSyncList.Add(w);
+                    }
                 }
             }
             else
@@ -552,18 +561,20 @@ namespace WinTest
             {
                 string[] data = e.Msg.Data.Split(new char[] { ' ' });
 
-                int sl_index = wtStationSyncList.FindLastIndex(x => x.from == e.Msg.Src);
-                // use 0 for unknown parts - we are mainly interested in the name
-                StationSyncStatus w = new StationSyncStatus(e.Msg.Src, DateTime.MinValue);
-                if (sl_index != -1)
+                lock (wtStationSyncList)
                 {
-                    wtStationSyncList[sl_index].timestamp = w.timestamp;
+                    int sl_index = wtStationSyncList.FindLastIndex(x => x.from == e.Msg.Src);
+                    // use 0 for unknown parts - we are mainly interested in the name
+                    StationSyncStatus w = new StationSyncStatus(e.Msg.Src, DateTime.MinValue);
+                    if (sl_index != -1)
+                    {
+                        wtStationSyncList[sl_index].timestamp = w.timestamp;
+                    }
+                    else
+                    {
+                        wtStationSyncList.Add(w);
+                    }
                 }
-                else
-                {
-                    wtStationSyncList.Add(w);
-                }
-
                 if (WtlogsyncState == WTLOGSYNCSTATE.WAIT_HELLO)
                     WtlogsyncState = WTLOGSYNCSTATE.HELLO_RECEIVED;
             }
@@ -684,24 +695,26 @@ namespace WinTest
 
                     StationLogStat sls = new StationLogStat(stationUniqueID, AvailableFrom, ls);
 
-                    int sl_index = wtStationSyncList.FindLastIndex(x => x.from == e.Msg.Src);
-                    if (sl_index != -1)
+                    lock (wtStationSyncList)
                     {
-                        int ssl_index = wtStationSyncList[sl_index].logstat.FindLastIndex(x => x.StationUniqueID == stationUniqueID);
-                        if (ssl_index != -1)
+                        int sl_index = wtStationSyncList.FindLastIndex(x => x.from == e.Msg.Src);
+                        if (sl_index != -1)
                         {
-                            if (wtStationSyncList[sl_index].logstat[ssl_index] != sls)
-                                wtStationSyncList[sl_index].logstat[ssl_index] = sls;
-                        }
-                        else
-                        {
-                            wtStationSyncList[sl_index].logstat.Add(sls);
-                        }
+                            int ssl_index = wtStationSyncList[sl_index].logstat.FindLastIndex(x => x.StationUniqueID == stationUniqueID);
+                            if (ssl_index != -1)
+                            {
+                                if (wtStationSyncList[sl_index].logstat[ssl_index] != sls)
+                                    wtStationSyncList[sl_index].logstat[ssl_index] = sls;
+                            }
+                            else
+                            {
+                                wtStationSyncList[sl_index].logstat.Add(sls);
+                            }
 
-                        //                        foreach (var s in sl.logstat)
-                        //                            Console.WriteLine(sl.from + ": " + s.StationUniqueID + " " + s.count_from + "-" + s.count_to);
+                            //                        foreach (var s in sl.logstat)
+                            //                            Console.WriteLine(sl.from + ": " + s.StationUniqueID + " " + s.count_from + "-" + s.count_to);
+                        }
                     }
-
                 }
             }
             else
