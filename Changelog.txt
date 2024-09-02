@@ -1,3 +1,34 @@
+
+3.2.1.1
+- Changes from "master" branch (3.1.4.14) re-integrated
+
+3.2.1.0
+- AS Web Interface - new data format
+- Airscout internal refactoring
+- New AS visialization UI (AS Tooltip, AS context menu in message list)
+
+3.2.0.0
+- AS Web Interface - internal test verson
+- WebRTC interface code to browser based Airscout
+
+3.1.4.14
+- Fix: local changes to the QRV entries should be ignored if too old
+
+3.1.4.13
+- Fix: "green" status of users in the list (so in the log already) was not filtered out correcty
+- Improvement: place the cursor at the end of a macro text
+
+3.1.4.12
+- Improvement: show "LED" indicators in the lower right corner of the UI to indicate the status of
+  the KST connection, Airscout connection and Log sync
+- Improvement/Fix: Win-Test network sync could fail if it went into a timeout. Also lock some code
+  path to avoid issues with concurrent update of the sync list data.
+- Improvement: add 50/70 MHz (feature req: 50/70MHz support #5)
+- Improvement: ignore planes estimated to be availabe in more than 30min
+- Fix: "away" handling: does not work for two logins with same call + suffix
+- Improvement: filter out inactive users in list and improve user list filter
+- Improvement: better visualize sorting options for calls area
+
 3.1.4.11
 
 - Fix: make sure window is visible on multi screen setups when screen
