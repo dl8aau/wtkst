@@ -367,6 +367,30 @@ namespace wtKST
             }
         }
 
+        private void Log_StateChanged(object sender, WinTestLogBase.LogStateEventArgs args)
+        {
+            if (this.InvokeRequired)
+            {
+                this.BeginInvoke(new EventHandler<WinTestLogBase.LogStateEventArgs>(Log_StateChanged), new object[] { sender, args });
+                return;
+            }
+            switch (args.LogState)
+            {
+                default:
+                    if (tsl_LED_Log_Status.BackColor != Color.Red)
+                        tsl_LED_Log_Status.BackColor = Color.Red;
+                    break;
+                case WinTestLogBase.LOG_STATE.LOG_SYNCING:
+                    if (tsl_LED_Log_Status.BackColor != Color.Yellow)
+                        tsl_LED_Log_Status.BackColor = Color.Yellow;
+                    break;
+                case WinTestLogBase.LOG_STATE.LOG_IN_SYNC:
+                    if (tsl_LED_Log_Status.BackColor != Color.Green)
+                        tsl_LED_Log_Status.BackColor = Color.Green;
+                    break;
+            }
+        }
+
         private DateTime KST_Update_User_Filter_last_called = DateTime.Now;
 
         private void OnIdle(object sender, EventArgs args)
@@ -1091,6 +1115,7 @@ namespace wtKST
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 {
                     wtQSO = new WinTest.WinTestLog(MainDlg.Log.WriteMessage);
+                    wtQSO.LogStateChanged += Log_StateChanged;
                 }
                 if (wts == null)
                     wts = new WinTest.wtStatus();
@@ -1115,6 +1140,7 @@ namespace wtKST
                 wtQSO = new WtLogSync(MainDlg.Log.WriteMessage);
                 if (wts == null)
                     wts = new WinTest.wtStatus();
+                wtQSO.LogStateChanged += Log_StateChanged;
             }
             else if (Settings.Default.QARTest_Sync_active)
             {
@@ -1139,6 +1165,7 @@ namespace wtKST
                     Console.WriteLine("wts active - turn off");
                     wts = null;
                 }
+                wtQSO.LogStateChanged += Log_StateChanged;
             }
             else
             {
@@ -1154,6 +1181,7 @@ namespace wtKST
                     Console.WriteLine("wts active - turn off");
                     wts = null;
                 }
+                Log_StateChanged(this, new WinTest.WinTestLogBase.LogStateEventArgs(WinTestLogBase.LOG_STATE.LOG_INACTIVE));
             }
         }
 

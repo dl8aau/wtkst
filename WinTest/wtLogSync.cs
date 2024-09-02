@@ -35,7 +35,7 @@ namespace WinTest
             };
             QSO.PrimaryKey = QSOkeys;
 
-            wtlogsyncState = WTLOGSYNCSTATE.WAIT_HELLO;
+            WtlogsyncState = WTLOGSYNCSTATE.WAIT_HELLO;
 
             ti_get_log = new System.Timers.Timer();
             ti_get_log.Enabled = true;
@@ -73,16 +73,27 @@ namespace WinTest
 
         private enum WTLOGSYNCSTATE { WAIT_HELLO, HELLO_RECEIVED, GET_QSO, QSO_IN_SYNC };
 
-        private WTLOGSYNCSTATE _wtlogsyncState = WTLOGSYNCSTATE.WAIT_HELLO;
-        private WTLOGSYNCSTATE wtlogsyncState
+        private WTLOGSYNCSTATE wtlogsyncState = WTLOGSYNCSTATE.WAIT_HELLO;
+        private WTLOGSYNCSTATE WtlogsyncState
         {
-            get { return _wtlogsyncState; }
+            get { return wtlogsyncState; }
             set
             {
-                if (_wtlogsyncState != value)
+                if (wtlogsyncState != value)
                 {
-                    _wtlogsyncState = value;
-                    // TODO emit event...
+                    wtlogsyncState = value;
+                    switch (wtlogsyncState)
+                    {
+                        case WTLOGSYNCSTATE.QSO_IN_SYNC:
+                            LogState = LOG_STATE.LOG_IN_SYNC;
+                            break;
+                        case WTLOGSYNCSTATE.WAIT_HELLO:
+                            LogState = LOG_STATE.LOG_INACTIVE;
+                            break;
+                        default:
+                            LogState = LOG_STATE.LOG_SYNCING;
+                            break;
+                    }
                 }
             }
         }
@@ -336,7 +347,7 @@ namespace WinTest
             {
                 if (intimer)
                     return;
-                if (wtlogsyncState != WTLOGSYNCSTATE.GET_QSO && wtlogsyncState != WTLOGSYNCSTATE.QSO_IN_SYNC)
+                if (WtlogsyncState != WTLOGSYNCSTATE.GET_QSO && WtlogsyncState != WTLOGSYNCSTATE.QSO_IN_SYNC)
                     return;
 
                 intimer = true;
@@ -410,8 +421,8 @@ namespace WinTest
                 exitLoop:
                 if (!needQSOs_sent)
                 {
-                    if (wtlogsyncState == WTLOGSYNCSTATE.GET_QSO)
-                        wtlogsyncState = WTLOGSYNCSTATE.QSO_IN_SYNC;
+                    if (WtlogsyncState == WTLOGSYNCSTATE.GET_QSO)
+                        WtlogsyncState = WTLOGSYNCSTATE.QSO_IN_SYNC;
                     Console.WriteLine("all done " + QSO.Rows.Count
                                       + " 432: "
                                       + QSO.Select("[BAND]='432M'").Length
@@ -432,8 +443,8 @@ namespace WinTest
                 }
                 else
                 {
-                    if (wtlogsyncState == WTLOGSYNCSTATE.QSO_IN_SYNC)
-                        wtlogsyncState = WTLOGSYNCSTATE.GET_QSO;
+                    if (WtlogsyncState == WTLOGSYNCSTATE.QSO_IN_SYNC)
+                        WtlogsyncState = WTLOGSYNCSTATE.GET_QSO;
                 }
             }
             catch (Exception ex)
@@ -457,8 +468,8 @@ namespace WinTest
         {
             // TODO: start log sync
             my_wtname = wtname;
-            if (wtlogsyncState == WTLOGSYNCSTATE.HELLO_RECEIVED)
-                wtlogsyncState = WTLOGSYNCSTATE.GET_QSO;
+            if (WtlogsyncState == WTLOGSYNCSTATE.HELLO_RECEIVED)
+                WtlogsyncState = WTLOGSYNCSTATE.GET_QSO;
         }
 
 #if DEBUG_PACKET_LOSS
@@ -520,8 +531,8 @@ namespace WinTest
                     stationContestID = contest_ID;
                 }
 
-                if (wtlogsyncState == WTLOGSYNCSTATE.WAIT_HELLO)
-                    wtlogsyncState = WTLOGSYNCSTATE.HELLO_RECEIVED;
+                if (WtlogsyncState == WTLOGSYNCSTATE.WAIT_HELLO)
+                    WtlogsyncState = WTLOGSYNCSTATE.HELLO_RECEIVED;
 
                 StationSyncStatus w = new StationSyncStatus(e.Msg.Src, first_QSO_ts);
                 int sl_index = wtStationSyncList.FindLastIndex(x => x.from == e.Msg.Src);
@@ -553,8 +564,8 @@ namespace WinTest
                     wtStationSyncList.Add(w);
                 }
 
-                if (wtlogsyncState == WTLOGSYNCSTATE.WAIT_HELLO)
-                    wtlogsyncState = WTLOGSYNCSTATE.HELLO_RECEIVED;
+                if (WtlogsyncState == WTLOGSYNCSTATE.WAIT_HELLO)
+                    WtlogsyncState = WTLOGSYNCSTATE.HELLO_RECEIVED;
             }
             else
                 if (e.Msg.Msg == WTMESSAGES.IHAVE && e.Msg.HasChecksum)
