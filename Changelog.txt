@@ -1,3 +1,10 @@
+3.1.4.12
+- Improvement: show "LED" indicators in the lower right corner of the UI to indicate the status of
+  the KST connection, Airscout connection and Log sync
+- Improvement/Fix: Win-Test network sync could fail if it went into a timeout. Also lock some code
+  path to avoid issues with concurrent update of the sync list data.
+- Improvement: add 50/70 MHz (feature req: 50/70MHz support #5)
+
 3.1.4.11
 
 - Fix: make sure window is visible on multi screen setups when screen
