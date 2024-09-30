@@ -3705,8 +3705,8 @@ namespace wtKST
             cmdLine = cmdLine.Replace("$BAND", band);
 
             cb_Command.Text = cmdLine;
-
-
+            cb_Command.SelectionStart = cmdLine.Length;
+            cb_Command.SelectionLength = 0;
         }
 
         private void kst_macro_bt1_Click(object sender, EventArgs e)
