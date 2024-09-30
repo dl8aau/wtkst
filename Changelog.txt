@@ -1,3 +1,7 @@
+3.1.4.13
+- Fix: "green" status of users in the list (so in the log already) was not filtered out correcty
+- Improvement: place the cursor at the end of a macro text
+
 3.1.4.12
 - Improvement: show "LED" indicators in the lower right corner of the UI to indicate the status of
   the KST connection, Airscout connection and Log sync
