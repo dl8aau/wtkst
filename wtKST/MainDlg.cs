@@ -135,6 +135,8 @@ namespace wtKST
 
         private System.Windows.Forms.ToolTip tt_Info;
 
+        private System.Windows.Forms.Timer ti_UpdateFilter;
+
         private BackgroundWorker bw_GetPlanes;
 
         private bool WinTestLocatorWarning = false;
@@ -810,6 +812,27 @@ namespace wtKST
         }
 
         private string KST_USR_RowFilter = "";
+
+        private void KSTUsrFilterSetTimer(int setTimer, bool force_wait)
+        {
+
+            if (force_wait)
+            {
+                ti_UpdateFilter.Stop();
+            }
+            else if (ti_UpdateFilter.Enabled)
+            {
+                return; // timer is already triggered, don't reprogram
+            }
+            ti_UpdateFilter.Interval = setTimer;
+            ti_UpdateFilter.Enabled = true;
+        }
+
+        private void ti_UpdateFilter_Tick(object sender, EventArgs e)
+        {
+            KST_Update_Usr_Filter(false);
+            ti_UpdateFilter.Stop();
+        }
 
         private void KST_Update_Usr_Filter(bool check = false)
         {
@@ -1761,6 +1784,8 @@ namespace wtKST
                 {
                     dgv.Sort(dgv.Columns["CALL"], ListSortDirection.Ascending);
                 }
+                else if (e.ColumnIndex > dgv.Columns["AS"].DisplayIndex)
+                    KSTUsrFilterSetTimer(3000, true); // when one changes the band status, wait 3s to give some time to make further changes until the row hides
             }
         }
 
@@ -2159,6 +2184,13 @@ namespace wtKST
                     ShowToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
                 }
             }
+        }
+
+        private void lv_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            DataGridView dgv = sender as DataGridView;
+            // TODO we get this event when AS column changes - could be ignored, but no idea how to find out which column changed
+            KSTUsrFilterSetTimer(100, false);
         }
 
         private string lv_msg_control_url_shown_from_Call = "";
@@ -2851,6 +2883,7 @@ namespace wtKST
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
+            this.ti_UpdateFilter = new System.Windows.Forms.Timer(this.components);
             this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
@@ -3193,6 +3226,7 @@ namespace wtKST
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
             this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
+            this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_DataBindingComplete);
             // 
             // lbl_KST_Calls
             // 
@@ -3496,6 +3530,10 @@ namespace wtKST
             // tt_Info
             // 
             this.tt_Info.ShowAlways = true;
+            // 
+            // ti_UpdateFilter
+            // 
+            this.ti_UpdateFilter.Tick += new System.EventHandler(this.ti_UpdateFilter_Tick);
             // 
             // bw_GetPlanes
             // 
