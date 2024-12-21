@@ -21,6 +21,7 @@ namespace wtKST
         private string[] BANDS;
 
         private DataTable QRV_local = new DataTable("QRV_local");
+        private bool QRVlocalChanged = false;
 
         public void Error(string methodname, string Text)
         {
@@ -149,6 +150,7 @@ namespace wtKST
                     qrv_row[band] = QRV_STATE.qrv; // if worked, then obviously qrv
                 else
                     qrv_row[band] = state;
+                QRVlocalChanged = true;
             }
         }
 
@@ -181,7 +183,7 @@ namespace wtKST
                 string QRV_Table_Filename = Path.Combine(Directory.GetParent(Application.LocalUserAppDataPath).ToString(),
                     Settings.Default.QRV_Local_Table_FileName);
                 TimeSpan ts = DateTime.Now - File.GetLastWriteTime(QRV_Table_Filename);
-                if (File.Exists(QRV_Table_Filename) && ts.Hours < 48)
+                if (File.Exists(QRV_Table_Filename) && ts.CompareTo(TimeSpan.FromHours(48.0)) < 0)
                 {
                     try
                     {
@@ -203,6 +205,8 @@ namespace wtKST
 
         public void save_db()
         {
+            if (!QRVlocalChanged)
+                return; // no need to save
             string FileName = Path.Combine(Directory.GetParent(Application.LocalUserAppDataPath).ToString(),
                 Settings.Default.QRV_Local_Table_FileName);
             DataView qrv_local_dv = new DataView(QRV_local);
