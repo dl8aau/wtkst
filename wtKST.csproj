@@ -243,10 +243,4 @@
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="ILRepack" AfterTargets="Build">
-    <PropertyGroup>
-      <WorkingDirectory>$(SolutionDirectory)bin\$(Configuration)\$(TargetFramework)</WorkingDirectory>
-    </PropertyGroup>
-    <ILRepack OutputType="$(OutputType)" MainAssembly="$(AssemblyName).exe" OutputAssembly="$(TargetDir)merged\$(AssemblyName).exe" InputAssemblies="$(WorkingDirectory)\*.dll" WilcardInputAssemblies="true" WorkingDirectory="$(WorkingDirectory)" />
-  </Target>
 </Project>
