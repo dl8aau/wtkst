@@ -357,7 +357,7 @@ namespace wtKST
                         "] --> ",
                         info.IntQRB.ToString(),
                         "km [",
-                        info.Mins,
+                        info.Mins>0 ? info.Mins : 0,
                         "mins]\n"
                     });
                 }
