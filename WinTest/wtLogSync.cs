@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Timers;
 
 namespace WinTest
@@ -205,7 +206,7 @@ namespace WinTest
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    Error(e.Message);
                 }
             }
             return false;
@@ -310,7 +311,14 @@ namespace WinTest
 
             return SECTION_STATE.NEED_QSO_SENT;
         }
-
+        /// <summary>
+        /// find_alternative_source
+        /// 
+        /// Log can come from several sources - we get here if one does not answer to check if others can help out
+        /// </summary>
+        /// <param name="original_from"></param>
+        /// <param name="StationUniqueID"></param>
+        /// <returns></returns>
         private bool find_alternative_source(string original_from, string StationUniqueID)
         {
             // we need to find another source:
@@ -322,7 +330,7 @@ namespace WinTest
                 var ls2 = sl2.logstat.Find(x => x.StationUniqueID == StationUniqueID);
                 if (ls2 != null)
                 {
-                    Console.WriteLine(StationUniqueID + " try " + sl2.from + " " + DateTime.Now.ToString("h:mm:ss"));
+                    Debug(StationUniqueID + " try " + sl2.from + " " + DateTime.Now.ToString("h:mm:ss"));
                     var cs2 = check_section(ls2, sl2.from);
                     if (cs2 == SECTION_STATE.NEED_QSO_SENT)
                     {
@@ -330,12 +338,12 @@ namespace WinTest
                     }
                     else
                     {
-                        Console.WriteLine(StationUniqueID + " alternative after timeout " + cs2.ToString() + " " + DateTime.Now.ToString("h:mm:ss"));
+                        Debug(StationUniqueID + " alternative after timeout " + cs2.ToString() + " " + DateTime.Now.ToString("h:mm:ss"));
                         original_from = sl2.from; // avoid this one now
                     }
                 }
                 else
-                    Console.WriteLine(StationUniqueID + " no alternative in " + sl2.from);
+                    Debug(StationUniqueID + " no alternative in " + sl2.from);
             }
             return false;
         }
@@ -371,14 +379,14 @@ namespace WinTest
                             if (ls.AvailableFrom == StationLogStat.wtAvailableFrom.Owner)
                             {
                                 var cs = check_section(ls, sl.from);
-                                Console.WriteLine("checking owner " + ls.StationUniqueID + " result " + cs);
+                                Debug("checking owner " + ls.StationUniqueID + " result " + cs);
                                 if (cs == SECTION_STATE.SECTION_DONE)
                                 {
-                                    Console.WriteLine(ls.StationUniqueID + " done (owner) " + DateTime.Now.ToString("h:mm:ss"));
+                                    Debug(ls.StationUniqueID + " done (owner) " + DateTime.Now.ToString("h:mm:ss"));
                                 }
                                 else if (cs == SECTION_STATE.SECTION_TIMEOUT)
                                 {
-                                    Console.WriteLine(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
+                                    Debug(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
                                     // we need to find another source:
                                     if (find_alternative_source(sl.from, ls.StationUniqueID))
                                     {
@@ -388,7 +396,7 @@ namespace WinTest
                                     {
                                         // remove the station
                                         wtStationSyncList.RemoveAll(x => x.from == sl.from);
-                                        Console.WriteLine("remove " + sl.from);
+                                        Debug("remove " + sl.from);
                                         timeoutRemoveStation = true;
                                     }
                                     goto exitLoop;
@@ -409,14 +417,14 @@ namespace WinTest
                             if (ls.AvailableFrom != StationLogStat.wtAvailableFrom.Owner)
                             {
                                 var cs = check_section(ls, sl.from);
-                                Console.WriteLine("checking " + ls.StationUniqueID + " result " + cs);
+                                Debug("checking " + ls.StationUniqueID + " result " + cs);
                                 if (cs == SECTION_STATE.SECTION_DONE)
                                 {
-                                    Console.WriteLine(ls.StationUniqueID + " done " + DateTime.Now.ToString("h:mm:ss"));
+                                    Debug(ls.StationUniqueID + " done " + DateTime.Now.ToString("h:mm:ss"));
                                 }
                                 else if (cs == SECTION_STATE.SECTION_TIMEOUT)
                                 {
-                                    Console.WriteLine(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
+                                    Debug(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
                                     // we need to find another source:
                                     if (find_alternative_source(sl.from, ls.StationUniqueID))
                                     {
@@ -426,7 +434,7 @@ namespace WinTest
                                     {
                                         // remove the station
                                         wtStationSyncList.RemoveAll(x => x.from == sl.from);
-                                        Console.WriteLine("remove " + sl.from);
+                                        Debug("remove " + sl.from);
                                         timeoutRemoveStation = true;
                                     }
                                     goto exitLoop;
@@ -445,7 +453,7 @@ namespace WinTest
                 {
                     if (WtlogsyncState == WTLOGSYNCSTATE.GET_QSO)
                         WtlogsyncState = WTLOGSYNCSTATE.QSO_IN_SYNC;
-                    Console.WriteLine("all done " + QSO.Rows.Count
+                    Debug("all done " + QSO.Rows.Count
                                       + " 432: "
                                       + QSO.Select("[BAND]='432M'").Length
                                       + " 1296: "
@@ -472,7 +480,7 @@ namespace WinTest
             catch (Exception ex)
             {
                 // FIXME: the foreach above sometimes throw an exception as the underlying data changed... Locking? Local copy?
-                Error(System.Reflection.MethodBase.GetCurrentMethod().Name, " " + ex.Message + "\n" + ex.StackTrace);
+                Error(ex.Message + "\n" + ex.StackTrace);
             }
             finally
             {
@@ -503,7 +511,7 @@ namespace WinTest
 #endif
         private void wtMessageReceivedHandler(object sender, wtListener.wtMessageEventArgs e)
         {
-            Console.WriteLine("WT Msg " + e.Msg.Msg + " src " +
+            Debug("WT Msg " + e.Msg.Msg + " src " +
             e.Msg.Src + " dest " + e.Msg.Dst + " data " + e.Msg.Data + " checksum "
             + e.Msg.HasChecksum);
             if (e.Msg.Msg == WTMESSAGES.HELLO && e.Msg.HasChecksum)
@@ -533,7 +541,7 @@ namespace WinTest
                  * WT Msg HELLO src mm dest  data 11290 130 SLAVE 20 2 1601733638 checksum True
                  * WT Msg HELLO src mm2 dest  data 2634 130 SLAVE 20 2 1601733638 checksum True
                  */
-                Console.WriteLine("HELLO: from " + e.Msg.Src + " protocol_version " + protocol_version + " master " + master +
+                Debug("HELLO: from " + e.Msg.Src + " protocol_version " + protocol_version + " master " + master +
                    " contest_ID " + contest_ID + " mode_category " + mode_category +
                    " first_QSO_ts " + first_QSO_ts.ToShortDateString() + " " + first_QSO_ts.ToShortTimeString());
 
@@ -544,7 +552,7 @@ namespace WinTest
                 }
                 myLogState.Clear();
                 Clear_QSOs();
-                Console.WriteLine("restart log");
+                Debug("restart log");
                 // TODO event?
 
                 // we monitor the protocol version and contest ID - if it changes, we better restart to load the log
@@ -795,7 +803,7 @@ namespace WinTest
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("ADDQSO exception ts" + ex.Message);
+                    Error("ADDQSO exception ts" + ex.Message);
                     return;
                 }
                 row["RCVD"] = data[12];
@@ -862,13 +870,13 @@ namespace WinTest
                         if (needQSOsentForStationID.Equals(StationUniqueID) && (needQSOsentForCountTo == txIDQSONumber))
                         {
                             // received everything from last "NEEDQSO"
-                            Console.WriteLine("next needqso");
+                            Debug("next needqso");
                             ti_get_log.Stop();
                             ti_get_log.Interval = 200; // quick restart
                             ti_get_log.Start();
                         }
                     }
-                    catch (Exception ex) { Console.WriteLine(ex.Message); }
+                    catch (Exception ex) { Error(ex.Message); }
                 }
             }
             else if (e.Msg.Msg == WTMESSAGES.UPDQSO && e.Msg.HasChecksum)
@@ -928,7 +936,7 @@ namespace WinTest
                             //Console.WriteLine("now " + qso["CALL"].ToString() + " " + qso["TIME"].ToString() + " " + qso["SENT"].ToString() + " " + qso["RCVD"].ToString() + " " + qso["LOC"].ToString());
                         }
                     }
-                    catch (Exception ex) { Console.WriteLine(ex.Message); }
+                    catch (Exception ex) { Error(ex.Message); }
                 }
 
             }

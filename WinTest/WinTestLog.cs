@@ -136,7 +136,7 @@ namespace WinTest
                         }
                         catch (Exception e)
                         {
-                            Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "(" + row["CALL"].ToString() + "): " + e.Message);
+                            Error("(" + row["CALL"].ToString() + "): " + e.Message);
                         }
 
                     } /* while */
@@ -144,7 +144,7 @@ namespace WinTest
             }
             catch (Exception e)
             {
-                Error(System.Reflection.MethodBase.GetCurrentMethod().Name, "(" + WinTest_INI_FileName + "): " + e.Message);
+                Error("(" + WinTest_INI_FileName + "): " + e.Message);
                 throw e;
             }
         }

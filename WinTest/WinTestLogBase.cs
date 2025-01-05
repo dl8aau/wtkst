@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Reflection;
 
 namespace WinTest
 {
@@ -15,11 +16,21 @@ namespace WinTest
         public delegate bool LogWriteMessageDelegate(string s);
         protected LogWriteMessageDelegate LogWrite;
 
-        protected void Error(string methodname, string Text)
+        protected void Error(string Text)
         {
             if (LogWrite != null)
-                LogWrite("Error - <" + methodname + "> " + Text);
+                LogWrite("Error - <" + (new System.Diagnostics.StackTrace()).GetFrame(1).GetMethod().Name + "> " + Text);
         }
+
+        protected void Debug(string Text)
+        {
+#if DEBUG
+            Console.WriteLine(Text);
+            if (LogWrite != null)
+                LogWrite((new System.Diagnostics.StackTrace()).GetFrame(1).GetMethod().Name + " - " + Text);
+#endif
+        }
+
         public void Clear_QSOs()
         {
             QSO.Clear();
