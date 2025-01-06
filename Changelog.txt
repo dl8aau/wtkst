@@ -1,6 +1,7 @@
 
 3.2.1.1
 - Changes from "master" branch (3.1.4.14) re-integrated
+- FIX: visualization UI did not work properly for webRTC IF
 
 3.2.1.0
 - AS Web Interface - new data format
