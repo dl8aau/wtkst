@@ -2361,8 +2361,8 @@ namespace wtKST
                         this.cmn_msglist_openURL.Visible = false;
                     }
 
-                    this.cmn_msglist_AS_details.Visible = Settings.Default.AS_Active;
-                    if (Settings.Default.AS_Active && !String.IsNullOrEmpty(call))
+                    this.cmn_msglist_AS_details.Visible = AS_if.IsActive();
+                    if (AS_if.IsActive() && !String.IsNullOrEmpty(call))
                     {
                         this.cmn_msglist_AS_status.Visible = true;
                         using (Graphics graphic = Graphics.FromImage(this.cmn_msglist_AS_status.Image))
@@ -2412,7 +2412,7 @@ namespace wtKST
         private void cmn_msglist_toolStripLabel_AS_clicked(object sender, EventArgs e)
         {
             ToolStripItem clickedItem = sender as ToolStripItem;
-            if (Settings.Default.AS_Active)
+            if (AS_if.IsActive())
             {
                 string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
 
@@ -2447,7 +2447,7 @@ namespace wtKST
                     lock (CALL)
                     {
                         DataRow Row = CALL.Rows.Find(ascall);
-                        if (Row != null && Settings.Default.AS_Active)
+                        if (Row != null && AS_if.IsActive())
                         {
                             int qrb = (int)Row["QRB"];
                             if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
