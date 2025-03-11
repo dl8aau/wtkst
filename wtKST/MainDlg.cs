@@ -2360,9 +2360,9 @@ namespace wtKST
                     {
                         this.cmn_msglist_openURL.Visible = false;
                     }
-
-                    this.cmn_msglist_AS_details.Visible = AS_if.IsActive();
-                    if (AS_if.IsActive() && !String.IsNullOrEmpty(call))
+                    // we only display Airscout information if available and the user is the in the user list (otherwise we probably do not have enough data)
+                    this.cmn_msglist_AS_details.Visible = AS_if.IsActive() && userRow != null;
+                    if (AS_if.IsActive() && !String.IsNullOrEmpty(call) && userRow != null)
                     {
                         this.cmn_msglist_AS_status.Visible = true;
                         using (Graphics graphic = Graphics.FromImage(this.cmn_msglist_AS_status.Image))
