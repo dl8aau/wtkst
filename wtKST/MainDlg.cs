@@ -2040,9 +2040,7 @@ namespace wtKST
 
             string watchlist = "";
             List<AirScoutInterface.AS_Calls> AS_list = new List<AirScoutInterface.AS_Calls>();
-
-            // called if the user list changes
-            AS_list.Clear();
+            List<AirScoutInterface.AS_Calls> tmp_AS_list = new List<AirScoutInterface.AS_Calls>();
 
             string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
 
@@ -2073,6 +2071,10 @@ namespace wtKST
                             {
                                 AS_list.Add(new AirScoutInterface.AS_Calls(dxcall, dxloc));
                             }
+                            else
+                            {
+                                tmp_AS_list.Add(new AirScoutInterface.AS_Calls(dxcall, dxloc));
+                            }
                         }
                         else
                         {
@@ -2084,8 +2086,10 @@ namespace wtKST
                 catch
                 {
                 }
-                AS_if.update_AS_list(AS_list);
             }
+            // concat the currently not displayed calls to the end of AS_list
+            AS_list.AddRange(tmp_AS_list);
+            AS_if.update_AS_list(AS_list);
 
             lock (AS_watchlist)
             {
