@@ -11,6 +11,7 @@ namespace WebRTC
     // needs to be "internal" - otherwise passing the delegate to _asStateSetter does not work
     internal class WebRTCPeer
     {
+        // access to planes needs to be protected by a lock!
         private Dictionary<string, PlaneInfoList> planes;
         private BackgroundWorker bw_GetPlanes;
         private WebRTCWorker bw_WebRTC;
@@ -136,7 +137,10 @@ namespace WebRTC
                     {
                         JSONResponse_GetNearestPlanes nearestplanes = JsonConvert.DeserializeObject<JSONResponse_GetNearestPlanes>(msg);
 
-                        planes.Clear();
+                        lock (planes)
+                        {
+                            planes.Clear();
+                        }
 
                         nearestplanes.data.ForEach(item =>
                         {
@@ -155,7 +159,10 @@ namespace WebRTC
                             {
                                 infolist.Sort(new PlaneInfoComparer());
 
-                                planes.Add(item.call, infolist);
+                                lock (planes)
+                                {
+                                    planes.Add(item.call, infolist);
+                                }
                                 bw_GetPlanes.ReportProgress(AirScoutInterface.ReportNewPlane, item.call);
                             }
                             else // report no planes available

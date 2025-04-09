@@ -10,6 +10,7 @@ namespace wtKST
 {
     class AirScoutInterface
     {
+        // access to planes needs to be protected by a lock!
         public Dictionary<string, PlaneInfoList> planes = new Dictionary<string, PlaneInfoList>();
 
         private EventWaitHandle getPlanesWaitHandle;
@@ -233,7 +234,10 @@ namespace wtKST
         {
             try
             {
-                planes.Clear();
+                lock (planes)
+                {
+                    planes.Clear();
+                }
 
                 if (UpdateASStatusEvent != null)
                 {
@@ -270,7 +274,10 @@ namespace wtKST
             if (e.ProgressPercentage == ReportNoPlane)
             {
                 //Console.WriteLine("remove " + dxcall);
-                planes.Remove(dxcall);
+                lock (planes)
+                {
+                    planes.Remove(dxcall);
+                }
             }
             else
             if (e.ProgressPercentage == ReportError)
@@ -331,23 +338,25 @@ namespace wtKST
 
             PlaneInfoList infolist = null;
             string result;
-            if (planes.TryGetValue(call, out infolist))
+            lock (planes)
             {
-                string s = DateTime.UtcNow.ToString("HH:mm") + " [" + (DateTime.UtcNow - infolist.UTC).Minutes.ToString() + "mins ago]\n\n";
-                int planes_per_Potential = 0;
-                int current_Potential = 0;
-
-                foreach (PlaneInfo info in infolist)
+                if (planes.TryGetValue(call, out infolist))
                 {
-                    if (current_Potential != info.Potential)
+                    string s = DateTime.UtcNow.ToString("HH:mm") + " [" + (DateTime.UtcNow - infolist.UTC).Minutes.ToString() + "mins ago]\n\n";
+                    int planes_per_Potential = 0;
+                    int current_Potential = 0;
+
+                    foreach (PlaneInfo info in infolist)
                     {
-                        current_Potential = info.Potential;
-                        planes_per_Potential = 0;
-                    }
-                    if (++planes_per_Potential > 5)
-                        continue;
-                    s = string.Concat(new object[]
-                    {
+                        if (current_Potential != info.Potential)
+                        {
+                            current_Potential = info.Potential;
+                            planes_per_Potential = 0;
+                        }
+                        if (++planes_per_Potential > 5)
+                            continue;
+                        s = string.Concat(new object[]
+                        {
                         s,
                         info.Potential.ToString(),
                         " : ",
@@ -359,13 +368,14 @@ namespace wtKST
                         "km [",
                         info.Mins>0 ? info.Mins : 0,
                         "mins]\n"
-                    });
+                        });
+                    }
+                    result = s;
                 }
-                result = s;
-            }
-            else
-            {
-                result = "";
+                else
+                {
+                    result = "";
+                }
             }
             return result;
         }
@@ -375,13 +385,16 @@ namespace wtKST
             call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
             PlaneInfoList infolist = null;
             string result;
-            if (planes.TryGetValue(call, out infolist))
+            lock (planes)
             {
-                result = infolist[0].Potential + "," + infolist[0].Category + "," + infolist[0].Mins;
-            }
-            else
-            {
-                result = "0";
+                if (planes.TryGetValue(call, out infolist))
+                {
+                    result = infolist[0].Potential + "," + infolist[0].Category + "," + infolist[0].Mins;
+                }
+                else
+                {
+                    result = "0";
+                }
             }
             return result;
         }

@@ -20,6 +20,7 @@ namespace wtKST
     /// </summary>
     internal class AirscoutUDP
     {
+        // access to planes needs to be protected by a lock!
         private Dictionary<string, PlaneInfoList> planes;
 
         private BackgroundWorker bw_GetPlanes;
@@ -264,12 +265,15 @@ namespace wtKST
                         if (info.Mins < 30)
                             infolist.Add(info);
                     }
-                    planes.Remove(dxcall);
-                    if (infolist.Count > 0)
+                    lock (planes)
                     {
-                        infolist.Sort(new PlaneInfoComparer());
-                        planes.Add(dxcall, infolist);
-                        return true;
+                        planes.Remove(dxcall);
+                        if (infolist.Count > 0)
+                        {
+                            infolist.Sort(new PlaneInfoComparer());
+                            planes.Add(dxcall, infolist);
+                            return true;
+                        }
                     }
                 }
                 catch
