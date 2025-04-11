@@ -2406,7 +2406,7 @@ namespace wtKST
                                 }
                             }
                         }
-                        this.cmn_msglist_AS_status.Text = "Left click for map";
+                        this.cmn_msglist_AS_status.Text = "Click for map";
                     }
                     else
                         this.cmn_msglist_AS_status.Visible = false;
