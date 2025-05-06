@@ -213,7 +213,7 @@
       <Value Profile="(Default)">qrv_local.xml</Value>
     </Setting>
     <Setting Name="WinTest_StationName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">wtKST</Value>
+      <Value Profile="(Default)">STN1</Value>
     </Setting>
     <Setting Name="WinTest_NetworkSync_active" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -236,5 +236,11 @@
     <Setting Name="WS_API_URL" Type="System.String" Scope="User">
       <Value Profile="(Default)">https://www.airscout.app/airscout/api/v1</Value>
     </Setting>
+    <Setting Name="DXLog_Sync_active" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+	  <Setting Name="DXLog_StationName" Type="System.String" Scope="User">
+		  <Value Profile="(Default)">STN1</Value>
+	  </Setting>
   </Settings>
 </SettingsFile>

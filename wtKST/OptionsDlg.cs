@@ -114,6 +114,10 @@ namespace wtKST
         private GroupBox groupBox1;
         private GroupBox groupBox4;
         public CheckBox cb_QARTest_Active;
+        private GroupBox groupBox6;
+        public CheckBox cb_DXLog_Active;
+        public TextBox tb_Options_DXLog_Station_Name;
+        private Label label28;
         public CheckBox cb_WS_Active;
         private Label label_WS_Password;
         private TextBox tb_WS_Password;
@@ -140,6 +144,8 @@ namespace wtKST
                 this.cb_WinTestNet_Active.Enabled = false;
                 this.cb_QARTest_Active.Checked = false;
                 this.cb_QARTest_Active.Enabled = false;
+                this.cb_DXLog_Active.Checked = false;
+                this.cb_DXLog_Active.Enabled = false;
             }
             else if (this.cb_WinTestNet_Active.Checked)
             {
@@ -148,10 +154,23 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = false;
                 this.cb_QARTest_Active.Checked = false;
                 this.cb_QARTest_Active.Enabled = false;
+                this.cb_DXLog_Active.Checked = false;
+                this.cb_DXLog_Active.Enabled = false;
             }
             else if (this.cb_QARTest_Active.Checked)
             {
                 this.cb_QARTest_Active.Enabled = true;
+                this.cb_WinTest_Active.Checked = false;
+                this.cb_WinTest_Active.Enabled = false;
+                this.cb_WinTestNet_Active.Checked = false;
+                this.cb_WinTestNet_Active.Enabled = false;
+                this.cb_DXLog_Active.Checked = false;
+                this.cb_DXLog_Active.Enabled = false;
+            }
+            else if (this.cb_DXLog_Active.Checked)
+            {
+                this.cb_DXLog_Active.Enabled = true;
+                this.cb_QARTest_Active.Enabled = false;
                 this.cb_WinTest_Active.Checked = false;
                 this.cb_WinTest_Active.Enabled = false;
                 this.cb_WinTestNet_Active.Checked = false;
@@ -163,6 +182,7 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = true;
                 this.cb_WinTestNet_Active.Enabled = true;
                 this.cb_QARTest_Active.Enabled = true;
+                this.cb_DXLog_Active.Enabled = true;
             }
 
             // AS handling
@@ -240,6 +260,8 @@ namespace wtKST
             this.tb_KST_Password = new System.Windows.Forms.TextBox();
             this.tb_KST_UserName = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.cb_DXLog_Active = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.cb_QARTest_Active = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -325,11 +347,14 @@ namespace wtKST
             this.tB_macro_1 = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.cB_macro_1 = new System.Windows.Forms.CheckBox();
+            this.tb_Options_DXLog_Station_Name = new System.Windows.Forms.TextBox();
+            this.label28 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -496,7 +521,7 @@ namespace wtKST
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(479, 316);
+            this.tabControl1.Size = new System.Drawing.Size(479, 367);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -662,24 +687,54 @@ namespace wtKST
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.groupBox6);
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(471, 290);
+            this.tabPage2.Size = new System.Drawing.Size(471, 341);
             this.tabPage2.TabIndex = 0;
             this.tabPage2.Text = "Log";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.tb_Options_DXLog_Station_Name);
+            this.groupBox6.Controls.Add(this.label28);
+            this.groupBox6.Controls.Add(this.cb_DXLog_Active);
+            this.groupBox6.Location = new System.Drawing.Point(22, 199);
+            this.groupBox6.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox6.Size = new System.Drawing.Size(422, 64);
+            this.groupBox6.TabIndex = 18;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "DXLog Network sync";
+            // 
+            // cb_DXLog_Active
+            // 
+            this.cb_DXLog_Active.AutoSize = true;
+            this.cb_DXLog_Active.Checked = global::wtKST.Properties.Settings.Default.DXLog_Sync_active;
+            this.cb_DXLog_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "DXLog_Sync_active", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cb_DXLog_Active.Enabled = false;
+            this.cb_DXLog_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_DXLog_Active.Location = new System.Drawing.Point(8, 22);
+            this.cb_DXLog_Active.Name = "cb_DXLog_Active";
+            this.cb_DXLog_Active.Size = new System.Drawing.Size(65, 17);
+            this.cb_DXLog_Active.TabIndex = 10;
+            this.cb_DXLog_Active.Text = "Activate";
+            this.cb_DXLog_Active.UseVisualStyleBackColor = true;
+            this.cb_DXLog_Active.CheckedChanged += new System.EventHandler(this.cb_DXLog_Active_CheckedChanged);
+            // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.cb_QARTest_Active);
-            this.groupBox4.Location = new System.Drawing.Point(22, 198);
+            this.groupBox4.Location = new System.Drawing.Point(22, 281);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox4.Size = new System.Drawing.Size(422, 64);
+            this.groupBox4.Size = new System.Drawing.Size(173, 46);
             this.groupBox4.TabIndex = 17;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "QARTest Network sync";
@@ -1674,13 +1729,33 @@ namespace wtKST
             this.cB_macro_1.TabIndex = 11;
             this.cB_macro_1.UseVisualStyleBackColor = true;
             // 
+            // tb_Options_DXLog_Station_Name
+            // 
+            this.tb_Options_DXLog_Station_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "DXLog_StationName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_Options_DXLog_Station_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_Options_DXLog_Station_Name.Location = new System.Drawing.Point(112, 35);
+            this.tb_Options_DXLog_Station_Name.Name = "tb_Options_DXLog_Station_Name";
+            this.tb_Options_DXLog_Station_Name.Size = new System.Drawing.Size(204, 20);
+            this.tb_Options_DXLog_Station_Name.TabIndex = 15;
+            this.tb_Options_DXLog_Station_Name.Text = global::wtKST.Properties.Settings.Default.DXLog_StationName;
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label28.Location = new System.Drawing.Point(5, 42);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(74, 13);
+            this.label28.TabIndex = 14;
+            this.label28.Text = "Station Name:";
+            // 
             // OptionsDlg
             // 
             this.AcceptButton = this.btn_OK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btn_Cancel;
-            this.ClientSize = new System.Drawing.Size(617, 350);
+            this.ClientSize = new System.Drawing.Size(617, 394);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btn_Cancel);
             this.Controls.Add(this.btn_OK);
@@ -1696,6 +1771,8 @@ namespace wtKST
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -1761,11 +1838,15 @@ namespace wtKST
                 this.cb_WinTestNet_Active.Enabled = false;
                 this.cb_QARTest_Active.Checked = false;
                 this.cb_QARTest_Active.Enabled = false;
+                this.cb_DXLog_Active.Checked = false;
+                this.cb_DXLog_Active.Enabled = false;
             }
             else
             {
+                this.cb_WinTest_Active.Enabled = true;
                 this.cb_WinTestNet_Active.Enabled = true;
                 this.cb_QARTest_Active.Enabled = true;
+                this.cb_DXLog_Active.Enabled = true;
             }
         }
         private void cb_WinTestNet_Active_CheckedChanged(object sender, EventArgs e)
@@ -1776,11 +1857,15 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = false;
                 this.cb_QARTest_Active.Checked = false;
                 this.cb_QARTest_Active.Enabled = false;
+                this.cb_DXLog_Active.Checked = false;
+                this.cb_DXLog_Active.Enabled = false;
             }
             else
             {
                 this.cb_WinTest_Active.Enabled = true;
+                this.cb_WinTestNet_Active.Enabled = true;
                 this.cb_QARTest_Active.Enabled = true;
+                this.cb_DXLog_Active.Enabled = true;
             }
         }
         private void cb_QARTest_Active_CheckedChanged(object sender, EventArgs e)
@@ -1791,11 +1876,35 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = false;
                 this.cb_WinTestNet_Active.Checked = false;
                 this.cb_WinTestNet_Active.Enabled = false;
+                this.cb_DXLog_Active.Checked = false;
+                this.cb_DXLog_Active.Enabled = false;
             }
             else
             {
                 this.cb_WinTest_Active.Enabled = true;
                 this.cb_WinTestNet_Active.Enabled = true;
+                this.cb_QARTest_Active.Enabled = true;
+                this.cb_DXLog_Active.Enabled = true;
+            }
+        }
+
+        private void cb_DXLog_Active_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.cb_DXLog_Active.Checked)
+            {
+                this.cb_WinTest_Active.Checked = false;
+                this.cb_WinTest_Active.Enabled = false;
+                this.cb_WinTestNet_Active.Checked = false;
+                this.cb_WinTestNet_Active.Enabled = false;
+                this.cb_QARTest_Active.Checked = false;
+                this.cb_QARTest_Active.Enabled = false;
+            }
+            else
+            {
+                this.cb_WinTest_Active.Enabled = true;
+                this.cb_WinTestNet_Active.Enabled = true;
+                this.cb_QARTest_Active.Enabled = true;
+                this.cb_DXLog_Active.Enabled = true;
             }
         }
 

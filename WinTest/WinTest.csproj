@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>WinTest</RootNamespace>
     <AssemblyName>WinTest</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -43,6 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DXLog\DXQSO.cs" />
+    <Compile Include="DXLog\DXLogNetworkClient.cs" />
+    <Compile Include="DXLog\DXLogSync.cs" />
+    <Compile Include="DXLog\NetworkMessage.cs" />
+    <Compile Include="DXLog\NetworkMsgProcessor.cs" />
+    <Compile Include="DXLog\NetworkMsgSked.cs" />
+    <Compile Include="DXLog\NetworkMsgStatusInfo.cs" />
+    <Compile Include="DXLog\NetworkMsgSync.cs" />
+    <Compile Include="DXLog\NetworkMsgSyncRequest.cs" />
     <Compile Include="QARTestLogSync.cs" />
     <Compile Include="WinTestLog.cs" />
     <Compile Include="WinTestLogBase.cs" />

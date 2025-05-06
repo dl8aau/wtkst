@@ -865,7 +865,7 @@ namespace wtKST.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("wtKST")]
+        [global::System.Configuration.DefaultSettingValueAttribute("STN1")]
         public string WinTest_StationName {
             get {
                 return ((string)(this["WinTest_StationName"]));
@@ -896,6 +896,30 @@ namespace wtKST.Properties {
             }
             set {
                 this["QARTest_Sync_active"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DXLog_Sync_active {
+            get {
+                return ((bool)(this["DXLog_Sync_active"]));
+            }
+            set {
+                this["DXLog_Sync_active"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("STN1")]
+        public string DXLog_StationName {
+            get {
+                return ((string)(this["DXLog_StationName"]));
+            }
+            set {
+                this["DXLog_StationName"] = value;
             }
         }
         

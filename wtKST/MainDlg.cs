@@ -6,11 +6,16 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using WinTest;
+using WinTest.DXL;
+using WinTest.DXLog;
 using wtKST.Properties;
 using Application = System.Windows.Forms.Application;
 
@@ -178,6 +183,7 @@ namespace wtKST
         private ToolStripStatusLabel tsl_LED_AS_Status;
         private ToolStripStatusLabel tsl_LED_Log_Status;
         private ToolStripStatusLabel tsl_LED_KST_Status;
+        private ToolStripMenuItem skedTestToolStripMenuItem;
         private string AS_watchlist = "";
 
         public MainDlg()
@@ -1215,6 +1221,31 @@ namespace wtKST
                 }
                 wtQSO.LogStateChanged += Log_StateChanged;
             }
+            else if (Settings.Default.DXLog_Sync_active)
+            {
+                if (wtQSO != null)
+                {
+                    if (wtQSO.GetType() == typeof(DXLogSync))
+                    {
+                        Console.WriteLine("wtQSO already DXLogSync");
+                        return;
+                    }
+                    else
+                    {
+
+                        Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
+                        ((IDisposable)wtQSO).Dispose();
+                        wtQSO = null;
+                    }
+                }
+                wtQSO = new DXLogSync(MainDlg.Log.WriteMessage);
+                if (wts != null)
+                {
+                    Console.WriteLine("wts active - turn off");
+                    wts = null;
+                }
+                wtQSO.LogStateChanged += Log_StateChanged;
+            }
             else
             {
                 if (wtQSO != null)
@@ -1350,6 +1381,8 @@ namespace wtKST
                                 else if (wtQSO.GetType() == typeof(WtLogSync))
                                     wtQSO.Get_QSOs(Settings.Default.WinTest_StationName);
                                 else if (wtQSO.GetType() == typeof(QARTestLogSync))
+                                    wtQSO.Get_QSOs("");
+                                else if (wtQSO.GetType() == typeof(DXLogSync))
                                     wtQSO.Get_QSOs("");
                                 if (!String.IsNullOrEmpty(wtQSO.MyLoc) && WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
                                 {
@@ -2679,27 +2712,32 @@ namespace wtKST
 
         private void cmn_item_wtsked_Click(object sender, EventArgs e)
         {
-            ToolStripItem clickedItem = sender as ToolStripItem;
-            string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
-
-            if (!String.IsNullOrEmpty(call))
+            if (sender is ToolStripItem clickedItem)
             {
-                string notes = "KST - Offline";
-                DataRow findrow = CALL.Rows.Find(call);
-                // [JO02OB - 113\\260] AP in 2min
-                if (findrow != null)
-                    notes = String.Format("[{0} - {1}°]", findrow["LOC"].ToString(), findrow["DIR"].ToString());
-                wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()),
-                                        notes, last_sked_qrg, kst_sked_qrg, kst_sked_mode, kst_sked_band_freq);
-                if (wtskdlg.ShowDialog() == DialogResult.OK)
-                {
-                    WinTest.wtSked wtsked = new WinTest.wtSked();
+                var call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
 
-                    wtsked.send_locksked(wtskdlg.target_wt);
-                    last_sked_qrg = wtskdlg.qrg;
-                    wtsked.send_addsked(wtskdlg.target_wt, wtskdlg.sked_time, wtskdlg.qrg, wtskdlg.band, wtskdlg.mode,
-                        wtskdlg.call, wtskdlg.notes);
-                    wtsked.send_unlocksked(wtskdlg.target_wt);
+                if (!String.IsNullOrEmpty(call))
+                {
+                    var notes = "KST - Offline";
+                    var dataRow = CALL.Rows.Find(call);
+                    // [JO02OB - 113\\260] AP in 2min
+                    if (dataRow != null)
+                    {
+                        notes = $"[{dataRow["LOC"]} - {dataRow["DIR"]}°]";
+                    }
+
+                    wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()),
+                        notes, last_sked_qrg, kst_sked_qrg, kst_sked_mode, kst_sked_band_freq);
+                
+                    if (wtskdlg.ShowDialog() == DialogResult.OK)
+                    {
+                        var wtSked = new wtSked();
+
+                        wtSked.send_locksked(wtskdlg.target_wt);
+                        last_sked_qrg = wtskdlg.qrg;
+                        wtSked.send_addsked(wtskdlg.target_wt, wtskdlg.sked_time, wtskdlg.qrg, wtskdlg.band, wtskdlg.mode, wtskdlg.call, wtskdlg.notes);
+                        wtSked.send_unlocksked(wtskdlg.target_wt);
+                    }
                 }
             }
         }
@@ -2978,9 +3016,9 @@ namespace wtKST
             this.ss_Main = new System.Windows.Forms.StatusStrip();
             this.tsl_Info = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsl_Error = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsl_LED_KST_Status = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsl_LED_AS_Status = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsl_LED_Log_Status = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tsl_LED_KST_Status = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -3028,6 +3066,7 @@ namespace wtKST
             this.macro_default_Station = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.skedTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ti_Main = new System.Windows.Forms.Timer(this.components);
             this.ni_Main = new System.Windows.Forms.NotifyIcon(this.components);
             this.cmn_Notify = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -3096,43 +3135,42 @@ namespace wtKST
             this.tsl_Error.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tsl_Error.ForeColor = System.Drawing.Color.Red;
             this.tsl_Error.Name = "tsl_Error";
-            this.tsl_Error.Text = "";
-            this.tsl_Error.Size = new System.Drawing.Size(1108, 17);
+            this.tsl_Error.Size = new System.Drawing.Size(1099, 17);
             this.tsl_Error.Spring = true;
             this.tsl_Error.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // tsl_LED_KST_Status
             // 
             this.tsl_LED_KST_Status.AutoSize = false;
+            this.tsl_LED_KST_Status.BackColor = System.Drawing.Color.Red;
             this.tsl_LED_KST_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
             this.tsl_LED_KST_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
             this.tsl_LED_KST_Status.Name = "tsl_LED_KST_Status";
             this.tsl_LED_KST_Status.Size = new System.Drawing.Size(12, 12);
             this.tsl_LED_KST_Status.Text = "ON4KST Chat Status LED";
             this.tsl_LED_KST_Status.ToolTipText = "ON4KST Chat Status LED";
-            this.tsl_LED_KST_Status.BackColor = Color.Red;
             // 
             // tsl_LED_AS_Status
             // 
             this.tsl_LED_AS_Status.AutoSize = false;
+            this.tsl_LED_AS_Status.BackColor = System.Drawing.Color.Red;
             this.tsl_LED_AS_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
             this.tsl_LED_AS_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
             this.tsl_LED_AS_Status.Name = "tsl_LED_AS_Status";
             this.tsl_LED_AS_Status.Size = new System.Drawing.Size(12, 12);
             this.tsl_LED_AS_Status.Text = "Airscout Status LED";
             this.tsl_LED_AS_Status.ToolTipText = "Airscout Status LED";
-            this.tsl_LED_AS_Status.BackColor = Color.Red;
             // 
             // tsl_LED_Log_Status
             // 
             this.tsl_LED_Log_Status.AutoSize = false;
+            this.tsl_LED_Log_Status.BackColor = System.Drawing.Color.Red;
             this.tsl_LED_Log_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
             this.tsl_LED_Log_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
-            this.tsl_LED_Log_Status.Name = "tsl_LED_AS_Status";
+            this.tsl_LED_Log_Status.Name = "tsl_LED_Log_Status";
             this.tsl_LED_Log_Status.Size = new System.Drawing.Size(12, 12);
             this.tsl_LED_Log_Status.Text = "Log sync Status LED";
             this.tsl_LED_Log_Status.ToolTipText = "Log sync Status LED";
-            this.tsl_LED_Log_Status.BackColor = Color.Red;
             // 
             // splitContainer1
             // 
@@ -3382,10 +3420,10 @@ namespace wtKST
             this.lv_Calls.CellStateChanged += new System.Windows.Forms.DataGridViewCellStateChangedEventHandler(this.lv_Calls_CellStateChanged);
             this.lv_Calls.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lv_Calls_CellValueChanged);
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
+            this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_DataBindingComplete);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
             this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_Calls_DataBindingComplete);
             this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
-            this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_DataBindingComplete);
             // 
             // lbl_KST_Calls
             // 
@@ -3409,7 +3447,8 @@ namespace wtKST
             this.tsm_KST,
             this.tsi_Options,
             this.macroToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.skedTestToolStripMenuItem});
             this.mn_Main.Location = new System.Drawing.Point(0, 0);
             this.mn_Main.Name = "mn_Main";
             this.mn_Main.Size = new System.Drawing.Size(1202, 24);
@@ -3627,6 +3666,13 @@ namespace wtKST
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // skedTestToolStripMenuItem
+            // 
+            this.skedTestToolStripMenuItem.Name = "skedTestToolStripMenuItem";
+            this.skedTestToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
+            this.skedTestToolStripMenuItem.Text = "Sked Test";
+            this.skedTestToolStripMenuItem.Click += new System.EventHandler(this.skedTestToolStripMenuItem_Click);
+            // 
             // ti_Main
             // 
             this.ti_Main.Enabled = true;
@@ -3712,19 +3758,19 @@ namespace wtKST
             this.cmn_userlist_wtsked,
             this.cmn_userlist_chatReview});
             this.cmn_userlist.Name = "cmn_userlist";
-            this.cmn_userlist.Size = new System.Drawing.Size(149, 48);
+            this.cmn_userlist.Size = new System.Drawing.Size(150, 48);
             // 
             // cmn_userlist_wtsked
             // 
             this.cmn_userlist_wtsked.Name = "cmn_userlist_wtsked";
-            this.cmn_userlist_wtsked.Size = new System.Drawing.Size(148, 22);
+            this.cmn_userlist_wtsked.Size = new System.Drawing.Size(149, 22);
             this.cmn_userlist_wtsked.Text = "Win-Test &Sked";
             this.cmn_userlist_wtsked.Click += new System.EventHandler(this.cmn_item_wtsked_Click);
             // 
             // cmn_userlist_chatReview
             // 
             this.cmn_userlist_chatReview.Name = "cmn_userlist_chatReview";
-            this.cmn_userlist_chatReview.Size = new System.Drawing.Size(148, 22);
+            this.cmn_userlist_chatReview.Size = new System.Drawing.Size(149, 22);
             this.cmn_userlist_chatReview.Text = "Chat &Review";
             this.cmn_userlist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
             // 
@@ -3739,7 +3785,7 @@ namespace wtKST
             this.cmn_msglist_AS_details
             });
             this.cmn_msglist.Name = "cmn_msglist";
-            this.cmn_msglist.Size = new System.Drawing.Size(181, 117);
+            this.cmn_msglist.Size = new System.Drawing.Size(161, 95);
             this.cmn_msglist.ImageScalingSize = new System.Drawing.Size(40, 20);
 
             // 
@@ -3750,7 +3796,7 @@ namespace wtKST
             // cmn_msglist_toolStripTextBox_DirQRB
             // 
             this.cmn_msglist_toolStripTextBox_DirQRB.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.cmn_msglist_toolStripTextBox_DirQRB.Name = "toolStripTextBox_CallQRBDir";
+            this.cmn_msglist_toolStripTextBox_DirQRB.Name = "cmn_msglist_toolStripTextBox_DirQRB";
             this.cmn_msglist_toolStripTextBox_DirQRB.ReadOnly = true;
             this.cmn_msglist_toolStripTextBox_DirQRB.Size = new System.Drawing.Size(100, 23);
             this.cmn_msglist_toolStripTextBox_DirQRB.Text = "Call 1000km 350°";
@@ -3768,21 +3814,21 @@ namespace wtKST
             // cmn_msglist_wtsked
             // 
             this.cmn_msglist_wtsked.Name = "cmn_msglist_wtsked";
-            this.cmn_msglist_wtsked.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_wtsked.Size = new System.Drawing.Size(160, 22);
             this.cmn_msglist_wtsked.Text = "Win-Test &Sked";
             this.cmn_msglist_wtsked.Click += new System.EventHandler(this.cmn_item_wtsked_Click);
             // 
             // cmn_msglist_chatReview
             // 
-            this.cmn_msglist_chatReview.Size = new System.Drawing.Size(148, 22);
             this.cmn_msglist_chatReview.Name = "cmn_msglist_chatReview";
+            this.cmn_msglist_chatReview.Size = new System.Drawing.Size(160, 22);
             this.cmn_msglist_chatReview.Text = "Chat &Review";
             this.cmn_msglist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
             // 
             // cmn_msglist_openURL
             // 
-            this.cmn_msglist_openURL.Size = new System.Drawing.Size(148, 22);
             this.cmn_msglist_openURL.Name = "cmn_msglist_openURL";
+            this.cmn_msglist_openURL.Size = new System.Drawing.Size(160, 22);
             this.cmn_msglist_openURL.Text = "&Open URL";
             this.cmn_msglist_openURL.Click += new System.EventHandler(this.cmn_item_openURL_Click);
             // 
@@ -3989,6 +4035,48 @@ namespace wtKST
             menu_btn_macro_0.Visible = Settings.Default.KST_M0;
             if (!Settings.Default.KST_Macro_9.Equals(menu_btn_macro_0.Text))
                 menu_btn_macro_0.Text = Settings.Default.KST_Macro_0;
+        }
+
+        private void skedTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var msgSked = new NetworkMsgSked
+            {
+                Callsign = "M4W",
+                Comments = "From WTKST",
+                Frequency = 144222.ToString(),
+                Mode = "USB",
+                SkedTime = DateTime.UtcNow.AddMinutes(3)
+            };
+
+            var networkMessage = new NetworkMessage
+            {
+                MsgDestination = "ALL",
+                MsgSender = "WTKST",
+                MsgID = "1",
+                MsgType = "SKD",
+                MsgData = msgSked.ToByteArray()
+            };
+
+            var rawMessage = networkMessage.ToByteArray();
+
+            try
+            {
+                using (var udpClient = new UdpClient())
+                {
+                    udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+                    udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+                    udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
+                    udpClient.Client.ReceiveTimeout = 10000;
+                    var endPoint = new IPEndPoint(IPAddress.Parse("192.168.10.255"), 9888);
+                    udpClient.Connect(endPoint);
+
+                    udpClient.Send(rawMessage, rawMessage.Length);
+                    udpClient.Close();
+                }
+            }
+            catch
+            {
+            }
         }
     }
 }
