@@ -30,11 +30,16 @@ namespace wtKST
 
         public void Process_QRV(DataRow row, string qrvcall, bool call_new_in_userlist = false)
         {
+            string qrvcallBase = qrvcall;
+            if (qrvcallBase.IndexOf("-") > 0)
+            {
+                qrvcallBase = qrvcallBase.Remove(qrvcallBase.IndexOf("-"));
+            }
             bool call_in_stationDB = false;
             List<QRVDesignator> QRVlist = null;
             try
             {
-                QRVlist = StationData.Database.QRVFind(qrvcall, row["LOC"].ToString());
+                QRVlist = StationData.Database.QRVFind(qrvcallBase, row["LOC"].ToString());
             }
             catch (Exception ex)
             {
@@ -95,12 +100,24 @@ namespace wtKST
             DataRow findrow = QRV_local.Rows.Find(new object[] { qrvcall, row["LOC"] });
             if (findrow == null)
             {
-                // need a new entry
+                // check if we have a hit for the base entry
+                findrow = QRV_local.Rows.Find(new object[] { qrvcallBase, row["LOC"] });
                 DataRow newrow = QRV_local.NewRow();
-                newrow["CALL"] = qrvcall;
-                newrow["LOC"] = row["LOC"];
-                foreach (string band in BANDS)
-                    newrow[band] = QRV_STATE.unknown;
+                if (findrow != null)
+                {
+                    // propagate base to specific one
+                    // copy entry
+                    newrow.ItemArray = findrow.ItemArray.Clone() as object[];
+                    newrow["CALL"] = qrvcall;
+                }
+                else
+                {
+                    // need a new entry
+                    newrow["CALL"] = qrvcall;
+                    newrow["LOC"] = row["LOC"];
+                    foreach (string band in BANDS)
+                        newrow[band] = QRV_STATE.unknown;
+                }
                 try
                 {
                     QRV_local.Rows.Add(newrow);
@@ -152,6 +169,11 @@ namespace wtKST
                     qrv_row[band] = state;
                 QRVlocalChanged = true;
             }
+        }
+
+        public DataRow match_call_loc_local(string call, string loc)
+        {
+            return QRV_local.Rows.Find(new object[] { call, loc });
         }
 
         public static bool worked(QRV_STATE qrv_state)

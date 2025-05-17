@@ -732,10 +732,6 @@ namespace wtKST
                         row["RECENTLOGIN"] = USER["RECENTLOGIN"];
 
                         string qrvcall = row["CALL"].ToString();
-                        if (qrvcall.IndexOf("-") > 0)
-                        {
-                            qrvcall = qrvcall.Remove(qrvcall.IndexOf("-"));
-                        }
                         bool call_new_in_userlist = (bool)USER["RECENTLOGIN"];
                         qrv.Process_QRV(row, qrvcall, call_new_in_userlist);
 
