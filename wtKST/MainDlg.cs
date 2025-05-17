@@ -2202,7 +2202,12 @@ namespace wtKST
                         lock (CALL)
                         {
                             // band columns
+
+                            // look for base call - can yield several hits
                             DataRow[] call_rows = CALL.Select(string.Format("[CALL] LIKE '*{0}*'", call));
+                            // do we have a matching local qrv entry?
+                            var localQRVRow = qrv.match_call_loc_local(username, loc);
+
                             string band = column.Name;
                             state = QRVdb.QRV_STATE.unknown;
                             try
@@ -2217,22 +2222,49 @@ namespace wtKST
                                 switch (state)
                                 {
                                     case QRVdb.QRV_STATE.unknown:
-                                        row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.qrv;
-                                        qrv.set_qrv_state(call, loc, band, QRVdb.QRV_STATE.qrv);
-                                        foreach(var CallsRow in call_rows)
-                                            CallsRow[band] = QRVdb.QRV_STATE.qrv;
+                                        if (localQRVRow!=null)
+                                        {
+                                            foreach (var CallsRow in call_rows)
+                                            {
+                                                if (CallsRow["CALL"].Equals(localQRVRow["CALL"]))
+                                                {
+                                                    CallsRow[band] = QRVdb.QRV_STATE.qrv;
+                                                    qrv.set_qrv_state(CallsRow["CALL"].ToString().Replace("(", "").Replace(")", ""),
+                                                        loc, band, QRVdb.QRV_STATE.qrv);
+                                                }
+                                                else
+                                                {
+                                                    CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
+                                                    qrv.set_qrv_state(CallsRow["CALL"].ToString().Replace("(", "").Replace(")", ""),
+                                                        loc, band, QRVdb.QRV_STATE.not_qrv);
+                                                }
+                                            }
+                                        }
+                                        else
+                                            foreach (var CallsRow in call_rows)
+                                                CallsRow[band] = QRVdb.QRV_STATE.qrv;
                                         break;
                                     case QRVdb.QRV_STATE.qrv:
-                                        row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.not_qrv;
-                                        qrv.set_qrv_state(call, loc, band, QRVdb.QRV_STATE.not_qrv);
-                                        foreach (var CallsRow in call_rows)
-                                            CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
+                                        if (localQRVRow != null)
+                                        {
+                                            foreach (var CallsRow in call_rows)
+                                            {
+                                                CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
+                                                qrv.set_qrv_state(CallsRow["CALL"].ToString().Replace("(", "").Replace(")", ""),
+                                                            loc, band, QRVdb.QRV_STATE.not_qrv);
+                                            }
+                                        }
+                                        else
+                                            foreach (var CallsRow in call_rows)
+                                                CallsRow[band] = QRVdb.QRV_STATE.not_qrv;
                                         break;
                                     case QRVdb.QRV_STATE.not_qrv:
-                                        row.Cells[e.ColumnIndex].Value = QRVdb.QRV_STATE.unknown;
-                                        qrv.set_qrv_state(call, loc, band, QRVdb.QRV_STATE.unknown);
                                         foreach (var CallsRow in call_rows)
+                                        {
                                             CallsRow[band] = QRVdb.QRV_STATE.unknown;
+                                            qrv.set_qrv_state(CallsRow["CALL"].ToString().Replace("(", "").Replace(")", ""),
+                                                        loc, band, QRVdb.QRV_STATE.unknown);
+                                        }
                                         break;
                                 }
                                 dgv.Refresh();
