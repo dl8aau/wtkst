@@ -710,7 +710,9 @@ namespace wtKST
         {
             if (State >= KST_STATE.Connected)
             {
+#if !DEBUG_INJECT_KST
                 tw.Send("/q\r");
+#endif
                 Say("Disconnected from KST chat...");
                 State = KST_STATE.Disconnecting;
             }
