@@ -3545,7 +3545,7 @@ namespace wtKST
             this.menu_btn_macro_1.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_1.Text = global::wtKST.Properties.Settings.Default.KST_Macro_1;
             this.menu_btn_macro_1.Visible = global::wtKST.Properties.Settings.Default.KST_M1;
-            this.menu_btn_macro_1.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_1.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // menu_btn_macro_2
             // 
@@ -3554,7 +3554,7 @@ namespace wtKST
             this.menu_btn_macro_2.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_2.Text = global::wtKST.Properties.Settings.Default.KST_Macro_2;
             this.menu_btn_macro_2.Visible = global::wtKST.Properties.Settings.Default.KST_M2;
-            this.menu_btn_macro_2.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_2.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // menu_btn_macro_3
             // 
@@ -3563,7 +3563,7 @@ namespace wtKST
             this.menu_btn_macro_3.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_3.Text = global::wtKST.Properties.Settings.Default.KST_Macro_3;
             this.menu_btn_macro_3.Visible = global::wtKST.Properties.Settings.Default.KST_M3;
-            this.menu_btn_macro_3.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_3.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // menu_btn_macro_4
             // 
@@ -3572,7 +3572,7 @@ namespace wtKST
             this.menu_btn_macro_4.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_4.Text = global::wtKST.Properties.Settings.Default.KST_Macro_4;
             this.menu_btn_macro_4.Visible = global::wtKST.Properties.Settings.Default.KST_M4;
-            this.menu_btn_macro_4.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_4.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // menu_btn_macro_5
             // 
@@ -3581,7 +3581,7 @@ namespace wtKST
             this.menu_btn_macro_5.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_5.Text = global::wtKST.Properties.Settings.Default.KST_Macro_5;
             this.menu_btn_macro_5.Visible = global::wtKST.Properties.Settings.Default.KST_M5;
-            this.menu_btn_macro_5.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_5.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // menu_btn_macro_6
             // 
@@ -3590,7 +3590,7 @@ namespace wtKST
             this.menu_btn_macro_6.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_6.Text = global::wtKST.Properties.Settings.Default.KST_Macro_6;
             this.menu_btn_macro_6.Visible = global::wtKST.Properties.Settings.Default.KST_M6;
-            this.menu_btn_macro_6.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_6.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // menu_btn_macro_7
             // 
@@ -3599,7 +3599,7 @@ namespace wtKST
             this.menu_btn_macro_7.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_7.Text = global::wtKST.Properties.Settings.Default.KST_Macro_7;
             this.menu_btn_macro_7.Visible = global::wtKST.Properties.Settings.Default.KST_M7;
-            this.menu_btn_macro_7.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_7.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // menu_btn_macro_8
             // 
@@ -3608,7 +3608,7 @@ namespace wtKST
             this.menu_btn_macro_8.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_8.Text = global::wtKST.Properties.Settings.Default.KST_Macro_8;
             this.menu_btn_macro_8.Visible = global::wtKST.Properties.Settings.Default.KST_M8;
-            this.menu_btn_macro_8.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_8.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // menu_btn_macro_9
             // 
@@ -3617,7 +3617,7 @@ namespace wtKST
             this.menu_btn_macro_9.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_9.Text = global::wtKST.Properties.Settings.Default.KST_Macro_9;
             this.menu_btn_macro_9.Visible = global::wtKST.Properties.Settings.Default.KST_M9;
-            this.menu_btn_macro_9.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_9.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // menu_btn_macro_0
             // 
@@ -3626,7 +3626,7 @@ namespace wtKST
             this.menu_btn_macro_0.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_0.Text = global::wtKST.Properties.Settings.Default.KST_Macro_0;
             this.menu_btn_macro_0.Visible = global::wtKST.Properties.Settings.Default.KST_M0;
-            this.menu_btn_macro_0.Click += new System.EventHandler(this.kst_macro_bt1_Click);
+            this.menu_btn_macro_0.Click += new System.EventHandler(this.kst_macro_btn_Click);
             // 
             // toolStripSeparator4
             // 
@@ -3921,12 +3921,29 @@ namespace wtKST
             }
             cmdLine = cmdLine.Replace("$BAND", band);
 
+            DataRow row = CALL.Rows.Find(call);
+            string name = "";
+            if (row != null)
+                name = parseNameFromNameInfo(row["NAME"].ToString());
+            cmdLine = cmdLine.Replace("$NAME", name);
+
             cb_Command.Text = cmdLine;
             cb_Command.SelectionStart = cmdLine.Length;
             cb_Command.SelectionLength = 0;
         }
 
-        private void kst_macro_bt1_Click(object sender, EventArgs e)
+        private static string parseNameFromNameInfo(string nameInfo)
+        {
+            Regex r = new Regex("^(\\p{L}+([/ -]\\p{L}+)*)");
+            nameInfo = Regex.Replace(nameInfo, "(?:not qrv)|(?:(?:only )?SWL)", "", RegexOptions.IgnoreCase);
+            Match m = r.Match(nameInfo);
+            if (m.Success)
+                return m.Value.Trim();
+            else
+                return "";
+        }
+
+        private void kst_macro_btn_Click(object sender, EventArgs e)
         {
             KST_Macro(sender);
         }
