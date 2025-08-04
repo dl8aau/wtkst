@@ -1,42 +1,84 @@
-﻿//#define DEBUG_AS
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
 using System.Threading;
-using WinTest;
+using WebRTC;
 using wtKST.Properties;
 
 namespace wtKST
 {
     class AirScoutInterface
     {
+        // access to planes needs to be protected by a lock!
         public Dictionary<string, PlaneInfoList> planes = new Dictionary<string, PlaneInfoList>();
-        private IPEndPoint localep;
-        private WinTest.wtListener wtl;
+
+        private EventWaitHandle getPlanesWaitHandle;
+
         private BackgroundWorker bw_GetPlanes;
 
-        private string mycall;
-        private string dxcall;
-        private EventWaitHandle waitHandle;
-#if DEBUG_AS
-        private Stopwatch stopWatch;
-#endif
-        public AirScoutInterface(ref BackgroundWorker bw_GetPlanes)
+        private WebRTC.WebRTCPeer mWebRTC; // TODO more clever...
+        private AirscoutUDP mUDPAS; // TODO more clever...
+
+        public AirScoutInterface()
         {
-            localep = new IPEndPoint(GetIpIFDefaultGateway(), 0);
+            getPlanesWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 
-            this.bw_GetPlanes = bw_GetPlanes;
-            waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+            this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
 
-            wtl = new WinTest.wtListener(Settings.Default.AS_Port);
-            wtl.wtMessageReceived += wtMessageReceivedHandler;
-#if DEBUG_AS
-            stopWatch = new Stopwatch();
-#endif
+            string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
+
+            // 
+            // bw_GetPlanes
+            // 
+            this.bw_GetPlanes.WorkerReportsProgress = true;
+            this.bw_GetPlanes.WorkerSupportsCancellation = true;
+            this.bw_GetPlanes.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bw_GetPlanes_DoWork);
+            this.bw_GetPlanes.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bw_GetPlanes_ProgressChanged);
+            this.bw_GetPlanes.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bw_GetPlanes_RunWorkerCompleted);
+
+            this.mUDPAS = new AirscoutUDP(ref bw_GetPlanes, ref planes, AsStateSetter); // more clever...
+            this.mWebRTC = new WebRTCPeer(ref bw_GetPlanes, ref planes, AsStateSetter); // TODO more clever...
+        }
+
+        public void Dispose()
+        {
+        }
+
+        public bool UDPBasedAS_isActive() { return Settings.Default.AS_Active; }
+        public bool WebRTCAS_isActive() { return mWebRTC.IsActive(); }
+
+        public bool IsActive() { return UDPBasedAS_isActive() || WebRTCAS_isActive();  }
+
+        public void Connect()
+        {
+            if (WebRTCAS_isActive())
+            {
+                mUDPAS.Stop();
+                ClearPlanesSendEvent();
+                mWebRTC.Connect();
+            }
+            else 
+            if (UDPBasedAS_isActive())
+            {
+                mWebRTC.Stop();
+                ClearPlanesSendEvent();
+                mUDPAS.Connect();
+            }
+            else // no service enabled, stop everything
+            {
+                mUDPAS.Stop();
+                mWebRTC.Stop();
+                ClearPlanesSendEvent();
+            }
+
+            if (!bw_GetPlanes.IsBusy)
+                bw_GetPlanes.RunWorkerAsync();
+        }
+
+        public void OnFormClosing()
+        {
+            this.bw_GetPlanes.CancelAsync();
         }
 
         public enum AS_STATE
@@ -74,259 +116,247 @@ namespace wtKST
             public AS_STATE ASState { get; private set; }
         }
 
-        DateTime mTimestamp = DateTime.UtcNow;
+        private void AsStateSetter(AS_STATE ASState) { this.ASState = ASState; }
 
-        private void wtMessageReceivedHandler(object sender, WinTest.wtListener.wtMessageEventArgs e)
+        /// <summary>
+        /// called from BackgroundWorker bw_GetPlanes - reports results through bw_GetPlanes.ReportProgress
+        /// </summary>
+        /// <param name="mycall"></param>
+        /// <param name="myloc"></param>
+        /// <param name="asarray"></param>
+        /// <returns></returns>
+        private bool GetPlanes(string mycall, string myloc, AS_Calls[] asarray)
         {
-            if (e.Msg.Msg == WTMESSAGES.ASNEAREST && e.Msg.HasChecksum)
+            int errors = 0;
+            if (UDPBasedAS_isActive())
             {
-                string[] a = e.Msg.Data.Split(new char[] { ',' });
-                var rxmycall = a[1];
-                var rxdxcall = a[3];
-
-                if (e.Msg.Dst == Settings.Default.AS_My_Name && e.Msg.Msg == WTMESSAGES.ASNEAREST
-                    && mycall == rxmycall)
+                foreach (AS_Calls a in asarray)
                 {
-                    if (process_msg_asnearest(e.Msg))
+                    try
                     {
-                        bw_GetPlanes.ReportProgress(1, rxdxcall);
-                    }
-                    else
-                    {
-                        // report no planes available
-                        bw_GetPlanes.ReportProgress(0, rxdxcall);
-                    }
-                    if (dxcall == rxdxcall)
-                    {
-#if DEBUG_AS
-                        stopWatch.Stop();
-                        Console.WriteLine("got AS " + dxcall + " " + e.Msg.Data + " in " + stopWatch.ElapsedMilliseconds);
-#endif
-                        waitHandle.Set();
+                        string dxloc = a.Locator;
+                        // FIXME: handle /p etc.
+                        string dxcall = a.Call;
 
-                        if (DateTime.UtcNow.Subtract(mTimestamp).TotalMilliseconds < 30000)
-                            ASState = AS_STATE.AS_IN_SYNC;
+                        if (UDPBasedAS_isActive())
+                        {
+                            if (!mUDPAS.GetPlanes(mycall, myloc, dxcall, dxloc))
+                            {
+                                errors++;
+                                if (errors > 10)
+                                {
+                                    return false;
+                                }
+
+                            }
+                        }
                         else
-                            ASState = AS_STATE.AS_UPDATING;
-                        mTimestamp = DateTime.UtcNow;
+                            break; // can happen if UDP service is stopped
+                        Thread.Sleep(200);
                     }
-#if DEBUG_AS
-                    else
-                        Console.WriteLine("dxcall " + this.dxcall + "!=" + rxdxcall);
-#endif
-                }
-            }
-        }
-
-        public void send_watchlist(string watchlist, string MyCall, string MyLoc)
-        {
-            string qrg = qrg_from_settings();
-            wtMessage Msg = new wtMessage(WTMESSAGES.ASWATCHLIST, Settings.Default.AS_My_Name,
-                                Settings.Default.AS_Local_Active ? Settings.Default.AS_Local_Name : Settings.Default.AS_Server_Name,
-                                string.Concat(new string[]
-            {
-                qrg, ",", WCCheck.WCCheck.SanitizeCall(MyCall), ",", MyLoc, watchlist
-            }));
-            try
-            {
-                UdpClient client = new UdpClient(localep);
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                client.Client.ReceiveTimeout = 10000;
-                IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, Settings.Default.AS_Port);
-                client.Connect(groupEp);
-                byte[] b = Msg.ToBytes();
-                client.Send(b, b.Length);
-                client.Close();
-            }
-            catch
-            {
-            }
-        }
-
-        public string qrg_from_settings()
-        {
-            string qrg = "1440000";
-            if (Settings.Default.AS_QRG == "50M")
-            {
-                qrg = "500000";
-            }
-            if (Settings.Default.AS_QRG == "70M")
-            {
-                qrg = "700000";
-            }
-            if (Settings.Default.AS_QRG == "432M")
-            {
-                qrg = "4320000";
-            }
-            else if (Settings.Default.AS_QRG == "1.2G")
-            {
-                qrg = "12960000";
-            }
-            else if (Settings.Default.AS_QRG == "2.3G")
-            {
-                qrg = "23200000";
-            }
-            else if (Settings.Default.AS_QRG == "3.4G")
-            {
-                qrg = "34000000";
-            }
-            else if (Settings.Default.AS_QRG == "5.7G")
-            {
-                qrg = "57600000";
-            }
-            else if (Settings.Default.AS_QRG == "10G")
-            {
-                qrg = "103680000";
-            }
-            return qrg;
-        }
-
-        public static IPAddress GetIpIFDefaultGateway()
-        {
-            return NetworkInterface
-                .GetAllNetworkInterfaces()
-                .Where(n => n.OperationalStatus == OperationalStatus.Up)
-                .Where(n => n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                .Where(n => n.GetIPProperties().GatewayAddresses.Count > 0) // only interfaces with a gateway
-                .SelectMany(n => n.GetIPProperties()?.UnicastAddresses)
-                .Where(g => g.Address.AddressFamily == AddressFamily.InterNetwork) // filter IPv4
-                .Select(g => g?.Address)
-                .FirstOrDefault(a => a != null);
-        }
-
-        /* called from BackgroundWorker bw_GetPlanes - reports results through bw_GetPlanes.ReportProgress */
-        public bool GetPlanes(string mycall, string myloc, string dxcall, string dxloc)
-        {
-
-            string qrg = qrg_from_settings();
-
-            this.mycall = mycall;
-            this.dxcall = dxcall;
-#if DEBUG_AS
-            Console.WriteLine("GetPlanes " + dxcall);
-            stopWatch.Reset();
-            stopWatch.Start();
-#endif
-            wtMessage Msg = new wtMessage(WTMESSAGES.ASSETPATH, Settings.Default.AS_My_Name, Settings.Default.AS_Server_Name,
-                string.Concat(new string[] { qrg, ",", mycall, ",", myloc, ",", dxcall, ",", dxloc }));
-            try
-            {
-                // https://stackoverflow.com/a/3297590
-                // https://stackoverflow.com/questions/13634868/get-the-default-gateway/13635038#13635038
-                UdpClient client = new UdpClient(localep);
-                client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                client.Client.ReceiveTimeout = 10000;
-                IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, Settings.Default.AS_Port);
-                client.Connect(groupEp);
-                byte[] b = Msg.ToBytes();
-                client.Send(b, b.Length);
-                client.Close();
-                DateTime start = DateTime.UtcNow;
-                int rcvtimeout = 30;
-                try
-                {
-                    rcvtimeout = Convert.ToInt32(Settings.Default.AS_Timeout);
-                }
-                catch
-                {
-                    rcvtimeout = 30;
-                }
-                waitHandle.Reset();
-                if (!waitHandle.WaitOne(rcvtimeout * 1000))
-                {
-#if DEBUG_AS
-                    Console.WriteLine("timeout " + dxcall);
-#endif
-                    bw_GetPlanes.ReportProgress(0, dxcall);
-                    ASState = AS_STATE.AS_INACTIVE;
-                    return false;
-                }
-                return true;
-            }
-            catch
-            {
-                bw_GetPlanes.ReportProgress(0, null);
-                bw_GetPlanes.ReportProgress(-1, dxcall);
-                ASState = AS_STATE.AS_INACTIVE;
-                return false;
-            }
-        }
-
-        private bool process_msg_asnearest(wtMessage Msg)
-        {
-            if (Msg.Msg == WTMESSAGES.ASNEAREST)
-            {
-                try
-                {
-                    PlaneInfoList infolist = new PlaneInfoList();
-                    string[] a = Msg.Data.Split(new char[] { ',' });
-                    DateTime utc = Convert.ToDateTime(a[0]).ToUniversalTime();
-                    string mycall = a[1];
-                    string myloc = a[2];
-                    string dxcall = a[3];
-                    string dxloc = a[4];
-                    int planecount = Convert.ToInt32(a[5]);
-                    infolist.UTC = utc;
-                    for (int i = 0; i < planecount; i++)
+                    catch
                     {
-                        PlaneInfo info = new PlaneInfo(a[6 + i * 5], a[7 + i * 5], Convert.ToInt32(a[8 + i * 5]), Convert.ToInt32(a[9 + i * 5]), Convert.ToInt32(a[10 + i * 5]));
-                        // ignore entries too far into the future
-                        if (info.Mins < 30)
-                            infolist.Add(info);
                     }
+                }
+            }
+            if (WebRTCAS_isActive())
+            {
+                List<JSONLocation> aslist = new List<JSONLocation>();
+                asarray.ToList().ForEach(item => aslist.Add(new JSONLocation(item.Call, item.Locator)));
+                if (!mWebRTC.GetPlanes(mycall, myloc, aslist))
+                {
+                    errors++;
+                    if (errors > 10)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        public class AS_Calls
+        {
+            public string Call;
+            public string Locator;
+
+            public AS_Calls(string call, string loc) { Call = call; Locator = loc; }
+        };
+
+        private AS_Calls[] mlocalAs_List;
+
+        private void bw_GetPlanes_DoWork(object sender, DoWorkEventArgs e)
+        {
+            while (!bw_GetPlanes.CancellationPending)
+            {
+                // we have a local copy of the current AS_list?
+                if (mlocalAs_List == null || mlocalAs_List.Length == 0)
+                {
+                    getPlanesWaitHandle.Reset();
+                    if (!getPlanesWaitHandle.WaitOne(1000))
+                        continue; // break? Should not happen...
+                }
+
+                AS_Calls[] workingAs_List = new AS_Calls[mlocalAs_List.Length];
+                // we need a working copy, as we need some time to process it
+                lock (this)
+                {
+                    mlocalAs_List.CopyTo(workingAs_List, 0);
+                }
+
+                if (!GetPlanes(WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName), Settings.Default.KST_Loc, workingAs_List))
+                {
+                    Console.WriteLine("GetPlanes - error");
+                    bw_GetPlanes.ReportProgress(ReportNoPlane, null);
+                }
+                Thread.Sleep(20000); // update every 20s, that should be enough
+            }
+            Console.WriteLine("bw_GetPlanes_DoWork done");
+        }
+
+        public event EventHandler<UpdateASStatusEventArgs> UpdateASStatusEvent;
+        public class UpdateASStatusEventArgs : EventArgs
+        {
+            /// <summary>
+            /// called when KSTState changes
+            /// </summary>
+            public UpdateASStatusEventArgs(string dxcall, string newtext)
+            {
+                this.dxcall = dxcall;
+                this.newtext = newtext;
+            }
+            public string dxcall { get; private set; }
+            public string newtext { get; private set; }
+        }
+
+
+        private void ClearPlanesSendEvent()
+        {
+            try
+            {
+                lock (planes)
+                {
+                    planes.Clear();
+                }
+
+                if (UpdateASStatusEvent != null)
+                {
+                    UpdateASStatusEvent(this, new UpdateASStatusEventArgs(null, null));
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        public const int ReportNewPlane = 1;
+        public const int ReportNoPlane = 0;
+        public const int ReportError = -1;
+
+        private void bw_GetPlanes_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            string dxcall = (string)e.UserState;
+            if (dxcall == null)
+            {
+                if (e.ProgressPercentage == ReportNoPlane)
+                {
+                    ClearPlanesSendEvent();
+                }
+                return;
+            }
+
+            string newtext = "";
+            if (e.ProgressPercentage == ReportNewPlane)
+            {
+                newtext = GetNearestPlanePotential(dxcall);
+            }
+            else
+            if (e.ProgressPercentage == ReportNoPlane)
+            {
+                //Console.WriteLine("remove " + dxcall);
+                lock (planes)
+                {
                     planes.Remove(dxcall);
-                    if (infolist.Count > 0)
-                    {
-                        infolist.Sort(new PlaneInfoComparer());
-                        planes.Add(dxcall, infolist);
-                        return true;
-                    }
-                }
-                catch
-                {
                 }
             }
-            return false;
+            else
+            if (e.ProgressPercentage == ReportError)
+            {
+                Console.WriteLine("BW Getplanes err " + (string)e.UserState);
+            }
+
+            if (UpdateASStatusEvent != null)
+            {
+                UpdateASStatusEvent(this, new UpdateASStatusEventArgs(dxcall, newtext));
+            }
         }
 
-        public void show_path(string call, string loc, string MyCall, string MyLoc)
+        private void bw_GetPlanes_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            string qrg = qrg_from_settings();
-            wtMessage Msg = new wtMessage(WTMESSAGES.ASSHOWPATH, Settings.Default.AS_My_Name,
-                Settings.Default.AS_Local_Active ? Settings.Default.AS_Local_Name : Settings.Default.AS_Server_Name,
-                string.Concat(new string[] { qrg, ",",  WCCheck.WCCheck.SanitizeCall(MyCall), ",",  MyLoc, ",",
-                    WCCheck.WCCheck.SanitizeCall(call), ",", loc }));
-            UdpClient client = new UdpClient();
-            client.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-            client.Client.ReceiveTimeout = 10000;
-            IPEndPoint groupEp = new IPEndPoint(IPAddress.Broadcast, Settings.Default.AS_Port);
-            client.Connect(groupEp);
-            byte[] b = Msg.ToBytes();
-            client.Send(b, b.Length);
-            client.Close();
+        }
+
+        /// <summary>
+        /// Provide a list of calls to query from Airscout
+        /// 
+        /// </summary>
+        /// <param name="AS_list"></param>
+        public void update_AS_list(List<AS_Calls> AS_list)
+        {
+            mlocalAs_List = new AS_Calls[AS_list.Count];
+            // bw_GetPlanes_DoWork and GetPlanes access it concurrently
+            lock (this)
+            {
+                AS_list.CopyTo(mlocalAs_List);
+            }
+            if (mlocalAs_List.Length > 0)
+                getPlanesWaitHandle.Set(); // unblock the getPlanes worker
+        }
+
+        public void ShowPath(string call, string loc, string MyCall, string MyLoc)
+        {
+            if (UDPBasedAS_isActive())
+                mUDPAS.ShowPath(call, loc, MyCall, MyLoc);
+            else
+            if (WebRTCAS_isActive())
+                mWebRTC.ShowPath(call, loc, MyCall, MyLoc);
+        }
+
+        public void SendWatchlist(string watchlist, string MyCall, string MyLoc)
+        {
+            if (UDPBasedAS_isActive())
+                mUDPAS.SendWatchlist(watchlist, MyCall, MyLoc);
+            else
+            if (WebRTCAS_isActive())
+                mWebRTC.SendWatchlist(watchlist, MyCall, MyLoc);
         }
 
         public string GetNearestPlanes(string call)
         {
+            // really needed?
+            if (WebRTCAS_isActive() && !mWebRTC.isConnected())
+                return "";
+
             PlaneInfoList infolist = null;
             string result;
-            if (planes.TryGetValue(call, out infolist))
+            lock (planes)
             {
-                string s = DateTime.UtcNow.ToString("HH:mm") + " [" + (DateTime.UtcNow - infolist.UTC).Minutes.ToString() + "mins ago]\n\n";
-                int planes_per_Potential = 0;
-                int current_Potential = 0;
-
-                foreach (PlaneInfo info in infolist)
+                if (planes.TryGetValue(call, out infolist))
                 {
-                    if (current_Potential != info.Potential)
+                    string s = DateTime.UtcNow.ToString("HH:mm") + " [" + (DateTime.UtcNow - infolist.UTC).Minutes.ToString() + "mins ago]\n\n";
+                    int planes_per_Potential = 0;
+                    int current_Potential = 0;
+
+                    foreach (PlaneInfo info in infolist)
                     {
-                        current_Potential = info.Potential;
-                        planes_per_Potential = 0;
-                    }
-                    if (++planes_per_Potential > 5)
-                        continue;
-                    s = string.Concat(new object[]
-                    {
+                        if (current_Potential != info.Potential)
+                        {
+                            current_Potential = info.Potential;
+                            planes_per_Potential = 0;
+                        }
+                        if (++planes_per_Potential > 5)
+                            continue;
+                        s = string.Concat(new object[]
+                        {
                         s,
                         info.Potential.ToString(),
                         " : ",
@@ -336,15 +366,16 @@ namespace wtKST
                         "] --> ",
                         info.IntQRB.ToString(),
                         "km [",
-                        info.Mins,
+                        info.Mins>0 ? info.Mins : 0,
                         "mins]\n"
-                    });
+                        });
+                    }
+                    result = s;
                 }
-                result = s;
-            }
-            else
-            {
-                result = "";
+                else
+                {
+                    result = "";
+                }
             }
             return result;
         }
@@ -354,13 +385,16 @@ namespace wtKST
             call = call.TrimStart(new char[] { '(' }).TrimEnd(new char[] { ')' });
             PlaneInfoList infolist = null;
             string result;
-            if (planes.TryGetValue(call, out infolist))
+            lock (planes)
             {
-                result = infolist[0].Potential + "," + infolist[0].Category + "," + infolist[0].Mins;
-            }
-            else
-            {
-                result = "0";
+                if (planes.TryGetValue(call, out infolist))
+                {
+                    result = infolist[0].Potential + "," + infolist[0].Category + "," + infolist[0].Mins;
+                }
+                else
+                {
+                    result = "0";
+                }
             }
             return result;
         }

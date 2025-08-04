@@ -9,7 +9,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows.Forms;
 using WinTest;
 using wtKST.Properties;
@@ -32,7 +31,7 @@ namespace wtKST
 
         private WinTest.WinTestLogBase wtQSO = null;
 
-        private wtKST.AirScoutInterface AS_if;
+        private wtKST.AirScoutInterface AS_if = null;
 
         public static LogWriter Log = new LogWriter(Directory.GetParent(Application.LocalUserAppDataPath).ToString());
 
@@ -134,10 +133,9 @@ namespace wtKST
         private System.Windows.Forms.Timer ti_Reconnect;
 
         private System.Windows.Forms.ToolTip tt_Info;
+        private System.Windows.Forms.ToolTip tt_ASInfo;
 
         private System.Windows.Forms.Timer ti_UpdateFilter;
-
-        private BackgroundWorker bw_GetPlanes;
 
         private bool WinTestLocatorWarning = false;
         private bool hide_away = false;
@@ -151,7 +149,10 @@ namespace wtKST
         private ToolStripMenuItem cmn_msglist_wtsked;
         private ToolStripMenuItem cmn_msglist_chatReview;
         private ToolStripMenuItem cmn_msglist_openURL;
+        private ToolStripMenuItem cmn_msglist_AS_details;
         private ToolStripTextBox cmn_msglist_toolStripTextBox_DirQRB;
+        private ToolStripLabel cmn_msglist_AS_status;
+        private Label cmn_msglist_Label;
 
         private WinTest.wtStatus wts;
         private WTSkedDlg wtskdlg;
@@ -161,15 +162,6 @@ namespace wtKST
         private uint kst_sked_band_freq;
         private string last_cq_call;
 
-        private class AS_Calls
-        {
-            public string Call;
-            public string Locator;
-
-            public AS_Calls(string call, string loc) { Call = call; Locator = loc; }
-        };
-
-        private List<AS_Calls> AS_list = new List<AS_Calls>();
         private ToolStripMenuItem macroToolStripMenuItem;
         private ToolStripMenuItem menu_btn_macro_1;
         private ToolStripMenuItem menu_btn_macro_2;
@@ -242,6 +234,8 @@ namespace wtKST
             lv_Calls.Columns["LOC"].HeaderCell.Value = "Locator";
             lv_Calls.Columns["LOC"].Width = 50;
             lv_Calls.Columns["AS"].Width = 30;
+            lv_Calls.Columns["AS"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None; // fix the width
+            lv_Calls.Columns["AS"].Resizable = DataGridViewTriState.False;
 
             lv_Calls.Columns["TIME"].Visible = false;
 
@@ -283,8 +277,10 @@ namespace wtKST
             init_wtQSO();
 
             UpdateUserBandsWidth();
-            bw_GetPlanes.RunWorkerAsync();
-            AS_if = new wtKST.AirScoutInterface(ref bw_GetPlanes);
+            AS_if = new wtKST.AirScoutInterface();
+            AS_if.UpdateASStatusEvent += AS_UpdateASStatus;
+            AS_if.Connect(); // TODO
+            AS_if.ASStateChanged += AS_StateChanged;
             AS_if.ASStateChanged += AS_StateChanged;
             if (Settings.Default.KST_AutoConnect)
             {
@@ -440,7 +436,10 @@ namespace wtKST
                 cb_Command.Enabled = false;
                 btn_KST_Send.Enabled = false;
                 lbl_Call.Enabled = false;
-                AS_if.planes.Clear();
+                lock (AS_if.planes)
+                {
+                    AS_if.planes.Clear();
+                }
                 if (Settings.Default.KST_AutoConnect && !ti_Reconnect.Enabled)
                 {
                     ti_Reconnect.Start();
@@ -471,10 +470,10 @@ namespace wtKST
                 {
                     KST_Update_Usr_Filter(true); // only check filter here! it should not have changed
                     KST_Update_User_Filter_last_called = DateTime.Now;
-                }
+            }
             }
 
-            fill_AS_list();
+            //fill_AS_list();
 
             string KST_Calls_Text = lbl_KST_Calls.Text;
             if (lv_Calls.RowCount > 0)
@@ -805,8 +804,7 @@ namespace wtKST
                     }
                     break;
                 case KSTcom.USER_OP.USER_DONE:
-                    if (Settings.Default.AS_Active)
-                        AS_send_ASWATCHLIST();
+                    AS_send_ASWATCHLIST();
                     break;
             }
         }
@@ -1111,6 +1109,7 @@ namespace wtKST
                     KST_Update_Usr_Filter();
                 macro_RefreshMacroText();
                 init_wtQSO();
+                AS_if.Connect(); //TODO!
             }
         }
         private void tsi_KST_Connect_Click(object sender, EventArgs e)
@@ -1372,8 +1371,7 @@ namespace wtKST
                         }
                     }
                 }
-                if (Settings.Default.AS_Active)
-                    AS_send_ASWATCHLIST();
+                AS_send_ASWATCHLIST();
             }
             int interval = Convert.ToInt32(Settings.Default.UpdateInterval) * 1000;
             if (interval > 10000)
@@ -1450,7 +1448,7 @@ namespace wtKST
         {
             try
             {
-                bw_GetPlanes.CancelAsync();
+                AS_if.OnFormClosing();
                 ni_Main.Visible = false; // hide NotificationIcon
                 Say("Saving QRV-Database");
                 qrv.save_db();
@@ -1488,7 +1486,7 @@ namespace wtKST
             ni_Main.Dispose(); //remove notification icon
         }
 
-        private void ShowToolTip(string text, Control control, Point p)
+        private void ToolTipPos(string text, Control control, ref Point p)
         {
             int BorderWith = (base.Width - base.ClientSize.Width) / 2;
             int TitleBarHeight = base.Height - base.ClientSize.Height - 2 * BorderWith;
@@ -1511,7 +1509,157 @@ namespace wtKST
             {
                 p.Y = 0;
             }
+        }
+
+        private System.Windows.Forms.Timer ti_ToolTip_active = new System.Windows.Forms.Timer();
+        private bool ToolTip_AS_active = false;
+
+        private void ShowToolTip(string text, Control control, Point p)
+        {
+            ToolTipPos(text, control, ref p);
             tt_Info.Show(text, this, p, 5000);
+        }
+
+        private void ShowASToolTip(string text, Control control, Point p)
+        {
+            ToolTipPos(text, control, ref p);
+            tt_ASInfo.Show(text, this, p, 10000);
+            ti_ToolTip_active.Start();
+            ToolTip_AS_active = true;
+        }
+
+        private void ti_ToolTip_active_Tick(object sender, EventArgs e)
+        {
+            ToolTip_AS_active = false;
+            ti_ToolTip_active.Stop();
+        }
+
+        private void ToolTipp_AS_Popup(System.Object sender, System.Windows.Forms.PopupEventArgs e)
+        {
+            Console.WriteLine("Popup " + e.ToolTipSize.Width + " " + e.ToolTipSize.Height);
+            System.Windows.Forms.ToolTip tt = (sender as System.Windows.Forms.ToolTip);
+            string toolTipText = tt.GetToolTip(e.AssociatedControl);
+
+            using (Font f = new Font("Tahoma", 9))
+            {
+                Size ttsize = TextRenderer.MeasureText(toolTipText, f);
+                ttsize.Height += f.Height / 2;
+                e.ToolTipSize = ttsize;
+            }
+            Console.WriteLine("now " + e.ToolTipSize.Width + " " + e.ToolTipSize.Height + " " + (float)e.ToolTipSize.Height/((float)(toolTipText.Split('\n').Length-1)));
+        }
+
+        private void ToolTipp_AS_Draw(System.Object sender,
+            System.Windows.Forms.DrawToolTipEventArgs e)
+        {
+            // Draw the standard background.
+            e.DrawBackground();
+            e.DrawBorder();
+            Console.WriteLine("ttdraw " + e.ToolTipText + "\n" + e.ToolTipText.Split(new string[] { "\n" }, StringSplitOptions.None).Count() + " " + e.Bounds.Height );
+
+            using (StringFormat sf = new StringFormat())
+            using (Font f = new Font("Tahoma", 9))
+            {
+                int line = 0;
+                Regex pattern = new Regex(@"(?<pot>\d+) : \[?(?<ID>\w+)\]?\s*\[(?<cat>\w)\] --> (?<dist>\w+) \[(?<min>\w+)mins\]");
+                sf.FormatFlags = StringFormatFlags.NoWrap;
+                sf.SetTabStops(0.0f, new float[] { 40.0f });
+
+                foreach ( var s in e.ToolTipText.Split(new string[] { "\n" }, StringSplitOptions.None))
+                {
+                    // skip the first line, any empty line and lines that do not match
+                    if (line >1 && s.Length > 0 && pattern.IsMatch(s))
+                    {
+                        try
+                        {
+                            Match match = pattern.Match(s);
+                            int pot = int.Parse(match.Groups["pot"].Value);
+                            string ID = match.Groups["ID"].Value;
+                            string cat = match.Groups["cat"].Value;
+                            string dist = match.Groups["dist"].Value;
+                            string min = match.Groups["min"].Value;
+                            int Mins = int.Parse(min);
+
+                            paintAScell(pot, cat, Mins, new Rectangle(0, line * f.Height-3, 33, f.Height+4), e.Graphics);
+                            // for the text we have to use DrawString - textrenderer does not support tabs it seems
+                            e.Graphics.DrawString(( ID.Length<7 ? ID.PadRight(7) : ID) + "\t" + dist + " " + (pot<100 ? min + "mins" : ""), f,
+                                    SystemBrushes.ActiveCaptionText, new Point(45, line * f.Height), sf);
+                        }
+                        catch (Exception ex)
+                        {
+                            MainDlg.Log.WriteMessage(MethodBase.GetCurrentMethod().Name + " " + s + "\n" + ex.Message + "\n" + ex.StackTrace);
+                        }
+                    }
+                    else
+                    {
+                        e.Graphics.DrawString(s, e.Font, SystemBrushes.ActiveCaptionText, new Point(0, line * e.Font.Height), sf);
+                    }
+                    line++;
+                }
+            }
+            e.Graphics.Dispose();
+        }
+
+        /// <summary>
+        /// Paint airplane scatter status - visualize status by an elipse with different size and color
+        /// </summary>
+        /// <param name="pot">"Potential" of a plane - 100=on the path, 75=soon on the path, 50=soon on the path, but too low</param>
+        /// <param name="cat">"Category" of the plane ([S]uper heavy, [H]eavy, [M]edium, [L]ight</param>
+        /// <param name="Mins">minutes until the plane is on the path</param>
+        /// <param name="CellBounds">Bounds of the cell to paint</param>
+        /// <param name="gfx">Graphics context to draw to</param>
+        /// 
+        private void paintAScell(int pot, string cat, int Mins, Rectangle CellBounds, Graphics gfx)
+        {
+            Rectangle newRect = new Rectangle(CellBounds.X + 2,
+                CellBounds.Y + 2, CellBounds.Width - 4,
+                CellBounds.Height - 4);
+            Rectangle b = newRect;
+            b.Inflate(-5, 0); // width -10 for the text
+            if (cat.Equals("S"))
+                b.Inflate(-1, -1);
+            else if (cat.Equals("H"))
+                b.Inflate(-2, -2);
+            else if (cat.Equals("M") || cat.Equals("[unknown]"))
+                b.Inflate(-4, -4);
+            else if (cat.Equals("L"))
+                b.Inflate(-6, -6);
+            else // unknown
+                b.Inflate(-5, -5);
+            b.X = newRect.X + 1;  // FIXME needed?
+            if (pot == 100)
+            {
+                // 100
+                gfx.FillEllipse(new SolidBrush(Color.Magenta), b);
+            }
+            else if (pot > 50)
+            {
+                // 51..99
+                if (Mins > 15)
+                    gfx.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b); // Pale Pink
+                else if (Mins > 5)
+                    gfx.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b); // Golden Gate Bridge Orange
+                else
+                    gfx.FillEllipse(new SolidBrush(Color.Red), b);
+
+                using (StringFormat sf = new StringFormat())
+                {
+                    sf.Alignment = StringAlignment.Center;
+                    sf.LineAlignment = StringAlignment.Center;
+                    Rectangle tb = newRect;
+                    tb.X = newRect.Width - 15 + tb.X;
+                    tb.Width = 15;
+                    using (Font font = new Font("Tahoma", 6.6F, FontStyle.Regular))
+                    {
+                        gfx.DrawString(Mins.ToString(), font, Brushes.Black, tb, sf);
+                    }
+                }
+            }
+            else
+            {
+                // 0..50
+                gfx.FillEllipse(new SolidBrush(Color.Orange), b);
+            }
         }
 
         private void lv_Calls_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
@@ -1711,57 +1859,9 @@ namespace wtKST
                                 if (a.Length < 2)
                                     Console.WriteLine("ups " + a.Length + " " + as_string);
                                 var cat = a[1];
-                                Rectangle newRect = new Rectangle(e.CellBounds.X + 2,
-                                    e.CellBounds.Y + 2, e.CellBounds.Width - 4,
-                                    e.CellBounds.Height - 4);
-                                Rectangle b = newRect;
-                                b.Inflate(-5, 0); // width -10 for the text
-                                if (cat.Equals("S"))
-                                    b.Inflate(-1, -1);
-                                else if (cat.Equals("H"))
-                                    b.Inflate(-2, -2);
-                                else if (cat.Equals("M") || cat.Equals("[unknown]"))
-                                    b.Inflate(-4, -4);
-                                else if (cat.Equals("L"))
-                                    b.Inflate(-6, -6);
-                                else // unknown
-                                    b.Inflate(-5, -5);
-                                b.X = newRect.X + 1;  // FIXME needed?
-                                if (pot == 100)
-                                {
-                                    // 100
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.Magenta), b);
-                                }
-                                else if (pot > 50)
-                                {
-                                    // 51..99
-                                    if (Mins > 15)
-                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xff, 0xdb, 0xdb)), b);
-                                    else if (Mins > 5)
-                                        e.Graphics.FillEllipse(new SolidBrush(Color.FromArgb(0xff, 0xb7, 0x2d, 0x2d)), b);
-                                    else
-                                        e.Graphics.FillEllipse(new SolidBrush(Color.Red), b);
-
-                                    using (StringFormat sf = new StringFormat())
-                                    {
-                                        using (Font headerFont = new Font(e.CellStyle.Font.Name, e.CellStyle.Font.Size * 0.8F, FontStyle.Regular))
-                                        {
-                                            sf.Alignment = StringAlignment.Center;
-                                            sf.LineAlignment = StringAlignment.Center;
-                                            Rectangle tb = newRect;
-                                            tb.X = tb.X + newRect.Width - 15;
-                                            tb.Width = 15;
-                                            e.Graphics.DrawString(Mins.ToString(), headerFont, Brushes.Black, tb, sf);
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    // 0..50
-                                    e.Graphics.FillEllipse(new SolidBrush(Color.Orange), b);
-                                }
-                                e.Handled = true;
+                                paintAScell(pot, cat, Mins, e.CellBounds, e.Graphics);
                             }
+                            e.Handled = true;
                         }
                     }
                     catch
@@ -1825,29 +1925,32 @@ namespace wtKST
                 }
                 if (column.Name == "AS")
                 {
-                    string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
-                    string s = AS_if.GetNearestPlanes(ascall);
-                    if (string.IsNullOrEmpty(s))
+                    if (AS_if.IsActive())
                     {
-                        ToolTipText = "No planes\n\nLeft click for map";
-                        lock (CALL)
+                        string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                        string s = AS_if.GetNearestPlanes(ascall);
+                        if (string.IsNullOrEmpty(s))
                         {
-                            DataRow Row = CALL.Rows.Find(ascall);
-                            if (Row != null && Settings.Default.AS_Active)
+                            ToolTipText = "No planes\n\nLeft click for map";
+                            lock (CALL)
                             {
-                                int qrb = (int)Row["QRB"];
-                                if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
-                                    ToolTipText = "Too close for planes\n\nLeft click for map";
-                                else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
-                                    ToolTipText = "Too far away for planes\n\nLeft click for map";
+                                DataRow Row = CALL.Rows.Find(ascall);
+                                if (Row != null )
+                                {
+                                    int qrb = (int)Row["QRB"];
+                                    if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                                        ToolTipText = "Too close for planes\n\nLeft click for map";
+                                    else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
+                                        ToolTipText = "Too far away for planes\n\nLeft click for map";
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        string t = s.Remove(0, s.IndexOf("\n\n") + 2);
-                        t = t.Remove(t.IndexOf("\n"));
-                        ToolTipText = t + "\n\nLeft click for map\nRight click for more";
+                        else
+                        {
+                            string t = s.Remove(0, s.IndexOf("\n\n") + 2);
+                            t = t.Remove(t.IndexOf("\n"));
+                            ToolTipText = t + "\n\nLeft click for map\nRight click for more";
+                        }
                     }
                 }
                 if (!String.IsNullOrEmpty(column.Name) && column.Name[0] > '0' && column.Name[0] < '9')
@@ -1907,6 +2010,11 @@ namespace wtKST
             fill_AS_list();
         }
 
+        private void lv_Calls_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+        {
+            fill_AS_list();
+        }
+
         private void lv_Calls_mousewheel_event(object sender, EventArgs e)
         {
             fill_AS_list();
@@ -1928,60 +2036,64 @@ namespace wtKST
             }
         }
 
+
         private void fill_AS_list()
         {
-            if (!Settings.Default.AS_Active || lv_Calls == null || lv_Calls.RowCount == 0)
+            if (AS_if==null || !AS_if.IsActive() || lv_Calls == null || lv_Calls.RowCount == 0)
                 return;
 
             string watchlist = "";
+            List<AirScoutInterface.AS_Calls> AS_list = new List<AirScoutInterface.AS_Calls>();
+            List<AirScoutInterface.AS_Calls> tmp_AS_list = new List<AirScoutInterface.AS_Calls>();
 
-            // called if the user list changes
-            lock (AS_list)
+            string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
+
+            // find visible users
+            for (int i = 0; i < lv_Calls.RowCount; i++)
             {
-                AS_list.Clear();
-
-                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
-
-                // find visible users
-                for (int i = 0; i < lv_Calls.RowCount; i++)
+                try
                 {
-                    try
-                    {
-                        if (lv_Calls.Rows[i].Cells["LOC"].Value == null)
-                            continue;
-                        string dxloc = lv_Calls.Rows[i].Cells["LOC"].Value.ToString();
-                        string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Rows[i].Cells["CALL"].Value.ToString().TrimStart(
-                            new char[] { '(' }).TrimEnd(new char[] { ')' }));
+                    if (lv_Calls.Rows[i].Cells["LOC"].Value == null)
+                        continue;
+                    string dxloc = lv_Calls.Rows[i].Cells["LOC"].Value.ToString();
+                    string dxcall = WCCheck.WCCheck.SanitizeCall(lv_Calls.Rows[i].Cells["CALL"].Value.ToString().TrimStart(
+                        new char[] { '(' }).TrimEnd(new char[] { ')' }));
 
-                        if (!mycall.Equals(dxcall))
+                    if (!mycall.Equals(dxcall))
+                    {
+                        int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, dxloc);
+                        var row = lv_Calls.Rows[i].Cells;//  DataBoundItem.GetType();
+                        if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
                         {
-                            int qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, dxloc);
-                            var row = lv_Calls.Rows[i].Cells;//  DataBoundItem.GetType();
-                            if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                            if (!row["AS"].Value.Equals("<"))
+                                row["AS"].Value = "<";
+                        }
+                        else if (qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
+                        {
+                            watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
+                            if (i >= lv_Calls.FirstDisplayedCell.RowIndex && i < lv_Calls.FirstDisplayedCell.RowIndex + lv_Calls.DisplayedRowCount(true))
                             {
-                                if (!row["AS"].Value.Equals("<"))
-                                    row["AS"].Value = "<";
-                            }
-                            else if (qrb <= Convert.ToInt32(Settings.Default.AS_MaxDist))
-                            {
-                                watchlist += string.Concat(new string[] { ",", dxcall, ",", dxloc });
-                                if (i >= lv_Calls.FirstDisplayedCell.RowIndex && i < lv_Calls.FirstDisplayedCell.RowIndex + lv_Calls.DisplayedRowCount(true))
-                                {
-                                    AS_list.Add(new AS_Calls(dxcall, dxloc));
-                                }
+                                AS_list.Add(new AirScoutInterface.AS_Calls(dxcall, dxloc));
                             }
                             else
                             {
-                                if (!row["AS"].Value.Equals(">"))
-                                    row["AS"].Value = ">";
+                                tmp_AS_list.Add(new AirScoutInterface.AS_Calls(dxcall, dxloc));
                             }
                         }
-                    }
-                    catch
-                    {
+                        else
+                        {
+                            if (!row["AS"].Value.Equals(">"))
+                                row["AS"].Value = ">";
+                        }
                     }
                 }
+                catch
+                {
+                }
             }
+            // concat the currently not displayed calls to the end of AS_list
+            AS_list.AddRange(tmp_AS_list);
+            AS_if.update_AS_list(AS_list);
 
             lock (AS_watchlist)
             {
@@ -2085,9 +2197,9 @@ namespace wtKST
                     }
                     string loc = row.Cells["LOC"].Value.ToString();
 
-                    if (column.Name == "AS" && Settings.Default.AS_Active)
+                    if (column.Name == "AS")
                     {
-                        AS_if.show_path(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
+                        AS_if.ShowPath(call, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
                     }
                     if (column.Name[0] > '0' && column.Name[0] < '9')
                     {
@@ -2156,7 +2268,7 @@ namespace wtKST
 
                         this.cmn_userlist.Show(lv_Calls, dgv.PointToClient(Cursor.Position));
                     }
-                    else if (column.Name == "AS" && Settings.Default.AS_Active)
+                    else if (column.Name == "AS" && AS_if.IsActive())
                     {
                         string call = WCCheck.WCCheck.SanitizeCall(row.Cells["CALL"].Value.ToString().Replace("(", "").Replace(")", ""));
                         string s = AS_if.GetNearestPlanes(call);
@@ -2166,7 +2278,7 @@ namespace wtKST
                             lock (CALL)
                             {
                                 DataRow Row = CALL.Rows.Find(call);
-                                if (Row != null && Settings.Default.AS_Active)
+                                if (Row != null)
                                 {
                                     int qrb = (int)Row["QRB"];
                                     if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
@@ -2178,7 +2290,9 @@ namespace wtKST
                         }
                         else
                         {
-                            ToolTipText = s + "\n\nLeft click for map\nRight click for more";
+                            ToolTipText = s + "\nLeft click for map";
+                            ShowASToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
+                            return;
                         }
                     }
                     ShowToolTip(ToolTipText, dgv, dgv.PointToClient(Cursor.Position));
@@ -2221,17 +2335,22 @@ namespace wtKST
                     DataRow[] selectRow = KST.MSG_findcall(call);
 
                     DataRow userRow = CALL.Rows.Find(call);
+                    int qrb = 0;
+                    double qtf = 0.0;
 
                     if (userRow != null) 
                     {
                        string loc = userRow["LOC"].ToString();
+                        qtf = WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
+                        qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
                        this.cmn_msglist_toolStripTextBox_DirQRB.Text = string.Concat(new object[]
                        {
-                            WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc).ToString("000"), "° ",
-                            WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc), " km"
+                            qtf.ToString("000"), "° ",
+                            qrb, " km"
                        });
                        this.cmn_msglist_toolStripTextBox_DirQRB.Visible = true;
-                    } else
+                    }
+                    else
                         this.cmn_msglist_toolStripTextBox_DirQRB.Visible = false;
 
                     this.cmn_msglist_chatReview.Visible = (selectRow.Length > 0);
@@ -2249,8 +2368,109 @@ namespace wtKST
                     {
                         this.cmn_msglist_openURL.Visible = false;
                     }
+                    // we only display Airscout information if available and the user is the in the user list (otherwise we probably do not have enough data)
+                    this.cmn_msglist_AS_details.Visible = AS_if.IsActive() && userRow != null;
+                    if (AS_if.IsActive() && !String.IsNullOrEmpty(call) && userRow != null)
+                    {
+                        this.cmn_msglist_AS_status.Visible = true;
+                        using (Graphics graphic = Graphics.FromImage(this.cmn_msglist_AS_status.Image))
+                        using (SolidBrush brush = new SolidBrush(Control.DefaultBackColor))
+                        {
+                            graphic.FillRectangle(brush, new RectangleF(0, 0,
+                                cmn_msglist_AS_status.Image.Width, cmn_msglist_AS_status.Image.Height));
+
+                            if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                            {
+                                TextRenderer.DrawText(graphic, "   < ", cmn_msglist_AS_status.Font, new Point(0,0), cmn_msglist_AS_status.ForeColor);
+                            }
+                            else
+                            {
+                                string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                                string as_string = AS_if.GetNearestPlanePotential(ascall);
+
+                                if (!string.IsNullOrEmpty(as_string) && as_string != "0")
+                                {
+                                    string[] a = as_string.Split(new char[] { ',' });
+                                    if (a.Length == 3)
+                                    {
+                                        int pot = Convert.ToInt32(a[0]);
+                                        int Mins = Convert.ToInt32(a[2]);
+                                        if (Mins > 99)
+                                            Mins = 99;
+                                        if (pot > 0)
+                                        {
+                                            var cat = a[1];
+
+                                                paintAScell(pot, cat, Mins, new Rectangle(0, 0, cmn_msglist_AS_status.Image.Width, cmn_msglist_AS_status.Image.Height), graphic);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        this.cmn_msglist_AS_status.Text = "Click for map";
+                    }
+                    else
+                        this.cmn_msglist_AS_status.Visible = false;
+
                     this.cmn_msglist.Show(lv_Msg, p);
                 }
+            }
+        }
+
+        private void cmn_msglist_toolStripLabel_AS_clicked(object sender, EventArgs e)
+        {
+            ToolStripItem clickedItem = sender as ToolStripItem;
+            if (AS_if.IsActive())
+            {
+                string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
+
+                if (!String.IsNullOrEmpty(call))
+                {
+                    DataRow userRow = CALL.Rows.Find(call);
+
+                    if (userRow != null)
+                    {
+                        string loc = userRow["LOC"].ToString();
+
+                        string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                        AS_if.ShowPath(ascall, loc, Settings.Default.KST_UserName.ToUpper(), Settings.Default.KST_Loc);
+                    }
+                }
+            }
+        }
+
+        private void cmn_item_AS_Click(object sender, MouseEventArgs e)
+        {
+            ToolStripItem clickedItem = sender as ToolStripItem;
+            string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
+
+            if (!String.IsNullOrEmpty(call))
+            {
+                string ToolTipText;
+                string ascall = WCCheck.WCCheck.SanitizeCall(call.Replace("(", "").Replace(")", ""));
+                string s = AS_if.GetNearestPlanes(ascall);
+                if (string.IsNullOrEmpty(s))
+                {
+                    ToolTipText = "No planes";
+                    lock (CALL)
+                    {
+                        DataRow Row = CALL.Rows.Find(ascall);
+                        if (Row != null && AS_if.IsActive())
+                        {
+                            int qrb = (int)Row["QRB"];
+                            if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
+                                ToolTipText = "Too close for planes";
+                            else if (qrb > Convert.ToInt32(Settings.Default.AS_MaxDist))
+                                ToolTipText = "Too far away for planes";
+                        }
+                    }
+                }
+                else
+                {
+                    ToolTipText = s;
+                }
+                ShowASToolTip(ToolTipText, lv_Msg, lv_Msg.PointToClient(Cursor.Position));
+                this.cmn_msglist_Label.Text = ToolTipText;
             }
         }
 
@@ -2318,7 +2538,7 @@ namespace wtKST
         {
             Point p = new Point(e.X, e.Y);
             ListViewHitTestInfo info = lv_Msg.HitTest(p);
-            if (OldMousePos != p && info != null && info.SubItem != null)
+            if (OldMousePos != p && info != null && info.SubItem != null && !ToolTip_AS_active)
             {
                 OldMousePos = p;
                 if (info.SubItem.Name == "Messages")
@@ -2336,7 +2556,7 @@ namespace wtKST
         {
             Point p = new Point(e.X, e.Y);
             ListViewHitTestInfo info = lv_MyMsg.HitTest(p);
-            if (OldMousePos != p && info != null && info.SubItem != null)
+            if (OldMousePos != p && info != null && info.SubItem != null && !ToolTip_AS_active)
             {
                 OldMousePos = p;
                 if (info.SubItem.Name == "Messages")
@@ -2692,114 +2912,49 @@ namespace wtKST
             lock (AS_watchlist)
             {
                 string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
-                AS_if.send_watchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
+                AS_if.SendWatchlist(AS_watchlist, mycall, Settings.Default.KST_Loc);
             }
         }
 
-        private void bw_GetPlanes_DoWork(object sender, DoWorkEventArgs e)
+        private void AS_UpdateASStatus(object sender, AirScoutInterface.UpdateASStatusEventArgs args)
         {
-            while (!bw_GetPlanes.CancellationPending)
+            if (this.InvokeRequired)
             {
-                if (KST.State < KSTcom.KST_STATE.Connected || !Settings.Default.AS_Active)
-                {
-                    Thread.Sleep(200); // TODO: better to use WaitHandles
-                    continue;
-                }
-                int errors = 0;
-                string mycall = WCCheck.WCCheck.SanitizeCall(Settings.Default.KST_UserName);
-
-                // here we make a local copy of the current AS_list
-                AS_Calls[] myAs_List;
-
-                if (AS_list.Count == 0)
-                    continue;
-                lock (AS_list)
-                {
-                    myAs_List = new AS_Calls[AS_list.Count];
-                    AS_list.CopyTo(myAs_List);
-                }
-
-                foreach (AS_Calls a in myAs_List)
-                {
-                    if (!Settings.Default.AS_Active)
-                        break;
-                    try
-                    {
-                        string dxloc = a.Locator;
-                        // FIXME: handle /p etc.
-                        string dxcall = a.Call;
-
-                        if (Settings.Default.AS_Active)
-                        {
-                            if (!AS_if.GetPlanes(mycall, Settings.Default.KST_Loc, dxcall, dxloc))
-                            {
-                                errors++;
-                                if (errors > 10)
-                                {
-                                    bw_GetPlanes.ReportProgress(0, null);
-                                    break;
-                                }
-
-                            }
-                        }
-                        Thread.Sleep(200);
-                    }
-                    catch
-                    {
-                    }
-                }
-            }
-        }
-
-        private void bw_GetPlanes_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            string dxcall = (string)e.UserState;
-            if (dxcall == null)
-            {
-                if (e.ProgressPercentage == 0)
-                {
-                    try
-                    {
-                        AS_if.planes.Clear();
-                        lv_Calls.SuspendLayout();
-                        for (int i = 0; i < CALL.Rows.Count; i++)
-                        {
-                            CALL.Rows[i]["AS"] = "";
-                        }
-                        lv_Calls.ResumeLayout();
-                    }
-                    catch
-                    {
-                    }
-                }
+                this.BeginInvoke(new EventHandler<AirScoutInterface.UpdateASStatusEventArgs>(AS_UpdateASStatus), new object[] { sender, args });
                 return;
             }
-            // search the view for matching call - note that dxcall is the bare callsign, whereas
-            // the list contains () for users that are away and may contain things like /p
-            // so this is safer...
-            DataRow[] call_rows = CALL.Select(string.Format("[CALL] LIKE '*{0}*'", dxcall));
-
-            string newtext = "";
-            if (e.ProgressPercentage > 0)
+            if (args.dxcall == null)
             {
-                newtext = AS_if.GetNearestPlanePotential(dxcall);
-            }
-            else /* e.ProgressPercentage == 0 or e.ProgressPercentage == -1 */
-            {
-                //Console.WriteLine("remove " + dxcall);
-                AS_if.planes.Remove(dxcall);
-            }
-            foreach (var c in call_rows)
-            {
-                if (c["AS"].ToString() != newtext)
+                // remove all AS information from CALL
+                try
                 {
-                    c["AS"] = newtext;
+                    lv_Calls.SuspendLayout();
+                    for (int i = 0; i < CALL.Rows.Count; i++)
+                    {
+                        CALL.Rows[i]["AS"] = "";
+                    }
+                    lv_Calls.ResumeLayout();
+                }
+                catch
+                {
+                }
+
+            }
+            else
+            {
+                // search the view for matching call - note that dxcall is the bare callsign, whereas
+                // the list contains () for users that are away and may contain things like /p
+                // so this is safer...
+                DataRow[] call_rows = CALL.Select(string.Format("[CALL] LIKE '*{0}*'", args.dxcall));
+
+                foreach (var c in call_rows)
+                {
+                    if (c["AS"].ToString() != args.newtext)
+                    {
+                        c["AS"] = args.newtext;
+                    }
                 }
             }
-        }
-
-        private void bw_GetPlanes_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
         }
 
         [DllImport("user32.dll")]
@@ -2883,16 +3038,19 @@ namespace wtKST
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
+            this.tt_ASInfo = new System.Windows.Forms.ToolTip(this.components);
             this.ti_UpdateFilter = new System.Windows.Forms.Timer(this.components);
-            this.bw_GetPlanes = new System.ComponentModel.BackgroundWorker();
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_msglist_toolStripTextBox_DirQRB = new System.Windows.Forms.ToolStripTextBox();
+            this.cmn_msglist_AS_status = new System.Windows.Forms.ToolStripLabel();
+            this.cmn_msglist_Label = new System.Windows.Forms.Label();
             this.cmn_msglist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist_openURL = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_AS_details = new System.Windows.Forms.ToolStripMenuItem();
             this.ss_Main.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -3225,6 +3383,7 @@ namespace wtKST
             this.lv_Calls.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lv_Calls_CellValueChanged);
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
+            this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_Calls_DataBindingComplete);
             this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
             this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_DataBindingComplete);
             // 
@@ -3269,12 +3428,12 @@ namespace wtKST
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(89, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(90, 6);
             // 
             // tsi_File_Exit
             // 
             this.tsi_File_Exit.Name = "tsi_File_Exit";
-            this.tsi_File_Exit.Size = new System.Drawing.Size(92, 22);
+            this.tsi_File_Exit.Size = new System.Drawing.Size(93, 22);
             this.tsi_File_Exit.Text = "E&xit";
             this.tsi_File_Exit.Click += new System.EventHandler(this.tsi_File_Exit_Click);
             // 
@@ -3287,7 +3446,7 @@ namespace wtKST
             this.tsi_KST_Here,
             this.tsi_KST_Away});
             this.tsm_KST.Name = "tsm_KST";
-            this.tsm_KST.Size = new System.Drawing.Size(39, 20);
+            this.tsm_KST.Size = new System.Drawing.Size(38, 20);
             this.tsm_KST.Text = "&KST";
             // 
             // tsi_KST_Connect
@@ -3355,7 +3514,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_1.Name = "menu_btn_macro_1";
             this.menu_btn_macro_1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
-            this.menu_btn_macro_1.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_1.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_1.Text = global::wtKST.Properties.Settings.Default.KST_Macro_1;
             this.menu_btn_macro_1.Visible = global::wtKST.Properties.Settings.Default.KST_M1;
             this.menu_btn_macro_1.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3364,7 +3523,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_2.Name = "menu_btn_macro_2";
             this.menu_btn_macro_2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D2)));
-            this.menu_btn_macro_2.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_2.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_2.Text = global::wtKST.Properties.Settings.Default.KST_Macro_2;
             this.menu_btn_macro_2.Visible = global::wtKST.Properties.Settings.Default.KST_M2;
             this.menu_btn_macro_2.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3373,7 +3532,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_3.Name = "menu_btn_macro_3";
             this.menu_btn_macro_3.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
-            this.menu_btn_macro_3.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_3.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_3.Text = global::wtKST.Properties.Settings.Default.KST_Macro_3;
             this.menu_btn_macro_3.Visible = global::wtKST.Properties.Settings.Default.KST_M3;
             this.menu_btn_macro_3.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3382,7 +3541,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_4.Name = "menu_btn_macro_4";
             this.menu_btn_macro_4.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D4)));
-            this.menu_btn_macro_4.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_4.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_4.Text = global::wtKST.Properties.Settings.Default.KST_Macro_4;
             this.menu_btn_macro_4.Visible = global::wtKST.Properties.Settings.Default.KST_M4;
             this.menu_btn_macro_4.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3391,7 +3550,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_5.Name = "menu_btn_macro_5";
             this.menu_btn_macro_5.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D5)));
-            this.menu_btn_macro_5.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_5.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_5.Text = global::wtKST.Properties.Settings.Default.KST_Macro_5;
             this.menu_btn_macro_5.Visible = global::wtKST.Properties.Settings.Default.KST_M5;
             this.menu_btn_macro_5.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3400,7 +3559,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_6.Name = "menu_btn_macro_6";
             this.menu_btn_macro_6.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D6)));
-            this.menu_btn_macro_6.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_6.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_6.Text = global::wtKST.Properties.Settings.Default.KST_Macro_6;
             this.menu_btn_macro_6.Visible = global::wtKST.Properties.Settings.Default.KST_M6;
             this.menu_btn_macro_6.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3409,7 +3568,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_7.Name = "menu_btn_macro_7";
             this.menu_btn_macro_7.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D7)));
-            this.menu_btn_macro_7.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_7.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_7.Text = global::wtKST.Properties.Settings.Default.KST_Macro_7;
             this.menu_btn_macro_7.Visible = global::wtKST.Properties.Settings.Default.KST_M7;
             this.menu_btn_macro_7.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3418,7 +3577,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_8.Name = "menu_btn_macro_8";
             this.menu_btn_macro_8.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D8)));
-            this.menu_btn_macro_8.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_8.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_8.Text = global::wtKST.Properties.Settings.Default.KST_Macro_8;
             this.menu_btn_macro_8.Visible = global::wtKST.Properties.Settings.Default.KST_M8;
             this.menu_btn_macro_8.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3427,7 +3586,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_9.Name = "menu_btn_macro_9";
             this.menu_btn_macro_9.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D9)));
-            this.menu_btn_macro_9.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_9.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_9.Text = global::wtKST.Properties.Settings.Default.KST_Macro_9;
             this.menu_btn_macro_9.Visible = global::wtKST.Properties.Settings.Default.KST_M9;
             this.menu_btn_macro_9.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3436,7 +3595,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_0.Name = "menu_btn_macro_0";
             this.menu_btn_macro_0.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D0)));
-            this.menu_btn_macro_0.Size = new System.Drawing.Size(310, 22);
+            this.menu_btn_macro_0.Size = new System.Drawing.Size(337, 22);
             this.menu_btn_macro_0.Text = global::wtKST.Properties.Settings.Default.KST_Macro_0;
             this.menu_btn_macro_0.Visible = global::wtKST.Properties.Settings.Default.KST_M0;
             this.menu_btn_macro_0.Click += new System.EventHandler(this.kst_macro_bt1_Click);
@@ -3444,12 +3603,12 @@ namespace wtKST
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(307, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(334, 6);
             // 
             // macro_default_Station
             // 
             this.macro_default_Station.Name = "macro_default_Station";
-            this.macro_default_Station.Size = new System.Drawing.Size(310, 22);
+            this.macro_default_Station.Size = new System.Drawing.Size(337, 22);
             this.macro_default_Station.Text = "Default Station ";
             this.macro_default_Station.DropDownOpening += new System.EventHandler(this.macro_default_Station_DropDownOpening);
             // 
@@ -3527,6 +3686,11 @@ namespace wtKST
             this.ti_Reconnect.Interval = 30000;
             this.ti_Reconnect.Tick += new System.EventHandler(this.ti_Reconnect_Tick);
             // 
+            // ti_ToolTip_active
+            //
+            this.ti_ToolTip_active.Interval = 10000;
+            this.ti_ToolTip_active.Tick += new System.EventHandler(ti_ToolTip_active_Tick);
+            // 
             // tt_Info
             // 
             this.tt_Info.ShowAlways = true;
@@ -3535,13 +3699,12 @@ namespace wtKST
             // 
             this.ti_UpdateFilter.Tick += new System.EventHandler(this.ti_UpdateFilter_Tick);
             // 
-            // bw_GetPlanes
+            // tt_ASInfo
             // 
-            this.bw_GetPlanes.WorkerReportsProgress = true;
-            this.bw_GetPlanes.WorkerSupportsCancellation = true;
-            this.bw_GetPlanes.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bw_GetPlanes_DoWork);
-            this.bw_GetPlanes.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bw_GetPlanes_ProgressChanged);
-            this.bw_GetPlanes.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bw_GetPlanes_RunWorkerCompleted);
+            this.tt_ASInfo.ShowAlways = true;
+            this.tt_ASInfo.OwnerDraw = true;
+            this.tt_ASInfo.Popup += new PopupEventHandler(this.ToolTipp_AS_Popup);
+            this.tt_ASInfo.Draw += new DrawToolTipEventHandler(this.ToolTipp_AS_Draw);
             // 
             // cmn_userlist
             // 
@@ -3571,17 +3734,36 @@ namespace wtKST
             this.cmn_msglist_toolStripTextBox_DirQRB,
             this.cmn_msglist_wtsked,
             this.cmn_msglist_chatReview,
-            this.cmn_msglist_openURL});
+            this.cmn_msglist_openURL,
+            this.cmn_msglist_AS_status,
+            this.cmn_msglist_AS_details
+            });
             this.cmn_msglist.Name = "cmn_msglist";
             this.cmn_msglist.Size = new System.Drawing.Size(181, 117);
+            this.cmn_msglist.ImageScalingSize = new System.Drawing.Size(40, 20);
+
             // 
-            // toolStripTextBox_CallQRBDir
+            // cmn_msglist_Label
+            // 
+            this.cmn_msglist_Label.AutoSize = true;
+            // 
+            // cmn_msglist_toolStripTextBox_DirQRB
             // 
             this.cmn_msglist_toolStripTextBox_DirQRB.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.cmn_msglist_toolStripTextBox_DirQRB.Name = "toolStripTextBox_CallQRBDir";
             this.cmn_msglist_toolStripTextBox_DirQRB.ReadOnly = true;
             this.cmn_msglist_toolStripTextBox_DirQRB.Size = new System.Drawing.Size(100, 23);
             this.cmn_msglist_toolStripTextBox_DirQRB.Text = "Call 1000km 350°";
+            // 
+            // 
+            // cmn_msglist_AS_status
+            // 
+            this.cmn_msglist_AS_status.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.cmn_msglist_AS_status.Name = "cmn_msglist_toolStripTextBox_AS";
+            this.cmn_msglist_AS_status.Size = new System.Drawing.Size(206, 23);
+            this.cmn_msglist_AS_status.Text = "";
+            this.cmn_msglist_AS_status.Image = new Bitmap(40, 20);
+            this.cmn_msglist_AS_status.Click += new EventHandler(cmn_msglist_toolStripLabel_AS_clicked);
             // 
             // cmn_msglist_wtsked
             // 
@@ -3603,6 +3785,13 @@ namespace wtKST
             this.cmn_msglist_openURL.Name = "cmn_msglist_openURL";
             this.cmn_msglist_openURL.Text = "&Open URL";
             this.cmn_msglist_openURL.Click += new System.EventHandler(this.cmn_item_openURL_Click);
+            // 
+            // cmn_msglist_AS_details
+            // 
+            this.cmn_msglist_AS_details.Size = new System.Drawing.Size(200, 22);
+            this.cmn_msglist_AS_details.Name = "cmn_msglist_AS";
+            this.cmn_msglist_AS_details.Text = "&Airscout Details";
+            this.cmn_msglist_AS_details.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cmn_item_AS_Click);
             // 
             // MainDlg
             // 

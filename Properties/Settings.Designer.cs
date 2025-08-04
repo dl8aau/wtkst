@@ -12,7 +12,7 @@ namespace wtKST.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.12.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -896,6 +896,66 @@ namespace wtKST.Properties {
             }
             set {
                 this["QARTest_Sync_active"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool WS_Active {
+            get {
+                return ((bool)(this["WS_Active"]));
+            }
+            set {
+                this["WS_Active"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string WS_Username {
+            get {
+                return ((string)(this["WS_Username"]));
+            }
+            set {
+                this["WS_Username"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string WS_Password {
+            get {
+                return ((string)(this["WS_Password"]));
+            }
+            set {
+                this["WS_Password"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.airscout.app/page/dist/login.php?login=1")]
+        public string WS_LoginURL {
+            get {
+                return ((string)(this["WS_LoginURL"]));
+            }
+            set {
+                this["WS_LoginURL"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://www.airscout.app/airscout/api/v1")]
+        public string WS_API_URL {
+            get {
+                return ((string)(this["WS_API_URL"]));
+            }
+            set {
+                this["WS_API_URL"] = value;
             }
         }
     }

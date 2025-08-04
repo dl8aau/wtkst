@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AssemblyName>wtKST</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <WarningLevel>4</WarningLevel>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -26,8 +26,8 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>13</ApplicationRevision>
-    <ApplicationVersion>3.1.4.13</ApplicationVersion>
+    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationVersion>3.2.1.3</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -115,6 +115,18 @@
     </Compile>
     <Compile Include="WCCheck\WCCheck.cs" />
     <Compile Include="WCCheck\WCUtils.cs" />
+    <Compile Include="WebRTC\JSONRequests.cs" />
+    <Compile Include="WebRTC\JSONResponses.cs" />
+    <Compile Include="WebRTC\WebClientEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WebRTC\WebRTCPeer.cs" />
+    <Compile Include="WebRTC\WebRTCStartArgs.cs" />
+    <Compile Include="WebRTC\WebRTCStatus.cs" />
+    <Compile Include="WebRTC\WebRTCWebStat.cs" />
+    <Compile Include="WebRTC\WebRTCWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="wtKST\AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -122,6 +134,7 @@
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
     <Compile Include="wtKST\AirScoutIF.cs" />
+    <Compile Include="wtKST\AirscoutUDP.cs" />
     <Compile Include="wtKST\ChatReview.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -205,6 +218,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ILRepack">
+      <Version>2.0.29</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="ILRepack.MSBuild.Task">
+      <Version>2.0.13</Version>
+    </PackageReference>
     <PackageReference Include="Ionic.Zip">
       <Version>1.9.1.8</Version>
     </PackageReference>
@@ -213,6 +234,9 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="SIPSorcery">
+      <Version>6.2.1</Version>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite">
       <Version>1.0.119</Version>

@@ -221,5 +221,20 @@
     <Setting Name="QARTest_Sync_active" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="WS_Active" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="WS_Username" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="WS_Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="WS_LoginURL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://www.airscout.app/page/dist/login.php?login=1</Value>
+    </Setting>
+    <Setting Name="WS_API_URL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://www.airscout.app/airscout/api/v1</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -1,3 +1,25 @@
+3.2.1.3
+- Fix: there was a missing lock that lead to exceptions in the Airscout IF code on slow PCs
+- Fix: List of calls to check AS information for was not compiled correctly
+- Fix: only display AS information on users that are currently logged in, otherwise they could be outdated
+- Fix: some small fixes to new Airscout Interface UI
+
+3.2.1.1
+- Changes from "master" branch (3.1.4.14) re-integrated
+- FIX: visualization UI did not work properly for webRTC IF
+
+3.2.1.0
+- AS Web Interface - new data format
+- Airscout internal refactoring
+- New AS visialization UI (AS Tooltip, AS context menu in message list)
+
+3.2.0.0
+- AS Web Interface - internal test verson
+- WebRTC interface code to browser based Airscout
+
+3.1.4.14
+- Fix: local changes to the QRV entries should be ignored if too old
+
 3.1.4.13
 - Fix: "green" status of users in the list (so in the log already) was not filtered out correcty
 - Improvement: place the cursor at the end of a macro text

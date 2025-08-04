@@ -46,14 +46,12 @@ namespace wtKST
         private Label label15;
         private TextBox tb_Options_AS_Server_Name;
         private Label label14;
-        private Label label13;
         private TextBox tb_AS_Timeout;
-        private Label label12;
+        private Label label_timeout;
         private Label label11;
         private TextBox tb_AS_MaxDist;
         private Label label9;
         private TextBox tb_AS_MinDist;
-        private Label label8;
         public CheckBox cb_AS_Active;
         private GroupBox Bands;
         private CheckBox checkBox50;
@@ -75,7 +73,7 @@ namespace wtKST
         private Label label2;
         public TextBox tb_KST_Locator;
         private Label label1;
-        private Label label7;
+        private Label label_local_server;
         private TextBox tb_Options_AS_Local_Server_Name;
         public CheckBox cb_AS_local;
         private TabPage tabPage5;
@@ -116,6 +114,20 @@ namespace wtKST
         private GroupBox groupBox1;
         private GroupBox groupBox4;
         public CheckBox cb_QARTest_Active;
+        public CheckBox cb_WS_Active;
+        private Label label_WS_Password;
+        private TextBox tb_WS_Password;
+        private Label label_WS_Username;
+        private TextBox tb_WS_Username;
+        private Label label8;
+        private Panel panel_WS;
+        private Panel panel2;
+        private Panel panel_AS;
+        private Label label_timeout2;
+        private Label label29;
+        private TextBox tb_WS_LoginURL;
+        private Label label31;
+        private TextBox tb_WS_API_URL;
         public CheckBox cb_WinTest_Active;
 
         public OptionsDlg()
@@ -151,6 +163,18 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = true;
                 this.cb_WinTestNet_Active.Enabled = true;
                 this.cb_QARTest_Active.Enabled = true;
+            }
+
+            // AS handling
+            mCBsASCheckedChangedTriggered = false;
+            mCBsWSCheckedChangedTriggered = false;
+            if (this.cb_AS_Active.Checked)
+            {
+                CBHandleASActive();
+            }
+            else
+            {
+                CBHandleWSActive();
             }
         }
 
@@ -240,24 +264,36 @@ namespace wtKST
             this.checkBox70 = new System.Windows.Forms.CheckBox();
             this.checkBox50 = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.cb_AS_local = new System.Windows.Forms.CheckBox();
-            this.label7 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.label16 = new System.Windows.Forms.Label();
             this.cb_AS_QRG = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.tb_Options_AS_Local_Server_Name = new System.Windows.Forms.TextBox();
-            this.cb_AS_Active = new System.Windows.Forms.CheckBox();
             this.tb_Options_AS_My_Name = new System.Windows.Forms.TextBox();
             this.tb_AS_MinDist = new System.Windows.Forms.TextBox();
             this.tb_Options_AS_Server_Name = new System.Windows.Forms.TextBox();
             this.tb_AS_MaxDist = new System.Windows.Forms.TextBox();
+            this.panel_AS = new System.Windows.Forms.Panel();
+            this.label_local_server = new System.Windows.Forms.Label();
+            this.cb_AS_local = new System.Windows.Forms.CheckBox();
+            this.label_timeout2 = new System.Windows.Forms.Label();
+            this.label_timeout = new System.Windows.Forms.Label();
+            this.cb_AS_Active = new System.Windows.Forms.CheckBox();
             this.tb_AS_Timeout = new System.Windows.Forms.TextBox();
+            this.tb_Options_AS_Local_Server_Name = new System.Windows.Forms.TextBox();
+            this.panel_WS = new System.Windows.Forms.Panel();
+            this.tb_WS_Password = new System.Windows.Forms.TextBox();
+            this.label31 = new System.Windows.Forms.Label();
+            this.tb_WS_API_URL = new System.Windows.Forms.TextBox();
+            this.label29 = new System.Windows.Forms.Label();
+            this.tb_WS_LoginURL = new System.Windows.Forms.TextBox();
+            this.label_WS_Password = new System.Windows.Forms.Label();
+            this.label_WS_Username = new System.Windows.Forms.Label();
+            this.tb_WS_Username = new System.Windows.Forms.TextBox();
+            this.cb_WS_Active = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.label24 = new System.Windows.Forms.Label();
@@ -300,6 +336,9 @@ namespace wtKST
             this.tabPage3.SuspendLayout();
             this.Bands.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel_AS.SuspendLayout();
+            this.panel_WS.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -649,7 +688,7 @@ namespace wtKST
             // 
             this.cb_QARTest_Active.AutoSize = true;
             this.cb_QARTest_Active.Checked = global::wtKST.Properties.Settings.Default.QARTest_Sync_active;
-            this.cb_QARTest_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "QARTest_Sync_active", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cb_QARTest_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "QARTest_Sync_active", true));
             this.cb_QARTest_Active.Enabled = false;
             this.cb_QARTest_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_QARTest_Active.Location = new System.Drawing.Point(8, 22);
@@ -678,7 +717,7 @@ namespace wtKST
             // 
             this.cb_WinTestNet_Active.AutoSize = true;
             this.cb_WinTestNet_Active.Checked = global::wtKST.Properties.Settings.Default.WinTest_NetworkSync_active;
-            this.cb_WinTestNet_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "WinTest_NetworkSync_active", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.cb_WinTestNet_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "WinTest_NetworkSync_active", true));
             this.cb_WinTestNet_Active.Enabled = false;
             this.cb_WinTestNet_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_WinTestNet_Active.Location = new System.Drawing.Point(8, 22);
@@ -691,7 +730,7 @@ namespace wtKST
             // 
             // tb_Options_WinTest_Station_Name
             // 
-            this.tb_Options_WinTest_Station_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WinTest_StationName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.tb_Options_WinTest_Station_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WinTest_StationName", true));
             this.tb_Options_WinTest_Station_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_Options_WinTest_Station_Name.Location = new System.Drawing.Point(112, 40);
             this.tb_Options_WinTest_Station_Name.Name = "tb_Options_WinTest_Station_Name";
@@ -964,24 +1003,9 @@ namespace wtKST
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.cb_AS_local);
-            this.tabPage4.Controls.Add(this.label7);
-            this.tabPage4.Controls.Add(this.label16);
-            this.tabPage4.Controls.Add(this.cb_AS_QRG);
-            this.tabPage4.Controls.Add(this.label8);
-            this.tabPage4.Controls.Add(this.label15);
-            this.tabPage4.Controls.Add(this.label9);
-            this.tabPage4.Controls.Add(this.label14);
-            this.tabPage4.Controls.Add(this.label13);
-            this.tabPage4.Controls.Add(this.label11);
-            this.tabPage4.Controls.Add(this.label12);
-            this.tabPage4.Controls.Add(this.tb_Options_AS_Local_Server_Name);
-            this.tabPage4.Controls.Add(this.cb_AS_Active);
-            this.tabPage4.Controls.Add(this.tb_Options_AS_My_Name);
-            this.tabPage4.Controls.Add(this.tb_AS_MinDist);
-            this.tabPage4.Controls.Add(this.tb_Options_AS_Server_Name);
-            this.tabPage4.Controls.Add(this.tb_AS_MaxDist);
-            this.tabPage4.Controls.Add(this.tb_AS_Timeout);
+            this.tabPage4.Controls.Add(this.panel2);
+            this.tabPage4.Controls.Add(this.panel_AS);
+            this.tabPage4.Controls.Add(this.panel_WS);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Size = new System.Drawing.Size(471, 290);
@@ -989,38 +1013,32 @@ namespace wtKST
             this.tabPage4.Text = "Airplane Scatter";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // cb_AS_local
+            // panel2
             // 
-            this.cb_AS_local.AutoSize = true;
-            this.cb_AS_local.Checked = global::wtKST.Properties.Settings.Default.AS_Local_Active;
-            this.cb_AS_local.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Local_Active", true));
-            this.cb_AS_local.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_AS_local.Location = new System.Drawing.Point(18, 101);
-            this.cb_AS_local.Name = "cb_AS_local";
-            this.cb_AS_local.Size = new System.Drawing.Size(177, 17);
-            this.cb_AS_local.TabIndex = 10;
-            this.cb_AS_local.Text = "Use local server for double click";
-            this.cb_AS_local.UseVisualStyleBackColor = true;
-            this.cb_AS_local.CheckedChanged += new System.EventHandler(this.cb_AS_local_CheckedChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(202, 102);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(70, 13);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "Local Server:";
+            this.panel2.Controls.Add(this.label16);
+            this.panel2.Controls.Add(this.cb_AS_QRG);
+            this.panel2.Controls.Add(this.label8);
+            this.panel2.Controls.Add(this.label15);
+            this.panel2.Controls.Add(this.label9);
+            this.panel2.Controls.Add(this.label14);
+            this.panel2.Controls.Add(this.label11);
+            this.panel2.Controls.Add(this.tb_Options_AS_My_Name);
+            this.panel2.Controls.Add(this.tb_AS_MinDist);
+            this.panel2.Controls.Add(this.tb_Options_AS_Server_Name);
+            this.panel2.Controls.Add(this.tb_AS_MaxDist);
+            this.panel2.Location = new System.Drawing.Point(5, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(446, 75);
+            this.panel2.TabIndex = 0;
             // 
             // label16
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(299, 67);
+            this.label16.Location = new System.Drawing.Point(302, 22);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(60, 13);
-            this.label16.TabIndex = 25;
+            this.label16.TabIndex = 10;
             this.label16.Text = "Frequency:";
             // 
             // cb_AS_QRG
@@ -1039,155 +1057,300 @@ namespace wtKST
             "3.4G",
             "5.7G",
             "10G"});
-            this.cb_AS_QRG.Location = new System.Drawing.Point(368, 63);
+            this.cb_AS_QRG.Location = new System.Drawing.Point(377, 18);
             this.cb_AS_QRG.Name = "cb_AS_QRG";
-            this.cb_AS_QRG.Size = new System.Drawing.Size(78, 21);
-            this.cb_AS_QRG.TabIndex = 9;
+            this.cb_AS_QRG.Size = new System.Drawing.Size(64, 21);
+            this.cb_AS_QRG.TabIndex = 11;
             // 
             // label8
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label8.Location = new System.Drawing.Point(13, 180);
+            this.label8.Location = new System.Drawing.Point(12, 48);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(224, 13);
-            this.label8.TabIndex = 15;
+            this.label8.TabIndex = 12;
             this.label8.Text = "Get aircraft positions in the range of minumum:";
             // 
             // label15
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(158, 67);
+            this.label15.Location = new System.Drawing.Point(161, 22);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(55, 13);
-            this.label15.TabIndex = 7;
+            this.label15.TabIndex = 8;
             this.label15.Text = "My Name:";
             // 
             // label9
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label9.Location = new System.Drawing.Point(273, 180);
+            this.label9.Location = new System.Drawing.Point(275, 48);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(102, 13);
-            this.label9.TabIndex = 17;
+            this.label9.TabIndex = 14;
             this.label9.Text = "kms up to maximum:";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(15, 67);
+            this.label14.Location = new System.Drawing.Point(12, 22);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(70, 13);
-            this.label14.TabIndex = 5;
-            this.label14.Text = "Server name:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label13.Location = new System.Drawing.Point(199, 131);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(27, 13);
-            this.label13.TabIndex = 19;
-            this.label13.Text = "sec.";
+            this.label14.Size = new System.Drawing.Size(85, 13);
+            this.label14.TabIndex = 6;
+            this.label14.Text = "Server/Channel:";
             // 
             // label11
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(417, 180);
+            this.label11.Location = new System.Drawing.Point(416, 48);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(29, 13);
             this.label11.TabIndex = 16;
             this.label11.Text = "kms.";
             // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label12.Location = new System.Drawing.Point(13, 131);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(141, 13);
-            this.label12.TabIndex = 13;
-            this.label12.Text = "Timeout for server response:";
-            // 
-            // tb_Options_AS_Local_Server_Name
-            // 
-            this.tb_Options_AS_Local_Server_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Local_Name", true));
-            this.tb_Options_AS_Local_Server_Name.Enabled = global::wtKST.Properties.Settings.Default.AS_Local_Active;
-            this.tb_Options_AS_Local_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(276, 99);
-            this.tb_Options_AS_Local_Server_Name.Name = "tb_Options_AS_Local_Server_Name";
-            this.tb_Options_AS_Local_Server_Name.Size = new System.Drawing.Size(51, 20);
-            this.tb_Options_AS_Local_Server_Name.TabIndex = 12;
-            this.tb_Options_AS_Local_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Local_Name;
-            // 
-            // cb_AS_Active
-            // 
-            this.cb_AS_Active.AutoSize = true;
-            this.cb_AS_Active.Checked = global::wtKST.Properties.Settings.Default.AS_Active;
-            this.cb_AS_Active.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_AS_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Active", true));
-            this.cb_AS_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_AS_Active.Location = new System.Drawing.Point(16, 29);
-            this.cb_AS_Active.Name = "cb_AS_Active";
-            this.cb_AS_Active.Size = new System.Drawing.Size(366, 17);
-            this.cb_AS_Active.TabIndex = 4;
-            this.cb_AS_Active.Text = "Activate (Requires AirScout server functionionaltiy newer than V.0.9.9.5)";
-            this.cb_AS_Active.UseVisualStyleBackColor = true;
-            // 
             // tb_Options_AS_My_Name
             // 
             this.tb_Options_AS_My_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_My_Name", true));
             this.tb_Options_AS_My_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_AS_My_Name.Location = new System.Drawing.Point(217, 64);
+            this.tb_Options_AS_My_Name.Location = new System.Drawing.Point(220, 19);
             this.tb_Options_AS_My_Name.Name = "tb_Options_AS_My_Name";
             this.tb_Options_AS_My_Name.Size = new System.Drawing.Size(66, 20);
-            this.tb_Options_AS_My_Name.TabIndex = 8;
+            this.tb_Options_AS_My_Name.TabIndex = 9;
             this.tb_Options_AS_My_Name.Text = global::wtKST.Properties.Settings.Default.AS_My_Name;
             // 
             // tb_AS_MinDist
             // 
             this.tb_AS_MinDist.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_MinDist", true));
             this.tb_AS_MinDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_AS_MinDist.Location = new System.Drawing.Point(234, 177);
+            this.tb_AS_MinDist.Location = new System.Drawing.Point(240, 45);
             this.tb_AS_MinDist.Name = "tb_AS_MinDist";
-            this.tb_AS_MinDist.Size = new System.Drawing.Size(33, 20);
-            this.tb_AS_MinDist.TabIndex = 16;
+            this.tb_AS_MinDist.Size = new System.Drawing.Size(32, 20);
+            this.tb_AS_MinDist.TabIndex = 13;
             this.tb_AS_MinDist.Text = global::wtKST.Properties.Settings.Default.AS_MinDist;
             // 
             // tb_Options_AS_Server_Name
             // 
             this.tb_Options_AS_Server_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Server_Name", true));
             this.tb_Options_AS_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_AS_Server_Name.Location = new System.Drawing.Point(89, 64);
+            this.tb_Options_AS_Server_Name.Location = new System.Drawing.Point(103, 19);
             this.tb_Options_AS_Server_Name.Name = "tb_Options_AS_Server_Name";
             this.tb_Options_AS_Server_Name.Size = new System.Drawing.Size(51, 20);
-            this.tb_Options_AS_Server_Name.TabIndex = 6;
+            this.tb_Options_AS_Server_Name.TabIndex = 7;
             this.tb_Options_AS_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Server_Name;
             // 
             // tb_AS_MaxDist
             // 
             this.tb_AS_MaxDist.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_MaxDist", true));
             this.tb_AS_MaxDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_AS_MaxDist.Location = new System.Drawing.Point(378, 177);
+            this.tb_AS_MaxDist.Location = new System.Drawing.Point(377, 45);
             this.tb_AS_MaxDist.Name = "tb_AS_MaxDist";
             this.tb_AS_MaxDist.Size = new System.Drawing.Size(33, 20);
-            this.tb_AS_MaxDist.TabIndex = 18;
+            this.tb_AS_MaxDist.TabIndex = 15;
             this.tb_AS_MaxDist.Text = global::wtKST.Properties.Settings.Default.AS_MaxDist;
+            // 
+            // panel_AS
+            // 
+            this.panel_AS.Controls.Add(this.label_local_server);
+            this.panel_AS.Controls.Add(this.cb_AS_local);
+            this.panel_AS.Controls.Add(this.label_timeout2);
+            this.panel_AS.Controls.Add(this.label_timeout);
+            this.panel_AS.Controls.Add(this.cb_AS_Active);
+            this.panel_AS.Controls.Add(this.tb_AS_Timeout);
+            this.panel_AS.Controls.Add(this.tb_Options_AS_Local_Server_Name);
+            this.panel_AS.Location = new System.Drawing.Point(5, 84);
+            this.panel_AS.Name = "panel_AS";
+            this.panel_AS.Size = new System.Drawing.Size(446, 59);
+            this.panel_AS.TabIndex = 35;
+            // 
+            // label_local_server
+            // 
+            this.label_local_server.AutoSize = true;
+            this.label_local_server.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_local_server.Location = new System.Drawing.Point(231, 37);
+            this.label_local_server.Name = "label_local_server";
+            this.label_local_server.Size = new System.Drawing.Size(70, 13);
+            this.label_local_server.TabIndex = 11;
+            this.label_local_server.Text = "Local Server:";
+            // 
+            // cb_AS_local
+            // 
+            this.cb_AS_local.AutoSize = true;
+            this.cb_AS_local.Checked = global::wtKST.Properties.Settings.Default.AS_Local_Active;
+            this.cb_AS_local.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Local_Active", true));
+            this.cb_AS_local.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_AS_local.Location = new System.Drawing.Point(33, 35);
+            this.cb_AS_local.Name = "cb_AS_local";
+            this.cb_AS_local.Size = new System.Drawing.Size(177, 17);
+            this.cb_AS_local.TabIndex = 7;
+            this.cb_AS_local.Text = "Use local server for double click";
+            this.cb_AS_local.UseVisualStyleBackColor = true;
+            this.cb_AS_local.CheckedChanged += new System.EventHandler(this.cb_AS_local_CheckedChanged);
+            this.cb_AS_local.EnabledChanged += new System.EventHandler(this.cb_AS_local_EnableChanged);
+            // 
+            // label_timeout2
+            // 
+            this.label_timeout2.AutoSize = true;
+            this.label_timeout2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_timeout2.Location = new System.Drawing.Point(414, 14);
+            this.label_timeout2.Name = "label_timeout2";
+            this.label_timeout2.Size = new System.Drawing.Size(27, 13);
+            this.label_timeout2.TabIndex = 20;
+            this.label_timeout2.Text = "sec.";
+            // 
+            // label_timeout
+            // 
+            this.label_timeout.AutoSize = true;
+            this.label_timeout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_timeout.Location = new System.Drawing.Point(272, 14);
+            this.label_timeout.Name = "label_timeout";
+            this.label_timeout.Size = new System.Drawing.Size(109, 13);
+            this.label_timeout.TabIndex = 13;
+            this.label_timeout.Text = "Timeout for response:";
+            // 
+            // cb_AS_Active
+            // 
+            this.cb_AS_Active.AutoSize = true;
+            this.cb_AS_Active.Checked = global::wtKST.Properties.Settings.Default.AS_Active;
+            this.cb_AS_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Active", true));
+            this.cb_AS_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_AS_Active.Location = new System.Drawing.Point(13, 13);
+            this.cb_AS_Active.Name = "cb_AS_Active";
+            this.cb_AS_Active.Size = new System.Drawing.Size(243, 17);
+            this.cb_AS_Active.TabIndex = 5;
+            this.cb_AS_Active.Text = "Activate local Airscout service (same network)";
+            this.cb_AS_Active.UseVisualStyleBackColor = true;
+            this.cb_AS_Active.CheckedChanged += new System.EventHandler(this.cb_AS_Active_CheckedChanged);
             // 
             // tb_AS_Timeout
             // 
             this.tb_AS_Timeout.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Timeout", true));
             this.tb_AS_Timeout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_AS_Timeout.Location = new System.Drawing.Point(160, 128);
+            this.tb_AS_Timeout.Location = new System.Drawing.Point(387, 10);
             this.tb_AS_Timeout.Name = "tb_AS_Timeout";
-            this.tb_AS_Timeout.Size = new System.Drawing.Size(33, 20);
-            this.tb_AS_Timeout.TabIndex = 14;
+            this.tb_AS_Timeout.Size = new System.Drawing.Size(23, 20);
+            this.tb_AS_Timeout.TabIndex = 6;
             this.tb_AS_Timeout.Text = global::wtKST.Properties.Settings.Default.AS_Timeout;
+            // 
+            // tb_Options_AS_Local_Server_Name
+            // 
+            this.tb_Options_AS_Local_Server_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Local_Name", true));
+            this.tb_Options_AS_Local_Server_Name.Enabled = global::wtKST.Properties.Settings.Default.AS_Local_Active;
+            this.tb_Options_AS_Local_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(305, 33);
+            this.tb_Options_AS_Local_Server_Name.Name = "tb_Options_AS_Local_Server_Name";
+            this.tb_Options_AS_Local_Server_Name.Size = new System.Drawing.Size(51, 20);
+            this.tb_Options_AS_Local_Server_Name.TabIndex = 8;
+            this.tb_Options_AS_Local_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Local_Name;
+            // 
+            // panel_WS
+            // 
+            this.panel_WS.Controls.Add(this.tb_WS_Password);
+            this.panel_WS.Controls.Add(this.label31);
+            this.panel_WS.Controls.Add(this.tb_WS_API_URL);
+            this.panel_WS.Controls.Add(this.label29);
+            this.panel_WS.Controls.Add(this.tb_WS_LoginURL);
+            this.panel_WS.Controls.Add(this.label_WS_Password);
+            this.panel_WS.Controls.Add(this.label_WS_Username);
+            this.panel_WS.Controls.Add(this.tb_WS_Username);
+            this.panel_WS.Controls.Add(this.cb_WS_Active);
+            this.panel_WS.Location = new System.Drawing.Point(5, 149);
+            this.panel_WS.Name = "panel_WS";
+            this.panel_WS.Size = new System.Drawing.Size(446, 138);
+            this.panel_WS.TabIndex = 37;
+            // 
+            // tb_WS_Password
+            // 
+            this.tb_WS_Password.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WS_Password", true));
+            this.tb_WS_Password.Location = new System.Drawing.Point(341, 37);
+            this.tb_WS_Password.Name = "tb_WS_Password";
+            this.tb_WS_Password.PasswordChar = '*';
+            this.tb_WS_Password.Size = new System.Drawing.Size(100, 20);
+            this.tb_WS_Password.TabIndex = 31;
+            this.tb_WS_Password.Text = global::wtKST.Properties.Settings.Default.WS_Password;
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(10, 102);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(49, 13);
+            this.label31.TabIndex = 36;
+            this.label31.Text = "API URL";
+            // 
+            // tb_WS_API_URL
+            // 
+            this.tb_WS_API_URL.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WS_API_URL", true));
+            this.tb_WS_API_URL.Location = new System.Drawing.Point(79, 99);
+            this.tb_WS_API_URL.Name = "tb_WS_API_URL";
+            this.tb_WS_API_URL.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.tb_WS_API_URL.Size = new System.Drawing.Size(362, 20);
+            this.tb_WS_API_URL.TabIndex = 35;
+            this.tb_WS_API_URL.Text = global::wtKST.Properties.Settings.Default.WS_Username;
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(10, 76);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(58, 13);
+            this.label29.TabIndex = 34;
+            this.label29.Text = "Login URL";
+            // 
+            // tb_WS_LoginURL
+            // 
+            this.tb_WS_LoginURL.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WS_LoginURL", true));
+            this.tb_WS_LoginURL.Location = new System.Drawing.Point(79, 73);
+            this.tb_WS_LoginURL.Name = "tb_WS_LoginURL";
+            this.tb_WS_LoginURL.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.tb_WS_LoginURL.Size = new System.Drawing.Size(362, 20);
+            this.tb_WS_LoginURL.TabIndex = 33;
+            this.tb_WS_LoginURL.Text = global::wtKST.Properties.Settings.Default.WS_Username;
+            // 
+            // label_WS_Password
+            // 
+            this.label_WS_Password.AutoSize = true;
+            this.label_WS_Password.Location = new System.Drawing.Point(230, 40);
+            this.label_WS_Password.Name = "label_WS_Password";
+            this.label_WS_Password.Size = new System.Drawing.Size(99, 13);
+            this.label_WS_Password.TabIndex = 32;
+            this.label_WS_Password.Text = "AirScout Password:";
+            // 
+            // label_WS_Username
+            // 
+            this.label_WS_Username.AutoSize = true;
+            this.label_WS_Username.Location = new System.Drawing.Point(10, 40);
+            this.label_WS_Username.Name = "label_WS_Username";
+            this.label_WS_Username.Size = new System.Drawing.Size(101, 13);
+            this.label_WS_Username.TabIndex = 28;
+            this.label_WS_Username.Text = "AirScout Username:";
+            // 
+            // tb_WS_Username
+            // 
+            this.tb_WS_Username.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "WS_Username", true));
+            this.tb_WS_Username.Location = new System.Drawing.Point(121, 37);
+            this.tb_WS_Username.Name = "tb_WS_Username";
+            this.tb_WS_Username.Size = new System.Drawing.Size(87, 20);
+            this.tb_WS_Username.TabIndex = 27;
+            this.tb_WS_Username.Text = global::wtKST.Properties.Settings.Default.WS_Username;
+            // 
+            // cb_WS_Active
+            // 
+            this.cb_WS_Active.AutoSize = true;
+            this.cb_WS_Active.Checked = global::wtKST.Properties.Settings.Default.WS_Active;
+            this.cb_WS_Active.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_WS_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "WS_Active", true));
+            this.cb_WS_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_WS_Active.Location = new System.Drawing.Point(13, 14);
+            this.cb_WS_Active.Name = "cb_WS_Active";
+            this.cb_WS_Active.Size = new System.Drawing.Size(297, 17);
+            this.cb_WS_Active.TabIndex = 26;
+            this.cb_WS_Active.Text = "Activate web service for browser based AirScout versions";
+            this.cb_WS_Active.UseVisualStyleBackColor = true;
+            this.cb_WS_Active.CheckedChanged += new System.EventHandler(this.cb_WS_Active_CheckedChanged);
             // 
             // tabPage5
             // 
@@ -1523,6 +1686,7 @@ namespace wtKST
             this.Controls.Add(this.btn_OK);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "OptionsDlg";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Options";
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
@@ -1542,7 +1706,12 @@ namespace wtKST
             this.Bands.ResumeLayout(false);
             this.Bands.PerformLayout();
             this.tabPage4.ResumeLayout(false);
-            this.tabPage4.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            this.panel_AS.ResumeLayout(false);
+            this.panel_AS.PerformLayout();
+            this.panel_WS.ResumeLayout(false);
+            this.panel_WS.PerformLayout();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
             this.ResumeLayout(false);
@@ -1575,6 +1744,13 @@ namespace wtKST
         private void cb_AS_local_CheckedChanged(object sender, EventArgs e)
         {
             this.tb_Options_AS_Local_Server_Name.Enabled = this.cb_AS_local.Checked;
+            this.label_local_server.Enabled = this.cb_AS_local.Checked;
+        }
+
+        private void cb_AS_local_EnableChanged(object sender, EventArgs e)
+        {
+            this.tb_Options_AS_Local_Server_Name.Enabled = this.cb_AS_local.Checked;
+            this.label_local_server.Enabled = this.cb_AS_local.Checked;
         }
 
         private void cb_WinTest_Active_CheckedChanged(object sender, EventArgs e)
@@ -1621,6 +1797,89 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = true;
                 this.cb_WinTestNet_Active.Enabled = true;
             }
+        }
+
+        private bool mCBsASCheckedChangedTriggered = false;
+        private bool mCBsWSCheckedChangedTriggered = false;
+
+        private void CBHandleWSActive()
+        {
+            if (this.cb_WS_Active.Checked)
+            {
+                this.panel_AS.Enabled = false;
+                this.cb_AS_Active.Checked = false;
+                this.cb_AS_Active.Enabled = false;
+                mCBsASCheckedChangedTriggered = true;
+
+                foreach (Control c in this.panel_WS.Controls)
+                {
+                    c.Enabled = true;
+                }
+            }
+            else
+            {
+                mCBsASCheckedChangedTriggered = false;
+                disable_AS_panels_enable_cbs();
+            }
+        }
+
+        private void cb_WS_Active_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mCBsWSCheckedChangedTriggered)
+            {
+                mCBsWSCheckedChangedTriggered = false;
+                return;
+            }
+            CBHandleWSActive();
+        }
+
+        private void CBHandleASActive()
+        {
+            if (this.cb_AS_Active.Checked)
+            {
+                this.panel_WS.Enabled = false;
+                this.cb_WS_Active.Checked = false;
+                this.cb_WS_Active.Enabled = false;
+                mCBsWSCheckedChangedTriggered = true;
+                foreach (Control c in this.panel_AS.Controls)
+                {
+                    c.Enabled = true;
+                }
+            }
+            else
+            {
+                mCBsWSCheckedChangedTriggered = false;
+                disable_AS_panels_enable_cbs();
+            }
+        }
+
+        private void cb_AS_Active_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mCBsASCheckedChangedTriggered)
+            {
+                mCBsASCheckedChangedTriggered = false;
+                return;
+            }
+            CBHandleASActive();
+        }
+
+        private void disable_AS_panels_enable_cbs()
+        {
+            this.panel_WS.Enabled = true;
+            this.panel_AS.Enabled = true;
+            // we cannot disable the panel - otherwise we could not enable cb_AS_Active separately
+            foreach (Control c in this.panel_AS.Controls)
+            {
+                if (c != cb_AS_Active)
+                    c.Enabled = false;
+            }
+            this.cb_AS_Active.Enabled = true;
+            foreach (Control c in this.panel_WS.Controls)
+            {
+                if (c != cb_WS_Active)
+                    c.Enabled = false;
+            }
+            this.cb_WS_Active.Enabled = true;
         }
     }
 }

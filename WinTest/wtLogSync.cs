@@ -379,14 +379,14 @@ namespace WinTest
                             if (ls.AvailableFrom == StationLogStat.wtAvailableFrom.Owner)
                             {
                                 var cs = check_section(ls, sl.from);
-                                Debug("checking owner " + ls.StationUniqueID + " result " + cs);
+                                Console.WriteLine("checking owner " + ls.StationUniqueID + " result " + cs);
                                 if (cs == SECTION_STATE.SECTION_DONE)
                                 {
-                                    Debug(ls.StationUniqueID + " done (owner) " + DateTime.Now.ToString("h:mm:ss"));
+                                    Console.WriteLine(ls.StationUniqueID + " done (owner) " + DateTime.Now.ToString("h:mm:ss"));
                                 }
                                 else if (cs == SECTION_STATE.SECTION_TIMEOUT)
                                 {
-                                    Debug(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
+                                    Console.WriteLine(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
                                     // we need to find another source:
                                     if (find_alternative_source(sl.from, ls.StationUniqueID))
                                     {
@@ -396,7 +396,7 @@ namespace WinTest
                                     {
                                         // remove the station
                                         wtStationSyncList.RemoveAll(x => x.from == sl.from);
-                                        Debug("remove " + sl.from);
+                                        Console.WriteLine("remove " + sl.from);
                                         timeoutRemoveStation = true;
                                     }
                                     goto exitLoop;
@@ -417,14 +417,14 @@ namespace WinTest
                             if (ls.AvailableFrom != StationLogStat.wtAvailableFrom.Owner)
                             {
                                 var cs = check_section(ls, sl.from);
-                                Debug("checking " + ls.StationUniqueID + " result " + cs);
+                                Console.WriteLine("checking " + ls.StationUniqueID + " result " + cs);
                                 if (cs == SECTION_STATE.SECTION_DONE)
                                 {
-                                    Debug(ls.StationUniqueID + " done " + DateTime.Now.ToString("h:mm:ss"));
+                                    Console.WriteLine(ls.StationUniqueID + " done " + DateTime.Now.ToString("h:mm:ss"));
                                 }
                                 else if (cs == SECTION_STATE.SECTION_TIMEOUT)
                                 {
-                                    Debug(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
+                                    Console.WriteLine(ls.StationUniqueID + " timeout " + DateTime.Now.ToString("h:mm:ss"));
                                     // we need to find another source:
                                     if (find_alternative_source(sl.from, ls.StationUniqueID))
                                     {
@@ -434,7 +434,7 @@ namespace WinTest
                                     {
                                         // remove the station
                                         wtStationSyncList.RemoveAll(x => x.from == sl.from);
-                                        Debug("remove " + sl.from);
+                                        Console.WriteLine("remove " + sl.from);
                                         timeoutRemoveStation = true;
                                     }
                                     goto exitLoop;
@@ -453,7 +453,7 @@ namespace WinTest
                 {
                     if (WtlogsyncState == WTLOGSYNCSTATE.GET_QSO)
                         WtlogsyncState = WTLOGSYNCSTATE.QSO_IN_SYNC;
-                    Debug("all done " + QSO.Rows.Count
+                    Console.WriteLine("all done " + QSO.Rows.Count
                                       + " 432: "
                                       + QSO.Select("[BAND]='432M'").Length
                                       + " 1296: "
