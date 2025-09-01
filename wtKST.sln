@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Telnet", "Telnet\Telnet.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinTest", "WinTest\WinTest.csproj", "{7B815C51-6896-4989-BD1B-8D2D7A116AA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kstTest", "kstTest\kstTest.csproj", "{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_Ubuntu|Any CPU = Debug_Ubuntu|Any CPU
@@ -96,6 +98,30 @@ Global
 		{7B815C51-6896-4989-BD1B-8D2D7A116AA3}.Release|x64.Build.0 = Release|Any CPU
 		{7B815C51-6896-4989-BD1B-8D2D7A116AA3}.Release|x86.ActiveCfg = Release|Any CPU
 		{7B815C51-6896-4989-BD1B-8D2D7A116AA3}.Release|x86.Build.0 = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug_Ubuntu|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug_Ubuntu|Any CPU.Build.0 = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug_Ubuntu|x64.ActiveCfg = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug_Ubuntu|x64.Build.0 = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug_Ubuntu|x86.ActiveCfg = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug_Ubuntu|x86.Build.0 = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug|x64.Build.0 = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Debug|x86.Build.0 = Debug|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release_Ubuntu|Any CPU.ActiveCfg = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release_Ubuntu|Any CPU.Build.0 = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release_Ubuntu|x64.ActiveCfg = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release_Ubuntu|x64.Build.0 = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release_Ubuntu|x86.ActiveCfg = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release_Ubuntu|x86.Build.0 = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release|x64.ActiveCfg = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release|x64.Build.0 = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release|x86.ActiveCfg = Release|Any CPU
+		{D4773D99-A3C2-4B9A-AD43-C2B7DE6326B9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
