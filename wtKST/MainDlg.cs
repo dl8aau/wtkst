@@ -732,8 +732,9 @@ namespace wtKST
                         row["RECENTLOGIN"] = USER["RECENTLOGIN"];
 
                         string qrvcall = row["CALL"].ToString();
+                        string nameInfo = row["NAME"].ToString();
                         bool call_new_in_userlist = (bool)USER["RECENTLOGIN"];
-                        qrv.Process_QRV(row, qrvcall, call_new_in_userlist);
+                        qrv.Process_QRV(row, qrvcall, nameInfo, call_new_in_userlist);
 
                         if (call_new_in_userlist && wtQSO != null && wtQSO.QSO.Rows.Count > 0)
                             Check_QSO(row);
