@@ -1,3 +1,8 @@
+3.2.1.4
+- Improvement: Macros evalute $NAME
+- Improvement: Update modifying the UI for QRV state per band
+- Improvement: QRV local database stores entries per user, not call
+
 3.2.1.3
 - Fix: there was a missing lock that lead to exceptions in the Airscout IF code on slow PCs
 - Fix: List of calls to check AS information for was not compiled correctly

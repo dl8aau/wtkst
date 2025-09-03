@@ -4,13 +4,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyVersion("3.2.1.3")]
+[assembly: AssemblyVersion("3.2.1.4")]
 [assembly: Debuggable(DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints | DebuggableAttribute.DebuggingModes.EnableEditAndContinue)]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCopyright("© 2012-2025 by DL2ALF, DL8AAU")]
 [assembly: AssemblyDescription("ON4KST client with Win-Test support")]
-[assembly: AssemblyFileVersion("3.2.1.3")]
+[assembly: AssemblyFileVersion("3.2.1.4")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyTitle("wtKST")]
 [assembly: AssemblyTrademark("")]
