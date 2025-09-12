@@ -519,7 +519,7 @@ namespace wtKST
                             }
                             else
                             {
-                                MainDlg.Log.WriteMessage("KST user UA: " + s + "not valid");
+                                MainDlg.Log.WriteMessage("KST user UA: " + s + "not valid - ignored");
                             }
                         }
                         break;
@@ -568,9 +568,9 @@ namespace wtKST
                                 {
                                     row["AWAY"] = (usr_state & 1) == 1;
                                     row["RECENTLOGIN"] = (usr_state & 2) == 2;
+                                    if (process_user_update != null)
+                                        process_user_update(this, new UserUpdateEventArgs(row, USER_OP.USER_MODIFY_STATE));
                                 }
-                                if (process_user_update != null)
-                                    process_user_update(this, new UserUpdateEventArgs(row, USER_OP.USER_MODIFY_STATE));
                             }
                         }
                         break;
