@@ -463,7 +463,6 @@ namespace wtKST
             try
             {
                 MainDlg.Log.WriteMessage("KST user: " + s);
-                DataRow Row = MSG.NewRow();
                 //UA0|3|DF9QX|Matthias 23-1,2|JO42HD|1| -> away
                 //UA0|3|DL7QY|Claus 1-122GHz|JN59BD|0|
                 //UA0|3|DL8AAU|Alexander|JO41VL|2| -> new
