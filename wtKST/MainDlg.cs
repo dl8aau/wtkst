@@ -3881,10 +3881,12 @@ namespace wtKST
                 {
                     var wtElem = wts.wtStatusList.SingleOrDefault(x => x.from == item.Text);
 
-                    passfreq = wtElem.passfreq;
-                    band = wtElem.band;
-                    runfreq = wtElem.freq;
-
+                    if (wtElem != null)
+                    {
+                        passfreq = wtElem.passfreq;
+                        band = wtElem.band; // TODO 2_3GHz -> 2.3GHz or 13cm
+                        runfreq = wtElem.freq;
+                    }
                 }
             }
 
