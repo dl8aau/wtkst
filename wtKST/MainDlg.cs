@@ -1266,7 +1266,10 @@ namespace wtKST
                         // check locator
                         if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
                         {
-                            Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
+                            // TODO: this most probably leads to
+                            // Check_QSOs(1055): Die Sammlung wurde geändert; möglicherweise wurde die Enumeration nicht ausgeführt.
+                            // so comment out for now
+                            // Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
                             WinTestLocatorWarning = true;
                             Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
                         }
