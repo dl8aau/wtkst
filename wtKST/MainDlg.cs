@@ -466,7 +466,7 @@ namespace wtKST
 
                 // rate limit - ideally calling filter update should not be needed here
                 // should be triggered appropriately
-                if (KST_Update_User_Filter_last_called.AddSeconds(1) <= DateTime.Now)
+                if (KST_Update_User_Filter_last_called.AddSeconds(10) <= DateTime.Now)
                 {
                     KST_Update_Usr_Filter(true); // only check filter here! it should not have changed
                     KST_Update_User_Filter_last_called = DateTime.Now;
