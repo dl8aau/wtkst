@@ -43,31 +43,43 @@ namespace wtKST
             {
                 qrvcallBase = qrvcallBase.Remove(qrvcallBase.IndexOf("-"));
             }
+            foreach (string band in BANDS)
+            {
+                row[band] = QRV_STATE.unknown; // init to "unknown"
+            }
+
             bool call_in_stationDB = false;
-            List<QRVDesignator> QRVlist = null;
-            try
+
+            // try to deduce information about the bands the user is using from the "NAME" field (which is abused like this often)
+            bool call_in_nameInfo = EstimateBandsSupported(nameInfo, ref row);
+
+            if (!call_in_nameInfo)
             {
-                QRVlist = StationData.Database.QRVFind(qrvcallBase, row["LOC"].ToString());
-            }
-            catch (Exception ex)
-            {
-                Error(MethodBase.GetCurrentMethod().Name, "Scoutbase " + ex.Message);
-            }
-            if (QRVlist != null)
-            {
-                call_in_stationDB = true;
-                foreach (string band in BANDS)
+                List<QRVDesignator> QRVlist = null;
+                try
                 {
-                    row[band] = QRV_STATE.unknown;
+                    QRVlist = StationData.Database.QRVFind(qrvcallBase, row["LOC"].ToString());
                 }
-                foreach (var QRV in QRVlist)
+                catch (Exception ex)
                 {
-                    // match the bands in "our" BANDS property
-                    var matchingBand = BANDS
-                        .Where(element => element.Equals(ScoutBase.Core.Bands.GetStringValue(QRV.Band).Replace(".", "_")));
-                    if (matchingBand.Count()>0)
+                    Error(MethodBase.GetCurrentMethod().Name, "Scoutbase " + ex.Message);
+                }
+                if (QRVlist != null)
+                {
+                    call_in_stationDB = true;
+                    foreach (string band in BANDS)
                     {
-                        row[matchingBand.First()] = QRV_STATE.qrv;
+                        row[band] = QRV_STATE.unknown;
+                    }
+                    foreach (var QRV in QRVlist)
+                    {
+                        // match the bands in "our" BANDS property
+                        var matchingBand = BANDS
+                            .Where(element => element.Equals(ScoutBase.Core.Bands.GetStringValue(QRV.Band).Replace(".", "_")));
+                        if (matchingBand.Count() > 0)
+                        {
+                            row[matchingBand.First()] = QRV_STATE.qrv;
+                        }
                     }
                 }
             }
@@ -104,7 +116,7 @@ namespace wtKST
                 }
             }
 
-            if (call_in_stationDB)
+            if (call_in_nameInfo || call_in_stationDB)
             {
                 // merge only if set
                 foreach (string band in BANDS)
