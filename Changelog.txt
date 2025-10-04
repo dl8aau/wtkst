@@ -1,3 +1,6 @@
+3.2.1.6
+- New Feature: Deduce band/QRV information from name field
+               nameInfo first, then stationDB. Local DB finally
 3.2.1.5
 - Fix: Macros: don't throw exception if no freq. is received from Win-Test yet
 - Fix: don't choke on "illegal" call signs as user ID
