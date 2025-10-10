@@ -1068,9 +1068,9 @@ namespace wtKST
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.Location = new System.Drawing.Point(12, 48);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(224, 13);
+            this.label8.Size = new System.Drawing.Size(227, 13);
             this.label8.TabIndex = 12;
-            this.label8.Text = "Get aircraft positions in the range of minumum:";
+            this.label8.Text = "Get airplane scatter possibilities from minimum:";
             // 
             // label15
             // 
