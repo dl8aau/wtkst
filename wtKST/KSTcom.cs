@@ -590,12 +590,12 @@ namespace wtKST
                                     // make a copy
                                     var row_delete = USER.NewRow();
                                     row_delete.ItemArray = row.ItemArray.Clone() as object[];
+                                    // now delete the original one
+                                    row.Delete();
 
                                     if (process_user_update != null)
                                         process_user_update(this, new UserUpdateEventArgs(row_delete, USER_OP.USER_DELETE));
                                 }
-
-                                row.Delete();
                             }
                         }
                         break;
