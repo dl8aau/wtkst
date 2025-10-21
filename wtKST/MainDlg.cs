@@ -131,6 +131,7 @@ namespace wtKST
         private System.Windows.Forms.Timer ti_Top;
 
         private System.Windows.Forms.Timer ti_Reconnect;
+        private System.Windows.Forms.Timer ti_ToolTip_active;
 
         private System.Windows.Forms.ToolTip tt_Info;
         private System.Windows.Forms.ToolTip tt_ASInfo;
@@ -1511,7 +1512,6 @@ namespace wtKST
             }
         }
 
-        private System.Windows.Forms.Timer ti_ToolTip_active = new System.Windows.Forms.Timer();
         private bool ToolTip_AS_active = false;
 
         private void ShowToolTip(string text, Control control, Point p)
@@ -3069,6 +3069,7 @@ namespace wtKST
             this.ti_Error = new System.Windows.Forms.Timer(this.components);
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
+            this.ti_ToolTip_active = new System.Windows.Forms.Timer();
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.tt_ASInfo = new System.Windows.Forms.ToolTip(this.components);
             this.ti_UpdateFilter = new System.Windows.Forms.Timer(this.components);
@@ -3782,7 +3783,7 @@ namespace wtKST
             // cmn_msglist_toolStripTextBox_DirQRB
             // 
             this.cmn_msglist_toolStripTextBox_DirQRB.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.cmn_msglist_toolStripTextBox_DirQRB.Name = "toolStripTextBox_CallQRBDir";
+            this.cmn_msglist_toolStripTextBox_DirQRB.Name = "cmn_msglist_toolStripTextBox_DirQRB";
             this.cmn_msglist_toolStripTextBox_DirQRB.ReadOnly = true;
             this.cmn_msglist_toolStripTextBox_DirQRB.Size = new System.Drawing.Size(100, 23);
             this.cmn_msglist_toolStripTextBox_DirQRB.Text = "Call 1000km 350°";
