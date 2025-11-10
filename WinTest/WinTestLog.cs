@@ -43,7 +43,8 @@ namespace WinTest
                 }
                 using (Stream stream = File.Open(WinTest_FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    QSO.Clear();
+                    Clear_QSOs();
+
                     byte[] bufh = new byte[13944];
                     stream.Read(bufh, 0, bufh.Length);
                     string wtLoc = Encoding.ASCII.GetString(bufh, 24, 6);
@@ -131,7 +132,10 @@ namespace WinTest
                                 row["BAND"].ToString()
                             }) == null)
                             {
-                                QSO.Rows.Add(row);
+                                lock (QSOlock)
+                                {
+                                    QSO.Rows.Add(row);
+                                }
                             }
                         }
                         catch (Exception e)

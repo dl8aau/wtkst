@@ -25,17 +25,19 @@ namespace WinTest
             wtl = new wtListener(WinTest.WinTestDefaultPort);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
 
-            QSO.Columns.Add("RUNSTN");
-            QSO.Columns.Add("LOGID");
-            QSO.Columns.Add("LOGNR", typeof(uint));
-            DataColumn[] QSOkeys = new DataColumn[]
+            lock (QSOlock)
             {
+                QSO.Columns.Add("RUNSTN");
+                QSO.Columns.Add("LOGID");
+                QSO.Columns.Add("LOGNR", typeof(uint));
+                DataColumn[] QSOkeys = new DataColumn[]
+                {
                 QSO.Columns["RUNSTN"],
                 QSO.Columns["LOGID"],
                 QSO.Columns["LOGNR"]
-            };
-            QSO.PrimaryKey = QSOkeys;
-
+                };
+                QSO.PrimaryKey = QSOkeys;
+            }
             WtlogsyncState = WTLOGSYNCSTATE.WAIT_HELLO;
 
             ti_get_log = new System.Timers.Timer();
@@ -828,19 +830,7 @@ namespace WinTest
                                 row["LOGID"].ToString(),
                                 row["LOGNR"].ToString()
                         });
-
-                        if (qso != null)
-                        {
-                            if (!(qso.ItemArray.SequenceEqual(row.ItemArray)))
-                            {
-                                qso.Delete();
-                                QSO.Rows.Add(row);
-                            }
-                        }
-                        else
-                        {
-                            QSO.Rows.Add(row);
-                        }
+                        AddOrModifyQSO(qso, row);
 
                         string StationUniqueID = StationName + "@" + row["LOGID"].ToString();
                         var myls = myLogState.Find(x => x.StationUniqueID.Equals(StationUniqueID));
@@ -923,17 +913,20 @@ namespace WinTest
 
                         if (qso != null)
                         {
-                            //Console.WriteLine("was " + qso["CALL"].ToString() + " " + qso["TIME"].ToString() + " " + qso["SENT"].ToString() + " " + qso["RCVD"].ToString() + " " + qso["LOC"].ToString());
-                            qso["CALL"] = data[14];
+                            lock (QSOlock)
+                            {
+                                //Console.WriteLine("was " + qso["CALL"].ToString() + " " + qso["TIME"].ToString() + " " + qso["SENT"].ToString() + " " + qso["RCVD"].ToString() + " " + qso["LOC"].ToString());
+                                qso["CALL"] = data[14];
 
-                            DateTime ts = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                            ts = ts.AddSeconds((double)Int32.Parse(data[6]));
-                            qso["TIME"] = ts.ToString("HH:mm"); // FIXME warum nicht als object? So fehlt das Datum
-                            uint serial_sent = UInt32.Parse(data[13]);
-                            qso["SENT"] = data[15] + serial_sent.ToString("D3");
-                            qso["RCVD"] = data[16];
-                            qso["LOC"] = data[17];
-                            //Console.WriteLine("now " + qso["CALL"].ToString() + " " + qso["TIME"].ToString() + " " + qso["SENT"].ToString() + " " + qso["RCVD"].ToString() + " " + qso["LOC"].ToString());
+                                DateTime ts = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                                ts = ts.AddSeconds((double)Int32.Parse(data[6]));
+                                qso["TIME"] = ts.ToString("HH:mm"); // FIXME warum nicht als object? So fehlt das Datum
+                                uint serial_sent = UInt32.Parse(data[13]);
+                                qso["SENT"] = data[15] + serial_sent.ToString("D3");
+                                qso["RCVD"] = data[16];
+                                qso["LOC"] = data[17];
+                                //Console.WriteLine("now " + qso["CALL"].ToString() + " " + qso["TIME"].ToString() + " " + qso["SENT"].ToString() + " " + qso["RCVD"].ToString() + " " + qso["LOC"].ToString());
+                            }
                         }
                     }
                     catch (Exception ex) { Error(ex.Message); }

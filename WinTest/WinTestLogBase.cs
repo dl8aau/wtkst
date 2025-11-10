@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Reflection;
+using System.Linq;
 
 namespace WinTest
 {
@@ -31,10 +32,47 @@ namespace WinTest
 #endif
         }
 
+        protected readonly object QSOlock = new object();
+
+        public DataRow[] QSOsSelect(string select)
+        {
+            DataRow[] qsos;
+            lock (QSOlock)
+            {
+                qsos = QSO.Select(select);
+            }
+            return qsos;
+        }
+
         public void Clear_QSOs()
         {
-            QSO.Clear();
+            lock (QSOlock)
+            {
+                QSO.Clear();
+            }
             LogState = LOG_STATE.LOG_INACTIVE;
+        }
+
+        protected void AddOrModifyQSO(DataRow existingQSOs, DataRow newQSOs)
+        {
+            if (existingQSOs != null)
+            {
+                if (!(existingQSOs.ItemArray.SequenceEqual(newQSOs.ItemArray)))
+                {
+                    lock (QSOlock)
+                    {
+                        existingQSOs.Delete();
+                        QSO.Rows.Add(newQSOs);
+                    }
+                }
+            }
+            else
+            {
+                lock (QSOlock)
+                {
+                    QSO.Rows.Add(newQSOs);
+                }
+            }
         }
 
         public abstract string getStatus();
@@ -93,13 +131,16 @@ namespace WinTest
 
         public WinTestLogBase(LogWriteMessageDelegate mylog)
         {
-            QSO = new DataTable("QSO");
-            QSO.Columns.Add("CALL");
-            QSO.Columns.Add("BAND");
-            QSO.Columns.Add("TIME");
-            QSO.Columns.Add("SENT");
-            QSO.Columns.Add("RCVD");
-            QSO.Columns.Add("LOC");
+            lock (QSOlock)
+            {
+                QSO = new DataTable("QSO");
+                QSO.Columns.Add("CALL");
+                QSO.Columns.Add("BAND");
+                QSO.Columns.Add("TIME");
+                QSO.Columns.Add("SENT");
+                QSO.Columns.Add("RCVD");
+                QSO.Columns.Add("LOC");
+            }
             LogWrite = mylog;
         }
     }

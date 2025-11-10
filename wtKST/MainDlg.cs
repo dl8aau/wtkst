@@ -1245,48 +1245,43 @@ namespace wtKST
             string findCall = string.Format("[CALL] LIKE '*{0}*'", wcall);
             bool[] found = new bool[BANDS.Length]; // defaults to false
 
-            lock (wtQSO)
+            if (wtQSO_local_lock)
             {
-                if (wtQSO_local_lock)
-                {
-                    Console.WriteLine("wtQSO locked");
-                    return;
-                }
-                wtQSO_local_lock = true;
-                DataRow[] selectRow = wtQSO.QSO.Select(findCall);
+                Console.WriteLine("wtQSO locked");
+                return;
+            }
+            wtQSO_local_lock = true;
+            DataRow[] selectRow = wtQSO.QSOsSelect(findCall);
 
-                foreach (var qso_row in selectRow)
-                {
-                    var band = qso_row["BAND"].ToString();
+            foreach (var qso_row in selectRow)
+            {
+                var band = qso_row["BAND"].ToString();
 
-                    if (WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall))
+                if (WCCheck.WCCheck.Cut(qso_row["CALL"].ToString()).Equals(wcall))
+                {
+                    if (!QRVdb.worked((QRVdb.QRV_STATE)call_row[band])) // FIXME wenn worked und not_qrv, was tun?
+                        call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], true);
+
+                    found[Array.IndexOf(BANDS, band)] = true;
+                    // check locator
+                    if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
                     {
-                        if (!QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
-                            call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], true);
+                        // Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
 
-                        found[Array.IndexOf(BANDS, band)] = true;
-                        // check locator
-                        if (call_row["LOC"].ToString() != qso_row["LOC"].ToString())
-                        {
-                            // TODO: this most probably leads to
-                            // Check_QSOs(1055): Die Sammlung wurde geändert; möglicherweise wurde die Enumeration nicht ausgeführt.
-                            // so comment out for now
-                            // Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
-                            WinTestLocatorWarning = true;
-                            Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
-                        }
+                        WinTestLocatorWarning = true;
+                        Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
                     }
                 }
-                wtQSO_local_lock = false;
-                // important: I cannot know if a call is *not* in the log until I scanned the log fully, so this code to clean entries that are wrongly marked as "worked" has to be done
-                // *after* the loop
-                foreach (string band in BANDS)
-                {
-                    // if marked as worked - but not in the log anymore, just leave it as "qrv"
-                    // check if worked - only then remove the flag. If we touch everything, we may trigger unneeded redraws
-                    if (!found[Array.IndexOf(BANDS, band)] && QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
-                        call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], false);
-                }
+            }
+            wtQSO_local_lock = false;
+            // important: I cannot know if a call is *not* in the log until I scanned the log fully, so this code to clean entries that are wrongly marked as "worked" has to be done
+            // *after* the loop
+            foreach (string band in BANDS)
+            {
+                // if marked as worked - but not in the log anymore, just leave it as "qrv"
+                // check if worked - only then remove the flag. If we touch everything, we may trigger unneeded redraws
+                if (!found[Array.IndexOf(BANDS, band)] && QRVdb.worked((QRVdb.QRV_STATE)call_row[band]))
+                    call_row[band] = QRVdb.set_worked((QRVdb.QRV_STATE)call_row[band], false);
             }
         }
 
@@ -1972,7 +1967,7 @@ namespace wtKST
                         if (wtQSO != null)
                         {
                             string band = column.Name;
-                            DataRow[] findrow = wtQSO.QSO.Select(string.Format("[CALL] LIKE '*{0}*' AND [BAND] = '{1}'", WCCheck.WCCheck.Cut(call), band.Replace(".", "_")));
+                            DataRow[] findrow = wtQSO.QSOsSelect(string.Format("[CALL] LIKE '*{0}*' AND [BAND] = '{1}'", WCCheck.WCCheck.Cut(call), band.Replace(".", "_")));
                             if (findrow != null && findrow.Count() > 0)
                             {
                                 ToolTipText = string.Concat(new object[]

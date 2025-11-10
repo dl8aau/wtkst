@@ -178,13 +178,16 @@ namespace WinTest
         public QARTestLogSync(LogWriteMessageDelegate mylog) : base(mylog)
         {
 
-            QSO.Columns.Add("TXNR");
-            DataColumn[] QSOkeys = new DataColumn[]
+            lock (QSOlock)
             {
+                QSO.Columns.Add("TXNR");
+                DataColumn[] QSOkeys = new DataColumn[]
+                {
                 QSO.Columns["TXNR"],
                 QSO.Columns["BAND"]
-            };
-            QSO.PrimaryKey = QSOkeys;
+                };
+                QSO.PrimaryKey = QSOkeys;
+            }
         }
 
         public override void Dispose()
@@ -204,7 +207,7 @@ namespace WinTest
             // start listener
             if (qtl == null)
             {
-                QSO.Clear();
+                Clear_QSOs();
                 qtl = new QARTtestListener(9458); // QARTest default UDP port
                 qtl.QTMessageReceived += QTMessageReceivedHandler;
             }
@@ -273,19 +276,7 @@ namespace WinTest
                                 row["BAND"]
                 });
 
-                if (qso != null)
-                {
-                    if (!(qso.ItemArray.SequenceEqual(row.ItemArray)))
-                    {
-                        qso.Delete();
-                        QSO.Rows.Add(row);
-                    }
-                }
-                else
-                {
-                    QSO.Rows.Add(row);
-                }
-
+                AddOrModifyQSO(qso, row);
             }
             catch (Exception ex) { Console.WriteLine(ex.Message); }
         }
