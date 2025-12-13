@@ -1,10 +1,28 @@
+# Hot-Fix...
+
+Sylvain made a change to the server, so URL www.on4kst.info currently does not work.
+ 
+Hotfix:
+In Windows Explorer %localappdata%\wtKST<br>
+
+There should be at least one folder wtKST.exe_Url_xxxxxxx (xxxx being cryptic strings)<br>
+
+Inside is a folder with the wtKST version (e.g. 3.2.1.5) and there you will find the text file "user.config".<br>
+
+Open it with a text editor and correct the URL:<br>
+<code>`<setting name="KST_ServerName" serializeAs="String">`<br>
+      `    <value>www.on4kst.org</value>`<br>
+      `</setting>`<br></code>
+            
+I'm going to release a new version this afternoon.
+
 # wtKST
 
 This software implements a client for the [ON4KST](http://www.on4kst.com/chat/start.php) chat. It is optimized for efficient sked management during
 VHF/UHF/SHF contests. It interfaces to Win-Test contest logging software and recently started to implement other
  logging software (e.g. QARTest).
 
- The software has been written originally by Frank Schm‰hling DL2ALF (https://github.com/dl2alf) for his team DL0GTH.
+ The software has been written originally by Frank Schm√§hling DL2ALF (https://github.com/dl2alf) for his team DL0GTH.
 
 
 This version is licensed under the GPL (v3 or later).
