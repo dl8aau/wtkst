@@ -9,7 +9,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="KST_ServerName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">www.on4kst.info</Value>
+      <Value Profile="(Default)">www.on4kst.org</Value>
     </Setting>
     <Setting Name="KST_ServerPort" Type="System.String" Scope="User">
       <Value Profile="(Default)">23001</Value>
