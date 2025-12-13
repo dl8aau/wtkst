@@ -506,7 +506,6 @@ namespace WinTest
                         var log13cm = QSO.Select("[BAND]='2_3G'");
                         //                foreach (var entry in log13cm)
                         //                    Console.WriteLine(entry.ItemArray[0] + " " + entry.ItemArray[2] + " " + entry.ItemArray[3]);
-                        UpdateLocatorList();
                     }
                 }
                 else
