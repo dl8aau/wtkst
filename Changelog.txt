@@ -1,3 +1,13 @@
+3.2.1.7
+- Fix: The server changed the address, "www.on4kst.info" currently does not work, change to "www.on4kst.org"
+- Fix: Win-Test network sync sometimes requested parts of the log it already had
+- Fix: Log check was not properly locked against update of the log
+  That caused some exceptions to be triggered.
+- Fix: browser based Airscout support should not be active by default
+  When upgrading from 3.1.4.x, Airscout support stops working, as both AS options get enabled
+- Fix: wording in Airscout option dialog regarding max. distance
+- Fix: if a user disconnects, sometimes error is flagged
+
 3.2.1.6
 - New Feature: Deduce band/QRV information from name field
                nameInfo first, then stationDB. Local DB finally
