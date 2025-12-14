@@ -14,7 +14,7 @@ Open it with a text editor and correct the URL:<br>
       `    <value>www.on4kst.org</value>`<br>
       `</setting>`<br></code>
             
-I'm going to release a new version this afternoon.
+Alternatively, you can use the new version https://github.com/dl8aau/wtkst/releases/tag/v3.2.1.7.
 
 # wtKST
 
