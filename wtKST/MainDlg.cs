@@ -14,6 +14,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+using WebSocketSharp;
 using WinTest;
 using WinTest.DXL;
 using WinTest.DXLog;
@@ -190,6 +192,8 @@ namespace wtKST
         private ToolStripStatusLabel tsl_LED_Log_Status;
         private ToolStripStatusLabel tsl_LED_KST_Status;
         private ToolStripMenuItem skedTestToolStripMenuItem;
+        private TextBox tb_SearchCall;
+        private SplitContainer splitContainer4;
         private string AS_watchlist = "";
 
         public MainDlg()
@@ -582,7 +586,7 @@ namespace wtKST
 
             ni_Main.Text = "wtKST\nLeft click to activate";
 
-            if (!aboutBox1.Visible && !cb_Command.IsDisposed && !cb_Command.Focused && !btn_KST_Send.Capture
+            if (!aboutBox1.Visible && !cb_Command.IsDisposed && !cb_Command.Focused && !tb_SearchCall.Focused &&!btn_KST_Send.Capture
                  && (wtskdlg == null || !wtskdlg.Visible))
             {
                 cb_Command.Focus();
@@ -942,6 +946,28 @@ namespace wtKST
                 }
                 if (calls_to_hide)
                     RowFilter += add_rowfilter + "))";
+            }
+
+            if (!tb_SearchCall.Text.IsNullOrEmpty())
+            {
+                string a = tb_SearchCall.Text;
+                UInt32 b = 0;
+                UInt32 c = 0;
+                if ((tb_SearchCall.Text.Length == 3) && (UInt32.TryParse(a, out b)))
+                {
+                    c = (b + 380) % 360;
+                    b = (b + 340) % 360;
+                    string add_rowfilter = string.Format(" AND ((DIR > {0}) AND (DIR < {1}))", b, c);
+                    RowFilter += add_rowfilter;
+                }
+                else
+                { 
+                    string add_rowfilter = " AND ((CALL LIKE ";
+                    add_rowfilter += string.Format("'*{0}*'", tb_SearchCall.Text);
+                    add_rowfilter += ") or (";
+                    add_rowfilter += string.Format("LOC LIKE '*{0}*'))", tb_SearchCall.Text);
+                    RowFilter += add_rowfilter;
+                }
             }
 
             RowFilter += ")";
@@ -3059,8 +3085,10 @@ namespace wtKST
             }
         }
 
+
         private void btn_KST_Send_Click(object sender, EventArgs e)
         {
+            if (tb_SearchCall.Focused) { KST_Update_Usr_Filter(); return; }
             if (!KST.Send(cb_Command.Text))
             {
                 MessageBox.Show("Sending commands except \"/cq\", \"/shloc\" and \"/shuser\" is not allowed!", "KST SendCommand");
@@ -3318,6 +3346,8 @@ namespace wtKST
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lbl_KST_MyMsg = new System.Windows.Forms.Label();
+            this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.tb_SearchCall = new System.Windows.Forms.TextBox();
             this.lv_Calls = new System.Windows.Forms.DataGridView();
             this.lbl_KST_Calls = new System.Windows.Forms.Label();
             this.mn_Main = new System.Windows.Forms.MenuStrip();
@@ -3386,6 +3416,10 @@ namespace wtKST
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
+            this.splitContainer4.Panel1.SuspendLayout();
+            this.splitContainer4.Panel2.SuspendLayout();
+            this.splitContainer4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.lv_Calls)).BeginInit();
             this.mn_Main.SuspendLayout();
             this.cmn_Notify.SuspendLayout();
@@ -3395,22 +3429,23 @@ namespace wtKST
             // 
             // ss_Main
             // 
+            this.ss_Main.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.ss_Main.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsl_Info,
             this.tsl_Error,
             this.tsl_LED_KST_Status,
             this.tsl_LED_AS_Status,
             this.tsl_LED_Log_Status});
-            this.ss_Main.Location = new System.Drawing.Point(0, 708);
+            this.ss_Main.Location = new System.Drawing.Point(0, 698);
             this.ss_Main.Name = "ss_Main";
-            this.ss_Main.Size = new System.Drawing.Size(1202, 22);
+            this.ss_Main.Size = new System.Drawing.Size(1202, 32);
             this.ss_Main.TabIndex = 9;
             this.ss_Main.Text = "statusStrip1";
             // 
             // tsl_Info
             // 
             this.tsl_Info.Name = "tsl_Info";
-            this.tsl_Info.Size = new System.Drawing.Size(28, 17);
+            this.tsl_Info.Size = new System.Drawing.Size(44, 25);
             this.tsl_Info.Text = "Info";
             // 
             // tsl_Error
@@ -3429,7 +3464,7 @@ namespace wtKST
             this.tsl_LED_KST_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
             this.tsl_LED_KST_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
             this.tsl_LED_KST_Status.Name = "tsl_LED_KST_Status";
-            this.tsl_LED_KST_Status.Size = new System.Drawing.Size(12, 12);
+            this.tsl_LED_KST_Status.Size = new System.Drawing.Size(12, 22);
             this.tsl_LED_KST_Status.Text = "ON4KST Chat Status LED";
             this.tsl_LED_KST_Status.ToolTipText = "ON4KST Chat Status LED";
             // 
@@ -3440,7 +3475,7 @@ namespace wtKST
             this.tsl_LED_AS_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
             this.tsl_LED_AS_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
             this.tsl_LED_AS_Status.Name = "tsl_LED_AS_Status";
-            this.tsl_LED_AS_Status.Size = new System.Drawing.Size(12, 12);
+            this.tsl_LED_AS_Status.Size = new System.Drawing.Size(12, 22);
             this.tsl_LED_AS_Status.Text = "Airscout Status LED";
             this.tsl_LED_AS_Status.ToolTipText = "Airscout Status LED";
             // 
@@ -3459,7 +3494,7 @@ namespace wtKST
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 33);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -3468,9 +3503,9 @@ namespace wtKST
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.lv_Calls);
+            this.splitContainer1.Panel2.Controls.Add(this.splitContainer4);
             this.splitContainer1.Panel2.Controls.Add(this.lbl_KST_Calls);
-            this.splitContainer1.Size = new System.Drawing.Size(1202, 684);
+            this.splitContainer1.Size = new System.Drawing.Size(1202, 665);
             this.splitContainer1.SplitterDistance = 843;
             this.splitContainer1.TabIndex = 10;
             // 
@@ -3492,8 +3527,8 @@ namespace wtKST
             this.splitContainer2.Panel2.Controls.Add(this.lv_MyMsg);
             this.splitContainer2.Panel2.Controls.Add(this.lbl_KST_MyMsg);
             this.splitContainer2.Panel2MinSize = 75;
-            this.splitContainer2.Size = new System.Drawing.Size(843, 684);
-            this.splitContainer2.SplitterDistance = 346;
+            this.splitContainer2.Size = new System.Drawing.Size(843, 665);
+            this.splitContainer2.SplitterDistance = 336;
             this.splitContainer2.TabIndex = 0;
             // 
             // splitContainer3
@@ -3518,7 +3553,7 @@ namespace wtKST
             // 
             this.splitContainer3.Panel2.Controls.Add(this.lv_Msg);
             this.splitContainer3.Panel2.Controls.Add(this.lbl_KST_Msg);
-            this.splitContainer3.Size = new System.Drawing.Size(843, 346);
+            this.splitContainer3.Size = new System.Drawing.Size(843, 336);
             this.splitContainer3.SplitterDistance = 80;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -3529,7 +3564,7 @@ namespace wtKST
             this.cb_Command.Location = new System.Drawing.Point(11, 41);
             this.cb_Command.MaxDropDownItems = 5;
             this.cb_Command.Name = "cb_Command";
-            this.cb_Command.Size = new System.Drawing.Size(469, 24);
+            this.cb_Command.Size = new System.Drawing.Size(469, 32);
             this.cb_Command.TabIndex = 1;
             this.cb_Command.TextUpdate += new System.EventHandler(this.cb_Command_TextUpdate);
             this.cb_Command.DropDownClosed += new System.EventHandler(this.cb_Command_DropDownClosed);
@@ -3586,7 +3621,7 @@ namespace wtKST
             this.lv_Msg.Location = new System.Drawing.Point(0, 26);
             this.lv_Msg.MultiSelect = false;
             this.lv_Msg.Name = "lv_Msg";
-            this.lv_Msg.Size = new System.Drawing.Size(841, 234);
+            this.lv_Msg.Size = new System.Drawing.Size(841, 224);
             this.lv_Msg.TabIndex = 12;
             this.lv_Msg.UseCompatibleStateImageBehavior = false;
             this.lv_Msg.View = System.Windows.Forms.View.Details;
@@ -3643,7 +3678,7 @@ namespace wtKST
             this.lv_MyMsg.Location = new System.Drawing.Point(0, 26);
             this.lv_MyMsg.MultiSelect = false;
             this.lv_MyMsg.Name = "lv_MyMsg";
-            this.lv_MyMsg.Size = new System.Drawing.Size(841, 306);
+            this.lv_MyMsg.Size = new System.Drawing.Size(841, 297);
             this.lv_MyMsg.TabIndex = 13;
             this.lv_MyMsg.UseCompatibleStateImageBehavior = false;
             this.lv_MyMsg.View = System.Windows.Forms.View.Details;
@@ -3685,19 +3720,53 @@ namespace wtKST
             this.lbl_KST_MyMsg.Text = "My Messages";
             this.lbl_KST_MyMsg.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // splitContainer4
+            // 
+            this.splitContainer4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer4.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer4.IsSplitterFixed = true;
+            this.splitContainer4.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer4.Name = "splitContainer4";
+            this.splitContainer4.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer4.Panel1
+            // 
+            this.splitContainer4.Panel1.Controls.Add(this.tb_SearchCall);
+            this.splitContainer4.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            // 
+            // splitContainer4.Panel2
+            // 
+            this.splitContainer4.Panel2.Controls.Add(this.lv_Calls);
+            this.splitContainer4.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.splitContainer4.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.splitContainer4.Size = new System.Drawing.Size(353, 639);
+            this.splitContainer4.SplitterDistance = 34;
+            this.splitContainer4.TabIndex = 16;
+            // 
+            // tb_SearchCall
+            // 
+            this.tb_SearchCall.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tb_SearchCall.Location = new System.Drawing.Point(0, 0);
+            this.tb_SearchCall.Name = "tb_SearchCall";
+            this.tb_SearchCall.Size = new System.Drawing.Size(353, 26);
+            this.tb_SearchCall.TabIndex = 15;
+            this.tb_SearchCall.WordWrap = false;
+            // 
             // lv_Calls
             // 
+            this.lv_Calls.ColumnHeadersHeight = 34;
             this.lv_Calls.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lv_Calls.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lv_Calls.Location = new System.Drawing.Point(0, 24);
+            this.lv_Calls.Location = new System.Drawing.Point(0, 0);
             this.lv_Calls.MultiSelect = false;
             this.lv_Calls.Name = "lv_Calls";
             this.lv_Calls.ReadOnly = true;
             this.lv_Calls.RowHeadersVisible = false;
             this.lv_Calls.AllowUserToAddRows = false;
+            this.lv_Calls.RowHeadersWidth = 62;
             this.lv_Calls.RowTemplate.Height = 17;
             this.lv_Calls.ShowCellToolTips = false;
-            this.lv_Calls.Size = new System.Drawing.Size(353, 658);
+            this.lv_Calls.Size = new System.Drawing.Size(353, 601);
             this.lv_Calls.TabIndex = 14;
             this.lv_Calls.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_MouseDown);
             this.lv_Calls.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_MouseMove);
@@ -3706,7 +3775,6 @@ namespace wtKST
             this.lv_Calls.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lv_Calls_CellValueChanged);
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_DataBindingComplete);
-            this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_Calls_DataBindingComplete);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
             this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
             // 
@@ -3727,6 +3795,8 @@ namespace wtKST
             // 
             // mn_Main
             // 
+            this.mn_Main.GripMargin = new System.Windows.Forms.Padding(2, 2, 0, 2);
+            this.mn_Main.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.mn_Main.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsm_File,
             this.tsm_KST,
@@ -3736,7 +3806,7 @@ namespace wtKST
             this.skedTestToolStripMenuItem});
             this.mn_Main.Location = new System.Drawing.Point(0, 0);
             this.mn_Main.Name = "mn_Main";
-            this.mn_Main.Size = new System.Drawing.Size(1202, 24);
+            this.mn_Main.Size = new System.Drawing.Size(1202, 33);
             this.mn_Main.TabIndex = 11;
             this.mn_Main.Text = "menuStrip1";
             // 
@@ -3746,7 +3816,7 @@ namespace wtKST
             this.toolStripSeparator1,
             this.tsi_File_Exit});
             this.tsm_File.Name = "tsm_File";
-            this.tsm_File.Size = new System.Drawing.Size(37, 20);
+            this.tsm_File.Size = new System.Drawing.Size(54, 29);
             this.tsm_File.Text = "&File";
             // 
             // toolStripSeparator1
@@ -3776,7 +3846,7 @@ namespace wtKST
             // tsi_KST_Connect
             // 
             this.tsi_KST_Connect.Name = "tsi_KST_Connect";
-            this.tsi_KST_Connect.Size = new System.Drawing.Size(160, 22);
+            this.tsi_KST_Connect.Size = new System.Drawing.Size(243, 34);
             this.tsi_KST_Connect.Text = "&Connect";
             this.tsi_KST_Connect.Click += new System.EventHandler(this.tsi_KST_Connect_Click);
             // 
@@ -3784,33 +3854,33 @@ namespace wtKST
             // 
             this.tsi_KST_Disconnect.Enabled = false;
             this.tsi_KST_Disconnect.Name = "tsi_KST_Disconnect";
-            this.tsi_KST_Disconnect.Size = new System.Drawing.Size(160, 22);
+            this.tsi_KST_Disconnect.Size = new System.Drawing.Size(243, 34);
             this.tsi_KST_Disconnect.Text = "&Disconnect";
             this.tsi_KST_Disconnect.Click += new System.EventHandler(this.tsi_KST_Disconnect_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(157, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(240, 6);
             // 
             // tsi_KST_Here
             // 
             this.tsi_KST_Here.Name = "tsi_KST_Here";
-            this.tsi_KST_Here.Size = new System.Drawing.Size(160, 22);
+            this.tsi_KST_Here.Size = new System.Drawing.Size(243, 34);
             this.tsi_KST_Here.Text = "&I am on the chat";
             this.tsi_KST_Here.Click += new System.EventHandler(this.tsi_KST_Here_Click);
             // 
             // tsi_KST_Away
             // 
             this.tsi_KST_Away.Name = "tsi_KST_Away";
-            this.tsi_KST_Away.Size = new System.Drawing.Size(160, 22);
+            this.tsi_KST_Away.Size = new System.Drawing.Size(243, 34);
             this.tsi_KST_Away.Text = "I am &away";
             this.tsi_KST_Away.Click += new System.EventHandler(this.tsi_KST_Away_Click);
             // 
             // tsi_Options
             // 
             this.tsi_Options.Name = "tsi_Options";
-            this.tsi_Options.Size = new System.Drawing.Size(61, 20);
+            this.tsi_Options.Size = new System.Drawing.Size(92, 29);
             this.tsi_Options.Text = "&Options";
             this.tsi_Options.Click += new System.EventHandler(this.tsi_Options_Click);
             // 
@@ -3831,7 +3901,7 @@ namespace wtKST
             this.macro_default_Station});
             this.macroToolStripMenuItem.Name = "macroToolStripMenuItem";
             this.macroToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.M)));
-            this.macroToolStripMenuItem.Size = new System.Drawing.Size(58, 20);
+            this.macroToolStripMenuItem.Size = new System.Drawing.Size(86, 29);
             this.macroToolStripMenuItem.Text = "&Macros";
             // 
             // menu_btn_macro_1
@@ -3942,13 +4012,13 @@ namespace wtKST
             this.toolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.aboutToolStripMenuItem});
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(24, 20);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(36, 29);
             this.toolStripMenuItem1.Text = "&?";
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(164, 34);
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -3977,30 +4047,31 @@ namespace wtKST
             // 
             // cmn_Notify
             // 
+            this.cmn_Notify.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.cmn_Notify.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmi_Notify_Restore,
             this.toolStripSeparator3,
             this.cmi_Notify_Quit});
             this.cmn_Notify.Name = "cmn_Notify";
-            this.cmn_Notify.Size = new System.Drawing.Size(119, 54);
+            this.cmn_Notify.Size = new System.Drawing.Size(150, 74);
             // 
             // cmi_Notify_Restore
             // 
             this.cmi_Notify_Restore.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmi_Notify_Restore.Name = "cmi_Notify_Restore";
-            this.cmi_Notify_Restore.Size = new System.Drawing.Size(118, 22);
+            this.cmi_Notify_Restore.Size = new System.Drawing.Size(149, 32);
             this.cmi_Notify_Restore.Text = "&Restore";
             this.cmi_Notify_Restore.Click += new System.EventHandler(this.cmi_Notify_Restore_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(115, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(146, 6);
             // 
             // cmi_Notify_Quit
             // 
             this.cmi_Notify_Quit.Name = "cmi_Notify_Quit";
-            this.cmi_Notify_Quit.Size = new System.Drawing.Size(118, 22);
+            this.cmi_Notify_Quit.Size = new System.Drawing.Size(149, 32);
             this.cmi_Notify_Quit.Text = "&Quit";
             this.cmi_Notify_Quit.Click += new System.EventHandler(this.cmi_Notify_Quit_Click);
             // 
@@ -4051,6 +4122,7 @@ namespace wtKST
             // 
             // cmn_userlist
             // 
+            this.cmn_userlist.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.cmn_userlist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmn_userlist_wtsked,
             this.cmn_userlist_chatReview});
@@ -4164,6 +4236,11 @@ namespace wtKST
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            this.splitContainer4.Panel1.ResumeLayout(false);
+            this.splitContainer4.Panel1.PerformLayout();
+            this.splitContainer4.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
+            this.splitContainer4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.lv_Calls)).EndInit();
             this.mn_Main.ResumeLayout(false);
             this.mn_Main.PerformLayout();
