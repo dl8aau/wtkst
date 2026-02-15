@@ -190,6 +190,9 @@ namespace wtKST
                 Settings.Default.Upgrade();
                 Settings.Default.UpgradeRequired = false;
                 Settings.Default.Save();
+
+                // update Macros
+                macro_RefreshMacroText();
             }
             MainDlg.Log.FileFormat = "wtKST_{0:d}.log";
             MainDlg.Log.MessageFormat = "{0:u}: {1}";
