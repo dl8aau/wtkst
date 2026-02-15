@@ -98,48 +98,48 @@ namespace WinTest
         {
             // convert bytes coded in UTF8 to text
             string text = Encoding.ASCII.GetString(bytes);
-            string msg = text.Substring(0, text.IndexOf(": "));
             try
             {
+                string msg = text.Substring(0, text.IndexOf(": "));
                 Msg = (WTMESSAGES)Enum.Parse(typeof(WTMESSAGES), msg);
+                var Length = bytes.Length;
+                // FIXME: maybe do this for anything but WTMESSAGES.ASNEAREST
+                if (bytes[Length - 1] == 0)
+                {
+                    if (Length > 1)
+                        Length--; // skip trailing zero
+                    if (text.Length > 1)
+                        text = text.Substring(0, text.Length - 1); // skip trailing zero
+                }
+                text = text.Remove(0, text.IndexOf(": ") + 2);
+                Src = text.Substring(0, text.IndexOf(" ")).Replace("\"", "");
+                text = text.Remove(0, text.IndexOf(" ") + 1);
+                if (text.IndexOf(" ") > 0)
+                {
+                    Dst = text.Substring(0, text.IndexOf(" ")).Replace("\"", "");
+                    text = text.Remove(0, text.IndexOf(" ") + 1);
+                }
+                else
+                    Dst = "";
+                // Clean up the message --> scrub last byte
+                text = text.Substring(0, text.Length - 1).Replace("\"", "");
+                // convert bytes coded in UTF8 to text
+                Data = text.Substring(0, text.Length);
+                // get checksum
+                Checksum = bytes[Length - 1];
+                byte sum = 0;
+                for (int i = 0; i < Length - 1; i++)
+                    sum += bytes[i];
+                sum = (byte)(sum | 0x80);
+                if (Checksum == sum)
+                    HasChecksum = true;
+                else
+                    HasChecksum = false;
             }
             catch
             {
                 Msg = WTMESSAGES.UNKNOWN;
             }
-            var Length = bytes.Length;
-            // FIXME: maybe do this for anything but WTMESSAGES.ASNEAREST
-            if (bytes[Length - 1] == 0)
-            {
-                if (Length > 1)
-                    Length--; // skip trailing zero
-                if (text.Length > 1)
-                    text = text.Substring(0, text.Length - 1); // skip trailing zero
-            }
-            text = text.Remove(0, text.IndexOf(": ") + 2);
-            Src = text.Substring(0, text.IndexOf(" ")).Replace("\"", "");
-            text = text.Remove(0, text.IndexOf(" ") + 1);
-            if (text.IndexOf(" ") > 0)
-            {
-                Dst = text.Substring(0, text.IndexOf(" ")).Replace("\"", "");
-                text = text.Remove(0, text.IndexOf(" ") + 1);
-            }
-            else
-                Dst = "";
-            // Clean up the message --> scrub last byte
-            text = text.Substring(0, text.Length - 1).Replace("\"", "");
-            // convert bytes coded in UTF8 to text
-            Data = text.Substring(0, text.Length);
-            // get checksum
-            Checksum = bytes[Length - 1];
-            byte sum = 0;
-            for (int i = 0; i < Length - 1; i++)
-                sum += bytes[i];
-            sum = (byte)(sum | 0x80);
-            if (Checksum == sum)
-                HasChecksum = true;
-            else
-                HasChecksum = false;
         }
 
         public byte[] ToBytes()
