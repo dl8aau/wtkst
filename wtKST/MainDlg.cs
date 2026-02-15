@@ -1660,6 +1660,22 @@ namespace wtKST
             }
         }
 
+
+
+        private void lv_Calls_ClearBackground(DataGridViewCellPaintingEventArgs e)
+        {
+            using (Brush gridBrush = new SolidBrush(lv_Calls.GridColor))
+            using (Brush backColorBrush = new SolidBrush(e.CellStyle.BackColor))
+            {
+                // Erase the cell.
+                // It's quicker to redraw two rectangles on top of one another than drawing the lines with a 'Pen'.
+                // Accelerated graphics for the win!!!
+                Rectangle r = Rectangle.FromLTRB(e.CellBounds.Left, e.CellBounds.Top, e.CellBounds.Right - 1, e.CellBounds.Bottom - 1);
+                e.Graphics.FillRectangle(gridBrush, e.CellBounds);
+                e.Graphics.FillRectangle(backColorBrush, r);
+            }
+        }
+
         private void lv_Calls_CellPainting(object sender, DataGridViewCellPaintingEventArgs e)
         {
             if (e.ColumnIndex < 0)
@@ -1675,7 +1691,7 @@ namespace wtKST
                     if (e.ColumnIndex > 4 && hide_worked) // Band
                         e.Graphics.FillRectangle(Brushes.LightGray, rect);
                     else
-                        e.PaintBackground(e.ClipBounds, false);
+                        lv_Calls_ClearBackground(e);
                     using (Font headerfont = new Font(e.CellStyle.Font.OriginalFontName, 6f))
                     {
                         Size titlesize = TextRenderer.MeasureText(e.FormattedValue.ToString(), headerfont);
@@ -1690,7 +1706,7 @@ namespace wtKST
                 else if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex || e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex
                       || e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
                 {
-                    e.PaintBackground(e.ClipBounds, false);
+                    lv_Calls_ClearBackground(e);
 
                     // columns with filter function (CALL, ACT column - Band handled above)
                     if ((e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && hide_away) ||
@@ -1734,7 +1750,7 @@ namespace wtKST
                         // Italic is too difficult to read and the font gets bigger
                         //LV.Font = new Font(LV.Font, FontStyle.Italic);
                     }
-                    e.PaintBackground(e.ClipBounds, false);
+                    lv_Calls_ClearBackground(e);
 
                     if (bool.TryParse(dgv.Rows[e.RowIndex].Cells["RECENTLOGIN"].Value.ToString(), out bool recentlogin) && recentlogin == true)
                     {
@@ -1768,7 +1784,7 @@ namespace wtKST
                     Rectangle newRect = new Rectangle(e.CellBounds.X + 2,
                         e.CellBounds.Y + 2, e.CellBounds.Width - 4,
                         e.CellBounds.Height - 4);
-                    e.PaintBackground(e.CellBounds, false);
+                    lv_Calls_ClearBackground(e);
                     if (QRVdb.worked(state))
                     {
                         e.Graphics.FillRectangle(Brushes.Green, newRect);
@@ -1801,7 +1817,7 @@ namespace wtKST
                     // last activity
                     var row = dgv.Rows[e.RowIndex];
                     var timeval = row.Cells["TIME"].Value;
-                    e.PaintBackground(e.CellBounds, false);
+                    lv_Calls_ClearBackground(e);
 
                     if (timeval != null && timeval != DBNull.Value)
                     {
@@ -1841,7 +1857,7 @@ namespace wtKST
                             {
                                 return;
                             }
-                            e.PaintBackground(e.CellBounds, false);
+                            lv_Calls_ClearBackground(e);
                             string[] a = as_string.Split(new char[] { ',' });
                             if (a.Length < 3)
                             {
