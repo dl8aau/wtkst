@@ -3419,6 +3419,7 @@ namespace wtKST
             this.lv_Calls.Name = "lv_Calls";
             this.lv_Calls.ReadOnly = true;
             this.lv_Calls.RowHeadersVisible = false;
+            this.lv_Calls.AllowUserToAddRows = false;
             this.lv_Calls.RowTemplate.Height = 17;
             this.lv_Calls.ShowCellToolTips = false;
             this.lv_Calls.Size = new System.Drawing.Size(353, 658);
