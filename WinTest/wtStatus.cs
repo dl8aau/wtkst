@@ -36,7 +36,17 @@ namespace WinTest
 
         public wtStatus()
         {
-            wtl = new wtListener(WinTest.WinTestDefaultPort);
+            int localbroadcastPort;
+            if (WinTest.advancedNetActivated)
+            {
+                localbroadcastPort = WinTest.advancedWinTestPort;
+            }
+            else
+            {
+                localbroadcastPort = WinTest.WinTestDefaultPort;
+            }
+
+            wtl = new wtListener(localbroadcastPort);
             wtl.wtMessageReceived += wtMessageReceivedHandler;
             wtStatusList = new BindingList<wtStat>();
 
