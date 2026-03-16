@@ -959,5 +959,41 @@ namespace wtKST.Properties {
                 this["WS_API_URL"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AdvancedWinTestNetwork_Activate {
+            get {
+                return ((bool)(this["AdvancedWinTestNetwork_Activate"]));
+            }
+            set {
+                this["AdvancedWinTestNetwork_Activate"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string AdvancedWinTestNetwork_BroadcastIP {
+            get {
+                return ((string)(this["AdvancedWinTestNetwork_BroadcastIP"]));
+            }
+            set {
+                this["AdvancedWinTestNetwork_BroadcastIP"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string AdvancedWinTestNetwork_UDPPort {
+            get {
+                return ((string)(this["AdvancedWinTestNetwork_UDPPort"]));
+            }
+            set {
+                this["AdvancedWinTestNetwork_UDPPort"] = value;
+            }
+        }
     }
 }

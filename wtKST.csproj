@@ -133,6 +133,9 @@
     <Compile Include="wtKST\AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="wtKST\AdvancedWinTestNetwork.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="wtKST\AirScoutIF.cs" />
     <Compile Include="wtKST\AirscoutUDP.cs" />
     <Compile Include="wtKST\Band.cs" />
@@ -170,6 +173,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="wtKST.Properties\Resources.resources" />
+    <EmbeddedResource Include="wtKST\AdvancedWinTestNetwork.resx">
+      <DependentUpon>AdvancedWinTestNetwork.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="wtKST\OptionsDlg.resx">
       <DependentUpon>OptionsDlg.cs</DependentUpon>
     </EmbeddedResource>

@@ -192,6 +192,9 @@ namespace WinTest
 
     public class WinTest
     {
+        public static bool advancedNetActivated = false;
+        public static int advancedWinTestPort = 9871;
+        public static IPAddress advancedWinTestBroadcastAddress = null;
         public const int WinTestDefaultPort = 9871;
 
         public static IPAddress GetIpIFBroadcastAddress()
