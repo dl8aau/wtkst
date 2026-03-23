@@ -139,6 +139,7 @@ namespace wtKST
 
         private System.Windows.Forms.Timer ti_UpdateFilter;
 
+        private bool WinTestLocatorWarning = false;
         private bool hide_away = false;
         private bool sort_by_dir = false;
         private bool ignore_inactive = false;
@@ -1276,6 +1277,7 @@ namespace wtKST
                     {
                         // Say(call + " Locator wrong? Win-Test Log " + band + " " + qso_row["TIME"] + " " + call + " " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
 
+                        WinTestLocatorWarning = true;
                         Log.WriteMessage("Win-Test log locator mismatch: " + qso_row["BAND"] + " " + qso_row["TIME"] + " " + call + " Locator wrong? Win-Test Log " + qso_row["LOC"] + " KST " + call_row["LOC"].ToString());
                     }
                 }
@@ -1296,6 +1298,7 @@ namespace wtKST
 
         private void Check_QSOs()
         {
+            WinTestLocatorWarning = false;
             try
             {
                 lock (CALL)
