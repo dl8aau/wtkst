@@ -1304,7 +1304,7 @@ namespace wtKST
                     }
                     check_QSO_CALL_lock = true;
                     // lock helps against other threads changing CALL, but not same (UI)
-                    foreach (DataRow call_row in CALL.Rows) // FIXME: CALL muss gelockt werden, während foreach drüber läuft
+                    foreach (DataRow call_row in CALL.Rows)
                     {
                         Check_QSO(call_row);
                     }
@@ -3083,7 +3083,7 @@ namespace wtKST
             this.ti_Error = new System.Windows.Forms.Timer(this.components);
             this.ti_Top = new System.Windows.Forms.Timer(this.components);
             this.ti_Reconnect = new System.Windows.Forms.Timer(this.components);
-            this.ti_ToolTip_active = new System.Windows.Forms.Timer();
+            this.ti_ToolTip_active = new System.Windows.Forms.Timer(this.components);
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.tt_ASInfo = new System.Windows.Forms.ToolTip(this.components);
             this.ti_UpdateFilter = new System.Windows.Forms.Timer(this.components);
@@ -3092,12 +3092,12 @@ namespace wtKST
             this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_msglist_toolStripTextBox_DirQRB = new System.Windows.Forms.ToolStripTextBox();
-            this.cmn_msglist_AS_status = new System.Windows.Forms.ToolStripLabel();
-            this.cmn_msglist_Label = new System.Windows.Forms.Label();
             this.cmn_msglist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_msglist_openURL = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_AS_status = new System.Windows.Forms.ToolStripLabel();
             this.cmn_msglist_AS_details = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmn_msglist_Label = new System.Windows.Forms.Label();
             this.ss_Main.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -3143,43 +3143,42 @@ namespace wtKST
             this.tsl_Error.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tsl_Error.ForeColor = System.Drawing.Color.Red;
             this.tsl_Error.Name = "tsl_Error";
-            this.tsl_Error.Text = "";
-            this.tsl_Error.Size = new System.Drawing.Size(1108, 17);
+            this.tsl_Error.Size = new System.Drawing.Size(1099, 17);
             this.tsl_Error.Spring = true;
             this.tsl_Error.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // tsl_LED_KST_Status
             // 
             this.tsl_LED_KST_Status.AutoSize = false;
+            this.tsl_LED_KST_Status.BackColor = System.Drawing.Color.Red;
             this.tsl_LED_KST_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
             this.tsl_LED_KST_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
             this.tsl_LED_KST_Status.Name = "tsl_LED_KST_Status";
             this.tsl_LED_KST_Status.Size = new System.Drawing.Size(12, 12);
             this.tsl_LED_KST_Status.Text = "ON4KST Chat Status LED";
             this.tsl_LED_KST_Status.ToolTipText = "ON4KST Chat Status LED";
-            this.tsl_LED_KST_Status.BackColor = Color.Red;
             // 
             // tsl_LED_AS_Status
             // 
             this.tsl_LED_AS_Status.AutoSize = false;
+            this.tsl_LED_AS_Status.BackColor = System.Drawing.Color.Red;
             this.tsl_LED_AS_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
             this.tsl_LED_AS_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
             this.tsl_LED_AS_Status.Name = "tsl_LED_AS_Status";
             this.tsl_LED_AS_Status.Size = new System.Drawing.Size(12, 12);
             this.tsl_LED_AS_Status.Text = "Airscout Status LED";
             this.tsl_LED_AS_Status.ToolTipText = "Airscout Status LED";
-            this.tsl_LED_AS_Status.BackColor = Color.Red;
             // 
             // tsl_LED_Log_Status
             // 
             this.tsl_LED_Log_Status.AutoSize = false;
+            this.tsl_LED_Log_Status.BackColor = System.Drawing.Color.Red;
             this.tsl_LED_Log_Status.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.None;
             this.tsl_LED_Log_Status.Margin = new System.Windows.Forms.Padding(7, 5, 1, 5);
-            this.tsl_LED_Log_Status.Name = "tsl_LED_AS_Status";
+            this.tsl_LED_Log_Status.Name = "tsl_LED_Log_Status";
             this.tsl_LED_Log_Status.Size = new System.Drawing.Size(12, 12);
             this.tsl_LED_Log_Status.Text = "Log sync Status LED";
             this.tsl_LED_Log_Status.ToolTipText = "Log sync Status LED";
-            this.tsl_LED_Log_Status.BackColor = Color.Red;
             // 
             // splitContainer1
             // 
@@ -3430,10 +3429,9 @@ namespace wtKST
             this.lv_Calls.CellStateChanged += new System.Windows.Forms.DataGridViewCellStateChangedEventHandler(this.lv_Calls_CellStateChanged);
             this.lv_Calls.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lv_Calls_CellValueChanged);
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
-            this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
-            this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_Calls_DataBindingComplete);
-            this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
             this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_DataBindingComplete);
+            this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
+            this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
             // 
             // lbl_KST_Calls
             // 
@@ -3476,12 +3474,12 @@ namespace wtKST
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(90, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(89, 6);
             // 
             // tsi_File_Exit
             // 
             this.tsi_File_Exit.Name = "tsi_File_Exit";
-            this.tsi_File_Exit.Size = new System.Drawing.Size(93, 22);
+            this.tsi_File_Exit.Size = new System.Drawing.Size(92, 22);
             this.tsi_File_Exit.Text = "E&xit";
             this.tsi_File_Exit.Click += new System.EventHandler(this.tsi_File_Exit_Click);
             // 
@@ -3494,7 +3492,7 @@ namespace wtKST
             this.tsi_KST_Here,
             this.tsi_KST_Away});
             this.tsm_KST.Name = "tsm_KST";
-            this.tsm_KST.Size = new System.Drawing.Size(38, 20);
+            this.tsm_KST.Size = new System.Drawing.Size(39, 20);
             this.tsm_KST.Text = "&KST";
             // 
             // tsi_KST_Connect
@@ -3560,9 +3558,10 @@ namespace wtKST
             // 
             // menu_btn_macro_1
             // 
+            this.menu_btn_macro_1.Enabled = global::wtKST.Properties.Settings.Default.KST_M1;
             this.menu_btn_macro_1.Name = "menu_btn_macro_1";
             this.menu_btn_macro_1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
-            this.menu_btn_macro_1.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_1.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_1.Text = global::wtKST.Properties.Settings.Default.KST_Macro_1;
             this.menu_btn_macro_1.Visible = global::wtKST.Properties.Settings.Default.KST_M1;
             this.menu_btn_macro_1.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3571,7 +3570,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_2.Name = "menu_btn_macro_2";
             this.menu_btn_macro_2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D2)));
-            this.menu_btn_macro_2.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_2.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_2.Text = global::wtKST.Properties.Settings.Default.KST_Macro_2;
             this.menu_btn_macro_2.Visible = global::wtKST.Properties.Settings.Default.KST_M2;
             this.menu_btn_macro_2.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3580,7 +3579,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_3.Name = "menu_btn_macro_3";
             this.menu_btn_macro_3.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
-            this.menu_btn_macro_3.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_3.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_3.Text = global::wtKST.Properties.Settings.Default.KST_Macro_3;
             this.menu_btn_macro_3.Visible = global::wtKST.Properties.Settings.Default.KST_M3;
             this.menu_btn_macro_3.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3589,7 +3588,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_4.Name = "menu_btn_macro_4";
             this.menu_btn_macro_4.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D4)));
-            this.menu_btn_macro_4.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_4.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_4.Text = global::wtKST.Properties.Settings.Default.KST_Macro_4;
             this.menu_btn_macro_4.Visible = global::wtKST.Properties.Settings.Default.KST_M4;
             this.menu_btn_macro_4.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3598,7 +3597,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_5.Name = "menu_btn_macro_5";
             this.menu_btn_macro_5.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D5)));
-            this.menu_btn_macro_5.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_5.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_5.Text = global::wtKST.Properties.Settings.Default.KST_Macro_5;
             this.menu_btn_macro_5.Visible = global::wtKST.Properties.Settings.Default.KST_M5;
             this.menu_btn_macro_5.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3607,7 +3606,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_6.Name = "menu_btn_macro_6";
             this.menu_btn_macro_6.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D6)));
-            this.menu_btn_macro_6.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_6.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_6.Text = global::wtKST.Properties.Settings.Default.KST_Macro_6;
             this.menu_btn_macro_6.Visible = global::wtKST.Properties.Settings.Default.KST_M6;
             this.menu_btn_macro_6.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3616,7 +3615,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_7.Name = "menu_btn_macro_7";
             this.menu_btn_macro_7.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D7)));
-            this.menu_btn_macro_7.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_7.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_7.Text = global::wtKST.Properties.Settings.Default.KST_Macro_7;
             this.menu_btn_macro_7.Visible = global::wtKST.Properties.Settings.Default.KST_M7;
             this.menu_btn_macro_7.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3625,7 +3624,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_8.Name = "menu_btn_macro_8";
             this.menu_btn_macro_8.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D8)));
-            this.menu_btn_macro_8.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_8.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_8.Text = global::wtKST.Properties.Settings.Default.KST_Macro_8;
             this.menu_btn_macro_8.Visible = global::wtKST.Properties.Settings.Default.KST_M8;
             this.menu_btn_macro_8.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3634,7 +3633,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_9.Name = "menu_btn_macro_9";
             this.menu_btn_macro_9.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D9)));
-            this.menu_btn_macro_9.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_9.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_9.Text = global::wtKST.Properties.Settings.Default.KST_Macro_9;
             this.menu_btn_macro_9.Visible = global::wtKST.Properties.Settings.Default.KST_M9;
             this.menu_btn_macro_9.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3643,7 +3642,7 @@ namespace wtKST
             // 
             this.menu_btn_macro_0.Name = "menu_btn_macro_0";
             this.menu_btn_macro_0.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D0)));
-            this.menu_btn_macro_0.Size = new System.Drawing.Size(337, 22);
+            this.menu_btn_macro_0.Size = new System.Drawing.Size(335, 22);
             this.menu_btn_macro_0.Text = global::wtKST.Properties.Settings.Default.KST_Macro_0;
             this.menu_btn_macro_0.Visible = global::wtKST.Properties.Settings.Default.KST_M0;
             this.menu_btn_macro_0.Click += new System.EventHandler(this.kst_macro_btn_Click);
@@ -3651,12 +3650,12 @@ namespace wtKST
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(334, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(332, 6);
             // 
             // macro_default_Station
             // 
             this.macro_default_Station.Name = "macro_default_Station";
-            this.macro_default_Station.Size = new System.Drawing.Size(337, 22);
+            this.macro_default_Station.Size = new System.Drawing.Size(335, 22);
             this.macro_default_Station.Text = "Default Station ";
             this.macro_default_Station.DropDownOpening += new System.EventHandler(this.macro_default_Station_DropDownOpening);
             // 
@@ -3735,24 +3734,24 @@ namespace wtKST
             this.ti_Reconnect.Tick += new System.EventHandler(this.ti_Reconnect_Tick);
             // 
             // ti_ToolTip_active
-            //
+            // 
             this.ti_ToolTip_active.Interval = 10000;
-            this.ti_ToolTip_active.Tick += new System.EventHandler(ti_ToolTip_active_Tick);
+            this.ti_ToolTip_active.Tick += new System.EventHandler(this.ti_ToolTip_active_Tick);
             // 
             // tt_Info
             // 
             this.tt_Info.ShowAlways = true;
             // 
+            // tt_ASInfo
+            // 
+            this.tt_ASInfo.OwnerDraw = true;
+            this.tt_ASInfo.ShowAlways = true;
+            this.tt_ASInfo.Draw += new System.Windows.Forms.DrawToolTipEventHandler(this.ToolTipp_AS_Draw);
+            this.tt_ASInfo.Popup += new System.Windows.Forms.PopupEventHandler(this.ToolTipp_AS_Popup);
+            // 
             // ti_UpdateFilter
             // 
             this.ti_UpdateFilter.Tick += new System.EventHandler(this.ti_UpdateFilter_Tick);
-            // 
-            // tt_ASInfo
-            // 
-            this.tt_ASInfo.ShowAlways = true;
-            this.tt_ASInfo.OwnerDraw = true;
-            this.tt_ASInfo.Popup += new PopupEventHandler(this.ToolTipp_AS_Popup);
-            this.tt_ASInfo.Draw += new DrawToolTipEventHandler(this.ToolTipp_AS_Draw);
             // 
             // cmn_userlist
             // 
@@ -3760,40 +3759,34 @@ namespace wtKST
             this.cmn_userlist_wtsked,
             this.cmn_userlist_chatReview});
             this.cmn_userlist.Name = "cmn_userlist";
-            this.cmn_userlist.Size = new System.Drawing.Size(149, 48);
+            this.cmn_userlist.Size = new System.Drawing.Size(150, 48);
             // 
             // cmn_userlist_wtsked
             // 
             this.cmn_userlist_wtsked.Name = "cmn_userlist_wtsked";
-            this.cmn_userlist_wtsked.Size = new System.Drawing.Size(148, 22);
+            this.cmn_userlist_wtsked.Size = new System.Drawing.Size(149, 22);
             this.cmn_userlist_wtsked.Text = "Win-Test &Sked";
             this.cmn_userlist_wtsked.Click += new System.EventHandler(this.cmn_item_wtsked_Click);
             // 
             // cmn_userlist_chatReview
             // 
             this.cmn_userlist_chatReview.Name = "cmn_userlist_chatReview";
-            this.cmn_userlist_chatReview.Size = new System.Drawing.Size(148, 22);
+            this.cmn_userlist_chatReview.Size = new System.Drawing.Size(149, 22);
             this.cmn_userlist_chatReview.Text = "Chat &Review";
             this.cmn_userlist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
             // 
             // cmn_msglist
             // 
+            this.cmn_msglist.ImageScalingSize = new System.Drawing.Size(40, 20);
             this.cmn_msglist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmn_msglist_toolStripTextBox_DirQRB,
             this.cmn_msglist_wtsked,
             this.cmn_msglist_chatReview,
             this.cmn_msglist_openURL,
             this.cmn_msglist_AS_status,
-            this.cmn_msglist_AS_details
-            });
+            this.cmn_msglist_AS_details});
             this.cmn_msglist.Name = "cmn_msglist";
-            this.cmn_msglist.Size = new System.Drawing.Size(181, 117);
-            this.cmn_msglist.ImageScalingSize = new System.Drawing.Size(40, 20);
-
-            // 
-            // cmn_msglist_Label
-            // 
-            this.cmn_msglist_Label.AutoSize = true;
+            this.cmn_msglist.Size = new System.Drawing.Size(267, 140);
             // 
             // cmn_msglist_toolStripTextBox_DirQRB
             // 
@@ -3803,43 +3796,49 @@ namespace wtKST
             this.cmn_msglist_toolStripTextBox_DirQRB.Size = new System.Drawing.Size(100, 23);
             this.cmn_msglist_toolStripTextBox_DirQRB.Text = "Call 1000km 350°";
             // 
-            // 
-            // cmn_msglist_AS_status
-            // 
-            this.cmn_msglist_AS_status.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.cmn_msglist_AS_status.Name = "cmn_msglist_toolStripTextBox_AS";
-            this.cmn_msglist_AS_status.Size = new System.Drawing.Size(206, 23);
-            this.cmn_msglist_AS_status.Text = "";
-            this.cmn_msglist_AS_status.Image = new Bitmap(40, 20);
-            this.cmn_msglist_AS_status.Click += new EventHandler(cmn_msglist_toolStripLabel_AS_clicked);
-            // 
             // cmn_msglist_wtsked
             // 
             this.cmn_msglist_wtsked.Name = "cmn_msglist_wtsked";
-            this.cmn_msglist_wtsked.Size = new System.Drawing.Size(148, 22);
+            this.cmn_msglist_wtsked.Size = new System.Drawing.Size(266, 22);
             this.cmn_msglist_wtsked.Text = "Win-Test &Sked";
             this.cmn_msglist_wtsked.Click += new System.EventHandler(this.cmn_item_wtsked_Click);
             // 
             // cmn_msglist_chatReview
             // 
-            this.cmn_msglist_chatReview.Size = new System.Drawing.Size(148, 22);
             this.cmn_msglist_chatReview.Name = "cmn_msglist_chatReview";
+            this.cmn_msglist_chatReview.Size = new System.Drawing.Size(266, 22);
             this.cmn_msglist_chatReview.Text = "Chat &Review";
             this.cmn_msglist_chatReview.Click += new System.EventHandler(this.cmn_item_chatReview_Click);
             // 
             // cmn_msglist_openURL
             // 
-            this.cmn_msglist_openURL.Size = new System.Drawing.Size(148, 22);
             this.cmn_msglist_openURL.Name = "cmn_msglist_openURL";
+            this.cmn_msglist_openURL.Size = new System.Drawing.Size(266, 22);
             this.cmn_msglist_openURL.Text = "&Open URL";
             this.cmn_msglist_openURL.Click += new System.EventHandler(this.cmn_item_openURL_Click);
             // 
+            // cmn_msglist_AS_status
+            // 
+            this.cmn_msglist_AS_status.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.cmn_msglist_AS_status.Image = ((System.Drawing.Image)(resources.GetObject("cmn_msglist_AS_status.Image")));
+            this.cmn_msglist_AS_status.Name = "cmn_msglist_AS_status";
+            this.cmn_msglist_AS_status.Size = new System.Drawing.Size(40, 20);
+            this.cmn_msglist_AS_status.Click += new System.EventHandler(this.cmn_msglist_toolStripLabel_AS_clicked);
+            // 
             // cmn_msglist_AS_details
             // 
-            this.cmn_msglist_AS_details.Size = new System.Drawing.Size(200, 22);
-            this.cmn_msglist_AS_details.Name = "cmn_msglist_AS";
+            this.cmn_msglist_AS_details.Name = "cmn_msglist_AS_details";
+            this.cmn_msglist_AS_details.Size = new System.Drawing.Size(266, 22);
             this.cmn_msglist_AS_details.Text = "&Airscout Details";
             this.cmn_msglist_AS_details.MouseDown += new System.Windows.Forms.MouseEventHandler(this.cmn_item_AS_Click);
+            // 
+            // cmn_msglist_Label
+            // 
+            this.cmn_msglist_Label.AutoSize = true;
+            this.cmn_msglist_Label.Location = new System.Drawing.Point(0, 0);
+            this.cmn_msglist_Label.Name = "cmn_msglist_Label";
+            this.cmn_msglist_Label.Size = new System.Drawing.Size(100, 23);
+            this.cmn_msglist_Label.TabIndex = 0;
             // 
             // MainDlg
             // 
