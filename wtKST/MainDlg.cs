@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -289,6 +290,11 @@ namespace wtKST
             if (Settings.Default.KST_AutoConnect)
             {
                 KST.Connect();
+            }
+            WinTest.WinTest.advancedNetActivated = Settings.Default.AdvancedWinTestNetwork_Activate;
+            if (Settings.Default.AdvancedWinTestNetwork_Activate) { 
+                WinTest.WinTest.advancedWinTestPort = int.Parse(Settings.Default.AdvancedWinTestNetwork_UDPPort);
+                WinTest.WinTest.advancedWinTestBroadcastAddress = IPAddress.Parse(Settings.Default.AdvancedWinTestNetwork_BroadcastIP);
             }
         }
 
