@@ -1,3 +1,13 @@
+3.2.1.8
+- Change .NET version from 4.7.2 to more common 4.8
+- Fix: improve Win-Test UDP message parser robustness
+- Fix: after version update, Macros were not correctly updated
+- Improvement: Speed up redraws for user list
+- Fix: remove last empty line in user list
+- Fix: apply changes to options only after OK button is actually clicked
+- New Feature: advanced network settings for Win-Test (thanks Philipp!)
+- Fix: start Airscout networking immediately and not only after user list changed once
+
 3.2.1.7
 - Fix: The server changed the address, "www.on4kst.info" currently does not work, change to "www.on4kst.org"
 - Fix: Win-Test network sync sometimes requested parts of the log it already had
