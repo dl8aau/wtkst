@@ -480,10 +480,10 @@ namespace wtKST
                 {
                     KST_Update_Usr_Filter(true); // only check filter here! it should not have changed
                     KST_Update_User_Filter_last_called = DateTime.Now;
+                }
+                if (AS_watchlist.Equals(""))
+                    fill_AS_list();
             }
-            }
-
-            //fill_AS_list();
 
             string KST_Calls_Text = lbl_KST_Calls.Text;
             if (lv_Calls.RowCount > 0)
