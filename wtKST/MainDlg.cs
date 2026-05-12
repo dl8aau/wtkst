@@ -958,11 +958,13 @@ namespace wtKST
                     // see https://stackoverflow.com/a/9823873
                     if (Keep_FirstDisplayedScrollingRowIndex + lv_Calls.DisplayedRowCount(false) < lv_Calls.Rows.Count)
                     {
-                        lv_Calls.FirstDisplayedScrollingRowIndex = Keep_FirstDisplayedScrollingRowIndex;
+                        if (Keep_FirstDisplayedScrollingRowIndex >= 0)
+                            lv_Calls.FirstDisplayedScrollingRowIndex = Keep_FirstDisplayedScrollingRowIndex;
                     }
                     else
                     {
-                        lv_Calls.FirstDisplayedScrollingRowIndex = lv_Calls.Rows.Count - 1;
+                        if (lv_Calls.Rows.Count > 0)
+                            lv_Calls.FirstDisplayedScrollingRowIndex = lv_Calls.Rows.Count - 1;
                     }
                 }
             }
