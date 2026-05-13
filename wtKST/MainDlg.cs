@@ -2467,10 +2467,11 @@ namespace wtKST
                     if (userRow != null) 
                     {
                        string loc = userRow["LOC"].ToString();
-                        qtf = WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
-                        qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
+                       qtf = WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
+                       qrb = WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc);
                        this.cmn_msglist_toolStripTextBox_DirQRB.Text = string.Concat(new object[]
                        {
+                            loc, " ",
                             qtf.ToString("000"), "° ",
                             qrb, " km"
                        });
@@ -2647,6 +2648,7 @@ namespace wtKST
                         string loc = userRow["LOC"].ToString();
                         this.cmn_msglist_toolStripTextBox_DirQRB.Text = string.Concat(new object[]
                         {
+                            loc, " ",
                             WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc).ToString("000"), "° ",
                             WCCheck.WCCheck.QRB(Settings.Default.KST_Loc, loc), " km"
                         });
@@ -3879,7 +3881,7 @@ namespace wtKST
             this.cmn_msglist_toolStripTextBox_DirQRB.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.cmn_msglist_toolStripTextBox_DirQRB.Name = "cmn_msglist_toolStripTextBox_DirQRB";
             this.cmn_msglist_toolStripTextBox_DirQRB.ReadOnly = true;
-            this.cmn_msglist_toolStripTextBox_DirQRB.Size = new System.Drawing.Size(100, 23);
+            this.cmn_msglist_toolStripTextBox_DirQRB.Size = new System.Drawing.Size(140, 23);
             this.cmn_msglist_toolStripTextBox_DirQRB.Text = "Call 1000km 350°";
             // 
             // cmn_msglist_wtsked
