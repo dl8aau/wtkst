@@ -143,7 +143,6 @@ namespace wtKST
 
         public OptionsDlg()
         {
-            this.AutoValidate = AutoValidate.Disable;
             InitializeComponent();
             if (this.cb_WinTest_Active.Checked)
             {
@@ -385,7 +384,6 @@ namespace wtKST
             // 
             // btn_OK
             // 
-            this.btn_OK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btn_OK.Location = new System.Drawing.Point(521, 36);
             this.btn_OK.Name = "btn_OK";
             this.btn_OK.Size = new System.Drawing.Size(75, 23);
@@ -1900,8 +1898,8 @@ namespace wtKST
 
         private void btn_OK_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
             this.ValidateChildren();
+            this.DialogResult = DialogResult.OK;
             this.Close();
         }
 
