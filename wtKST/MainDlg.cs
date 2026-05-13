@@ -143,6 +143,7 @@ namespace wtKST
         private bool WinTestLocatorWarning = false;
         private bool hide_away = false;
         private bool sort_by_dir = false;
+        private bool sort_by_qrb = false;
         private bool ignore_inactive = false;
         private bool hide_worked = false;
         private ContextMenuStrip cmn_userlist;
@@ -251,7 +252,8 @@ namespace wtKST
             lv_Calls.Columns["RECENTLOGIN"].Visible = false;
             lv_Calls.Columns["ASLAT"].Visible = false;
             lv_Calls.Columns["ASLON"].Visible = false;
-            lv_Calls.Columns["QRB"].Visible = false;
+            lv_Calls.Columns["QRB"].HeaderCell.Value = "QRB";
+            lv_Calls.Columns["QRB"].Width = 45;
             lv_Calls.Columns["DIR"].Visible = false;
             lv_Calls.Columns["AWAY"].Visible = false;
             lv_Calls.Columns["COLOR"].Visible = false;
@@ -1784,7 +1786,7 @@ namespace wtKST
                     e.Handled = true;
                 }
                 else if (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex || e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex
-                      || e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)
+                      || e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex || e.ColumnIndex == dgv.Columns["QRB"].DisplayIndex)
                 {
                     lv_Calls_ClearBackground(e);
 
@@ -1797,7 +1799,8 @@ namespace wtKST
 
                     // mark sorting column - draw text + icon
                     if ((e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex) ||
-                        (e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex))
+                        (e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex) ||
+                        (e.ColumnIndex == dgv.Columns["QRB"].DisplayIndex))
                     {
                         //Draw Text Custom
                         TextRenderer.DrawText(e.Graphics, string.Format("{0}", e.FormattedValue),
@@ -1806,8 +1809,8 @@ namespace wtKST
 
                         //Draw Sort Icon
                         var sortIcon = ((e.ColumnIndex == dgv.Columns["LOC"].DisplayIndex && sort_by_dir) ||
-                            (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && !sort_by_dir)) ? "▼" : " ";
-                        //Or draw an icon here.
+                            (e.ColumnIndex == dgv.Columns["QRB"].DisplayIndex && sort_by_qrb) ||
+                            (e.ColumnIndex == dgv.Columns["CALL"].DisplayIndex && !sort_by_dir && !sort_by_qrb)) ? "▼" : " ";
                         TextRenderer.DrawText(e.Graphics, sortIcon,
                             e.CellStyle.Font, e.CellBounds, e.CellStyle.ForeColor,
                             TextFormatFlags.VerticalCenter | TextFormatFlags.Right);
@@ -2234,7 +2237,26 @@ namespace wtKST
                 else
                 {
                     sort_by_dir = true;
+                    sort_by_qrb = false;
                     dgv.Sort(dgv.Columns["DIR"], ListSortDirection.Ascending);
+                }
+                KST_Update_Usr_Filter();
+                return;
+            }
+
+            // QRB column
+            if (column.Name == "QRB")
+            {
+                if (sort_by_qrb)
+                {
+                    sort_by_qrb = false;
+                    dgv.Sort(dgv.Columns["CALL"], ListSortDirection.Ascending);
+                }
+                else
+                {
+                    sort_by_qrb = true;
+                    sort_by_dir = false;
+                    dgv.Sort(dgv.Columns["QRB"], ListSortDirection.Ascending);
                 }
                 KST_Update_Usr_Filter();
                 return;
