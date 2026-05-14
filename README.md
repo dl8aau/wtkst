@@ -45,7 +45,7 @@ See the file LICENSE for details.
 
 # Settings
 
-In order to set N1MMLogger+ as logging, you need to select the s3db file used by N1MM. Usually found in C:\Users\..username..\Documents\N1MM Logger+\Databases. Usually ham.s3db is the default used one. Then click Load and it will show the contests available in the database. Pick the latest one.
+In order to set N1MMLogger+ as logging, you need to select the s3db file used by N1MM. Usually found in C:\Users\\..username..\Documents\N1MM Logger+\Databases. Usually ham.s3db is the default used one. Then click Load and it will show the contests available in the database. Pick the latest one.
 
 # Installation
 
