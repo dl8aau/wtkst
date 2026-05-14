@@ -431,6 +431,7 @@ namespace wtKST
                 default:
                     if (tsl_LED_Log_Status.BackColor != Color.Red)
                         tsl_LED_Log_Status.BackColor = Color.Red;
+                    tt_Info.SetToolTip(lbl_KST_Calls, "");
                     break;
                 case WinTestLogBase.LOG_STATE.LOG_SYNCING:
                     if (tsl_LED_Log_Status.BackColor != Color.Yellow)
@@ -439,8 +440,33 @@ namespace wtKST
                 case WinTestLogBase.LOG_STATE.LOG_IN_SYNC:
                     if (tsl_LED_Log_Status.BackColor != Color.Green)
                         tsl_LED_Log_Status.BackColor = Color.Green;
+                    UpdateLogTooltip();
                     break;
             }
+        }
+
+        private static readonly string[] LogBandOrder = { "50M", "70M", "144M", "432M", "1_2G", "2_3G", "3_4G", "5_7G", "10G", "24G", "47G", "76G" };
+
+        private void UpdateLogTooltip()
+        {
+            if (wtQSO == null)
+            {
+                tt_Info.SetToolTip(lbl_KST_Calls, "");
+                return;
+            }
+            DataRow[] rows = wtQSO.QSOsSelect("");
+            if (rows.Length == 0)
+            {
+                tt_Info.SetToolTip(lbl_KST_Calls, "No QSOs");
+                return;
+            }
+            var counts = rows
+                .GroupBy(r => r["BAND"].ToString())
+                .ToDictionary(g => g.Key, g => g.Count());
+            var lines = LogBandOrder
+                .Where(b => counts.ContainsKey(b))
+                .Select(b => string.Format("{0}: {1}", b, counts[b]));
+            tt_Info.SetToolTip(lbl_KST_Calls, string.Join(Environment.NewLine, lines));
         }
 
         private DateTime KST_Update_User_Filter_last_called = DateTime.Now;
