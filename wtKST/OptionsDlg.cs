@@ -1928,6 +1928,7 @@ namespace wtKST
             // 
             // tb_Options_DXLog_Station_Name
             // 
+            this.tb_Options_DXLog_Station_Name.Visible = false;
             this.tb_Options_DXLog_Station_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "DXLog_StationName", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.tb_Options_DXLog_Station_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_Options_DXLog_Station_Name.Location = new System.Drawing.Point(112, 35);
@@ -1944,7 +1945,8 @@ namespace wtKST
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(74, 13);
             this.label28.TabIndex = 14;
-            this.label28.Text = "Station Name:";
+            this.label28.Text = "Sked Target Station:";
+            this.label28.Visible = false;
             // 
             // OptionsDlg
             // 

@@ -3862,6 +3862,7 @@ namespace wtKST
             this.skedTestToolStripMenuItem.Name = "skedTestToolStripMenuItem";
             this.skedTestToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
             this.skedTestToolStripMenuItem.Text = "Sked Test";
+            this.skedTestToolStripMenuItem.Visible = false;
             this.skedTestToolStripMenuItem.Click += new System.EventHandler(this.skedTestToolStripMenuItem_Click);
             // 
             // ti_Main
@@ -4257,46 +4258,55 @@ namespace wtKST
                 menu_btn_macro_0.Text = Settings.Default.KST_Macro_0;
         }
 
-        private void skedTestToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var msgSked = new NetworkMsgSked
-            {
-                Callsign = "M4W",
-                Comments = "From WTKST",
-                Frequency = 144222.ToString(),
-                Mode = "USB",
-                SkedTime = DateTime.UtcNow.AddMinutes(3)
-            };
+        // TODO: DXLog sked sending not fully implemented yet
+        //private void skedTestToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    string skedTestCall = "M4W";
+        //    if (CALL.Rows.Count > 0)
+        //    {
+        //        var rng = new Random();
+        //        skedTestCall = CALL.Rows[rng.Next(CALL.Rows.Count)]["CALL"].ToString();
+        //    }
 
-            var networkMessage = new NetworkMessage
-            {
-                MsgDestination = "ALL",
-                MsgSender = "WTKST",
-                MsgID = "1",
-                MsgType = "SKD",
-                MsgData = msgSked.ToByteArray()
-            };
+        //    var msgSked = new NetworkMsgSked
+        //    {
+        //        Callsign = skedTestCall,
+        //        Comments = "From WTKST",
+        //        Frequency = 144222.ToString(),
+        //        Mode = "USB",
+        //        SkedTime = DateTime.UtcNow.AddMinutes(1)
+        //    };
 
-            var rawMessage = networkMessage.ToByteArray();
+        //    var networkMessage = new NetworkMessage
+        //    {
+        //        MsgDestination = !string.IsNullOrWhiteSpace(Settings.Default.DXLog_StationName) ? Settings.Default.DXLog_StationName : "ALL",
+        //        MsgSender = "WTKST",
+        //        MsgID = "1",
+        //        MsgType = "SKD",
+        //        MsgData = msgSked.ToByteArray()
+        //    };
 
-            try
-            {
-                using (var udpClient = new UdpClient())
-                {
-                    udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
-                    udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-                    udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
-                    udpClient.Client.ReceiveTimeout = 10000;
-                    var endPoint = new IPEndPoint(IPAddress.Parse("192.168.10.255"), 9888);
-                    udpClient.Connect(endPoint);
+        //    var rawMessage = networkMessage.ToByteArray();
 
-                    udpClient.Send(rawMessage, rawMessage.Length);
-                    udpClient.Close();
-                }
-            }
-            catch
-            {
-            }
-        }
+        //    try
+        //    {
+        //        using (var udpClient = new UdpClient())
+        //        {
+        //            udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+        //            udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+        //            udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
+        //            udpClient.Client.ReceiveTimeout = 10000;
+        //            var endPoint = new IPEndPoint(WinTest.WinTest.GetIpIFBroadcastAddress(), 9888);
+        //            udpClient.Connect(endPoint);
+
+        //            udpClient.Send(rawMessage, rawMessage.Length);
+        //            udpClient.Close();
+        //        }
+        //    }
+        //    catch
+        //    {
+        //    }
+        //}
+        private void skedTestToolStripMenuItem_Click(object sender, EventArgs e) { }
     }
 }
