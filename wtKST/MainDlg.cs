@@ -6,12 +6,16 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using WinTest;
+using WinTest.DXL;
+using WinTest.DXLog;
 using wtKST.Properties;
 using Application = System.Windows.Forms.Application;
 
@@ -134,6 +138,7 @@ namespace wtKST
         private System.Windows.Forms.Timer ti_Reconnect;
         private System.Windows.Forms.Timer ti_ToolTip_active;
         private System.Windows.Forms.Timer ti_N1MM;
+        private System.Windows.Forms.Timer ti_BandRefresh;
 
         private System.Windows.Forms.ToolTip tt_Info;
         private System.Windows.Forms.ToolTip tt_ASInfo;
@@ -182,6 +187,7 @@ namespace wtKST
         private ToolStripStatusLabel tsl_LED_AS_Status;
         private ToolStripStatusLabel tsl_LED_Log_Status;
         private ToolStripStatusLabel tsl_LED_KST_Status;
+        private ToolStripMenuItem skedTestToolStripMenuItem;
         private string AS_watchlist = "";
 
         public MainDlg()
@@ -283,6 +289,7 @@ namespace wtKST
 
             // handle Log interface
             init_wtQSO();
+            ti_BandRefresh.Start();
 
             UpdateUserBandsWidth();
             AS_if = new wtKST.AirScoutInterface();
@@ -535,7 +542,16 @@ namespace wtKST
                 /* show number of calls in list and total number of users (-1 for own call) */
                 KST_Calls_Text = "Calls [" + lv_Calls.RowCount.ToString() + " / " + (CALL.Rows.Count - 1) + "]";
                 if (wtQSO != null)
-                    KST_Calls_Text += " - " + Path.GetFileName(wtQSO.getStatus());
+                {
+                    string intName;
+                    if (wtQSO is WinTest.WinTestLog)           intName = "WT File";
+                    else if (wtQSO is WinTest.WtLogSync)       intName = WinTest.WinTest.advancedNetActivated ? "WT Net (Advanced)" : "WT Net";
+                    else if (wtQSO is WinTest.QARTestLogSync)  intName = "QARTest";
+                    else if (wtQSO is N1MMSQLiteLog)           intName = "N1MM";
+                    else if (wtQSO is WinTest.DXL.DXLogSync)  intName = "DXLog";
+                    else                                       intName = "Log";
+                    KST_Calls_Text += " - " + intName + " " + wtQSO.QSO.Rows.Count + " QSOs";
+                }
             }
             else
             {
@@ -1297,6 +1313,30 @@ namespace wtKST
                 ti_N1MM.Interval = Math.Max(1000, Settings.Default.N1MM_UpdateInterval * 1000);
                 ti_N1MM.Start();
             }
+            else if (Settings.Default.DXLog_Sync_active)
+            {
+                if (wtQSO != null)
+                {
+                    if (wtQSO.GetType() == typeof(DXLogSync))
+                    {
+                        Console.WriteLine("wtQSO already DXLogSync");
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
+                        ((IDisposable)wtQSO).Dispose();
+                        wtQSO = null;
+                    }
+                }
+                wtQSO = new DXLogSync(MainDlg.Log.WriteMessage);
+                if (wts != null)
+                {
+                    Console.WriteLine("wts active - turn off");
+                    wts = null;
+                }
+                wtQSO.LogStateChanged += Log_StateChanged;
+            }
             else
             {
                 ti_N1MM.Stop();
@@ -1432,6 +1472,8 @@ namespace wtKST
                                     wtQSO.Get_QSOs(Settings.Default.WinTest_StationName);
                                 else if (wtQSO.GetType() == typeof(QARTestLogSync))
                                     wtQSO.Get_QSOs("");
+                                else if (wtQSO.GetType() == typeof(DXLogSync))
+                                    wtQSO.Get_QSOs("");
                                 if (!String.IsNullOrEmpty(wtQSO.MyLoc) && WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
                                 {
                                     MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
@@ -1440,6 +1482,7 @@ namespace wtKST
                                 wtQSO_local_lock = false;
 
                                 Check_QSOs();
+                                UpdateLogTooltip();
                             }
                             catch
                             {
@@ -1486,6 +1529,15 @@ namespace wtKST
             }
             ti_N1MM.Interval = Math.Max(1000, Settings.Default.N1MM_UpdateInterval * 1000);
             ti_N1MM.Start();
+        }
+
+        private void ti_BandRefresh_Tick(object sender, EventArgs e)
+        {
+            if (KST.State == KSTcom.KST_STATE.Connected && wtQSO != null && !wtQSO_local_lock)
+            {
+                Check_QSOs();
+                UpdateLogTooltip();
+            }
         }
 
         public void Say(string Text)
@@ -2855,27 +2907,32 @@ namespace wtKST
 
         private void cmn_item_wtsked_Click(object sender, EventArgs e)
         {
-            ToolStripItem clickedItem = sender as ToolStripItem;
-            string call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
-
-            if (!String.IsNullOrEmpty(call))
+            if (sender is ToolStripItem clickedItem)
             {
-                string notes = "KST - Offline";
-                DataRow findrow = CALL.Rows.Find(call);
-                // [JO02OB - 113\\260] AP in 2min
-                if (findrow != null)
-                    notes = String.Format("[{0} - {1}°]", findrow["LOC"].ToString(), findrow["DIR"].ToString());
-                wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()),
-                                        notes, last_sked_qrg, kst_sked_qrg, kst_sked_mode, kst_sked_band_freq);
-                if (wtskdlg.ShowDialog() == DialogResult.OK)
-                {
-                    WinTest.wtSked wtsked = new WinTest.wtSked();
+                var call = cmn_userlist_get_call_from_contextMenu(clickedItem.Owner as ContextMenuStrip);
 
-                    wtsked.send_locksked(wtskdlg.target_wt);
-                    last_sked_qrg = wtskdlg.qrg;
-                    wtsked.send_addsked(wtskdlg.target_wt, wtskdlg.sked_time, wtskdlg.qrg, wtskdlg.band, wtskdlg.mode,
-                        wtskdlg.call, wtskdlg.notes);
-                    wtsked.send_unlocksked(wtskdlg.target_wt);
+                if (!String.IsNullOrEmpty(call))
+                {
+                    var notes = "KST - Offline";
+                    var dataRow = CALL.Rows.Find(call);
+                    // [JO02OB - 113\\260] AP in 2min
+                    if (dataRow != null)
+                    {
+                        notes = $"[{dataRow["LOC"]} - {dataRow["DIR"]}°]";
+                    }
+
+                    wtskdlg = new WTSkedDlg(WCCheck.WCCheck.SanitizeCall(call), wts.wtStatusList, new BindingList<bandinfo>(selected_bands()),
+                        notes, last_sked_qrg, kst_sked_qrg, kst_sked_mode, kst_sked_band_freq);
+                
+                    if (wtskdlg.ShowDialog() == DialogResult.OK)
+                    {
+                        var wtSked = new wtSked();
+
+                        wtSked.send_locksked(wtskdlg.target_wt);
+                        last_sked_qrg = wtskdlg.qrg;
+                        wtSked.send_addsked(wtskdlg.target_wt, wtskdlg.sked_time, wtskdlg.qrg, wtskdlg.band, wtskdlg.mode, wtskdlg.call, wtskdlg.notes);
+                        wtSked.send_unlocksked(wtskdlg.target_wt);
+                    }
                 }
             }
         }
@@ -3154,9 +3211,9 @@ namespace wtKST
             this.ss_Main = new System.Windows.Forms.StatusStrip();
             this.tsl_Info = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsl_Error = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsl_LED_KST_Status = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsl_LED_AS_Status = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsl_LED_Log_Status = new System.Windows.Forms.ToolStripStatusLabel();
-            this.tsl_LED_KST_Status = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -3204,6 +3261,7 @@ namespace wtKST
             this.macro_default_Station = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.skedTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ti_Main = new System.Windows.Forms.Timer(this.components);
             this.ni_Main = new System.Windows.Forms.NotifyIcon(this.components);
             this.cmn_Notify = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -3218,6 +3276,7 @@ namespace wtKST
             this.tt_ASInfo = new System.Windows.Forms.ToolTip(this.components);
             this.ti_UpdateFilter = new System.Windows.Forms.Timer(this.components);
             this.ti_N1MM = new System.Windows.Forms.Timer(this.components);
+            this.ti_BandRefresh = new System.Windows.Forms.Timer(this.components);
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
@@ -3561,6 +3620,7 @@ namespace wtKST
             this.lv_Calls.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.lv_Calls_CellValueChanged);
             this.lv_Calls.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.lv_Calls_ColumnClick);
             this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_DataBindingComplete);
+            this.lv_Calls.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.lv_Calls_DataBindingComplete);
             this.lv_Calls.ClientSizeChanged += new System.EventHandler(this.lv_Calls_clientSizeChanged);
             this.lv_Calls.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.lv_Calls_mousewheel_event);
             // 
@@ -3586,7 +3646,8 @@ namespace wtKST
             this.tsm_KST,
             this.tsi_Options,
             this.macroToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.skedTestToolStripMenuItem});
             this.mn_Main.Location = new System.Drawing.Point(0, 0);
             this.mn_Main.Name = "mn_Main";
             this.mn_Main.Size = new System.Drawing.Size(1202, 24);
@@ -3805,6 +3866,14 @@ namespace wtKST
             this.aboutToolStripMenuItem.Text = "&About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
+            // skedTestToolStripMenuItem
+            // 
+            this.skedTestToolStripMenuItem.Name = "skedTestToolStripMenuItem";
+            this.skedTestToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
+            this.skedTestToolStripMenuItem.Text = "Sked Test";
+            this.skedTestToolStripMenuItem.Visible = false;
+            this.skedTestToolStripMenuItem.Click += new System.EventHandler(this.skedTestToolStripMenuItem_Click);
+            // 
             // ti_Main
             // 
             this.ti_Main.Enabled = true;
@@ -3888,6 +3957,11 @@ namespace wtKST
             //
             this.ti_N1MM.Interval = 10000;
             this.ti_N1MM.Tick += new System.EventHandler(this.ti_N1MM_Tick);
+            //
+            // ti_BandRefresh
+            //
+            this.ti_BandRefresh.Interval = 5000;
+            this.ti_BandRefresh.Tick += new System.EventHandler(this.ti_BandRefresh_Tick);
             // 
             // cmn_userlist
             // 
@@ -4192,5 +4266,56 @@ namespace wtKST
             if (!Settings.Default.KST_Macro_9.Equals(menu_btn_macro_0.Text))
                 menu_btn_macro_0.Text = Settings.Default.KST_Macro_0;
         }
+
+        // TODO: DXLog sked sending not fully implemented yet
+        //private void skedTestToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    string skedTestCall = "M4W";
+        //    if (CALL.Rows.Count > 0)
+        //    {
+        //        var rng = new Random();
+        //        skedTestCall = CALL.Rows[rng.Next(CALL.Rows.Count)]["CALL"].ToString();
+        //    }
+
+        //    var msgSked = new NetworkMsgSked
+        //    {
+        //        Callsign = skedTestCall,
+        //        Comments = "From WTKST",
+        //        Frequency = 144222.ToString(),
+        //        Mode = "USB",
+        //        SkedTime = DateTime.UtcNow.AddMinutes(1)
+        //    };
+
+        //    var networkMessage = new NetworkMessage
+        //    {
+        //        MsgDestination = !string.IsNullOrWhiteSpace(Settings.Default.DXLog_StationName) ? Settings.Default.DXLog_StationName : "ALL",
+        //        MsgSender = "WTKST",
+        //        MsgID = "1",
+        //        MsgType = "SKD",
+        //        MsgData = msgSked.ToByteArray()
+        //    };
+
+        //    var rawMessage = networkMessage.ToByteArray();
+
+        //    try
+        //    {
+        //        using (var udpClient = new UdpClient())
+        //        {
+        //            udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
+        //            udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+        //            udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontRoute, 1);
+        //            udpClient.Client.ReceiveTimeout = 10000;
+        //            var endPoint = new IPEndPoint(WinTest.WinTest.GetIpIFBroadcastAddress(), 9888);
+        //            udpClient.Connect(endPoint);
+
+        //            udpClient.Send(rawMessage, rawMessage.Length);
+        //            udpClient.Close();
+        //        }
+        //    }
+        //    catch
+        //    {
+        //    }
+        //}
+        private void skedTestToolStripMenuItem_Click(object sender, EventArgs e) { }
     }
 }
