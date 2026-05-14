@@ -138,6 +138,7 @@ namespace wtKST
         private System.Windows.Forms.Timer ti_Reconnect;
         private System.Windows.Forms.Timer ti_ToolTip_active;
         private System.Windows.Forms.Timer ti_N1MM;
+        private System.Windows.Forms.Timer ti_BandRefresh;
 
         private System.Windows.Forms.ToolTip tt_Info;
         private System.Windows.Forms.ToolTip tt_ASInfo;
@@ -288,6 +289,7 @@ namespace wtKST
 
             // handle Log interface
             init_wtQSO();
+            ti_BandRefresh.Start();
 
             UpdateUserBandsWidth();
             AS_if = new wtKST.AirScoutInterface();
@@ -1471,6 +1473,7 @@ namespace wtKST
                                 wtQSO_local_lock = false;
 
                                 Check_QSOs();
+                                UpdateLogTooltip();
                             }
                             catch
                             {
@@ -1517,6 +1520,15 @@ namespace wtKST
             }
             ti_N1MM.Interval = Math.Max(1000, Settings.Default.N1MM_UpdateInterval * 1000);
             ti_N1MM.Start();
+        }
+
+        private void ti_BandRefresh_Tick(object sender, EventArgs e)
+        {
+            if (KST.State == KSTcom.KST_STATE.Connected && wtQSO != null && !wtQSO_local_lock)
+            {
+                Check_QSOs();
+                UpdateLogTooltip();
+            }
         }
 
         public void Say(string Text)
@@ -3255,6 +3267,7 @@ namespace wtKST
             this.tt_ASInfo = new System.Windows.Forms.ToolTip(this.components);
             this.ti_UpdateFilter = new System.Windows.Forms.Timer(this.components);
             this.ti_N1MM = new System.Windows.Forms.Timer(this.components);
+            this.ti_BandRefresh = new System.Windows.Forms.Timer(this.components);
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
@@ -3934,6 +3947,11 @@ namespace wtKST
             //
             this.ti_N1MM.Interval = 10000;
             this.ti_N1MM.Tick += new System.EventHandler(this.ti_N1MM_Tick);
+            //
+            // ti_BandRefresh
+            //
+            this.ti_BandRefresh.Interval = 5000;
+            this.ti_BandRefresh.Tick += new System.EventHandler(this.ti_BandRefresh_Tick);
             // 
             // cmn_userlist
             // 
