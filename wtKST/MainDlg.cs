@@ -133,6 +133,7 @@ namespace wtKST
 
         private System.Windows.Forms.Timer ti_Reconnect;
         private System.Windows.Forms.Timer ti_ToolTip_active;
+        private System.Windows.Forms.Timer ti_N1MM;
 
         private System.Windows.Forms.ToolTip tt_Info;
         private System.Windows.Forms.ToolTip tt_ASInfo;
@@ -372,6 +373,21 @@ namespace wtKST
                 case KSTcom.KST_STATE.Connected:
                     if (tsl_LED_KST_Status.BackColor != Color.Green)
                         tsl_LED_KST_Status.BackColor = Color.Green;
+                    if (wtQSO != null)
+                    {
+                        if (wtQSO.GetType() == typeof(N1MMSQLiteLog))
+                        {
+                            ti_N1MM.Stop();
+                            ti_N1MM.Interval = 100;
+                            ti_N1MM.Start();
+                        }
+                        else
+                        {
+                            ti_Main.Stop();
+                            ti_Main.Interval = 100;
+                            ti_Main.Start();
+                        }
+                    }
                     break;
             }
         }
@@ -1081,7 +1097,6 @@ namespace wtKST
         private void tsi_Options_Click(object sender, EventArgs e)
         {
             OptionsDlg Dlg = new OptionsDlg();
-            Dlg.cbb_KST_Chat.SelectedIndex = 2;
             if (KST.State != KSTcom.KST_STATE.Standby)
             {
                 Dlg.tb_KST_Password.Enabled = false;
@@ -1099,7 +1114,6 @@ namespace wtKST
             if (Dlg.ShowDialog() == DialogResult.OK)
             {
                 Settings.Default.Save();
-                Settings.Default.Reload();
                 if (oldchat != Settings.Default.KST_Chat)
                 {
                     lock (CALL)
@@ -1222,8 +1236,42 @@ namespace wtKST
                 }
                 wtQSO.LogStateChanged += Log_StateChanged;
             }
+            else if (Settings.Default.N1MM_Activate)
+            {
+                if (wtQSO != null)
+                {
+                    if (wtQSO.GetType() == typeof(N1MMSQLiteLog))
+                    {
+                        ((N1MMSQLiteLog)wtQSO).ContestNR = Settings.Default.N1MM_ContestNR;
+                        int n1mmInterval = Math.Max(1000, Settings.Default.N1MM_UpdateInterval * 1000);
+                        if (ti_N1MM.Interval != n1mmInterval)
+                            ti_N1MM.Interval = n1mmInterval;
+                        if (!ti_N1MM.Enabled)
+                            ti_N1MM.Start();
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
+                        ((IDisposable)wtQSO).Dispose();
+                        wtQSO = null;
+                    }
+                }
+                var n1mmLog = new N1MMSQLiteLog(MainDlg.Log.WriteMessage);
+                n1mmLog.ContestNR = Settings.Default.N1MM_ContestNR;
+                wtQSO = n1mmLog;
+                if (wts != null)
+                {
+                    Console.WriteLine("wts active - turn off");
+                    wts = null;
+                }
+                wtQSO.LogStateChanged += Log_StateChanged;
+                ti_N1MM.Interval = Math.Max(1000, Settings.Default.N1MM_UpdateInterval * 1000);
+                ti_N1MM.Start();
+            }
             else
             {
+                ti_N1MM.Stop();
                 if (wtQSO != null)
                 {
 
@@ -1379,11 +1427,37 @@ namespace wtKST
                 AS_send_ASWATCHLIST();
             }
             int interval = Convert.ToInt32(Settings.Default.UpdateInterval) * 1000;
-            if (interval > 10000)
-            {
+            if (interval >= 1000)
                 ti_Main.Interval = interval;
-            }
             ti_Main.Start();
+        }
+
+        private void ti_N1MM_Tick(object sender, EventArgs e)
+        {
+            ti_N1MM.Stop();
+            if (KST.State == KSTcom.KST_STATE.Connected && wtQSO != null && wtQSO.GetType() == typeof(N1MMSQLiteLog))
+            {
+                lock (wtQSO)
+                {
+                    if (!wtQSO_local_lock)
+                    {
+                        wtQSO_local_lock = true;
+                        try
+                        {
+                            wtQSO.Get_QSOs(Settings.Default.N1MM_DB_FileName);
+                            wtQSO_local_lock = false;
+                            Check_QSOs();
+                        }
+                        catch { }
+                        finally
+                        {
+                            wtQSO_local_lock = false;
+                        }
+                    }
+                }
+            }
+            ti_N1MM.Interval = Math.Max(1000, Settings.Default.N1MM_UpdateInterval * 1000);
+            ti_N1MM.Start();
         }
 
         public void Say(string Text)
@@ -3093,6 +3167,7 @@ namespace wtKST
             this.tt_Info = new System.Windows.Forms.ToolTip(this.components);
             this.tt_ASInfo = new System.Windows.Forms.ToolTip(this.components);
             this.ti_UpdateFilter = new System.Windows.Forms.Timer(this.components);
+            this.ti_N1MM = new System.Windows.Forms.Timer(this.components);
             this.cmn_userlist = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.cmn_userlist_wtsked = new System.Windows.Forms.ToolStripMenuItem();
             this.cmn_userlist_chatReview = new System.Windows.Forms.ToolStripMenuItem();
@@ -3758,6 +3833,11 @@ namespace wtKST
             // ti_UpdateFilter
             // 
             this.ti_UpdateFilter.Tick += new System.EventHandler(this.ti_UpdateFilter_Tick);
+            //
+            // ti_N1MM
+            //
+            this.ti_N1MM.Interval = 10000;
+            this.ti_N1MM.Tick += new System.EventHandler(this.ti_N1MM_Tick);
             // 
             // cmn_userlist
             // 
