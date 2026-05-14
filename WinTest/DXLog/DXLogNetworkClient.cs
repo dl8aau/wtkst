@@ -35,6 +35,7 @@ namespace WinTest.DXLog
                 _udpClient = new UdpClient();
                 _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 _udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, Port));
+                _udpClient.EnableBroadcast = true;
 
                 SendSyncRequest();
 
@@ -193,7 +194,7 @@ namespace WinTest.DXLog
                                             {
                                                 if (string.IsNullOrEmpty(qso.IDQSO) || qso.IDQSO == "0" || qso.IDQSO == "-1")
                                                 {
-                                                    return;
+                                                    continue;
                                                 }
                                                 RequestQso(qso.IDQSO, qso.OriginStnID);
                                             }
