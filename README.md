@@ -35,12 +35,17 @@ See the file LICENSE for details.
 * Filter messages addressed to/from me
 * Filter displayed users by distance to station, here/away status and additionally if already in the log
 * Sort users alphabetically or by antenna direction
-* Display information if a user is QRV probably on a band (based on Airscout database) 
+* Display information if a user is QRV probably on a band (based on Chat name or Airscout database) 
 * Support Airplane Scatter status through [Airscout](http://airscout.eu/index.php)
 * Supported log (as of now): 
     * [Win-Test v4](http://www.win-test.com/) file and network based
     * [QARTest](https://www.ik3qar.it/software/qartest/en/)
+    * [N1MMLogger+](https://n1mmwp.hamdocs.com/) file based
 * Make skeds in the Win-Test logging software
+
+# Settings
+
+In order to set N1MMLogger+ as logging, you need to select the s3db file used by N1MM. Usually found in C:\Users\..username..\Documents\N1MM Logger+\Databases. Usually ham.s3db is the default used one. Then click Load and it will show the contests available in the database. Pick the latest one.
 
 # Installation
 

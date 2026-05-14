@@ -130,10 +130,19 @@ namespace wtKST
         private TextBox tb_WS_API_URL;
         private Button btn_advanced_WT_network_options;
         public CheckBox cb_WinTest_Active;
+        private GroupBox groupBox_N1MM;
+        public CheckBox cb_N1MM_Active;
+        private Label lbl_N1MM_Interval;
+        private TextBox tb_N1MM_Interval;
+        private Label lbl_N1MM_DB;
+        private TextBox tb_N1MM_DB_Path;
+        private Button btn_N1MM_Browse;
+        private Label lbl_N1MM_Contest;
+        private ComboBox cb_N1MM_Contest;
+        private Button btn_N1MM_LoadContests;
 
         public OptionsDlg()
         {
-            this.AutoValidate = AutoValidate.Disable;
             InitializeComponent();
             if (this.cb_WinTest_Active.Checked)
             {
@@ -142,6 +151,8 @@ namespace wtKST
                 this.cb_WinTestNet_Active.Enabled = false;
                 this.cb_QARTest_Active.Checked = false;
                 this.cb_QARTest_Active.Enabled = false;
+                this.cb_N1MM_Active.Checked = false;
+                this.cb_N1MM_Active.Enabled = false;
             }
             else if (this.cb_WinTestNet_Active.Checked)
             {
@@ -150,6 +161,8 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = false;
                 this.cb_QARTest_Active.Checked = false;
                 this.cb_QARTest_Active.Enabled = false;
+                this.cb_N1MM_Active.Checked = false;
+                this.cb_N1MM_Active.Enabled = false;
             }
             else if (this.cb_QARTest_Active.Checked)
             {
@@ -158,6 +171,18 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = false;
                 this.cb_WinTestNet_Active.Checked = false;
                 this.cb_WinTestNet_Active.Enabled = false;
+                this.cb_N1MM_Active.Checked = false;
+                this.cb_N1MM_Active.Enabled = false;
+            }
+            else if (this.cb_N1MM_Active.Checked)
+            {
+                this.cb_N1MM_Active.Enabled = true;
+                this.cb_WinTest_Active.Checked = false;
+                this.cb_WinTest_Active.Enabled = false;
+                this.cb_WinTestNet_Active.Checked = false;
+                this.cb_WinTestNet_Active.Enabled = false;
+                this.cb_QARTest_Active.Checked = false;
+                this.cb_QARTest_Active.Enabled = false;
             }
             else
             {
@@ -165,6 +190,7 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = true;
                 this.cb_WinTestNet_Active.Enabled = true;
                 this.cb_QARTest_Active.Enabled = true;
+                this.cb_N1MM_Active.Enabled = true;
             }
 
             // AS handling
@@ -328,6 +354,16 @@ namespace wtKST
             this.tB_macro_1 = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.cB_macro_1 = new System.Windows.Forms.CheckBox();
+            this.groupBox_N1MM = new System.Windows.Forms.GroupBox();
+            this.cb_N1MM_Active = new System.Windows.Forms.CheckBox();
+            this.lbl_N1MM_Interval = new System.Windows.Forms.Label();
+            this.tb_N1MM_Interval = new System.Windows.Forms.TextBox();
+            this.lbl_N1MM_DB = new System.Windows.Forms.Label();
+            this.tb_N1MM_DB_Path = new System.Windows.Forms.TextBox();
+            this.btn_N1MM_Browse = new System.Windows.Forms.Button();
+            this.lbl_N1MM_Contest = new System.Windows.Forms.Label();
+            this.cb_N1MM_Contest = new System.Windows.Forms.ComboBox();
+            this.btn_N1MM_LoadContests = new System.Windows.Forms.Button();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -343,11 +379,11 @@ namespace wtKST
             this.panel_AS.SuspendLayout();
             this.panel_WS.SuspendLayout();
             this.tabPage5.SuspendLayout();
+            this.groupBox_N1MM.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn_OK
             // 
-            this.btn_OK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.btn_OK.Location = new System.Drawing.Point(521, 36);
             this.btn_OK.Name = "btn_OK";
             this.btn_OK.Size = new System.Drawing.Size(75, 23);
@@ -664,7 +700,9 @@ namespace wtKST
             this.tb_KST_UserName.Text = global::wtKST.Properties.Settings.Default.KST_UserName;
             // 
             // tabPage2
-            // 
+            //
+            this.tabPage2.AutoScroll = true;
+            this.tabPage2.Controls.Add(this.groupBox_N1MM);
             this.tabPage2.Controls.Add(this.groupBox4);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Controls.Add(this.groupBox1);
@@ -675,8 +713,123 @@ namespace wtKST
             this.tabPage2.Text = "Log";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // groupBox_N1MM
+            //
+            this.groupBox_N1MM.Controls.Add(this.cb_N1MM_Active);
+            this.groupBox_N1MM.Controls.Add(this.lbl_N1MM_Interval);
+            this.groupBox_N1MM.Controls.Add(this.tb_N1MM_Interval);
+            this.groupBox_N1MM.Controls.Add(this.lbl_N1MM_DB);
+            this.groupBox_N1MM.Controls.Add(this.tb_N1MM_DB_Path);
+            this.groupBox_N1MM.Controls.Add(this.btn_N1MM_Browse);
+            this.groupBox_N1MM.Controls.Add(this.lbl_N1MM_Contest);
+            this.groupBox_N1MM.Controls.Add(this.cb_N1MM_Contest);
+            this.groupBox_N1MM.Controls.Add(this.btn_N1MM_LoadContests);
+            this.groupBox_N1MM.Location = new System.Drawing.Point(22, 274);
+            this.groupBox_N1MM.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox_N1MM.Name = "groupBox_N1MM";
+            this.groupBox_N1MM.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox_N1MM.Size = new System.Drawing.Size(422, 100);
+            this.groupBox_N1MM.TabIndex = 18;
+            this.groupBox_N1MM.TabStop = false;
+            this.groupBox_N1MM.Text = "N1MM Logger+ SQLite";
+            //
+            // cb_N1MM_Active
+            //
+            this.cb_N1MM_Active.AutoSize = true;
+            this.cb_N1MM_Active.Checked = global::wtKST.Properties.Settings.Default.N1MM_Activate;
+            this.cb_N1MM_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "N1MM_Activate", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.cb_N1MM_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_N1MM_Active.Location = new System.Drawing.Point(8, 22);
+            this.cb_N1MM_Active.Name = "cb_N1MM_Active";
+            this.cb_N1MM_Active.Size = new System.Drawing.Size(65, 17);
+            this.cb_N1MM_Active.TabIndex = 10;
+            this.cb_N1MM_Active.Text = "Activate";
+            this.cb_N1MM_Active.UseVisualStyleBackColor = true;
+            this.cb_N1MM_Active.CheckedChanged += new System.EventHandler(this.cb_N1MM_Active_CheckedChanged);
+            //
+            // lbl_N1MM_Interval
+            //
+            this.lbl_N1MM_Interval.AutoSize = true;
+            this.lbl_N1MM_Interval.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_N1MM_Interval.Location = new System.Drawing.Point(90, 24);
+            this.lbl_N1MM_Interval.Name = "lbl_N1MM_Interval";
+            this.lbl_N1MM_Interval.TabIndex = 17;
+            this.lbl_N1MM_Interval.Text = "Refresh (s):";
+            //
+            // tb_N1MM_Interval
+            //
+            this.tb_N1MM_Interval.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "N1MM_UpdateInterval", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tb_N1MM_Interval.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_N1MM_Interval.Location = new System.Drawing.Point(172, 22);
+            this.tb_N1MM_Interval.Name = "tb_N1MM_Interval";
+            this.tb_N1MM_Interval.Size = new System.Drawing.Size(40, 20);
+            this.tb_N1MM_Interval.TabIndex = 18;
+            this.tb_N1MM_Interval.Text = global::wtKST.Properties.Settings.Default.N1MM_UpdateInterval.ToString();
+            //
+            // tb_N1MM_DB_Path
+            //
+            this.tb_N1MM_DB_Path.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "N1MM_DB_FileName", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tb_N1MM_DB_Path.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_N1MM_DB_Path.Location = new System.Drawing.Point(85, 44);
+            this.tb_N1MM_DB_Path.Name = "tb_N1MM_DB_Path";
+            this.tb_N1MM_DB_Path.Size = new System.Drawing.Size(235, 20);
+            this.tb_N1MM_DB_Path.TabIndex = 11;
+            this.tb_N1MM_DB_Path.Text = global::wtKST.Properties.Settings.Default.N1MM_DB_FileName;
+            //
+            // btn_N1MM_Browse
+            //
+            this.btn_N1MM_Browse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_N1MM_Browse.Location = new System.Drawing.Point(329, 42);
+            this.btn_N1MM_Browse.Name = "btn_N1MM_Browse";
+            this.btn_N1MM_Browse.Size = new System.Drawing.Size(75, 23);
+            this.btn_N1MM_Browse.TabIndex = 12;
+            this.btn_N1MM_Browse.Text = "Browse...";
+            this.btn_N1MM_Browse.UseVisualStyleBackColor = true;
+            this.btn_N1MM_Browse.Click += new System.EventHandler(this.btn_N1MM_Browse_Click);
+            //
+            // lbl_N1MM_DB
+            //
+            this.lbl_N1MM_DB.AutoSize = true;
+            this.lbl_N1MM_DB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_N1MM_DB.Location = new System.Drawing.Point(5, 47);
+            this.lbl_N1MM_DB.Name = "lbl_N1MM_DB";
+            this.lbl_N1MM_DB.Size = new System.Drawing.Size(55, 13);
+            this.lbl_N1MM_DB.TabIndex = 13;
+            this.lbl_N1MM_DB.Text = "Database:";
+            //
+            // lbl_N1MM_Contest
+            //
+            this.lbl_N1MM_Contest.AutoSize = true;
+            this.lbl_N1MM_Contest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_N1MM_Contest.Location = new System.Drawing.Point(5, 73);
+            this.lbl_N1MM_Contest.Name = "lbl_N1MM_Contest";
+            this.lbl_N1MM_Contest.Size = new System.Drawing.Size(49, 13);
+            this.lbl_N1MM_Contest.TabIndex = 16;
+            this.lbl_N1MM_Contest.Text = "Contest:";
+            //
+            // cb_N1MM_Contest
+            //
+            this.cb_N1MM_Contest.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cb_N1MM_Contest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_N1MM_Contest.FormattingEnabled = true;
+            this.cb_N1MM_Contest.Location = new System.Drawing.Point(85, 70);
+            this.cb_N1MM_Contest.Name = "cb_N1MM_Contest";
+            this.cb_N1MM_Contest.Size = new System.Drawing.Size(235, 21);
+            this.cb_N1MM_Contest.TabIndex = 14;
+            this.cb_N1MM_Contest.SelectedIndexChanged += new System.EventHandler(this.cb_N1MM_Contest_SelectedIndexChanged);
+            //
+            // btn_N1MM_LoadContests
+            //
+            this.btn_N1MM_LoadContests.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_N1MM_LoadContests.Location = new System.Drawing.Point(329, 68);
+            this.btn_N1MM_LoadContests.Name = "btn_N1MM_LoadContests";
+            this.btn_N1MM_LoadContests.Size = new System.Drawing.Size(75, 23);
+            this.btn_N1MM_LoadContests.TabIndex = 15;
+            this.btn_N1MM_LoadContests.Text = "Load";
+            this.btn_N1MM_LoadContests.UseVisualStyleBackColor = true;
+            this.btn_N1MM_LoadContests.Click += new System.EventHandler(this.btn_N1MM_LoadContests_Click);
             // groupBox4
-            // 
+            //
             this.groupBox4.Controls.Add(this.cb_QARTest_Active);
             this.groupBox4.Location = new System.Drawing.Point(22, 198);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
@@ -1710,6 +1863,8 @@ namespace wtKST
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox_N1MM.ResumeLayout(false);
+            this.groupBox_N1MM.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -1743,8 +1898,8 @@ namespace wtKST
 
         private void btn_OK_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
             this.ValidateChildren();
+            this.DialogResult = DialogResult.OK;
             this.Close();
         }
 
@@ -1775,11 +1930,14 @@ namespace wtKST
                 this.cb_WinTestNet_Active.Enabled = false;
                 this.cb_QARTest_Active.Checked = false;
                 this.cb_QARTest_Active.Enabled = false;
+                this.cb_N1MM_Active.Checked = false;
+                this.cb_N1MM_Active.Enabled = false;
             }
             else
             {
                 this.cb_WinTestNet_Active.Enabled = true;
                 this.cb_QARTest_Active.Enabled = true;
+                this.cb_N1MM_Active.Enabled = true;
             }
         }
         private void cb_WinTestNet_Active_CheckedChanged(object sender, EventArgs e)
@@ -1790,11 +1948,14 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = false;
                 this.cb_QARTest_Active.Checked = false;
                 this.cb_QARTest_Active.Enabled = false;
+                this.cb_N1MM_Active.Checked = false;
+                this.cb_N1MM_Active.Enabled = false;
             }
             else
             {
                 this.cb_WinTest_Active.Enabled = true;
                 this.cb_QARTest_Active.Enabled = true;
+                this.cb_N1MM_Active.Enabled = true;
             }
         }
         private void cb_QARTest_Active_CheckedChanged(object sender, EventArgs e)
@@ -1805,11 +1966,96 @@ namespace wtKST
                 this.cb_WinTest_Active.Enabled = false;
                 this.cb_WinTestNet_Active.Checked = false;
                 this.cb_WinTestNet_Active.Enabled = false;
+                this.cb_N1MM_Active.Checked = false;
+                this.cb_N1MM_Active.Enabled = false;
             }
             else
             {
                 this.cb_WinTest_Active.Enabled = true;
                 this.cb_WinTestNet_Active.Enabled = true;
+                this.cb_N1MM_Active.Enabled = true;
+            }
+        }
+
+        private void cb_N1MM_Active_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.cb_N1MM_Active.Checked)
+            {
+                this.cb_WinTest_Active.Checked = false;
+                this.cb_WinTest_Active.Enabled = false;
+                this.cb_WinTestNet_Active.Checked = false;
+                this.cb_WinTestNet_Active.Enabled = false;
+                this.cb_QARTest_Active.Checked = false;
+                this.cb_QARTest_Active.Enabled = false;
+            }
+            else
+            {
+                this.cb_WinTest_Active.Enabled = true;
+                this.cb_WinTestNet_Active.Enabled = true;
+                this.cb_QARTest_Active.Enabled = true;
+            }
+        }
+
+        private void btn_N1MM_Browse_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.InitialDirectory = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    "N1MM Logger+", "Databases");
+                ofd.CheckFileExists = true;
+                ofd.Multiselect = false;
+                ofd.Filter = "N1MM Database (*.s3db)|*.s3db|All files (*.*)|*.*";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    this.tb_N1MM_DB_Path.Text = ofd.FileName;
+                }
+            }
+        }
+
+        private void btn_N1MM_LoadContests_Click(object sender, EventArgs e)
+        {
+            string dbPath = this.tb_N1MM_DB_Path.Text.Trim();
+            if (string.IsNullOrEmpty(dbPath) || !System.IO.File.Exists(dbPath))
+            {
+                MessageBox.Show("Please select a valid N1MM Logger+ database file first.", "N1MM Logger+",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            try
+            {
+                var contests = N1MMSQLiteLog.LoadContests(dbPath);
+                this.cb_N1MM_Contest.BeginUpdate();
+                this.cb_N1MM_Contest.Items.Clear();
+                foreach (var entry in contests)
+                    this.cb_N1MM_Contest.Items.Add(entry);
+                this.cb_N1MM_Contest.EndUpdate();
+
+                int savedNR = wtKST.Properties.Settings.Default.N1MM_ContestNR;
+                foreach (N1MMSQLiteLog.ContestEntry item in this.cb_N1MM_Contest.Items)
+                {
+                    if (item.ContestNR == savedNR)
+                    {
+                        this.cb_N1MM_Contest.SelectedItem = item;
+                        break;
+                    }
+                }
+                if (this.cb_N1MM_Contest.SelectedIndex < 0 && this.cb_N1MM_Contest.Items.Count > 0)
+                    this.cb_N1MM_Contest.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading contests: " + ex.Message, "N1MM Logger+",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void cb_N1MM_Contest_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            N1MMSQLiteLog.ContestEntry entry = this.cb_N1MM_Contest.SelectedItem as N1MMSQLiteLog.ContestEntry;
+            if (entry != null)
+            {
+                wtKST.Properties.Settings.Default.N1MM_ContestNR = entry.ContestNR;
             }
         }
 

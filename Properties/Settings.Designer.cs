@@ -995,5 +995,53 @@ namespace wtKST.Properties {
                 this["AdvancedWinTestNetwork_UDPPort"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool N1MM_Activate {
+            get {
+                return ((bool)(this["N1MM_Activate"]));
+            }
+            set {
+                this["N1MM_Activate"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string N1MM_DB_FileName {
+            get {
+                return ((string)(this["N1MM_DB_FileName"]));
+            }
+            set {
+                this["N1MM_DB_FileName"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int N1MM_UpdateInterval {
+            get {
+                return ((int)(this["N1MM_UpdateInterval"]));
+            }
+            set {
+                this["N1MM_UpdateInterval"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int N1MM_ContestNR {
+            get {
+                return ((int)(this["N1MM_ContestNR"]));
+            }
+            set {
+                this["N1MM_ContestNR"] = value;
+            }
+        }
     }
 }
