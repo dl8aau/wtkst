@@ -1,3 +1,15 @@
+3.2.2.1
+- Fix: index out of bounds error in user list handling (thanks Basti)
+- Fix: "Send" button needs to be disabled initially, otherwise software crashes without connection
+- New Feature: merge N1MM+ support (thanks Dani!!)
+- Improvement: Tooltip to show log entries
+- New Feature: merge DXLog support (thanks James and Dani!)
+- Improvement: log is checked more often (every 5s) and in its own timer, Log tooltip is updated, too
+- Improvement: make Airscout UDP port configurable (thanks Dani)
+- Improvement: Add QRB column to user list and support sort by QRB (thanks Dani)
+- Fix: regression introduced in 3.2.1.8 - option would allow only one change at a time, revert the change more or less
+- Improvement: Add locator to right mouse button menu in message list for quicker access
+
 3.2.1.8
 - Change .NET version from 4.7.2 to more common 4.8
 - Fix: improve Win-Test UDP message parser robustness
