@@ -542,7 +542,16 @@ namespace wtKST
                 /* show number of calls in list and total number of users (-1 for own call) */
                 KST_Calls_Text = "Calls [" + lv_Calls.RowCount.ToString() + " / " + (CALL.Rows.Count - 1) + "]";
                 if (wtQSO != null)
-                    KST_Calls_Text += " - " + Path.GetFileName(wtQSO.getStatus());
+                {
+                    string intName;
+                    if (wtQSO is WinTest.WinTestLog)           intName = "WT File";
+                    else if (wtQSO is WinTest.WtLogSync)       intName = WinTest.WinTest.advancedNetActivated ? "WT Net (Advanced)" : "WT Net";
+                    else if (wtQSO is WinTest.QARTestLogSync)  intName = "QARTest";
+                    else if (wtQSO is N1MMSQLiteLog)           intName = "N1MM";
+                    else if (wtQSO is WinTest.DXL.DXLogSync)  intName = "DXLog";
+                    else                                       intName = "Log";
+                    KST_Calls_Text += " - " + intName + " " + wtQSO.QSO.Rows.Count + " QSOs";
+                }
             }
             else
             {
