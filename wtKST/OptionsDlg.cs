@@ -127,6 +127,8 @@ namespace wtKST
         private Panel panel_WS;
         private Panel panel2;
         private Panel panel_AS;
+        private Label label_AS_Port;
+        private TextBox tb_AS_Port;
         private Label label_timeout2;
         private Label label29;
         private TextBox tb_WS_LoginURL;
@@ -340,6 +342,8 @@ namespace wtKST
             this.cb_AS_Active = new System.Windows.Forms.CheckBox();
             this.tb_AS_Timeout = new System.Windows.Forms.TextBox();
             this.tb_Options_AS_Local_Server_Name = new System.Windows.Forms.TextBox();
+            this.label_AS_Port = new System.Windows.Forms.Label();
+            this.tb_AS_Port = new System.Windows.Forms.TextBox();
             this.panel_WS = new System.Windows.Forms.Panel();
             this.tb_WS_Password = new System.Windows.Forms.TextBox();
             this.label31 = new System.Windows.Forms.Label();
@@ -1236,7 +1240,7 @@ namespace wtKST
             this.tabPage4.Controls.Add(this.panel_WS);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(471, 290);
+            this.tabPage4.Size = new System.Drawing.Size(471, 316);
             this.tabPage4.TabIndex = 2;
             this.tabPage4.Text = "Airplane Scatter";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1382,6 +1386,8 @@ namespace wtKST
             // 
             // panel_AS
             // 
+            this.panel_AS.Controls.Add(this.label_AS_Port);
+            this.panel_AS.Controls.Add(this.tb_AS_Port);
             this.panel_AS.Controls.Add(this.label_local_server);
             this.panel_AS.Controls.Add(this.cb_AS_local);
             this.panel_AS.Controls.Add(this.label_timeout2);
@@ -1391,14 +1397,14 @@ namespace wtKST
             this.panel_AS.Controls.Add(this.tb_Options_AS_Local_Server_Name);
             this.panel_AS.Location = new System.Drawing.Point(5, 84);
             this.panel_AS.Name = "panel_AS";
-            this.panel_AS.Size = new System.Drawing.Size(446, 59);
+            this.panel_AS.Size = new System.Drawing.Size(446, 82);
             this.panel_AS.TabIndex = 35;
             // 
             // label_local_server
             // 
             this.label_local_server.AutoSize = true;
             this.label_local_server.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_local_server.Location = new System.Drawing.Point(231, 37);
+            this.label_local_server.Location = new System.Drawing.Point(231, 60);
             this.label_local_server.Name = "label_local_server";
             this.label_local_server.Size = new System.Drawing.Size(70, 13);
             this.label_local_server.TabIndex = 11;
@@ -1410,7 +1416,7 @@ namespace wtKST
             this.cb_AS_local.Checked = global::wtKST.Properties.Settings.Default.AS_Local_Active;
             this.cb_AS_local.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Local_Active", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.cb_AS_local.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_AS_local.Location = new System.Drawing.Point(33, 35);
+            this.cb_AS_local.Location = new System.Drawing.Point(33, 58);
             this.cb_AS_local.Name = "cb_AS_local";
             this.cb_AS_local.Size = new System.Drawing.Size(177, 17);
             this.cb_AS_local.TabIndex = 7;
@@ -1423,7 +1429,7 @@ namespace wtKST
             // 
             this.label_timeout2.AutoSize = true;
             this.label_timeout2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_timeout2.Location = new System.Drawing.Point(414, 14);
+            this.label_timeout2.Location = new System.Drawing.Point(414, 37);
             this.label_timeout2.Name = "label_timeout2";
             this.label_timeout2.Size = new System.Drawing.Size(27, 13);
             this.label_timeout2.TabIndex = 20;
@@ -1433,7 +1439,7 @@ namespace wtKST
             // 
             this.label_timeout.AutoSize = true;
             this.label_timeout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_timeout.Location = new System.Drawing.Point(272, 14);
+            this.label_timeout.Location = new System.Drawing.Point(272, 37);
             this.label_timeout.Name = "label_timeout";
             this.label_timeout.Size = new System.Drawing.Size(109, 13);
             this.label_timeout.TabIndex = 13;
@@ -1445,7 +1451,7 @@ namespace wtKST
             this.cb_AS_Active.Checked = global::wtKST.Properties.Settings.Default.AS_Active;
             this.cb_AS_Active.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::wtKST.Properties.Settings.Default, "AS_Active", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.cb_AS_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_AS_Active.Location = new System.Drawing.Point(13, 13);
+            this.cb_AS_Active.Location = new System.Drawing.Point(13, 36);
             this.cb_AS_Active.Name = "cb_AS_Active";
             this.cb_AS_Active.Size = new System.Drawing.Size(243, 17);
             this.cb_AS_Active.TabIndex = 5;
@@ -1457,7 +1463,7 @@ namespace wtKST
             // 
             this.tb_AS_Timeout.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Timeout", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tb_AS_Timeout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_AS_Timeout.Location = new System.Drawing.Point(387, 10);
+            this.tb_AS_Timeout.Location = new System.Drawing.Point(387, 33);
             this.tb_AS_Timeout.Name = "tb_AS_Timeout";
             this.tb_AS_Timeout.Size = new System.Drawing.Size(23, 20);
             this.tb_AS_Timeout.TabIndex = 6;
@@ -1468,12 +1474,30 @@ namespace wtKST
             this.tb_Options_AS_Local_Server_Name.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Local_Name", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
             this.tb_Options_AS_Local_Server_Name.Enabled = global::wtKST.Properties.Settings.Default.AS_Local_Active;
             this.tb_Options_AS_Local_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(305, 33);
+            this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(305, 56);
             this.tb_Options_AS_Local_Server_Name.Name = "tb_Options_AS_Local_Server_Name";
             this.tb_Options_AS_Local_Server_Name.Size = new System.Drawing.Size(51, 20);
             this.tb_Options_AS_Local_Server_Name.TabIndex = 8;
             this.tb_Options_AS_Local_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Local_Name;
-            // 
+            //
+            // label_AS_Port
+            //
+            this.label_AS_Port.AutoSize = true;
+            this.label_AS_Port.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_AS_Port.Location = new System.Drawing.Point(12, 13);
+            this.label_AS_Port.Name = "label_AS_Port";
+            this.label_AS_Port.Text = "AirScout UDP Port:";
+            //
+            // tb_AS_Port
+            //
+            this.tb_AS_Port.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "AS_Port", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tb_AS_Port.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_AS_Port.Location = new System.Drawing.Point(130, 10);
+            this.tb_AS_Port.Name = "tb_AS_Port";
+            this.tb_AS_Port.Size = new System.Drawing.Size(50, 20);
+            this.tb_AS_Port.TabIndex = 9;
+            this.tb_AS_Port.Text = global::wtKST.Properties.Settings.Default.AS_Port.ToString();
+            //
             // panel_WS
             // 
             this.panel_WS.Controls.Add(this.tb_WS_Password);
@@ -1485,7 +1509,7 @@ namespace wtKST
             this.panel_WS.Controls.Add(this.label_WS_Username);
             this.panel_WS.Controls.Add(this.tb_WS_Username);
             this.panel_WS.Controls.Add(this.cb_WS_Active);
-            this.panel_WS.Location = new System.Drawing.Point(5, 149);
+            this.panel_WS.Location = new System.Drawing.Point(5, 175);
             this.panel_WS.Name = "panel_WS";
             this.panel_WS.Size = new System.Drawing.Size(446, 138);
             this.panel_WS.TabIndex = 37;
