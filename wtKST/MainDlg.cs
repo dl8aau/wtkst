@@ -3455,6 +3455,7 @@ namespace wtKST
             // btn_KST_Send
             // 
             this.btn_KST_Send.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_KST_Send.Enabled = false;
             this.btn_KST_Send.Location = new System.Drawing.Point(508, 41);
             this.btn_KST_Send.Name = "btn_KST_Send";
             this.btn_KST_Send.Size = new System.Drawing.Size(75, 23);
