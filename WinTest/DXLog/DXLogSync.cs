@@ -305,13 +305,13 @@ namespace WinTest.DXL
                 case "1296":
                     row["BAND"] = "1_2G";
                     break;
-                case "2320":
+                case "2300":
                     row["BAND"] = "2_3G";
                     break;
                 case "3400":
                     row["BAND"] = "3_4G";
                     break;
-                case "5700":
+                case "5650":
                     row["BAND"] = "5_7G";
                     break;
                 case "10G":
