@@ -365,6 +365,10 @@ namespace wtKST
                     row[band] = QRV_STATE.not_qrv;
                 return true;
             }
+            else if (nameInfo.IndexOf("KST4Contest", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return false;
+            }
             else if (nameInfo.Any(char.IsDigit))
             {
                 List<BAND> bandList;
