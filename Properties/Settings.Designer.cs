@@ -1023,6 +1023,42 @@ namespace wtKST.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ADIF_CurrContest_Active {
+            get {
+                return ((bool)(this["ADIF_CurrContest_Active"]));
+            }
+            set {
+                this["ADIF_CurrContest_Active"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ADIF_CurrContest_FileName {
+            get {
+                return ((string)(this["ADIF_CurrContest_FileName"]));
+            }
+            set {
+                this["ADIF_CurrContest_FileName"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ADIF_PrevContest_FileName {
+            get {
+                return ((string)(this["ADIF_PrevContest_FileName"]));
+            }
+            set {
+                this["ADIF_PrevContest_FileName"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool N1MM_Activate {
             get {
                 return ((bool)(this["N1MM_Activate"]));

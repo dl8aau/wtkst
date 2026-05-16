@@ -151,6 +151,7 @@ namespace wtKST
         private bool sort_by_qrb = false;
         private bool ignore_inactive = false;
         private bool hide_worked = false;
+        private Dictionary<string, HashSet<string>> adifWorkedCalls = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
         private ContextMenuStrip cmn_userlist;
         private ContextMenuStrip cmn_msglist;
         private ToolStripMenuItem cmn_userlist_wtsked;
@@ -289,6 +290,7 @@ namespace wtKST
 
             // handle Log interface
             init_wtQSO();
+            Load_ADIF();
             ti_BandRefresh.Start();
 
             UpdateUserBandsWidth();
@@ -1183,6 +1185,7 @@ namespace wtKST
                     KST_Update_Usr_Filter();
                 macro_RefreshMacroText();
                 init_wtQSO();
+                Load_ADIF();
                 AS_if.Connect(); //TODO!
             }
         }
@@ -1346,6 +1349,30 @@ namespace wtKST
                 }
                 wtQSO.LogStateChanged += Log_StateChanged;
             }
+            else if (Settings.Default.ADIF_CurrContest_Active)
+            {
+                if (wtQSO != null)
+                {
+                    if (wtQSO.GetType() == typeof(ADIFContestLog))
+                    {
+                        Console.WriteLine("wtQSO already ADIFContestLog");
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("wtQSO active " + wtQSO.GetType().ToString());
+                        ((IDisposable)wtQSO).Dispose();
+                        wtQSO = null;
+                    }
+                }
+                wtQSO = new ADIFContestLog(MainDlg.Log.WriteMessage);
+                if (wts != null)
+                {
+                    Console.WriteLine("wts active - turn off");
+                    wts = null;
+                }
+                wtQSO.LogStateChanged += Log_StateChanged;
+            }
             else
             {
                 ti_N1MM.Stop();
@@ -1363,6 +1390,27 @@ namespace wtKST
                 }
                 Log_StateChanged(this, new WinTest.WinTestLogBase.LogStateEventArgs(WinTestLogBase.LOG_STATE.LOG_INACTIVE));
             }
+        }
+
+        private void Load_ADIF()
+        {
+            string path = Settings.Default.ADIF_PrevContest_FileName;
+            var records = ADIFLog.Parse(path);
+            var loaded = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var rec in records)
+            {
+                string wcall = WCCheck.WCCheck.Cut(rec.Call);
+                if (!loaded.TryGetValue(wcall, out HashSet<string> bands))
+                {
+                    bands = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    loaded[wcall] = bands;
+                }
+                bands.Add(rec.Band);
+            }
+            adifWorkedCalls = loaded;
+            if (lv_Calls != null)
+                lv_Calls.Invalidate();
+            MainDlg.Log.WriteMessage("ADIF loaded: " + records.Count + " QSOs from " + (string.IsNullOrEmpty(path) ? "(none)" : path));
         }
 
         private bool wtQSO_local_lock = false;
@@ -1483,6 +1531,8 @@ namespace wtKST
                                     wtQSO.Get_QSOs("");
                                 else if (wtQSO.GetType() == typeof(DXLogSync))
                                     wtQSO.Get_QSOs("");
+                                else if (wtQSO.GetType() == typeof(ADIFContestLog))
+                                    wtQSO.Get_QSOs(Settings.Default.ADIF_CurrContest_FileName);
                                 if (!String.IsNullOrEmpty(wtQSO.MyLoc) && WCCheck.WCCheck.IsLoc(wtQSO.MyLoc) > 0 && !wtQSO.MyLoc.Equals(Settings.Default.KST_Loc))
                                 {
                                     MessageBox.Show("KST locator " + Settings.Default.KST_Loc + " does not match locator in Win-Test " + wtQSO.MyLoc + " !!!", "Win-Test Log",
@@ -1979,6 +2029,22 @@ namespace wtKST
                             default:
                                 break;
                         }
+                    }
+                    // Draw X over the box if this call/band was worked in a previous contest (ADIF)
+                    string adifCallKey = null;
+                    var adifCallCell = dgv.Rows[e.RowIndex].Cells["CALL"].Value;
+                    if (adifCallCell != null)
+                        adifCallKey = WCCheck.WCCheck.Cut(adifCallCell.ToString().ToUpperInvariant());
+                    string columnBand = dgv.Columns[e.ColumnIndex].Name;
+                    if (!string.IsNullOrEmpty(adifCallKey)
+                        && adifWorkedCalls.TryGetValue(adifCallKey, out HashSet<string> adifBands)
+                        && adifBands.Contains(columnBand))
+                    {
+                        int dotSize = Math.Max(2, Math.Min(newRect.Width, newRect.Height) / 2);
+                        int dotX = newRect.Left + (newRect.Width - dotSize) / 2;
+                        int dotY = newRect.Top + (newRect.Height - dotSize) / 2;
+                        e.Graphics.FillEllipse(Brushes.Green, dotX, dotY, dotSize, dotSize);
+                        e.Handled = true;
                     }
                 }
                 else if (e.ColumnIndex == dgv.Columns["CONTACTED"].DisplayIndex)

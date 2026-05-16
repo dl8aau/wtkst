@@ -146,6 +146,15 @@ namespace wtKST
         private Label lbl_N1MM_Contest;
         private ComboBox cb_N1MM_Contest;
         private Button btn_N1MM_LoadContests;
+        private GroupBox groupBox_ADIF_PrevContest;
+        private Label lbl_ADIF_PrevContest_File;
+        private TextBox tb_ADIF_PrevContest;
+        private Button btn_ADIF_PrevContest_Browse;
+        private GroupBox groupBox_ADIF_PrevContest_CurrContest;
+        public CheckBox cb_ADIF_CurrContest_Active;
+        private Label lbl_ADIF_CurrContest_File;
+        private TextBox tb_ADIF_CurrContest;
+        private Button btn_ADIF_CurrContest_Browse;
 
         public OptionsDlg()
         {
@@ -162,6 +171,8 @@ namespace wtKST
                 this.cb_N1MM_Active.Enabled = false;
                 this.cb_DXLog_Active.Checked = false;
                 this.cb_DXLog_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
             }
             else if (this.cb_WinTestNet_Active.Checked)
             {
@@ -174,6 +185,8 @@ namespace wtKST
                 this.cb_N1MM_Active.Enabled = false;
                 this.cb_DXLog_Active.Checked = false;
                 this.cb_DXLog_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
             }
             else if (this.cb_QARTest_Active.Checked)
             {
@@ -186,6 +199,8 @@ namespace wtKST
                 this.cb_N1MM_Active.Enabled = false;
                 this.cb_DXLog_Active.Checked = false;
                 this.cb_DXLog_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
             }
             else if (this.cb_N1MM_Active.Checked)
             {
@@ -198,6 +213,8 @@ namespace wtKST
                 this.cb_QARTest_Active.Enabled = false;
                 this.cb_DXLog_Active.Checked = false;
                 this.cb_DXLog_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
             }
             else if (this.cb_DXLog_Active.Checked)
             {
@@ -210,6 +227,22 @@ namespace wtKST
                 this.cb_QARTest_Active.Enabled = false;
                 this.cb_N1MM_Active.Checked = false;
                 this.cb_N1MM_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
+            }
+            else if (this.cb_ADIF_CurrContest_Active.Checked)
+            {
+                this.cb_ADIF_CurrContest_Active.Enabled = true;
+                this.cb_WinTest_Active.Checked = false;
+                this.cb_WinTest_Active.Enabled = false;
+                this.cb_WinTestNet_Active.Checked = false;
+                this.cb_WinTestNet_Active.Enabled = false;
+                this.cb_QARTest_Active.Checked = false;
+                this.cb_QARTest_Active.Enabled = false;
+                this.cb_N1MM_Active.Checked = false;
+                this.cb_N1MM_Active.Enabled = false;
+                this.cb_DXLog_Active.Checked = false;
+                this.cb_DXLog_Active.Enabled = false;
             }
             else
             {
@@ -219,6 +252,7 @@ namespace wtKST
                 this.cb_QARTest_Active.Enabled = true;
                 this.cb_N1MM_Active.Enabled = true;
                 this.cb_DXLog_Active.Enabled = true;
+                this.cb_ADIF_CurrContest_Active.Enabled = true;
             }
 
             // AS handling
@@ -237,7 +271,10 @@ namespace wtKST
         private void btn_Options_WinTest_INI_Select_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Win-Test\\cfg";
+            string currentWinTest = this.tb_Options_WinTest_INI.Text.Trim();
+            ofd.InitialDirectory = (!string.IsNullOrEmpty(currentWinTest) && System.IO.File.Exists(currentWinTest))
+                ? System.IO.Path.GetDirectoryName(currentWinTest)
+                : Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Win-Test\\cfg";
             ofd.CheckFileExists = true;
             ofd.Multiselect = false;
             ofd.Filter = "Win-Test Einstellung | *.ini";
@@ -396,6 +433,15 @@ namespace wtKST
             this.lbl_N1MM_Contest = new System.Windows.Forms.Label();
             this.cb_N1MM_Contest = new System.Windows.Forms.ComboBox();
             this.btn_N1MM_LoadContests = new System.Windows.Forms.Button();
+            this.groupBox_ADIF_PrevContest = new System.Windows.Forms.GroupBox();
+            this.lbl_ADIF_PrevContest_File = new System.Windows.Forms.Label();
+            this.tb_ADIF_PrevContest = new System.Windows.Forms.TextBox();
+            this.btn_ADIF_PrevContest_Browse = new System.Windows.Forms.Button();
+            this.groupBox_ADIF_PrevContest_CurrContest = new System.Windows.Forms.GroupBox();
+            this.cb_ADIF_CurrContest_Active = new System.Windows.Forms.CheckBox();
+            this.lbl_ADIF_CurrContest_File = new System.Windows.Forms.Label();
+            this.tb_ADIF_CurrContest = new System.Windows.Forms.TextBox();
+            this.btn_ADIF_CurrContest_Browse = new System.Windows.Forms.Button();
             this.tb_Options_DXLog_Station_Name = new System.Windows.Forms.TextBox();
             this.label28 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
@@ -415,6 +461,8 @@ namespace wtKST
             this.panel_WS.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox_N1MM.SuspendLayout();
+            this.groupBox_ADIF_PrevContest.SuspendLayout();
+            this.groupBox_ADIF_PrevContest_CurrContest.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn_OK
@@ -725,6 +773,8 @@ namespace wtKST
             // tabPage2
             //
             this.tabPage2.AutoScroll = true;
+            this.tabPage2.Controls.Add(this.groupBox_ADIF_PrevContest_CurrContest);
+            this.tabPage2.Controls.Add(this.groupBox_ADIF_PrevContest);
             this.tabPage2.Controls.Add(this.groupBox_N1MM);
             this.tabPage2.Controls.Add(this.groupBox6);
             this.tabPage2.Controls.Add(this.groupBox4);
@@ -848,6 +898,111 @@ namespace wtKST
             this.btn_N1MM_LoadContests.Text = "Load";
             this.btn_N1MM_LoadContests.UseVisualStyleBackColor = true;
             this.btn_N1MM_LoadContests.Click += new System.EventHandler(this.btn_N1MM_LoadContests_Click);
+            //
+            // groupBox_ADIF_PrevContest
+            //
+            this.groupBox_ADIF_PrevContest.Controls.Add(this.lbl_ADIF_PrevContest_File);
+            this.groupBox_ADIF_PrevContest.Controls.Add(this.tb_ADIF_PrevContest);
+            this.groupBox_ADIF_PrevContest.Controls.Add(this.btn_ADIF_PrevContest_Browse);
+            this.groupBox_ADIF_PrevContest.Location = new System.Drawing.Point(22, 460);
+            this.groupBox_ADIF_PrevContest.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox_ADIF_PrevContest.Name = "groupBox_ADIF_PrevContest";
+            this.groupBox_ADIF_PrevContest.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox_ADIF_PrevContest.Size = new System.Drawing.Size(422, 52);
+            this.groupBox_ADIF_PrevContest.TabIndex = 20;
+            this.groupBox_ADIF_PrevContest.TabStop = false;
+            this.groupBox_ADIF_PrevContest.Text = "ADIF Previous Contest Log (green dot)";
+            //
+            // lbl_ADIF_PrevContest_File
+            //
+            this.lbl_ADIF_PrevContest_File.AutoSize = true;
+            this.lbl_ADIF_PrevContest_File.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_ADIF_PrevContest_File.Location = new System.Drawing.Point(5, 22);
+            this.lbl_ADIF_PrevContest_File.Name = "lbl_ADIF_PrevContest_File";
+            this.lbl_ADIF_PrevContest_File.Size = new System.Drawing.Size(23, 13);
+            this.lbl_ADIF_PrevContest_File.TabIndex = 0;
+            this.lbl_ADIF_PrevContest_File.Text = "File:";
+            //
+            // tb_ADIF_PrevContest
+            //
+            this.tb_ADIF_PrevContest.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "ADIF_PrevContest_FileName", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tb_ADIF_PrevContest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_ADIF_PrevContest.Location = new System.Drawing.Point(35, 19);
+            this.tb_ADIF_PrevContest.Name = "tb_ADIF_PrevContest";
+            this.tb_ADIF_PrevContest.Size = new System.Drawing.Size(285, 20);
+            this.tb_ADIF_PrevContest.TabIndex = 1;
+            this.tb_ADIF_PrevContest.Text = global::wtKST.Properties.Settings.Default.ADIF_PrevContest_FileName;
+            //
+            // btn_ADIF_PrevContest_Browse
+            //
+            this.btn_ADIF_PrevContest_Browse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_ADIF_PrevContest_Browse.Location = new System.Drawing.Point(329, 17);
+            this.btn_ADIF_PrevContest_Browse.Name = "btn_ADIF_PrevContest_Browse";
+            this.btn_ADIF_PrevContest_Browse.Size = new System.Drawing.Size(75, 23);
+            this.btn_ADIF_PrevContest_Browse.TabIndex = 2;
+            this.btn_ADIF_PrevContest_Browse.Text = "Browse...";
+            this.btn_ADIF_PrevContest_Browse.UseVisualStyleBackColor = true;
+            this.btn_ADIF_PrevContest_Browse.Click += new System.EventHandler(this.btn_ADIF_PrevContest_Browse_Click);
+            //
+            // groupBox_ADIF_PrevContest_CurrContest
+            //
+            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.cb_ADIF_CurrContest_Active);
+            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.lbl_ADIF_CurrContest_File);
+            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.tb_ADIF_CurrContest);
+            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.btn_ADIF_CurrContest_Browse);
+            this.groupBox_ADIF_PrevContest_CurrContest.Location = new System.Drawing.Point(22, 382);
+            this.groupBox_ADIF_PrevContest_CurrContest.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox_ADIF_PrevContest_CurrContest.Name = "groupBox_ADIF_PrevContest_CurrContest";
+            this.groupBox_ADIF_PrevContest_CurrContest.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox_ADIF_PrevContest_CurrContest.Size = new System.Drawing.Size(422, 70);
+            this.groupBox_ADIF_PrevContest_CurrContest.TabIndex = 21;
+            this.groupBox_ADIF_PrevContest_CurrContest.TabStop = false;
+            this.groupBox_ADIF_PrevContest_CurrContest.Text = "ADIF Current Contest Log";
+            //
+            // cb_ADIF_CurrContest_Active
+            //
+            this.cb_ADIF_CurrContest_Active.AutoSize = true;
+            this.cb_ADIF_CurrContest_Active.Checked = global::wtKST.Properties.Settings.Default.ADIF_CurrContest_Active;
+            this.cb_ADIF_CurrContest_Active.Enabled = false;
+            this.cb_ADIF_CurrContest_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_ADIF_CurrContest_Active.Location = new System.Drawing.Point(8, 22);
+            this.cb_ADIF_CurrContest_Active.Name = "cb_ADIF_CurrContest_Active";
+            this.cb_ADIF_CurrContest_Active.Size = new System.Drawing.Size(65, 17);
+            this.cb_ADIF_CurrContest_Active.TabIndex = 0;
+            this.cb_ADIF_CurrContest_Active.Text = "Activate";
+            this.cb_ADIF_CurrContest_Active.UseVisualStyleBackColor = true;
+            this.cb_ADIF_CurrContest_Active.CheckedChanged += new System.EventHandler(this.cb_ADIF_CurrContest_Active_CheckedChanged);
+            //
+            // lbl_ADIF_CurrContest_File
+            //
+            this.lbl_ADIF_CurrContest_File.AutoSize = true;
+            this.lbl_ADIF_CurrContest_File.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_ADIF_CurrContest_File.Location = new System.Drawing.Point(5, 47);
+            this.lbl_ADIF_CurrContest_File.Name = "lbl_ADIF_CurrContest_File";
+            this.lbl_ADIF_CurrContest_File.Size = new System.Drawing.Size(23, 13);
+            this.lbl_ADIF_CurrContest_File.TabIndex = 1;
+            this.lbl_ADIF_CurrContest_File.Text = "File:";
+            //
+            // tb_ADIF_CurrContest
+            //
+            this.tb_ADIF_CurrContest.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "ADIF_CurrContest_FileName", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
+            this.tb_ADIF_CurrContest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_ADIF_CurrContest.Location = new System.Drawing.Point(35, 44);
+            this.tb_ADIF_CurrContest.Name = "tb_ADIF_CurrContest";
+            this.tb_ADIF_CurrContest.Size = new System.Drawing.Size(285, 20);
+            this.tb_ADIF_CurrContest.TabIndex = 2;
+            this.tb_ADIF_CurrContest.Text = global::wtKST.Properties.Settings.Default.ADIF_CurrContest_FileName;
+            //
+            // btn_ADIF_CurrContest_Browse
+            //
+            this.btn_ADIF_CurrContest_Browse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_ADIF_CurrContest_Browse.Location = new System.Drawing.Point(329, 42);
+            this.btn_ADIF_CurrContest_Browse.Name = "btn_ADIF_CurrContest_Browse";
+            this.btn_ADIF_CurrContest_Browse.Size = new System.Drawing.Size(75, 23);
+            this.btn_ADIF_CurrContest_Browse.TabIndex = 3;
+            this.btn_ADIF_CurrContest_Browse.Text = "Browse...";
+            this.btn_ADIF_CurrContest_Browse.UseVisualStyleBackColor = true;
+            this.btn_ADIF_CurrContest_Browse.Click += new System.EventHandler(this.btn_ADIF_CurrContest_Browse_Click);
             //
             // groupBox6
             //
@@ -1903,6 +2058,10 @@ namespace wtKST
             this.tabPage2.ResumeLayout(false);
             this.groupBox_N1MM.ResumeLayout(false);
             this.groupBox_N1MM.PerformLayout();
+            this.groupBox_ADIF_PrevContest.ResumeLayout(false);
+            this.groupBox_ADIF_PrevContest.PerformLayout();
+            this.groupBox_ADIF_PrevContest_CurrContest.ResumeLayout(false);
+            this.groupBox_ADIF_PrevContest_CurrContest.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -1963,6 +2122,8 @@ namespace wtKST
             tb_N1MM_Interval.Text = Settings.Default.N1MM_UpdateInterval.ToString();
             cb_DXLog_Active.Checked = Settings.Default.DXLog_Sync_active;
             tb_Options_DXLog_Station_Name.Text = Settings.Default.DXLog_StationName;
+            cb_ADIF_CurrContest_Active.Checked = Settings.Default.ADIF_CurrContest_Active;
+            tb_ADIF_CurrContest.Text = Settings.Default.ADIF_CurrContest_FileName;
 
             // Bands tab
             checkBox50.Checked = Settings.Default.Band_50;
@@ -2050,6 +2211,8 @@ namespace wtKST
                 Settings.Default.N1MM_ContestNR = selectedContest.ContestNR;
             Settings.Default.DXLog_Sync_active = cb_DXLog_Active.Checked;
             Settings.Default.DXLog_StationName = tb_Options_DXLog_Station_Name.Text;
+            Settings.Default.ADIF_CurrContest_Active = cb_ADIF_CurrContest_Active.Checked;
+            Settings.Default.ADIF_CurrContest_FileName = tb_ADIF_CurrContest.Text;
 
             // Bands tab
             Settings.Default.Band_50 = checkBox50.Checked;
@@ -2145,6 +2308,8 @@ namespace wtKST
                 this.cb_N1MM_Active.Enabled = false;
                 this.cb_DXLog_Active.Checked = false;
                 this.cb_DXLog_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
             }
             else
             {
@@ -2153,6 +2318,7 @@ namespace wtKST
                 this.cb_QARTest_Active.Enabled = true;
                 this.cb_N1MM_Active.Enabled = true;
                 this.cb_DXLog_Active.Enabled = true;
+                this.cb_ADIF_CurrContest_Active.Enabled = true;
             }
         }
         private void cb_WinTestNet_Active_CheckedChanged(object sender, EventArgs e)
@@ -2167,6 +2333,8 @@ namespace wtKST
                 this.cb_N1MM_Active.Enabled = false;
                 this.cb_DXLog_Active.Checked = false;
                 this.cb_DXLog_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
             }
             else
             {
@@ -2175,6 +2343,7 @@ namespace wtKST
                 this.cb_QARTest_Active.Enabled = true;
                 this.cb_N1MM_Active.Enabled = true;
                 this.cb_DXLog_Active.Enabled = true;
+                this.cb_ADIF_CurrContest_Active.Enabled = true;
             }
         }
         private void cb_QARTest_Active_CheckedChanged(object sender, EventArgs e)
@@ -2189,6 +2358,8 @@ namespace wtKST
                 this.cb_N1MM_Active.Enabled = false;
                 this.cb_DXLog_Active.Checked = false;
                 this.cb_DXLog_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
             }
             else
             {
@@ -2197,6 +2368,7 @@ namespace wtKST
                 this.cb_QARTest_Active.Enabled = true;
                 this.cb_N1MM_Active.Enabled = true;
                 this.cb_DXLog_Active.Enabled = true;
+                this.cb_ADIF_CurrContest_Active.Enabled = true;
             }
         }
 
@@ -2212,6 +2384,8 @@ namespace wtKST
                 this.cb_QARTest_Active.Enabled = false;
                 this.cb_DXLog_Active.Checked = false;
                 this.cb_DXLog_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
             }
             else
             {
@@ -2219,6 +2393,7 @@ namespace wtKST
                 this.cb_WinTestNet_Active.Enabled = true;
                 this.cb_QARTest_Active.Enabled = true;
                 this.cb_DXLog_Active.Enabled = true;
+                this.cb_ADIF_CurrContest_Active.Enabled = true;
             }
         }
 
@@ -2234,6 +2409,8 @@ namespace wtKST
                 this.cb_QARTest_Active.Enabled = false;
                 this.cb_N1MM_Active.Checked = false;
                 this.cb_N1MM_Active.Enabled = false;
+                this.cb_ADIF_CurrContest_Active.Checked = false;
+                this.cb_ADIF_CurrContest_Active.Enabled = false;
             }
             else
             {
@@ -2241,6 +2418,33 @@ namespace wtKST
                 this.cb_WinTestNet_Active.Enabled = true;
                 this.cb_QARTest_Active.Enabled = true;
                 this.cb_N1MM_Active.Enabled = true;
+                this.cb_ADIF_CurrContest_Active.Enabled = true;
+            }
+        }
+
+        private void cb_ADIF_CurrContest_Active_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.cb_ADIF_CurrContest_Active.Checked)
+            {
+                this.cb_WinTest_Active.Checked = false;
+                this.cb_WinTest_Active.Enabled = false;
+                this.cb_WinTestNet_Active.Checked = false;
+                this.cb_WinTestNet_Active.Enabled = false;
+                this.cb_QARTest_Active.Checked = false;
+                this.cb_QARTest_Active.Enabled = false;
+                this.cb_N1MM_Active.Checked = false;
+                this.cb_N1MM_Active.Enabled = false;
+                this.cb_DXLog_Active.Checked = false;
+                this.cb_DXLog_Active.Enabled = false;
+            }
+            else
+            {
+                this.cb_WinTest_Active.Enabled = true;
+                this.cb_WinTestNet_Active.Enabled = true;
+                this.cb_QARTest_Active.Enabled = true;
+                this.cb_N1MM_Active.Enabled = true;
+                this.cb_DXLog_Active.Enabled = true;
+                this.cb_ADIF_CurrContest_Active.Enabled = true;
             }
         }
 
@@ -2248,9 +2452,10 @@ namespace wtKST
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                ofd.InitialDirectory = System.IO.Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                    "N1MM Logger+", "Databases");
+                string currentN1MM = this.tb_N1MM_DB_Path.Text.Trim();
+                ofd.InitialDirectory = (!string.IsNullOrEmpty(currentN1MM) && System.IO.File.Exists(currentN1MM))
+                    ? System.IO.Path.GetDirectoryName(currentN1MM)
+                    : System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "N1MM Logger+", "Databases");
                 ofd.CheckFileExists = true;
                 ofd.Multiselect = false;
                 ofd.Filter = "N1MM Database (*.s3db)|*.s3db|All files (*.*)|*.*";
@@ -2298,6 +2503,54 @@ namespace wtKST
             }
         }
 
+        private void cb_N1MM_Contest_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            N1MMSQLiteLog.ContestEntry entry = this.cb_N1MM_Contest.SelectedItem as N1MMSQLiteLog.ContestEntry;
+            if (entry != null)
+            {
+                wtKST.Properties.Settings.Default.N1MM_ContestNR = entry.ContestNR;
+            }
+        }
+
+        private void btn_ADIF_PrevContest_Browse_Click(object sender, EventArgs e)
+        {
+            using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+            {
+                string currentADIF = this.tb_ADIF_PrevContest.Text.Trim();
+                if (!string.IsNullOrEmpty(currentADIF) && System.IO.File.Exists(currentADIF))
+                    ofd.InitialDirectory = System.IO.Path.GetDirectoryName(currentADIF);
+                ofd.CheckFileExists = true;
+                ofd.Multiselect = false;
+                ofd.Filter = "ADIF files (*.adi;*.adif)|*.adi;*.adif|All files (*.*)|*.*";
+                if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    // Update Settings directly — tb_ADIF_PrevContest has a DataBinding to Settings.Default.ADIF_PrevContest_FileName
+                    // so we must keep Settings in sync; otherwise the binding can revert the textbox
+                    // to the old value when the form regains focus after the dialog closes.
+                    wtKST.Properties.Settings.Default.ADIF_PrevContest_FileName = ofd.FileName;
+                    this.tb_ADIF_PrevContest.Text = ofd.FileName;
+                }
+            }
+        }
+
+        private void btn_ADIF_CurrContest_Browse_Click(object sender, EventArgs e)
+        {
+            using (System.Windows.Forms.OpenFileDialog ofd = new System.Windows.Forms.OpenFileDialog())
+            {
+                string currentADIFContest = this.tb_ADIF_CurrContest.Text.Trim();
+                if (!string.IsNullOrEmpty(currentADIFContest) && System.IO.File.Exists(currentADIFContest))
+                    ofd.InitialDirectory = System.IO.Path.GetDirectoryName(currentADIFContest);
+                ofd.CheckFileExists = true;
+                ofd.Multiselect = false;
+                ofd.Filter = "ADIF files (*.adi;*.adif)|*.adi;*.adif|All files (*.*)|*.*";
+                if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    // Same DataBinding issue — update Settings directly.
+                    wtKST.Properties.Settings.Default.ADIF_CurrContest_FileName = ofd.FileName;
+                    this.tb_ADIF_CurrContest.Text = ofd.FileName;
+                }
+            }
+        }
         private bool mCBsASCheckedChangedTriggered = false;
         private bool mCBsWSCheckedChangedTriggered = false;
 

@@ -263,5 +263,14 @@
     <Setting Name="DXLog_StationName" Type="System.String" Scope="User">
       <Value Profile="(Default)">STN1</Value>
     </Setting>
+    <Setting Name="ADIF_PrevContest_FileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ADIF_CurrContest_Active" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ADIF_CurrContest_FileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

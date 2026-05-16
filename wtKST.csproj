@@ -139,6 +139,8 @@
     <Compile Include="wtKST\AirScoutIF.cs" />
     <Compile Include="wtKST\AirscoutUDP.cs" />
     <Compile Include="wtKST\Band.cs" />
+    <Compile Include="wtKST\ADIFLog.cs" />
+    <Compile Include="wtKST\ADIFContestLog.cs" />
     <Compile Include="wtKST\N1MMSQLiteLog.cs" />
     <Compile Include="wtKST\ChatReview.cs">
       <SubType>Form</SubType>
