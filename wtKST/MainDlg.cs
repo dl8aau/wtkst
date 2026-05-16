@@ -831,8 +831,12 @@ namespace wtKST
                         DataRow row = CALL.Rows.Find(USER["CALL"]);
                         if (row != null)
                         {
+                            bool reprocessQRV = false;
                             if (!row["NAME"].Equals(USER["NAME"]))
+                            {
                                 row["NAME"] = USER["NAME"];
+                                reprocessQRV = true;
+                            }
                             if (!row["LOC"].Equals(USER["LOC"]))
                             {
                                 row["LOC"] = USER["LOC"];
@@ -842,7 +846,10 @@ namespace wtKST
                                 int qtf = (int)WCCheck.WCCheck.QTF(Settings.Default.KST_Loc, loc);
                                 row["QRB"] = qrb;
                                 row["DIR"] = qtf;
+                                reprocessQRV = true;
                             }
+                            if (reprocessQRV)
+                                qrv.Process_QRV(row, row["CALL"].ToString(), row["NAME"].ToString());
                             if ( !row["TIME"].Equals(USER["TIME"]) || !row["CONTACTED"].Equals(USER["CONTACTED"]) )
                             {
                                 row["TIME"] = USER["TIME"];
