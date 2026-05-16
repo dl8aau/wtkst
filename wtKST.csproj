@@ -139,9 +139,9 @@
     <Compile Include="wtKST\AirScoutIF.cs" />
     <Compile Include="wtKST\AirscoutUDP.cs" />
     <Compile Include="wtKST\Band.cs" />
-    <Compile Include="wtKST\ADIFLog.cs" />
-    <Compile Include="wtKST\ADIFContestLog.cs" />
-    <Compile Include="wtKST\N1MMSQLiteLog.cs" />
+    <Compile Include="LoggerIntegrations\ADIF\ADIFLog.cs" />
+    <Compile Include="LoggerIntegrations\ADIF\ADIFContestLog.cs" />
+    <Compile Include="LoggerIntegrations\N1MM\N1MMSQLiteLog.cs" />
     <Compile Include="wtKST\ChatReview.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -222,7 +222,7 @@
       <Project>{c0a19260-2ce0-4253-80cb-8579bcfdded3}</Project>
       <Name>Telnet</Name>
     </ProjectReference>
-    <ProjectReference Include="WinTest\WinTest.csproj">
+    <ProjectReference Include="LoggerIntegrations\WinTest\WinTest.csproj">
       <Project>{7b815c51-6896-4989-bd1b-8d2d7a116aa3}</Project>
       <Name>WinTest</Name>
     </ProjectReference>

@@ -551,6 +551,7 @@ namespace wtKST
                     else if (wtQSO is WinTest.QARTestLogSync)  intName = "QARTest";
                     else if (wtQSO is N1MMSQLiteLog)           intName = "N1MM";
                     else if (wtQSO is WinTest.DXL.DXLogSync)  intName = "DXLog";
+                    else if (wtQSO is ADIFContestLog)          intName = "ADIF";
                     else                                       intName = "Log";
                     KST_Calls_Text += " - " + intName + " " + wtQSO.QSO.Rows.Count + " QSOs";
                 }
