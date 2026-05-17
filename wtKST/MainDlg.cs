@@ -204,7 +204,7 @@ namespace wtKST
                 // update Macros
                 macro_RefreshMacroText();
             }
-            MainDlg.Log.FileFormat = "wtKST_{0:d}.log";
+            MainDlg.Log.FileFormat = "wtKST_{0:yyyy-MM-dd}.log";
             MainDlg.Log.MessageFormat = "{0:u}: {1}";
             MainDlg.Log.WriteMessage("Startup Version " + aboutBox1.AssemblyVersion.ToString());
             Application.Idle += new EventHandler(OnIdle);
