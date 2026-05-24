@@ -42,3 +42,5 @@ publish
 **/packages
 *.csproj.user
 wtKST*.zip
+
+.claude/*
