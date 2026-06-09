@@ -4268,10 +4268,14 @@ namespace wtKST
             {
                 if (eargs.Delta > 0)
                 {
+                    if (num > 355)
+                        num -= 360;
                     tb_SearchCall.Text = (num + 5).ToString();
                 }
                 if (eargs.Delta < 0)
                 {
+                    if (num < 5)
+                        num += 360;
                     tb_SearchCall.Text = (num - 5).ToString();
                 }
             }
