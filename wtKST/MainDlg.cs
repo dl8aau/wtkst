@@ -6,9 +6,10 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
+using System.Resources;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
@@ -2673,8 +2674,9 @@ namespace wtKST
                     }
                     // we only display Airscout information if available and the user is the in the user list (otherwise we probably do not have enough data)
                     this.cmn_msglist_AS_details.Visible = AS_if.IsActive() && userRow != null;
-                    if (AS_if.IsActive() && !String.IsNullOrEmpty(call) && userRow != null)
+                    if (AS_if.IsActive() && !String.IsNullOrEmpty(call))
                     {
+                        if (userRow != null) { 
                         this.cmn_msglist_AS_status.Visible = true;
                         using (Graphics graphic = Graphics.FromImage(this.cmn_msglist_AS_status.Image))
                         using (SolidBrush brush = new SolidBrush(Control.DefaultBackColor))
@@ -2684,7 +2686,7 @@ namespace wtKST
 
                             if (qrb < Convert.ToInt32(Settings.Default.AS_MinDist))
                             {
-                                TextRenderer.DrawText(graphic, "   < ", cmn_msglist_AS_status.Font, new Point(0,0), cmn_msglist_AS_status.ForeColor);
+                                TextRenderer.DrawText(graphic, "   < ", cmn_msglist_AS_status.Font, new Point(0, 0), cmn_msglist_AS_status.ForeColor);
                             }
                             else
                             {
@@ -2704,16 +2706,23 @@ namespace wtKST
                                         {
                                             var cat = a[1];
 
-                                                paintAScell(pot, cat, Mins, new Rectangle(0, 0, cmn_msglist_AS_status.Image.Width, cmn_msglist_AS_status.Image.Height), graphic);
+                                            paintAScell(pot, cat, Mins, new Rectangle(0, 0, cmn_msglist_AS_status.Image.Width, cmn_msglist_AS_status.Image.Height), graphic);
                                         }
                                     }
                                 }
                             }
                         }
-                        this.cmn_msglist_AS_status.Text = "Click for map";
+                        } else
+                        {
+                            Graphics graphic = Graphics.FromImage(this.cmn_msglist_AS_status.Image);
+                            graphic.Clear(Color.Transparent);
+                        }
+                            this.cmn_msglist_AS_status.Text = "Click for map";
                     }
                     else
+                    {
                         this.cmn_msglist_AS_status.Visible = false;
+                    }
 
                     this.cmn_msglist.Show(lv_Msg, p);
                 }
