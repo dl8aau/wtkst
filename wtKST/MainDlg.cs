@@ -3751,6 +3751,7 @@ namespace wtKST
             this.tb_SearchCall.Size = new System.Drawing.Size(353, 26);
             this.tb_SearchCall.TabIndex = 15;
             this.tb_SearchCall.WordWrap = false;
+            this.tb_SearchCall.MouseWheel += new MouseEventHandler(this.tb_searchCall_mouseWheelHandler);
             // 
             // lv_Calls
             // 
@@ -4257,6 +4258,25 @@ namespace wtKST
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             aboutBox1.ShowDialog();
+        }
+
+        private void tb_searchCall_mouseWheelHandler(object sender, EventArgs e)
+        {
+            HandledMouseEventArgs eargs = e as HandledMouseEventArgs;
+            int num = 0;
+            if (int.TryParse(tb_SearchCall.Text, out num))
+            {
+                if (eargs.Delta > 0)
+                {
+                    tb_SearchCall.Text = (num + 5).ToString();
+                }
+                if (eargs.Delta < 0)
+                {
+                    tb_SearchCall.Text = (num - 5).ToString();
+                }
+            }
+            eargs.Handled = true;
+            KST_Update_Usr_Filter(false);
         }
 
         private void KST_Macro(object sender)
