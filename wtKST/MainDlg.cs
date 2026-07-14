@@ -892,6 +892,7 @@ namespace wtKST
         }
 
         private string KST_USR_RowFilter = "";
+        private string KST_USR_Searchstring = "";
 
         private void KSTUsrFilterSetTimer(int setTimer, bool force_wait)
         {
@@ -961,18 +962,23 @@ namespace wtKST
                     RowFilter += add_rowfilter;
                 }
                 else
-                { 
-                    string add_rowfilter = " AND ((CALL LIKE ";
-                    add_rowfilter += string.Format("'*{0}*'", tb_SearchCall.Text);
-                    add_rowfilter += ") or (";
-                    add_rowfilter += string.Format("LOC LIKE '*{0}*'))", tb_SearchCall.Text);
-                    RowFilter += add_rowfilter;
+                {
+                    string sanitized = tb_SearchCall.Text;
+                    Regex filter = new Regex("^[0-9a-zA-Z/]+$");
+                    if (filter.Matches(sanitized).Count > 0) { 
+                        string add_rowfilter = " AND ((CALL LIKE ";
+                        add_rowfilter += string.Format("'*{0}*'", sanitized);
+                        add_rowfilter += ") or (";
+                        add_rowfilter += string.Format("LOC LIKE '*{0}*'))", sanitized);
+                        RowFilter += add_rowfilter;
+                    }
                 }
             }
 
             RowFilter += ")";
 
-            if (!RowFilter.Equals(KST_USR_RowFilter))
+
+            if ((!RowFilter.Equals(KST_USR_RowFilter)) || (!tb_SearchCall.Text.Equals(KST_USR_Searchstring)))
             {
                 if (check)
                 {
@@ -985,9 +991,28 @@ namespace wtKST
                 }
                 // remember the vertical scroll position as the rowfilter will screw it up
                 // it is reset in OnIdle
+                if (tb_SearchCall.Text.StartsWith("'") && tb_SearchCall.Text.Length>1)
+                {
+                    try
+                    {
+                        var calltable = CALL.AsEnumerable();
+                        var substr = tb_SearchCall.Text.Substring(1);
+                        var filteredCalls = from matching in calltable where (Regex.IsMatch(matching.Field<string>("CALL"), substr) || Regex.IsMatch(matching.Field<string>("LOC"), substr)) select matching;
+                        if (filteredCalls.Count() > 0)
+                            lv_Calls.DataSource = filteredCalls.CopyToDataTable();
+                        else
+                            lv_Calls.DataSource = CALL;
+                    } catch (Exception e) { lv_Calls.DataSource = CALL; }
+                }
+                else
+                {
+                    lv_Calls.DataSource = CALL;
+                }
                 var Keep_FirstDisplayedScrollingRowIndex = lv_Calls.FirstDisplayedScrollingRowIndex;
                 (lv_Calls.DataSource as DataTable).DefaultView.RowFilter = RowFilter;
                 KST_USR_RowFilter = RowFilter;
+                KST_USR_Searchstring = tb_SearchCall.Text;
+
                 // now restore the vertical position of the first entry
                 if (lv_Calls.FirstDisplayedScrollingRowIndex != Keep_FirstDisplayedScrollingRowIndex)
                 {
