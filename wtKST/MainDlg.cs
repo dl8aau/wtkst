@@ -666,7 +666,7 @@ namespace wtKST
                     lv_Msg.Items[current_index].BackColor = Color.Coral;
                 }
 
-                bool fromMe = Row["CALL"].ToString().ToUpper().StartsWith(MyCall);
+                bool fromMe = Row["CALL"].ToString().ToUpper().Equals(MyCall);
 
                 if (Row["MSG"].ToString().ToUpper().StartsWith("(" + MyCall + ")") || Row["MSG"].ToString().ToUpper().StartsWith(MyCall)
                     || (fromMe && Settings.Default.KST_Show_Own_Messages))
