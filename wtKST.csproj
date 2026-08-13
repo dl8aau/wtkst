@@ -246,7 +246,7 @@
       <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="SIPSorcery">
-      <Version>6.2.1</Version>
+      <Version>10.0.15</Version>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite">
       <Version>1.0.119</Version>
