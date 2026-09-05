@@ -1,3 +1,14 @@
+3.2.2.2
+- Fix: Fix Options dialog OK/Cancel by removing live data bindings (thanks Dani and Claude ;-) )
+- Improvement: Re-run QRV processing on USER_MODIFY when NAME or LOC changes
+- Fix: Don't false-positive parse KST4Contest as a band indicator
+- New Feature: Add ADIF support for both Current Contest and Previous Contest. 
+  Uses previous contest ADIF for marking with small green bullet in Calls list.
+- Improvement: Create LoggerIntegrations directory instead of WinTest and move all files to proper places
+- Fix: Enable Airscout menu as soon as it is established, even if no data os present yet (thanks Basti)
+- Fix: Fix own message filter for exact match, not startsWith
+- Fix: SIPSorcery (used for WebRTC) new version due to security alert
+
 3.2.2.1
 - Fix: index out of bounds error in user list handling (thanks Basti)
 - Fix: "Send" button needs to be disabled initially, otherwise software crashes without connection
