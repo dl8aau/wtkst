@@ -958,8 +958,14 @@ namespace wtKST
                 {
                     c = (b + 380) % 360;
                     b = (b + 340) % 360;
-                    string add_rowfilter = string.Format(" AND ((DIR > {0}) AND (DIR < {1}))", b, c);
-                    RowFilter += add_rowfilter;
+                    if (c > b) {
+                        RowFilter += string.Format(" AND ((DIR > {0}) AND (DIR < {1}))", b, c);
+                    }
+                    else
+                    {
+                        RowFilter += string.Format(" AND ((DIR > {0}) OR (DIR < {1}))", b, c);
+                    }
+
                 }
                 else
                 {
