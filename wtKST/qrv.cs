@@ -231,8 +231,8 @@ namespace wtKST
         private static bool NameInfoSingleBand(string nameInfo, out BAND band)
         {
             // https://regex101.com/r/a6h8Pg/2
-            // don't allow "," - otherwise too many false hits
-            Regex r = new Regex("^[^0-9.,]*(\\d*[._]?\\d+)(?:c?m?|M?G?Hz)+(?(?=(?:\\D*\\d+W|\\D{5,})).*|\\D*)$");
+            // don't allow "," - otherwise too mane false hits
+            Regex r = new Regex("^[^0-9.,]*(\\d*[.]?\\d+)(?:c?m?|M?G?Hz)+(?(?=(?:\\D*\\d+W|\\D{5,})).*|\\D*)$");
 
             Match m = r.Match(nameInfo);
             if (m.Success  && m.Groups.Count==2)
@@ -253,7 +253,7 @@ namespace wtKST
         private static bool NameInfoMultipleBands(string nameInfo, out List<BAND> bandList)
         {
             // https://regex101.com/r/Iw9Ylu/3
-            Regex r = new Regex("^[^\\d.,]*(?(?=.*\\d[/ +\\-&]+|and)((\\d+[,.]?\\d*)(?:c?m?|M?G?Hz)*(?:[/ +\\-&]+|and)+)+(\\d+[,.]?\\d*)|((\\d+[.]?\\d*)(?:c?m?|M?G?Hz)*(?:[,/ +\\-&]+|and)+)+(\\d+[.]?\\d*))(?:c?m?|M?G?Hz)*");
+            Regex r = new Regex("^[^\\d.,]*(?(?=.*\\d[/ +-]+|and)((\\d+[,.]?\\d*)(?:c?m?|M?G?Hz)*(?:[/ +-]+|and)+)+(\\d+[,.]?\\d*)|((\\d+[.]?\\d*)(?:c?m?|M?G?Hz)*(?:[,/ +-]+|and)+)+(\\d+[.]?\\d*))(?:c?m?|M?G?Hz)*");
 
             Match m = r.Match(nameInfo);
             bandList = new List<BAND>();
@@ -304,10 +304,9 @@ namespace wtKST
             (BAND, BAND_MATCH_TYPE) band = (BAND.BNONE, BAND_MATCH_TYPE.UNCLEAR);
             if (!bandNameToBand.TryGetValue(bandtext, out band))
             {
-                bandtext = bandtext.Replace("_", ".");
                 if (bandtext.Contains("."))
                     bandNameToBand.TryGetValue(bandtext.Split('.')[0], out band);
-             }
+            }
             return band.Item1;
         }
 
@@ -419,8 +418,7 @@ namespace wtKST
 
         public static bool worked(QRV_STATE qrv_state)
         {
-            bool wkd = ((int)qrv_state & (int)QRV_STATE.worked) == (int)QRV_STATE.worked && !not_qrv(qrv_state);
-            return wkd;
+            return ((int)qrv_state & (int)QRV_STATE.worked) == (int)QRV_STATE.worked;
         }
 
         public static bool not_qrv(QRV_STATE qrv_state)
