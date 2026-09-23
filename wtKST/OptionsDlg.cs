@@ -333,7 +333,28 @@ namespace wtKST
             this.tb_KST_Password = new System.Windows.Forms.TextBox();
             this.tb_KST_UserName = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox_ADIF_PrevContest_CurrContest = new System.Windows.Forms.GroupBox();
+            this.cb_ADIF_CurrContest_Active = new System.Windows.Forms.CheckBox();
+            this.lbl_ADIF_CurrContest_File = new System.Windows.Forms.Label();
+            this.tb_ADIF_CurrContest = new System.Windows.Forms.TextBox();
+            this.btn_ADIF_CurrContest_Browse = new System.Windows.Forms.Button();
+            this.groupBox_ADIF_PrevContest = new System.Windows.Forms.GroupBox();
+            this.lbl_ADIF_PrevContest_File = new System.Windows.Forms.Label();
+            this.tb_ADIF_PrevContest = new System.Windows.Forms.TextBox();
+            this.btn_ADIF_PrevContest_Browse = new System.Windows.Forms.Button();
+            this.groupBox_N1MM = new System.Windows.Forms.GroupBox();
+            this.cb_N1MM_Active = new System.Windows.Forms.CheckBox();
+            this.lbl_N1MM_Interval = new System.Windows.Forms.Label();
+            this.tb_N1MM_Interval = new System.Windows.Forms.TextBox();
+            this.lbl_N1MM_DB = new System.Windows.Forms.Label();
+            this.tb_N1MM_DB_Path = new System.Windows.Forms.TextBox();
+            this.btn_N1MM_Browse = new System.Windows.Forms.Button();
+            this.lbl_N1MM_Contest = new System.Windows.Forms.Label();
+            this.cb_N1MM_Contest = new System.Windows.Forms.ComboBox();
+            this.btn_N1MM_LoadContests = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.tb_Options_DXLog_Station_Name = new System.Windows.Forms.TextBox();
+            this.label28 = new System.Windows.Forms.Label();
             this.cb_DXLog_Active = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.cb_QARTest_Active = new System.Windows.Forms.CheckBox();
@@ -373,6 +394,8 @@ namespace wtKST
             this.tb_Options_AS_Server_Name = new System.Windows.Forms.TextBox();
             this.tb_AS_MaxDist = new System.Windows.Forms.TextBox();
             this.panel_AS = new System.Windows.Forms.Panel();
+            this.label_AS_Port = new System.Windows.Forms.Label();
+            this.tb_AS_Port = new System.Windows.Forms.TextBox();
             this.label_local_server = new System.Windows.Forms.Label();
             this.cb_AS_local = new System.Windows.Forms.CheckBox();
             this.label_timeout2 = new System.Windows.Forms.Label();
@@ -380,8 +403,6 @@ namespace wtKST
             this.cb_AS_Active = new System.Windows.Forms.CheckBox();
             this.tb_AS_Timeout = new System.Windows.Forms.TextBox();
             this.tb_Options_AS_Local_Server_Name = new System.Windows.Forms.TextBox();
-            this.label_AS_Port = new System.Windows.Forms.Label();
-            this.tb_AS_Port = new System.Windows.Forms.TextBox();
             this.panel_WS = new System.Windows.Forms.Panel();
             this.tb_WS_Password = new System.Windows.Forms.TextBox();
             this.label31 = new System.Windows.Forms.Label();
@@ -423,32 +444,14 @@ namespace wtKST
             this.tB_macro_1 = new System.Windows.Forms.TextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.cB_macro_1 = new System.Windows.Forms.CheckBox();
-            this.groupBox_N1MM = new System.Windows.Forms.GroupBox();
-            this.cb_N1MM_Active = new System.Windows.Forms.CheckBox();
-            this.lbl_N1MM_Interval = new System.Windows.Forms.Label();
-            this.tb_N1MM_Interval = new System.Windows.Forms.TextBox();
-            this.lbl_N1MM_DB = new System.Windows.Forms.Label();
-            this.tb_N1MM_DB_Path = new System.Windows.Forms.TextBox();
-            this.btn_N1MM_Browse = new System.Windows.Forms.Button();
-            this.lbl_N1MM_Contest = new System.Windows.Forms.Label();
-            this.cb_N1MM_Contest = new System.Windows.Forms.ComboBox();
-            this.btn_N1MM_LoadContests = new System.Windows.Forms.Button();
-            this.groupBox_ADIF_PrevContest = new System.Windows.Forms.GroupBox();
-            this.lbl_ADIF_PrevContest_File = new System.Windows.Forms.Label();
-            this.tb_ADIF_PrevContest = new System.Windows.Forms.TextBox();
-            this.btn_ADIF_PrevContest_Browse = new System.Windows.Forms.Button();
-            this.groupBox_ADIF_PrevContest_CurrContest = new System.Windows.Forms.GroupBox();
-            this.cb_ADIF_CurrContest_Active = new System.Windows.Forms.CheckBox();
-            this.lbl_ADIF_CurrContest_File = new System.Windows.Forms.Label();
-            this.tb_ADIF_CurrContest = new System.Windows.Forms.TextBox();
-            this.btn_ADIF_CurrContest_Browse = new System.Windows.Forms.Button();
-            this.tb_Options_DXLog_Station_Name = new System.Windows.Forms.TextBox();
-            this.label28 = new System.Windows.Forms.Label();
             this.groupBox3.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.groupBox_ADIF_PrevContest_CurrContest.SuspendLayout();
+            this.groupBox_ADIF_PrevContest.SuspendLayout();
+            this.groupBox_N1MM.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -460,9 +463,6 @@ namespace wtKST
             this.panel_AS.SuspendLayout();
             this.panel_WS.SuspendLayout();
             this.tabPage5.SuspendLayout();
-            this.groupBox_N1MM.SuspendLayout();
-            this.groupBox_ADIF_PrevContest.SuspendLayout();
-            this.groupBox_ADIF_PrevContest_CurrContest.SuspendLayout();
             this.SuspendLayout();
             // 
             // btn_OK
@@ -492,7 +492,7 @@ namespace wtKST
             this.btn_Options_WinTest_INI_Select.Location = new System.Drawing.Point(329, 36);
             this.btn_Options_WinTest_INI_Select.Name = "btn_Options_WinTest_INI_Select";
             this.btn_Options_WinTest_INI_Select.Size = new System.Drawing.Size(75, 23);
-            this.btn_Options_WinTest_INI_Select.TabIndex = 14;
+            this.btn_Options_WinTest_INI_Select.TabIndex = 4;
             this.btn_Options_WinTest_INI_Select.Text = "Select";
             this.btn_Options_WinTest_INI_Select.UseVisualStyleBackColor = true;
             this.btn_Options_WinTest_INI_Select.Click += new System.EventHandler(this.btn_Options_WinTest_INI_Select_Click);
@@ -503,7 +503,7 @@ namespace wtKST
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.Location = new System.Drawing.Point(5, 42);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(37, 13);
+            this.label6.Size = new System.Drawing.Size(47, 17);
             this.label6.TabIndex = 11;
             this.label6.Text = "wt.ini :";
             // 
@@ -525,7 +525,7 @@ namespace wtKST
             this.tb_KST_MaxDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_KST_MaxDist.Location = new System.Drawing.Point(241, 29);
             this.tb_KST_MaxDist.Name = "tb_KST_MaxDist";
-            this.tb_KST_MaxDist.Size = new System.Drawing.Size(45, 20);
+            this.tb_KST_MaxDist.Size = new System.Drawing.Size(45, 23);
             this.tb_KST_MaxDist.TabIndex = 7;
             this.tb_KST_MaxDist.Text = global::wtKST.Properties.Settings.Default.KST_MaxDist;
             // 
@@ -535,7 +535,7 @@ namespace wtKST
             this.label17.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label17.Location = new System.Drawing.Point(124, 32);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(101, 13);
+            this.label17.Size = new System.Drawing.Size(130, 17);
             this.label17.TabIndex = 6;
             this.label17.Text = "Max. Distance [km]:";
             // 
@@ -546,7 +546,7 @@ namespace wtKST
             this.cb_ShowBeacons.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_ShowBeacons.Location = new System.Drawing.Point(9, 32);
             this.cb_ShowBeacons.Name = "cb_ShowBeacons";
-            this.cb_ShowBeacons.Size = new System.Drawing.Size(98, 17);
+            this.cb_ShowBeacons.Size = new System.Drawing.Size(123, 21);
             this.cb_ShowBeacons.TabIndex = 5;
             this.cb_ShowBeacons.Text = "Show Beacons";
             this.cb_ShowBeacons.UseVisualStyleBackColor = true;
@@ -570,7 +570,7 @@ namespace wtKST
             this.cb_KST_ShowBalloon.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_KST_ShowBalloon.Location = new System.Drawing.Point(9, 29);
             this.cb_KST_ShowBalloon.Name = "cb_KST_ShowBalloon";
-            this.cb_KST_ShowBalloon.Size = new System.Drawing.Size(241, 17);
+            this.cb_KST_ShowBalloon.Size = new System.Drawing.Size(314, 21);
             this.cb_KST_ShowBalloon.TabIndex = 30;
             this.cb_KST_ShowBalloon.Text = "On new MyMessages show ballon notification";
             this.cb_KST_ShowBalloon.UseVisualStyleBackColor = true;
@@ -581,7 +581,7 @@ namespace wtKST
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.Location = new System.Drawing.Point(15, 26);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.Size = new System.Drawing.Size(46, 17);
             this.label3.TabIndex = 3;
             this.label3.Text = "User :";
             // 
@@ -591,7 +591,7 @@ namespace wtKST
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.Location = new System.Drawing.Point(15, 53);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(59, 13);
+            this.label4.Size = new System.Drawing.Size(77, 17);
             this.label4.TabIndex = 4;
             this.label4.Text = "Password :";
             // 
@@ -601,7 +601,7 @@ namespace wtKST
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.Location = new System.Drawing.Point(15, 79);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(35, 13);
+            this.label5.Size = new System.Drawing.Size(45, 17);
             this.label5.TabIndex = 5;
             this.label5.Text = "Chat :";
             // 
@@ -636,7 +636,7 @@ namespace wtKST
             this.tabPage1.Controls.Add(this.label4);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(471, 290);
+            this.tabPage1.Size = new System.Drawing.Size(471, 341);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "KST";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -646,7 +646,7 @@ namespace wtKST
             this.tb_KST_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_KST_Name.Location = new System.Drawing.Point(120, 142);
             this.tb_KST_Name.Name = "tb_KST_Name";
-            this.tb_KST_Name.Size = new System.Drawing.Size(121, 20);
+            this.tb_KST_Name.Size = new System.Drawing.Size(121, 23);
             this.tb_KST_Name.TabIndex = 12;
             this.tb_KST_Name.Text = global::wtKST.Properties.Settings.Default.KST_Name;
             // 
@@ -656,7 +656,7 @@ namespace wtKST
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(15, 142);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(41, 13);
+            this.label2.Size = new System.Drawing.Size(53, 17);
             this.label2.TabIndex = 7;
             this.label2.Text = "Name :";
             // 
@@ -666,7 +666,7 @@ namespace wtKST
             this.tb_KST_Locator.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_KST_Locator.Location = new System.Drawing.Point(120, 116);
             this.tb_KST_Locator.Name = "tb_KST_Locator";
-            this.tb_KST_Locator.Size = new System.Drawing.Size(121, 20);
+            this.tb_KST_Locator.Size = new System.Drawing.Size(121, 23);
             this.tb_KST_Locator.TabIndex = 11;
             this.tb_KST_Locator.Text = global::wtKST.Properties.Settings.Default.KST_Loc;
             // 
@@ -676,7 +676,7 @@ namespace wtKST
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.Location = new System.Drawing.Point(15, 116);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(49, 13);
+            this.label1.Size = new System.Drawing.Size(64, 17);
             this.label1.TabIndex = 6;
             this.label1.Text = "Locator :";
             // 
@@ -687,7 +687,7 @@ namespace wtKST
             this.checkBox_KST_Show_Own_Messages.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox_KST_Show_Own_Messages.Location = new System.Drawing.Point(275, 167);
             this.checkBox_KST_Show_Own_Messages.Name = "checkBox_KST_Show_Own_Messages";
-            this.checkBox_KST_Show_Own_Messages.Size = new System.Drawing.Size(126, 17);
+            this.checkBox_KST_Show_Own_Messages.Size = new System.Drawing.Size(161, 21);
             this.checkBox_KST_Show_Own_Messages.TabIndex = 16;
             this.checkBox_KST_Show_Own_Messages.Text = "Show own messages";
             this.checkBox_KST_Show_Own_Messages.UseVisualStyleBackColor = true;
@@ -699,7 +699,7 @@ namespace wtKST
             this.rb_KST_StartAsAway.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rb_KST_StartAsAway.Location = new System.Drawing.Point(275, 101);
             this.rb_KST_StartAsAway.Name = "rb_KST_StartAsAway";
-            this.rb_KST_StartAsAway.Size = new System.Drawing.Size(96, 17);
+            this.rb_KST_StartAsAway.Size = new System.Drawing.Size(122, 21);
             this.rb_KST_StartAsAway.TabIndex = 15;
             this.rb_KST_StartAsAway.TabStop = true;
             this.rb_KST_StartAsAway.Text = "Start as AWAY";
@@ -713,7 +713,7 @@ namespace wtKST
             this.rb_KST_StartAsHere.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rb_KST_StartAsHere.Location = new System.Drawing.Point(275, 70);
             this.rb_KST_StartAsHere.Name = "rb_KST_StartAsHere";
-            this.rb_KST_StartAsHere.Size = new System.Drawing.Size(94, 17);
+            this.rb_KST_StartAsHere.Size = new System.Drawing.Size(120, 21);
             this.rb_KST_StartAsHere.TabIndex = 14;
             this.rb_KST_StartAsHere.Text = "Start as HERE";
             this.rb_KST_StartAsHere.UseVisualStyleBackColor = true;
@@ -726,7 +726,7 @@ namespace wtKST
             this.cb_KST_AutoConnect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_KST_AutoConnect.Location = new System.Drawing.Point(277, 21);
             this.cb_KST_AutoConnect.Name = "cb_KST_AutoConnect";
-            this.cb_KST_AutoConnect.Size = new System.Drawing.Size(90, 17);
+            this.cb_KST_AutoConnect.Size = new System.Drawing.Size(113, 21);
             this.cb_KST_AutoConnect.TabIndex = 13;
             this.cb_KST_AutoConnect.Text = "Auto connect";
             this.cb_KST_AutoConnect.UseVisualStyleBackColor = true;
@@ -747,7 +747,7 @@ namespace wtKST
             "9 - 144/432 MHz R 3"});
             this.cbb_KST_Chat.Location = new System.Drawing.Point(120, 79);
             this.cbb_KST_Chat.Name = "cbb_KST_Chat";
-            this.cbb_KST_Chat.Size = new System.Drawing.Size(121, 21);
+            this.cbb_KST_Chat.Size = new System.Drawing.Size(121, 25);
             this.cbb_KST_Chat.TabIndex = 10;
             this.cbb_KST_Chat.Text = global::wtKST.Properties.Settings.Default.KST_Chat;
             // 
@@ -757,7 +757,7 @@ namespace wtKST
             this.tb_KST_Password.Location = new System.Drawing.Point(120, 53);
             this.tb_KST_Password.Name = "tb_KST_Password";
             this.tb_KST_Password.PasswordChar = '*';
-            this.tb_KST_Password.Size = new System.Drawing.Size(121, 20);
+            this.tb_KST_Password.Size = new System.Drawing.Size(121, 23);
             this.tb_KST_Password.TabIndex = 9;
             this.tb_KST_Password.Text = global::wtKST.Properties.Settings.Default.KST_Password;
             // 
@@ -766,18 +766,18 @@ namespace wtKST
             this.tb_KST_UserName.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_KST_UserName.Location = new System.Drawing.Point(120, 26);
             this.tb_KST_UserName.Name = "tb_KST_UserName";
-            this.tb_KST_UserName.Size = new System.Drawing.Size(121, 20);
+            this.tb_KST_UserName.Size = new System.Drawing.Size(121, 23);
             this.tb_KST_UserName.TabIndex = 8;
             this.tb_KST_UserName.Text = global::wtKST.Properties.Settings.Default.KST_UserName;
             // 
             // tabPage2
-            //
+            // 
             this.tabPage2.AutoScroll = true;
             this.tabPage2.Controls.Add(this.groupBox_ADIF_PrevContest_CurrContest);
             this.tabPage2.Controls.Add(this.groupBox_ADIF_PrevContest);
             this.tabPage2.Controls.Add(this.groupBox_N1MM);
-            this.tabPage2.Controls.Add(this.groupBox6);
             this.tabPage2.Controls.Add(this.groupBox4);
+            this.tabPage2.Controls.Add(this.groupBox6);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
@@ -787,8 +787,113 @@ namespace wtKST
             this.tabPage2.Text = "Log";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // groupBox_ADIF_PrevContest_CurrContest
+            // 
+            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.cb_ADIF_CurrContest_Active);
+            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.lbl_ADIF_CurrContest_File);
+            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.tb_ADIF_CurrContest);
+            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.btn_ADIF_CurrContest_Browse);
+            this.groupBox_ADIF_PrevContest_CurrContest.Location = new System.Drawing.Point(22, 399);
+            this.groupBox_ADIF_PrevContest_CurrContest.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox_ADIF_PrevContest_CurrContest.Name = "groupBox_ADIF_PrevContest_CurrContest";
+            this.groupBox_ADIF_PrevContest_CurrContest.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox_ADIF_PrevContest_CurrContest.Size = new System.Drawing.Size(422, 70);
+            this.groupBox_ADIF_PrevContest_CurrContest.TabIndex = 21;
+            this.groupBox_ADIF_PrevContest_CurrContest.TabStop = false;
+            this.groupBox_ADIF_PrevContest_CurrContest.Text = "ADIF Current Contest Log";
+            // 
+            // cb_ADIF_CurrContest_Active
+            // 
+            this.cb_ADIF_CurrContest_Active.AutoSize = true;
+            this.cb_ADIF_CurrContest_Active.Checked = global::wtKST.Properties.Settings.Default.ADIF_CurrContest_Active;
+            this.cb_ADIF_CurrContest_Active.Enabled = false;
+            this.cb_ADIF_CurrContest_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_ADIF_CurrContest_Active.Location = new System.Drawing.Point(8, 22);
+            this.cb_ADIF_CurrContest_Active.Name = "cb_ADIF_CurrContest_Active";
+            this.cb_ADIF_CurrContest_Active.Size = new System.Drawing.Size(80, 21);
+            this.cb_ADIF_CurrContest_Active.TabIndex = 22;
+            this.cb_ADIF_CurrContest_Active.Text = "Activate";
+            this.cb_ADIF_CurrContest_Active.UseVisualStyleBackColor = true;
+            this.cb_ADIF_CurrContest_Active.CheckedChanged += new System.EventHandler(this.cb_ADIF_CurrContest_Active_CheckedChanged);
+            // 
+            // lbl_ADIF_CurrContest_File
+            // 
+            this.lbl_ADIF_CurrContest_File.AutoSize = true;
+            this.lbl_ADIF_CurrContest_File.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_ADIF_CurrContest_File.Location = new System.Drawing.Point(5, 47);
+            this.lbl_ADIF_CurrContest_File.Name = "lbl_ADIF_CurrContest_File";
+            this.lbl_ADIF_CurrContest_File.Size = new System.Drawing.Size(34, 17);
+            this.lbl_ADIF_CurrContest_File.TabIndex = 1;
+            this.lbl_ADIF_CurrContest_File.Text = "File:";
+            // 
+            // tb_ADIF_CurrContest
+            // 
+            this.tb_ADIF_CurrContest.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "ADIF_CurrContest_FileName", true));
+            this.tb_ADIF_CurrContest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_ADIF_CurrContest.Location = new System.Drawing.Point(35, 44);
+            this.tb_ADIF_CurrContest.Name = "tb_ADIF_CurrContest";
+            this.tb_ADIF_CurrContest.Size = new System.Drawing.Size(285, 23);
+            this.tb_ADIF_CurrContest.TabIndex = 23;
+            this.tb_ADIF_CurrContest.Text = global::wtKST.Properties.Settings.Default.ADIF_CurrContest_FileName;
+            // 
+            // btn_ADIF_CurrContest_Browse
+            // 
+            this.btn_ADIF_CurrContest_Browse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_ADIF_CurrContest_Browse.Location = new System.Drawing.Point(329, 42);
+            this.btn_ADIF_CurrContest_Browse.Name = "btn_ADIF_CurrContest_Browse";
+            this.btn_ADIF_CurrContest_Browse.Size = new System.Drawing.Size(75, 23);
+            this.btn_ADIF_CurrContest_Browse.TabIndex = 24;
+            this.btn_ADIF_CurrContest_Browse.Text = "Browse...";
+            this.btn_ADIF_CurrContest_Browse.UseVisualStyleBackColor = true;
+            this.btn_ADIF_CurrContest_Browse.Click += new System.EventHandler(this.btn_ADIF_CurrContest_Browse_Click);
+            // 
+            // groupBox_ADIF_PrevContest
+            // 
+            this.groupBox_ADIF_PrevContest.Controls.Add(this.lbl_ADIF_PrevContest_File);
+            this.groupBox_ADIF_PrevContest.Controls.Add(this.tb_ADIF_PrevContest);
+            this.groupBox_ADIF_PrevContest.Controls.Add(this.btn_ADIF_PrevContest_Browse);
+            this.groupBox_ADIF_PrevContest.Location = new System.Drawing.Point(22, 477);
+            this.groupBox_ADIF_PrevContest.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox_ADIF_PrevContest.Name = "groupBox_ADIF_PrevContest";
+            this.groupBox_ADIF_PrevContest.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox_ADIF_PrevContest.Size = new System.Drawing.Size(422, 52);
+            this.groupBox_ADIF_PrevContest.TabIndex = 25;
+            this.groupBox_ADIF_PrevContest.TabStop = false;
+            this.groupBox_ADIF_PrevContest.Text = "ADIF Previous Contest Log (green dot)";
+            // 
+            // lbl_ADIF_PrevContest_File
+            // 
+            this.lbl_ADIF_PrevContest_File.AutoSize = true;
+            this.lbl_ADIF_PrevContest_File.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_ADIF_PrevContest_File.Location = new System.Drawing.Point(5, 22);
+            this.lbl_ADIF_PrevContest_File.Name = "lbl_ADIF_PrevContest_File";
+            this.lbl_ADIF_PrevContest_File.Size = new System.Drawing.Size(34, 17);
+            this.lbl_ADIF_PrevContest_File.TabIndex = 0;
+            this.lbl_ADIF_PrevContest_File.Text = "File:";
+            // 
+            // tb_ADIF_PrevContest
+            // 
+            this.tb_ADIF_PrevContest.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "ADIF_PrevContest_FileName", true));
+            this.tb_ADIF_PrevContest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_ADIF_PrevContest.Location = new System.Drawing.Point(35, 19);
+            this.tb_ADIF_PrevContest.Name = "tb_ADIF_PrevContest";
+            this.tb_ADIF_PrevContest.Size = new System.Drawing.Size(285, 23);
+            this.tb_ADIF_PrevContest.TabIndex = 26;
+            this.tb_ADIF_PrevContest.Text = global::wtKST.Properties.Settings.Default.ADIF_PrevContest_FileName;
+            // 
+            // btn_ADIF_PrevContest_Browse
+            // 
+            this.btn_ADIF_PrevContest_Browse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_ADIF_PrevContest_Browse.Location = new System.Drawing.Point(329, 17);
+            this.btn_ADIF_PrevContest_Browse.Name = "btn_ADIF_PrevContest_Browse";
+            this.btn_ADIF_PrevContest_Browse.Size = new System.Drawing.Size(75, 23);
+            this.btn_ADIF_PrevContest_Browse.TabIndex = 27;
+            this.btn_ADIF_PrevContest_Browse.Text = "Browse...";
+            this.btn_ADIF_PrevContest_Browse.UseVisualStyleBackColor = true;
+            this.btn_ADIF_PrevContest_Browse.Click += new System.EventHandler(this.btn_ADIF_PrevContest_Browse_Click);
+            // 
             // groupBox_N1MM
-            //
+            // 
             this.groupBox_N1MM.Controls.Add(this.cb_N1MM_Active);
             this.groupBox_N1MM.Controls.Add(this.lbl_N1MM_Interval);
             this.groupBox_N1MM.Controls.Add(this.tb_N1MM_Interval);
@@ -798,249 +903,166 @@ namespace wtKST
             this.groupBox_N1MM.Controls.Add(this.lbl_N1MM_Contest);
             this.groupBox_N1MM.Controls.Add(this.cb_N1MM_Contest);
             this.groupBox_N1MM.Controls.Add(this.btn_N1MM_LoadContests);
-            this.groupBox_N1MM.Location = new System.Drawing.Point(22, 274);
+            this.groupBox_N1MM.Location = new System.Drawing.Point(22, 290);
             this.groupBox_N1MM.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox_N1MM.Name = "groupBox_N1MM";
             this.groupBox_N1MM.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox_N1MM.Size = new System.Drawing.Size(422, 100);
-            this.groupBox_N1MM.TabIndex = 18;
+            this.groupBox_N1MM.Size = new System.Drawing.Size(422, 101);
+            this.groupBox_N1MM.TabIndex = 14;
             this.groupBox_N1MM.TabStop = false;
             this.groupBox_N1MM.Text = "N1MM Logger+ SQLite";
-            //
+            // 
             // cb_N1MM_Active
-            //
+            // 
             this.cb_N1MM_Active.AutoSize = true;
             this.cb_N1MM_Active.Checked = global::wtKST.Properties.Settings.Default.N1MM_Activate;
             this.cb_N1MM_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_N1MM_Active.Location = new System.Drawing.Point(8, 22);
             this.cb_N1MM_Active.Name = "cb_N1MM_Active";
-            this.cb_N1MM_Active.Size = new System.Drawing.Size(65, 17);
-            this.cb_N1MM_Active.TabIndex = 10;
+            this.cb_N1MM_Active.Size = new System.Drawing.Size(80, 21);
+            this.cb_N1MM_Active.TabIndex = 15;
             this.cb_N1MM_Active.Text = "Activate";
             this.cb_N1MM_Active.UseVisualStyleBackColor = true;
             this.cb_N1MM_Active.CheckedChanged += new System.EventHandler(this.cb_N1MM_Active_CheckedChanged);
-            //
+            // 
             // lbl_N1MM_Interval
-            //
+            // 
             this.lbl_N1MM_Interval.AutoSize = true;
             this.lbl_N1MM_Interval.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_N1MM_Interval.Location = new System.Drawing.Point(90, 24);
             this.lbl_N1MM_Interval.Name = "lbl_N1MM_Interval";
+            this.lbl_N1MM_Interval.Size = new System.Drawing.Size(83, 17);
             this.lbl_N1MM_Interval.TabIndex = 17;
             this.lbl_N1MM_Interval.Text = "Refresh (s):";
-            //
+            // 
             // tb_N1MM_Interval
-            //
+            // 
             this.tb_N1MM_Interval.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_N1MM_Interval.Location = new System.Drawing.Point(172, 22);
             this.tb_N1MM_Interval.Name = "tb_N1MM_Interval";
-            this.tb_N1MM_Interval.Size = new System.Drawing.Size(40, 20);
-            this.tb_N1MM_Interval.TabIndex = 18;
-            this.tb_N1MM_Interval.Text = global::wtKST.Properties.Settings.Default.N1MM_UpdateInterval.ToString();
-            //
-            // tb_N1MM_DB_Path
-            //
-            this.tb_N1MM_DB_Path.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_N1MM_DB_Path.Location = new System.Drawing.Point(85, 44);
-            this.tb_N1MM_DB_Path.Name = "tb_N1MM_DB_Path";
-            this.tb_N1MM_DB_Path.Size = new System.Drawing.Size(235, 20);
-            this.tb_N1MM_DB_Path.TabIndex = 11;
-            this.tb_N1MM_DB_Path.Text = global::wtKST.Properties.Settings.Default.N1MM_DB_FileName;
-            //
-            // btn_N1MM_Browse
-            //
-            this.btn_N1MM_Browse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_N1MM_Browse.Location = new System.Drawing.Point(329, 42);
-            this.btn_N1MM_Browse.Name = "btn_N1MM_Browse";
-            this.btn_N1MM_Browse.Size = new System.Drawing.Size(75, 23);
-            this.btn_N1MM_Browse.TabIndex = 12;
-            this.btn_N1MM_Browse.Text = "Browse...";
-            this.btn_N1MM_Browse.UseVisualStyleBackColor = true;
-            this.btn_N1MM_Browse.Click += new System.EventHandler(this.btn_N1MM_Browse_Click);
-            //
+            this.tb_N1MM_Interval.Size = new System.Drawing.Size(40, 23);
+            this.tb_N1MM_Interval.TabIndex = 16;
+            this.tb_N1MM_Interval.Text = "10";
+            // 
             // lbl_N1MM_DB
-            //
+            // 
             this.lbl_N1MM_DB.AutoSize = true;
             this.lbl_N1MM_DB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_N1MM_DB.Location = new System.Drawing.Point(5, 47);
             this.lbl_N1MM_DB.Name = "lbl_N1MM_DB";
-            this.lbl_N1MM_DB.Size = new System.Drawing.Size(55, 13);
+            this.lbl_N1MM_DB.Size = new System.Drawing.Size(73, 17);
             this.lbl_N1MM_DB.TabIndex = 13;
             this.lbl_N1MM_DB.Text = "Database:";
-            //
+            // 
+            // tb_N1MM_DB_Path
+            // 
+            this.tb_N1MM_DB_Path.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_N1MM_DB_Path.Location = new System.Drawing.Point(85, 44);
+            this.tb_N1MM_DB_Path.Name = "tb_N1MM_DB_Path";
+            this.tb_N1MM_DB_Path.Size = new System.Drawing.Size(235, 23);
+            this.tb_N1MM_DB_Path.TabIndex = 17;
+            this.tb_N1MM_DB_Path.Text = global::wtKST.Properties.Settings.Default.N1MM_DB_FileName;
+            // 
+            // btn_N1MM_Browse
+            // 
+            this.btn_N1MM_Browse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_N1MM_Browse.Location = new System.Drawing.Point(329, 42);
+            this.btn_N1MM_Browse.Name = "btn_N1MM_Browse";
+            this.btn_N1MM_Browse.Size = new System.Drawing.Size(75, 23);
+            this.btn_N1MM_Browse.TabIndex = 18;
+            this.btn_N1MM_Browse.Text = "Browse...";
+            this.btn_N1MM_Browse.UseVisualStyleBackColor = true;
+            this.btn_N1MM_Browse.Click += new System.EventHandler(this.btn_N1MM_Browse_Click);
+            // 
             // lbl_N1MM_Contest
-            //
+            // 
             this.lbl_N1MM_Contest.AutoSize = true;
             this.lbl_N1MM_Contest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbl_N1MM_Contest.Location = new System.Drawing.Point(5, 73);
             this.lbl_N1MM_Contest.Name = "lbl_N1MM_Contest";
-            this.lbl_N1MM_Contest.Size = new System.Drawing.Size(49, 13);
+            this.lbl_N1MM_Contest.Size = new System.Drawing.Size(60, 17);
             this.lbl_N1MM_Contest.TabIndex = 16;
             this.lbl_N1MM_Contest.Text = "Contest:";
-            //
+            // 
             // cb_N1MM_Contest
-            //
+            // 
             this.cb_N1MM_Contest.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cb_N1MM_Contest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_N1MM_Contest.FormattingEnabled = true;
             this.cb_N1MM_Contest.Location = new System.Drawing.Point(85, 70);
             this.cb_N1MM_Contest.Name = "cb_N1MM_Contest";
-            this.cb_N1MM_Contest.Size = new System.Drawing.Size(235, 21);
-            this.cb_N1MM_Contest.TabIndex = 14;
-            //
+            this.cb_N1MM_Contest.Size = new System.Drawing.Size(235, 25);
+            this.cb_N1MM_Contest.TabIndex = 19;
+            // 
             // btn_N1MM_LoadContests
-            //
+            // 
             this.btn_N1MM_LoadContests.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btn_N1MM_LoadContests.Location = new System.Drawing.Point(329, 68);
             this.btn_N1MM_LoadContests.Name = "btn_N1MM_LoadContests";
             this.btn_N1MM_LoadContests.Size = new System.Drawing.Size(75, 23);
-            this.btn_N1MM_LoadContests.TabIndex = 15;
+            this.btn_N1MM_LoadContests.TabIndex = 20;
             this.btn_N1MM_LoadContests.Text = "Load";
             this.btn_N1MM_LoadContests.UseVisualStyleBackColor = true;
             this.btn_N1MM_LoadContests.Click += new System.EventHandler(this.btn_N1MM_LoadContests_Click);
-            //
-            // groupBox_ADIF_PrevContest
-            //
-            this.groupBox_ADIF_PrevContest.Controls.Add(this.lbl_ADIF_PrevContest_File);
-            this.groupBox_ADIF_PrevContest.Controls.Add(this.tb_ADIF_PrevContest);
-            this.groupBox_ADIF_PrevContest.Controls.Add(this.btn_ADIF_PrevContest_Browse);
-            this.groupBox_ADIF_PrevContest.Location = new System.Drawing.Point(22, 460);
-            this.groupBox_ADIF_PrevContest.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox_ADIF_PrevContest.Name = "groupBox_ADIF_PrevContest";
-            this.groupBox_ADIF_PrevContest.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox_ADIF_PrevContest.Size = new System.Drawing.Size(422, 52);
-            this.groupBox_ADIF_PrevContest.TabIndex = 20;
-            this.groupBox_ADIF_PrevContest.TabStop = false;
-            this.groupBox_ADIF_PrevContest.Text = "ADIF Previous Contest Log (green dot)";
-            //
-            // lbl_ADIF_PrevContest_File
-            //
-            this.lbl_ADIF_PrevContest_File.AutoSize = true;
-            this.lbl_ADIF_PrevContest_File.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_ADIF_PrevContest_File.Location = new System.Drawing.Point(5, 22);
-            this.lbl_ADIF_PrevContest_File.Name = "lbl_ADIF_PrevContest_File";
-            this.lbl_ADIF_PrevContest_File.Size = new System.Drawing.Size(23, 13);
-            this.lbl_ADIF_PrevContest_File.TabIndex = 0;
-            this.lbl_ADIF_PrevContest_File.Text = "File:";
-            //
-            // tb_ADIF_PrevContest
-            //
-            this.tb_ADIF_PrevContest.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "ADIF_PrevContest_FileName", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tb_ADIF_PrevContest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_ADIF_PrevContest.Location = new System.Drawing.Point(35, 19);
-            this.tb_ADIF_PrevContest.Name = "tb_ADIF_PrevContest";
-            this.tb_ADIF_PrevContest.Size = new System.Drawing.Size(285, 20);
-            this.tb_ADIF_PrevContest.TabIndex = 1;
-            this.tb_ADIF_PrevContest.Text = global::wtKST.Properties.Settings.Default.ADIF_PrevContest_FileName;
-            //
-            // btn_ADIF_PrevContest_Browse
-            //
-            this.btn_ADIF_PrevContest_Browse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_ADIF_PrevContest_Browse.Location = new System.Drawing.Point(329, 17);
-            this.btn_ADIF_PrevContest_Browse.Name = "btn_ADIF_PrevContest_Browse";
-            this.btn_ADIF_PrevContest_Browse.Size = new System.Drawing.Size(75, 23);
-            this.btn_ADIF_PrevContest_Browse.TabIndex = 2;
-            this.btn_ADIF_PrevContest_Browse.Text = "Browse...";
-            this.btn_ADIF_PrevContest_Browse.UseVisualStyleBackColor = true;
-            this.btn_ADIF_PrevContest_Browse.Click += new System.EventHandler(this.btn_ADIF_PrevContest_Browse_Click);
-            //
-            // groupBox_ADIF_PrevContest_CurrContest
-            //
-            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.cb_ADIF_CurrContest_Active);
-            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.lbl_ADIF_CurrContest_File);
-            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.tb_ADIF_CurrContest);
-            this.groupBox_ADIF_PrevContest_CurrContest.Controls.Add(this.btn_ADIF_CurrContest_Browse);
-            this.groupBox_ADIF_PrevContest_CurrContest.Location = new System.Drawing.Point(22, 382);
-            this.groupBox_ADIF_PrevContest_CurrContest.Margin = new System.Windows.Forms.Padding(2);
-            this.groupBox_ADIF_PrevContest_CurrContest.Name = "groupBox_ADIF_PrevContest_CurrContest";
-            this.groupBox_ADIF_PrevContest_CurrContest.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox_ADIF_PrevContest_CurrContest.Size = new System.Drawing.Size(422, 70);
-            this.groupBox_ADIF_PrevContest_CurrContest.TabIndex = 21;
-            this.groupBox_ADIF_PrevContest_CurrContest.TabStop = false;
-            this.groupBox_ADIF_PrevContest_CurrContest.Text = "ADIF Current Contest Log";
-            //
-            // cb_ADIF_CurrContest_Active
-            //
-            this.cb_ADIF_CurrContest_Active.AutoSize = true;
-            this.cb_ADIF_CurrContest_Active.Checked = global::wtKST.Properties.Settings.Default.ADIF_CurrContest_Active;
-            this.cb_ADIF_CurrContest_Active.Enabled = false;
-            this.cb_ADIF_CurrContest_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cb_ADIF_CurrContest_Active.Location = new System.Drawing.Point(8, 22);
-            this.cb_ADIF_CurrContest_Active.Name = "cb_ADIF_CurrContest_Active";
-            this.cb_ADIF_CurrContest_Active.Size = new System.Drawing.Size(65, 17);
-            this.cb_ADIF_CurrContest_Active.TabIndex = 0;
-            this.cb_ADIF_CurrContest_Active.Text = "Activate";
-            this.cb_ADIF_CurrContest_Active.UseVisualStyleBackColor = true;
-            this.cb_ADIF_CurrContest_Active.CheckedChanged += new System.EventHandler(this.cb_ADIF_CurrContest_Active_CheckedChanged);
-            //
-            // lbl_ADIF_CurrContest_File
-            //
-            this.lbl_ADIF_CurrContest_File.AutoSize = true;
-            this.lbl_ADIF_CurrContest_File.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbl_ADIF_CurrContest_File.Location = new System.Drawing.Point(5, 47);
-            this.lbl_ADIF_CurrContest_File.Name = "lbl_ADIF_CurrContest_File";
-            this.lbl_ADIF_CurrContest_File.Size = new System.Drawing.Size(23, 13);
-            this.lbl_ADIF_CurrContest_File.TabIndex = 1;
-            this.lbl_ADIF_CurrContest_File.Text = "File:";
-            //
-            // tb_ADIF_CurrContest
-            //
-            this.tb_ADIF_CurrContest.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::wtKST.Properties.Settings.Default, "ADIF_CurrContest_FileName", true, System.Windows.Forms.DataSourceUpdateMode.OnValidation));
-            this.tb_ADIF_CurrContest.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_ADIF_CurrContest.Location = new System.Drawing.Point(35, 44);
-            this.tb_ADIF_CurrContest.Name = "tb_ADIF_CurrContest";
-            this.tb_ADIF_CurrContest.Size = new System.Drawing.Size(285, 20);
-            this.tb_ADIF_CurrContest.TabIndex = 2;
-            this.tb_ADIF_CurrContest.Text = global::wtKST.Properties.Settings.Default.ADIF_CurrContest_FileName;
-            //
-            // btn_ADIF_CurrContest_Browse
-            //
-            this.btn_ADIF_CurrContest_Browse.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_ADIF_CurrContest_Browse.Location = new System.Drawing.Point(329, 42);
-            this.btn_ADIF_CurrContest_Browse.Name = "btn_ADIF_CurrContest_Browse";
-            this.btn_ADIF_CurrContest_Browse.Size = new System.Drawing.Size(75, 23);
-            this.btn_ADIF_CurrContest_Browse.TabIndex = 3;
-            this.btn_ADIF_CurrContest_Browse.Text = "Browse...";
-            this.btn_ADIF_CurrContest_Browse.UseVisualStyleBackColor = true;
-            this.btn_ADIF_CurrContest_Browse.Click += new System.EventHandler(this.btn_ADIF_CurrContest_Browse_Click);
-            //
+            // 
             // groupBox6
-            //
+            // 
             this.groupBox6.Controls.Add(this.tb_Options_DXLog_Station_Name);
             this.groupBox6.Controls.Add(this.label28);
             this.groupBox6.Controls.Add(this.cb_DXLog_Active);
-            this.groupBox6.Location = new System.Drawing.Point(22, 199);
+            this.groupBox6.Location = new System.Drawing.Point(22, 218);
             this.groupBox6.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox6.Size = new System.Drawing.Size(422, 64);
-            this.groupBox6.TabIndex = 19;
+            this.groupBox6.TabIndex = 11;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "DXLog Network sync";
-            //
+            // 
+            // tb_Options_DXLog_Station_Name
+            // 
+            this.tb_Options_DXLog_Station_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_Options_DXLog_Station_Name.Location = new System.Drawing.Point(112, 35);
+            this.tb_Options_DXLog_Station_Name.Name = "tb_Options_DXLog_Station_Name";
+            this.tb_Options_DXLog_Station_Name.Size = new System.Drawing.Size(204, 23);
+            this.tb_Options_DXLog_Station_Name.TabIndex = 13;
+            this.tb_Options_DXLog_Station_Name.Text = global::wtKST.Properties.Settings.Default.DXLog_StationName;
+            this.tb_Options_DXLog_Station_Name.Visible = false;
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label28.Location = new System.Drawing.Point(5, 42);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(138, 17);
+            this.label28.TabIndex = 14;
+            this.label28.Text = "Sked Target Station:";
+            this.label28.Visible = false;
+            // 
             // cb_DXLog_Active
-            //
+            // 
             this.cb_DXLog_Active.AutoSize = true;
             this.cb_DXLog_Active.Checked = global::wtKST.Properties.Settings.Default.DXLog_Sync_active;
             this.cb_DXLog_Active.Enabled = false;
             this.cb_DXLog_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_DXLog_Active.Location = new System.Drawing.Point(8, 22);
             this.cb_DXLog_Active.Name = "cb_DXLog_Active";
-            this.cb_DXLog_Active.Size = new System.Drawing.Size(65, 17);
-            this.cb_DXLog_Active.TabIndex = 10;
+            this.cb_DXLog_Active.Size = new System.Drawing.Size(80, 21);
+            this.cb_DXLog_Active.TabIndex = 12;
             this.cb_DXLog_Active.Text = "Activate";
             this.cb_DXLog_Active.UseVisualStyleBackColor = true;
             this.cb_DXLog_Active.CheckedChanged += new System.EventHandler(this.cb_DXLog_Active_CheckedChanged);
-            //
+            // 
             // groupBox4
-            //
+            // 
             this.groupBox4.Controls.Add(this.cb_QARTest_Active);
-            this.groupBox4.Location = new System.Drawing.Point(22, 281);
+            this.groupBox4.Location = new System.Drawing.Point(22, 164);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox4.Size = new System.Drawing.Size(173, 46);
-            this.groupBox4.TabIndex = 17;
+            this.groupBox4.Size = new System.Drawing.Size(422, 46);
+            this.groupBox4.TabIndex = 9;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "QARTest Network sync";
             // 
@@ -1052,7 +1074,7 @@ namespace wtKST
             this.cb_QARTest_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_QARTest_Active.Location = new System.Drawing.Point(8, 22);
             this.cb_QARTest_Active.Name = "cb_QARTest_Active";
-            this.cb_QARTest_Active.Size = new System.Drawing.Size(65, 17);
+            this.cb_QARTest_Active.Size = new System.Drawing.Size(80, 21);
             this.cb_QARTest_Active.TabIndex = 10;
             this.cb_QARTest_Active.Text = "Activate";
             this.cb_QARTest_Active.UseVisualStyleBackColor = true;
@@ -1064,12 +1086,12 @@ namespace wtKST
             this.groupBox2.Controls.Add(this.cb_WinTestNet_Active);
             this.groupBox2.Controls.Add(this.tb_Options_WinTest_Station_Name);
             this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Location = new System.Drawing.Point(22, 114);
+            this.groupBox2.Location = new System.Drawing.Point(22, 92);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox2.Size = new System.Drawing.Size(422, 64);
-            this.groupBox2.TabIndex = 16;
+            this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Win-Test Network sync";
             // 
@@ -1078,7 +1100,7 @@ namespace wtKST
             this.btn_advanced_WT_network_options.Location = new System.Drawing.Point(329, 36);
             this.btn_advanced_WT_network_options.Name = "btn_advanced_WT_network_options";
             this.btn_advanced_WT_network_options.Size = new System.Drawing.Size(75, 23);
-            this.btn_advanced_WT_network_options.TabIndex = 14;
+            this.btn_advanced_WT_network_options.TabIndex = 8;
             this.btn_advanced_WT_network_options.Text = "Advanced Network";
             this.btn_advanced_WT_network_options.UseVisualStyleBackColor = true;
             this.btn_advanced_WT_network_options.Click += new System.EventHandler(this.btn_advanced_WT_network_options_Click);
@@ -1091,8 +1113,8 @@ namespace wtKST
             this.cb_WinTestNet_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_WinTestNet_Active.Location = new System.Drawing.Point(8, 22);
             this.cb_WinTestNet_Active.Name = "cb_WinTestNet_Active";
-            this.cb_WinTestNet_Active.Size = new System.Drawing.Size(65, 17);
-            this.cb_WinTestNet_Active.TabIndex = 10;
+            this.cb_WinTestNet_Active.Size = new System.Drawing.Size(80, 21);
+            this.cb_WinTestNet_Active.TabIndex = 6;
             this.cb_WinTestNet_Active.Text = "Activate";
             this.cb_WinTestNet_Active.UseVisualStyleBackColor = true;
             this.cb_WinTestNet_Active.CheckedChanged += new System.EventHandler(this.cb_WinTestNet_Active_CheckedChanged);
@@ -1102,8 +1124,8 @@ namespace wtKST
             this.tb_Options_WinTest_Station_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_Options_WinTest_Station_Name.Location = new System.Drawing.Point(112, 40);
             this.tb_Options_WinTest_Station_Name.Name = "tb_Options_WinTest_Station_Name";
-            this.tb_Options_WinTest_Station_Name.Size = new System.Drawing.Size(204, 20);
-            this.tb_Options_WinTest_Station_Name.TabIndex = 13;
+            this.tb_Options_WinTest_Station_Name.Size = new System.Drawing.Size(204, 23);
+            this.tb_Options_WinTest_Station_Name.TabIndex = 7;
             this.tb_Options_WinTest_Station_Name.Text = global::wtKST.Properties.Settings.Default.WinTest_StationName;
             // 
             // label10
@@ -1112,8 +1134,8 @@ namespace wtKST
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label10.Location = new System.Drawing.Point(5, 42);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(74, 13);
-            this.label10.TabIndex = 11;
+            this.label10.Size = new System.Drawing.Size(97, 17);
+            this.label10.TabIndex = 0;
             this.label10.Text = "Station Name:";
             // 
             // groupBox1
@@ -1122,12 +1144,12 @@ namespace wtKST
             this.groupBox1.Controls.Add(this.cb_WinTest_Active);
             this.groupBox1.Controls.Add(this.tb_Options_WinTest_INI);
             this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Location = new System.Drawing.Point(22, 36);
+            this.groupBox1.Location = new System.Drawing.Point(22, 20);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(422, 64);
-            this.groupBox1.TabIndex = 15;
+            this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Win-Test file based";
             // 
@@ -1138,8 +1160,8 @@ namespace wtKST
             this.cb_WinTest_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_WinTest_Active.Location = new System.Drawing.Point(8, 22);
             this.cb_WinTest_Active.Name = "cb_WinTest_Active";
-            this.cb_WinTest_Active.Size = new System.Drawing.Size(65, 17);
-            this.cb_WinTest_Active.TabIndex = 10;
+            this.cb_WinTest_Active.Size = new System.Drawing.Size(80, 21);
+            this.cb_WinTest_Active.TabIndex = 2;
             this.cb_WinTest_Active.Text = "Activate";
             this.cb_WinTest_Active.UseVisualStyleBackColor = true;
             this.cb_WinTest_Active.CheckedChanged += new System.EventHandler(this.cb_WinTest_Active_CheckedChanged);
@@ -1149,8 +1171,8 @@ namespace wtKST
             this.tb_Options_WinTest_INI.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_Options_WinTest_INI.Location = new System.Drawing.Point(112, 40);
             this.tb_Options_WinTest_INI.Name = "tb_Options_WinTest_INI";
-            this.tb_Options_WinTest_INI.Size = new System.Drawing.Size(204, 20);
-            this.tb_Options_WinTest_INI.TabIndex = 13;
+            this.tb_Options_WinTest_INI.Size = new System.Drawing.Size(204, 23);
+            this.tb_Options_WinTest_INI.TabIndex = 3;
             this.tb_Options_WinTest_INI.Text = global::wtKST.Properties.Settings.Default.WinTest_INI_FileName;
             // 
             // tabPage3
@@ -1160,7 +1182,7 @@ namespace wtKST
             this.tabPage3.Controls.Add(this.groupBox5);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(471, 290);
+            this.tabPage3.Size = new System.Drawing.Size(471, 341);
             this.tabPage3.TabIndex = 1;
             this.tabPage3.Text = "Calls";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1196,7 +1218,7 @@ namespace wtKST
             this.checkBox76GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox76GHz.Location = new System.Drawing.Point(257, 96);
             this.checkBox76GHz.Name = "checkBox76GHz";
-            this.checkBox76GHz.Size = new System.Drawing.Size(59, 17);
+            this.checkBox76GHz.Size = new System.Drawing.Size(74, 21);
             this.checkBox76GHz.TabIndex = 26;
             this.checkBox76GHz.Text = "76GHz";
             this.checkBox76GHz.UseVisualStyleBackColor = true;
@@ -1210,7 +1232,7 @@ namespace wtKST
             this.checkBox10GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox10GHz.Location = new System.Drawing.Point(257, 73);
             this.checkBox10GHz.Name = "checkBox10GHz";
-            this.checkBox10GHz.Size = new System.Drawing.Size(59, 17);
+            this.checkBox10GHz.Size = new System.Drawing.Size(74, 21);
             this.checkBox10GHz.TabIndex = 23;
             this.checkBox10GHz.Text = "10GHz";
             this.checkBox10GHz.UseVisualStyleBackColor = true;
@@ -1224,7 +1246,7 @@ namespace wtKST
             this.checkBox24GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox24GHz.Location = new System.Drawing.Point(48, 96);
             this.checkBox24GHz.Name = "checkBox24GHz";
-            this.checkBox24GHz.Size = new System.Drawing.Size(59, 17);
+            this.checkBox24GHz.Size = new System.Drawing.Size(74, 21);
             this.checkBox24GHz.TabIndex = 24;
             this.checkBox24GHz.Text = "24GHz";
             this.checkBox24GHz.UseVisualStyleBackColor = true;
@@ -1238,7 +1260,7 @@ namespace wtKST
             this.checkBox47GHz.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox47GHz.Location = new System.Drawing.Point(156, 96);
             this.checkBox47GHz.Name = "checkBox47GHz";
-            this.checkBox47GHz.Size = new System.Drawing.Size(59, 17);
+            this.checkBox47GHz.Size = new System.Drawing.Size(74, 21);
             this.checkBox47GHz.TabIndex = 25;
             this.checkBox47GHz.Text = "47GHz";
             this.checkBox47GHz.UseVisualStyleBackColor = true;
@@ -1252,7 +1274,7 @@ namespace wtKST
             this.checkBox2320.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox2320.Location = new System.Drawing.Point(244, 50);
             this.checkBox2320.Name = "checkBox2320";
-            this.checkBox2320.Size = new System.Drawing.Size(72, 17);
+            this.checkBox2320.Size = new System.Drawing.Size(90, 21);
             this.checkBox2320.TabIndex = 20;
             this.checkBox2320.Text = "2320MHz";
             this.checkBox2320.UseVisualStyleBackColor = true;
@@ -1266,7 +1288,7 @@ namespace wtKST
             this.checkBox3400.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox3400.Location = new System.Drawing.Point(35, 73);
             this.checkBox3400.Name = "checkBox3400";
-            this.checkBox3400.Size = new System.Drawing.Size(72, 17);
+            this.checkBox3400.Size = new System.Drawing.Size(90, 21);
             this.checkBox3400.TabIndex = 21;
             this.checkBox3400.Text = "3400MHz";
             this.checkBox3400.UseVisualStyleBackColor = true;
@@ -1280,7 +1302,7 @@ namespace wtKST
             this.checkBox5760.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox5760.Location = new System.Drawing.Point(143, 73);
             this.checkBox5760.Name = "checkBox5760";
-            this.checkBox5760.Size = new System.Drawing.Size(72, 17);
+            this.checkBox5760.Size = new System.Drawing.Size(90, 21);
             this.checkBox5760.TabIndex = 22;
             this.checkBox5760.Text = "5760MHz";
             this.checkBox5760.UseVisualStyleBackColor = true;
@@ -1294,7 +1316,7 @@ namespace wtKST
             this.checkBox1296.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox1296.Location = new System.Drawing.Point(143, 50);
             this.checkBox1296.Name = "checkBox1296";
-            this.checkBox1296.Size = new System.Drawing.Size(72, 17);
+            this.checkBox1296.Size = new System.Drawing.Size(90, 21);
             this.checkBox1296.TabIndex = 19;
             this.checkBox1296.Text = "1296MHz";
             this.checkBox1296.UseVisualStyleBackColor = true;
@@ -1308,7 +1330,7 @@ namespace wtKST
             this.checkBox432.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox432.Location = new System.Drawing.Point(41, 50);
             this.checkBox432.Name = "checkBox432";
-            this.checkBox432.Size = new System.Drawing.Size(66, 17);
+            this.checkBox432.Size = new System.Drawing.Size(82, 21);
             this.checkBox432.TabIndex = 18;
             this.checkBox432.Text = "432MHz";
             this.checkBox432.UseVisualStyleBackColor = true;
@@ -1322,7 +1344,7 @@ namespace wtKST
             this.checkBox144.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox144.Location = new System.Drawing.Point(250, 27);
             this.checkBox144.Name = "checkBox144";
-            this.checkBox144.Size = new System.Drawing.Size(66, 17);
+            this.checkBox144.Size = new System.Drawing.Size(82, 21);
             this.checkBox144.TabIndex = 17;
             this.checkBox144.Text = "144MHz";
             this.checkBox144.UseVisualStyleBackColor = true;
@@ -1336,7 +1358,7 @@ namespace wtKST
             this.checkBox70.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox70.Location = new System.Drawing.Point(155, 27);
             this.checkBox70.Name = "checkBox70";
-            this.checkBox70.Size = new System.Drawing.Size(60, 17);
+            this.checkBox70.Size = new System.Drawing.Size(74, 21);
             this.checkBox70.TabIndex = 16;
             this.checkBox70.Text = "70MHz";
             this.checkBox70.UseVisualStyleBackColor = true;
@@ -1350,7 +1372,7 @@ namespace wtKST
             this.checkBox50.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkBox50.Location = new System.Drawing.Point(47, 27);
             this.checkBox50.Name = "checkBox50";
-            this.checkBox50.Size = new System.Drawing.Size(60, 17);
+            this.checkBox50.Size = new System.Drawing.Size(74, 21);
             this.checkBox50.TabIndex = 15;
             this.checkBox50.Text = "50MHz";
             this.checkBox50.UseVisualStyleBackColor = true;
@@ -1362,7 +1384,7 @@ namespace wtKST
             this.tabPage4.Controls.Add(this.panel_WS);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(471, 316);
+            this.tabPage4.Size = new System.Drawing.Size(471, 341);
             this.tabPage4.TabIndex = 2;
             this.tabPage4.Text = "Airplane Scatter";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1391,7 +1413,7 @@ namespace wtKST
             this.label16.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label16.Location = new System.Drawing.Point(302, 22);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(60, 13);
+            this.label16.Size = new System.Drawing.Size(79, 17);
             this.label16.TabIndex = 10;
             this.label16.Text = "Frequency:";
             // 
@@ -1412,7 +1434,7 @@ namespace wtKST
             "10G"});
             this.cb_AS_QRG.Location = new System.Drawing.Point(377, 18);
             this.cb_AS_QRG.Name = "cb_AS_QRG";
-            this.cb_AS_QRG.Size = new System.Drawing.Size(64, 21);
+            this.cb_AS_QRG.Size = new System.Drawing.Size(64, 25);
             this.cb_AS_QRG.TabIndex = 11;
             // 
             // label8
@@ -1421,7 +1443,7 @@ namespace wtKST
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label8.Location = new System.Drawing.Point(12, 48);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(227, 13);
+            this.label8.Size = new System.Drawing.Size(304, 17);
             this.label8.TabIndex = 12;
             this.label8.Text = "Get airplane scatter possibilities from minimum:";
             // 
@@ -1431,7 +1453,7 @@ namespace wtKST
             this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label15.Location = new System.Drawing.Point(161, 22);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(55, 13);
+            this.label15.Size = new System.Drawing.Size(71, 17);
             this.label15.TabIndex = 8;
             this.label15.Text = "My Name:";
             // 
@@ -1441,7 +1463,7 @@ namespace wtKST
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label9.Location = new System.Drawing.Point(275, 48);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(102, 13);
+            this.label9.Size = new System.Drawing.Size(135, 17);
             this.label9.TabIndex = 14;
             this.label9.Text = "kms up to maximum:";
             // 
@@ -1451,7 +1473,7 @@ namespace wtKST
             this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label14.Location = new System.Drawing.Point(12, 22);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(85, 13);
+            this.label14.Size = new System.Drawing.Size(110, 17);
             this.label14.TabIndex = 6;
             this.label14.Text = "Server/Channel:";
             // 
@@ -1461,7 +1483,7 @@ namespace wtKST
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label11.Location = new System.Drawing.Point(416, 48);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(29, 13);
+            this.label11.Size = new System.Drawing.Size(37, 17);
             this.label11.TabIndex = 16;
             this.label11.Text = "kms.";
             // 
@@ -1470,7 +1492,7 @@ namespace wtKST
             this.tb_Options_AS_My_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_Options_AS_My_Name.Location = new System.Drawing.Point(220, 19);
             this.tb_Options_AS_My_Name.Name = "tb_Options_AS_My_Name";
-            this.tb_Options_AS_My_Name.Size = new System.Drawing.Size(66, 20);
+            this.tb_Options_AS_My_Name.Size = new System.Drawing.Size(66, 23);
             this.tb_Options_AS_My_Name.TabIndex = 9;
             this.tb_Options_AS_My_Name.Text = global::wtKST.Properties.Settings.Default.AS_My_Name;
             // 
@@ -1479,7 +1501,7 @@ namespace wtKST
             this.tb_AS_MinDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_AS_MinDist.Location = new System.Drawing.Point(240, 45);
             this.tb_AS_MinDist.Name = "tb_AS_MinDist";
-            this.tb_AS_MinDist.Size = new System.Drawing.Size(32, 20);
+            this.tb_AS_MinDist.Size = new System.Drawing.Size(32, 23);
             this.tb_AS_MinDist.TabIndex = 13;
             this.tb_AS_MinDist.Text = global::wtKST.Properties.Settings.Default.AS_MinDist;
             // 
@@ -1488,7 +1510,7 @@ namespace wtKST
             this.tb_Options_AS_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_Options_AS_Server_Name.Location = new System.Drawing.Point(103, 19);
             this.tb_Options_AS_Server_Name.Name = "tb_Options_AS_Server_Name";
-            this.tb_Options_AS_Server_Name.Size = new System.Drawing.Size(51, 20);
+            this.tb_Options_AS_Server_Name.Size = new System.Drawing.Size(51, 23);
             this.tb_Options_AS_Server_Name.TabIndex = 7;
             this.tb_Options_AS_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Server_Name;
             // 
@@ -1497,7 +1519,7 @@ namespace wtKST
             this.tb_AS_MaxDist.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_AS_MaxDist.Location = new System.Drawing.Point(377, 45);
             this.tb_AS_MaxDist.Name = "tb_AS_MaxDist";
-            this.tb_AS_MaxDist.Size = new System.Drawing.Size(33, 20);
+            this.tb_AS_MaxDist.Size = new System.Drawing.Size(33, 23);
             this.tb_AS_MaxDist.TabIndex = 15;
             this.tb_AS_MaxDist.Text = global::wtKST.Properties.Settings.Default.AS_MaxDist;
             // 
@@ -1517,13 +1539,32 @@ namespace wtKST
             this.panel_AS.Size = new System.Drawing.Size(446, 82);
             this.panel_AS.TabIndex = 35;
             // 
+            // label_AS_Port
+            // 
+            this.label_AS_Port.AutoSize = true;
+            this.label_AS_Port.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_AS_Port.Location = new System.Drawing.Point(12, 13);
+            this.label_AS_Port.Name = "label_AS_Port";
+            this.label_AS_Port.Size = new System.Drawing.Size(128, 17);
+            this.label_AS_Port.TabIndex = 0;
+            this.label_AS_Port.Text = "AirScout UDP Port:";
+            // 
+            // tb_AS_Port
+            // 
+            this.tb_AS_Port.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.tb_AS_Port.Location = new System.Drawing.Point(130, 10);
+            this.tb_AS_Port.Name = "tb_AS_Port";
+            this.tb_AS_Port.Size = new System.Drawing.Size(50, 23);
+            this.tb_AS_Port.TabIndex = 9;
+            this.tb_AS_Port.Text = "9872";
+            // 
             // label_local_server
             // 
             this.label_local_server.AutoSize = true;
             this.label_local_server.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_local_server.Location = new System.Drawing.Point(231, 60);
             this.label_local_server.Name = "label_local_server";
-            this.label_local_server.Size = new System.Drawing.Size(70, 13);
+            this.label_local_server.Size = new System.Drawing.Size(92, 17);
             this.label_local_server.TabIndex = 11;
             this.label_local_server.Text = "Local Server:";
             // 
@@ -1534,7 +1575,7 @@ namespace wtKST
             this.cb_AS_local.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_AS_local.Location = new System.Drawing.Point(33, 58);
             this.cb_AS_local.Name = "cb_AS_local";
-            this.cb_AS_local.Size = new System.Drawing.Size(177, 17);
+            this.cb_AS_local.Size = new System.Drawing.Size(231, 21);
             this.cb_AS_local.TabIndex = 7;
             this.cb_AS_local.Text = "Use local server for double click";
             this.cb_AS_local.UseVisualStyleBackColor = true;
@@ -1547,7 +1588,7 @@ namespace wtKST
             this.label_timeout2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_timeout2.Location = new System.Drawing.Point(414, 37);
             this.label_timeout2.Name = "label_timeout2";
-            this.label_timeout2.Size = new System.Drawing.Size(27, 13);
+            this.label_timeout2.Size = new System.Drawing.Size(34, 17);
             this.label_timeout2.TabIndex = 20;
             this.label_timeout2.Text = "sec.";
             // 
@@ -1557,7 +1598,7 @@ namespace wtKST
             this.label_timeout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label_timeout.Location = new System.Drawing.Point(272, 37);
             this.label_timeout.Name = "label_timeout";
-            this.label_timeout.Size = new System.Drawing.Size(109, 13);
+            this.label_timeout.Size = new System.Drawing.Size(147, 17);
             this.label_timeout.TabIndex = 13;
             this.label_timeout.Text = "Timeout for response:";
             // 
@@ -1568,7 +1609,7 @@ namespace wtKST
             this.cb_AS_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_AS_Active.Location = new System.Drawing.Point(13, 36);
             this.cb_AS_Active.Name = "cb_AS_Active";
-            this.cb_AS_Active.Size = new System.Drawing.Size(243, 17);
+            this.cb_AS_Active.Size = new System.Drawing.Size(318, 21);
             this.cb_AS_Active.TabIndex = 5;
             this.cb_AS_Active.Text = "Activate local Airscout service (same network)";
             this.cb_AS_Active.UseVisualStyleBackColor = true;
@@ -1579,7 +1620,7 @@ namespace wtKST
             this.tb_AS_Timeout.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_AS_Timeout.Location = new System.Drawing.Point(387, 33);
             this.tb_AS_Timeout.Name = "tb_AS_Timeout";
-            this.tb_AS_Timeout.Size = new System.Drawing.Size(23, 20);
+            this.tb_AS_Timeout.Size = new System.Drawing.Size(23, 23);
             this.tb_AS_Timeout.TabIndex = 6;
             this.tb_AS_Timeout.Text = global::wtKST.Properties.Settings.Default.AS_Timeout;
             // 
@@ -1589,27 +1630,10 @@ namespace wtKST
             this.tb_Options_AS_Local_Server_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tb_Options_AS_Local_Server_Name.Location = new System.Drawing.Point(305, 56);
             this.tb_Options_AS_Local_Server_Name.Name = "tb_Options_AS_Local_Server_Name";
-            this.tb_Options_AS_Local_Server_Name.Size = new System.Drawing.Size(51, 20);
+            this.tb_Options_AS_Local_Server_Name.Size = new System.Drawing.Size(51, 23);
             this.tb_Options_AS_Local_Server_Name.TabIndex = 8;
             this.tb_Options_AS_Local_Server_Name.Text = global::wtKST.Properties.Settings.Default.AS_Local_Name;
-            //
-            // label_AS_Port
-            //
-            this.label_AS_Port.AutoSize = true;
-            this.label_AS_Port.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_AS_Port.Location = new System.Drawing.Point(12, 13);
-            this.label_AS_Port.Name = "label_AS_Port";
-            this.label_AS_Port.Text = "AirScout UDP Port:";
-            //
-            // tb_AS_Port
-            //
-            this.tb_AS_Port.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_AS_Port.Location = new System.Drawing.Point(130, 10);
-            this.tb_AS_Port.Name = "tb_AS_Port";
-            this.tb_AS_Port.Size = new System.Drawing.Size(50, 20);
-            this.tb_AS_Port.TabIndex = 9;
-            this.tb_AS_Port.Text = global::wtKST.Properties.Settings.Default.AS_Port.ToString();
-            //
+            // 
             // panel_WS
             // 
             this.panel_WS.Controls.Add(this.tb_WS_Password);
@@ -1640,7 +1664,7 @@ namespace wtKST
             this.label31.AutoSize = true;
             this.label31.Location = new System.Drawing.Point(10, 102);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(49, 13);
+            this.label31.Size = new System.Drawing.Size(53, 15);
             this.label31.TabIndex = 36;
             this.label31.Text = "API URL";
             // 
@@ -1658,7 +1682,7 @@ namespace wtKST
             this.label29.AutoSize = true;
             this.label29.Location = new System.Drawing.Point(10, 76);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(58, 13);
+            this.label29.Size = new System.Drawing.Size(66, 15);
             this.label29.TabIndex = 34;
             this.label29.Text = "Login URL";
             // 
@@ -1676,7 +1700,7 @@ namespace wtKST
             this.label_WS_Password.AutoSize = true;
             this.label_WS_Password.Location = new System.Drawing.Point(230, 40);
             this.label_WS_Password.Name = "label_WS_Password";
-            this.label_WS_Password.Size = new System.Drawing.Size(99, 13);
+            this.label_WS_Password.Size = new System.Drawing.Size(112, 15);
             this.label_WS_Password.TabIndex = 32;
             this.label_WS_Password.Text = "AirScout Password:";
             // 
@@ -1685,7 +1709,7 @@ namespace wtKST
             this.label_WS_Username.AutoSize = true;
             this.label_WS_Username.Location = new System.Drawing.Point(10, 40);
             this.label_WS_Username.Name = "label_WS_Username";
-            this.label_WS_Username.Size = new System.Drawing.Size(101, 13);
+            this.label_WS_Username.Size = new System.Drawing.Size(116, 15);
             this.label_WS_Username.TabIndex = 28;
             this.label_WS_Username.Text = "AirScout Username:";
             // 
@@ -1705,7 +1729,7 @@ namespace wtKST
             this.cb_WS_Active.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cb_WS_Active.Location = new System.Drawing.Point(13, 14);
             this.cb_WS_Active.Name = "cb_WS_Active";
-            this.cb_WS_Active.Size = new System.Drawing.Size(297, 17);
+            this.cb_WS_Active.Size = new System.Drawing.Size(390, 21);
             this.cb_WS_Active.TabIndex = 26;
             this.cb_WS_Active.Text = "Activate web service for browser based AirScout versions";
             this.cb_WS_Active.UseVisualStyleBackColor = true;
@@ -1746,7 +1770,7 @@ namespace wtKST
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(471, 290);
+            this.tabPage5.Size = new System.Drawing.Size(471, 341);
             this.tabPage5.TabIndex = 3;
             this.tabPage5.Text = "KST - Macros";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1763,7 +1787,7 @@ namespace wtKST
             this.label24.AutoSize = true;
             this.label24.Location = new System.Drawing.Point(18, 214);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(46, 13);
+            this.label24.Size = new System.Drawing.Size(52, 15);
             this.label24.TabIndex = 34;
             this.label24.Text = "Macro 9";
             // 
@@ -1772,7 +1796,7 @@ namespace wtKST
             this.checkBox1.AutoSize = true;
             this.checkBox1.Location = new System.Drawing.Point(70, 213);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(15, 14);
+            this.checkBox1.Size = new System.Drawing.Size(18, 17);
             this.checkBox1.TabIndex = 35;
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
@@ -1788,7 +1812,7 @@ namespace wtKST
             this.label25.AutoSize = true;
             this.label25.Location = new System.Drawing.Point(18, 239);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(52, 13);
+            this.label25.Size = new System.Drawing.Size(59, 15);
             this.label25.TabIndex = 37;
             this.label25.Text = "Macro 10";
             // 
@@ -1797,7 +1821,7 @@ namespace wtKST
             this.checkBox2.AutoSize = true;
             this.checkBox2.Location = new System.Drawing.Point(70, 238);
             this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(15, 14);
+            this.checkBox2.Size = new System.Drawing.Size(18, 17);
             this.checkBox2.TabIndex = 38;
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
@@ -1813,7 +1837,7 @@ namespace wtKST
             this.label26.AutoSize = true;
             this.label26.Location = new System.Drawing.Point(18, 164);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(46, 13);
+            this.label26.Size = new System.Drawing.Size(52, 15);
             this.label26.TabIndex = 28;
             this.label26.Text = "Macro 7";
             // 
@@ -1822,7 +1846,7 @@ namespace wtKST
             this.checkBox3.AutoSize = true;
             this.checkBox3.Location = new System.Drawing.Point(70, 163);
             this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(15, 14);
+            this.checkBox3.Size = new System.Drawing.Size(18, 17);
             this.checkBox3.TabIndex = 29;
             this.checkBox3.UseVisualStyleBackColor = true;
             // 
@@ -1838,7 +1862,7 @@ namespace wtKST
             this.label27.AutoSize = true;
             this.label27.Location = new System.Drawing.Point(18, 189);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(46, 13);
+            this.label27.Size = new System.Drawing.Size(52, 15);
             this.label27.TabIndex = 31;
             this.label27.Text = "Macro 8";
             // 
@@ -1847,7 +1871,7 @@ namespace wtKST
             this.checkBox4.AutoSize = true;
             this.checkBox4.Location = new System.Drawing.Point(70, 188);
             this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(15, 14);
+            this.checkBox4.Size = new System.Drawing.Size(18, 17);
             this.checkBox4.TabIndex = 32;
             this.checkBox4.UseVisualStyleBackColor = true;
             // 
@@ -1863,7 +1887,7 @@ namespace wtKST
             this.label23.AutoSize = true;
             this.label23.Location = new System.Drawing.Point(18, 39);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(46, 13);
+            this.label23.Size = new System.Drawing.Size(52, 15);
             this.label23.TabIndex = 13;
             this.label23.Text = "Macro 2";
             // 
@@ -1874,7 +1898,7 @@ namespace wtKST
             this.cB_macro_2.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cB_macro_2.Location = new System.Drawing.Point(70, 38);
             this.cB_macro_2.Name = "cB_macro_2";
-            this.cB_macro_2.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_2.Size = new System.Drawing.Size(18, 17);
             this.cB_macro_2.TabIndex = 14;
             this.cB_macro_2.UseVisualStyleBackColor = true;
             // 
@@ -1890,7 +1914,7 @@ namespace wtKST
             this.label22.AutoSize = true;
             this.label22.Location = new System.Drawing.Point(18, 114);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(46, 13);
+            this.label22.Size = new System.Drawing.Size(52, 15);
             this.label22.TabIndex = 22;
             this.label22.Text = "Macro 5";
             // 
@@ -1901,7 +1925,7 @@ namespace wtKST
             this.cB_macro_5.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cB_macro_5.Location = new System.Drawing.Point(70, 113);
             this.cB_macro_5.Name = "cB_macro_5";
-            this.cB_macro_5.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_5.Size = new System.Drawing.Size(18, 17);
             this.cB_macro_5.TabIndex = 23;
             this.cB_macro_5.UseVisualStyleBackColor = true;
             // 
@@ -1917,7 +1941,7 @@ namespace wtKST
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(18, 139);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(46, 13);
+            this.label21.Size = new System.Drawing.Size(52, 15);
             this.label21.TabIndex = 25;
             this.label21.Text = "Macro 6";
             // 
@@ -1928,7 +1952,7 @@ namespace wtKST
             this.cB_macro_6.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cB_macro_6.Location = new System.Drawing.Point(70, 138);
             this.cB_macro_6.Name = "cB_macro_6";
-            this.cB_macro_6.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_6.Size = new System.Drawing.Size(18, 17);
             this.cB_macro_6.TabIndex = 26;
             this.cB_macro_6.UseVisualStyleBackColor = true;
             // 
@@ -1944,7 +1968,7 @@ namespace wtKST
             this.label20.AutoSize = true;
             this.label20.Location = new System.Drawing.Point(18, 64);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(46, 13);
+            this.label20.Size = new System.Drawing.Size(52, 15);
             this.label20.TabIndex = 16;
             this.label20.Text = "Macro 3";
             // 
@@ -1955,7 +1979,7 @@ namespace wtKST
             this.cB_macro_3.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cB_macro_3.Location = new System.Drawing.Point(70, 63);
             this.cB_macro_3.Name = "cB_macro_3";
-            this.cB_macro_3.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_3.Size = new System.Drawing.Size(18, 17);
             this.cB_macro_3.TabIndex = 17;
             this.cB_macro_3.UseVisualStyleBackColor = true;
             // 
@@ -1971,7 +1995,7 @@ namespace wtKST
             this.label19.AutoSize = true;
             this.label19.Location = new System.Drawing.Point(18, 89);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(46, 13);
+            this.label19.Size = new System.Drawing.Size(52, 15);
             this.label19.TabIndex = 19;
             this.label19.Text = "Macro 4";
             // 
@@ -1982,7 +2006,7 @@ namespace wtKST
             this.cB_macro_4.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cB_macro_4.Location = new System.Drawing.Point(70, 88);
             this.cB_macro_4.Name = "cB_macro_4";
-            this.cB_macro_4.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_4.Size = new System.Drawing.Size(18, 17);
             this.cB_macro_4.TabIndex = 20;
             this.cB_macro_4.UseVisualStyleBackColor = true;
             // 
@@ -1998,7 +2022,7 @@ namespace wtKST
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(18, 14);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(46, 13);
+            this.label18.Size = new System.Drawing.Size(52, 15);
             this.label18.TabIndex = 10;
             this.label18.Text = "Macro 1";
             // 
@@ -2009,30 +2033,9 @@ namespace wtKST
             this.cB_macro_1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cB_macro_1.Location = new System.Drawing.Point(70, 13);
             this.cB_macro_1.Name = "cB_macro_1";
-            this.cB_macro_1.Size = new System.Drawing.Size(15, 14);
+            this.cB_macro_1.Size = new System.Drawing.Size(18, 17);
             this.cB_macro_1.TabIndex = 11;
             this.cB_macro_1.UseVisualStyleBackColor = true;
-            // 
-            // tb_Options_DXLog_Station_Name
-            // 
-            this.tb_Options_DXLog_Station_Name.Visible = false;
-            this.tb_Options_DXLog_Station_Name.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.tb_Options_DXLog_Station_Name.Location = new System.Drawing.Point(112, 35);
-            this.tb_Options_DXLog_Station_Name.Name = "tb_Options_DXLog_Station_Name";
-            this.tb_Options_DXLog_Station_Name.Size = new System.Drawing.Size(204, 20);
-            this.tb_Options_DXLog_Station_Name.TabIndex = 15;
-            this.tb_Options_DXLog_Station_Name.Text = global::wtKST.Properties.Settings.Default.DXLog_StationName;
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label28.Location = new System.Drawing.Point(5, 42);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(74, 13);
-            this.label28.TabIndex = 14;
-            this.label28.Text = "Sked Target Station:";
-            this.label28.Visible = false;
             // 
             // OptionsDlg
             // 
@@ -2056,12 +2059,12 @@ namespace wtKST
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
-            this.groupBox_N1MM.ResumeLayout(false);
-            this.groupBox_N1MM.PerformLayout();
-            this.groupBox_ADIF_PrevContest.ResumeLayout(false);
-            this.groupBox_ADIF_PrevContest.PerformLayout();
             this.groupBox_ADIF_PrevContest_CurrContest.ResumeLayout(false);
             this.groupBox_ADIF_PrevContest_CurrContest.PerformLayout();
+            this.groupBox_ADIF_PrevContest.ResumeLayout(false);
+            this.groupBox_ADIF_PrevContest.PerformLayout();
+            this.groupBox_N1MM.ResumeLayout(false);
+            this.groupBox_N1MM.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             this.groupBox4.ResumeLayout(false);
