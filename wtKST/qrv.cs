@@ -35,8 +35,7 @@ namespace wtKST
         /// <param name="row">DataRow that contains entries for BANDS</param>
         /// <param name="qrvcall">Callsign used for database queries</param>
         /// <param name="nameInfo">nameInfo string from user list</param>
-        /// <param name="call_new_in_userlist">true if user is a new entry in the user list</param>
-        public void Process_QRV(DataRow row, string qrvcall, string nameInfo, bool call_new_in_userlist = false)
+        public void Process_QRV(DataRow row, string qrvcall, string nameInfo)
         {
             string qrvcallBase = qrvcall;
             if (qrvcallBase.IndexOf("-") > 0)
@@ -135,13 +134,6 @@ namespace wtKST
                     else
                         row[band] = QRV_STATE.unknown;
                 }
-            }
-
-            if (call_new_in_userlist)
-            {
-                // if we have not just started (oldCALL empty) treat connecting
-                // to KST as activity
-                row["TIME"] = DateTime.UtcNow;
             }
         }
         /*

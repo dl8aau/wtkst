@@ -545,9 +545,6 @@ namespace wtKST
                                     row["AWAY"] = (usr_state & 1) == 1;
                                     row["RECENTLOGIN"] = (usr_state & 2) == 2;
 
-                                    row["CONTACTED"] = 0; // clear counter on activity
-                                    row["TIME"] = DateTime.UtcNow; // store time of activity
-
                                     if (process_user_update != null)
                                         process_user_update(this, new UserUpdateEventArgs(row, USER_OP.USER_MODIFY));
                                 }
