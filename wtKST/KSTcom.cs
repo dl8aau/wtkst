@@ -209,7 +209,7 @@ namespace wtKST
 
         public DataRow[] MSG_findcall(string call)
         {
-            string findCall = string.Format("[CALL] = '{0}' OR [RECIPIENT] = '{0}'", call);
+            string findCall = string.Format("[CALL] LIKE '*{0}*' OR [RECIPIENT] LIKE '*{0}*'", call);
             DataRow[] selectRow = MSG.Select(findCall);
             return selectRow;
         }
